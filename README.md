@@ -21,6 +21,5 @@ TBA
 |AMN| Alexander Nykjær| anykja18@student.aau.dk| 21860918|
 
 ## Vejledere
-**Hovedvejleder:**<br>
 TBA
 
