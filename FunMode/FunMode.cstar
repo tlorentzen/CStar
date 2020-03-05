@@ -1,0 +1,128 @@
+Boolean inFunMode = false;
+
+// Potentiometers
+Integer valPot1 = 0;
+Integer valPot2 = 0;
+constant byte pinPot1 = A1;
+constant byte pinPot2 = A2;
+
+// Button
+byte btnPin = A0;
+Integer btnState = 0;
+
+// BarGraph pins
+constant byte numOfGraphLeds = 10;
+constant byte array bargraph = {2,3,4,5,6,7,8,A4,A5,12};
+
+// RGB Diode
+constant byte array rgb = {9,10,11};
+
+void setup() {
+    console.begin(9600);
+}
+
+void loop() {
+    if(!inFunMode){
+        readInput();
+        setBarGraph();
+        setRGB();
+    }else{
+        makeFun();
+    }
+}
+
+void setBarGraph() {
+
+    byte counter = 0;
+    byte barState = map(constrain(valPot1, 0, 1023), 0, 1023, 0, 10);
+    
+    while(counter < numOfGraphLeds){
+        if(barState >= counter+1){
+            write(bargraph[counter], HIGH);
+        }else{
+            write(bargraph[counter], LOW);
+        }
+        
+        counter = counter + 1;
+    }
+}
+
+void readInput() {
+    valPot1  = read(pinPot1);
+    valPot2  = read(pinPot2);
+    btnState = read(btnPin);
+
+    console.println(btnState);
+
+    if(btnState > 500){
+        inFunMode = true;
+    }
+}
+
+void setRGB() {
+    int potState = map(constrain(valPot2, 0, 1023), 0, 1023, 0, 765);
+
+    if(potState BETWEEN [1; 255]){
+        byte red = map(potState, 1, 255, 1, 255);
+        writeRGBState(red, 0, 0);
+    }else if(potState BETWEEN [256; 510]){
+        byte green = map(potState, 256, 510, 1, 255);
+        writeRGBState(0, green, 0);
+    }else if(potState > 510){
+        byte blue = map(potState, 511, 765, 1, 255);
+        writeRGBState(0, 0, blue);
+    }else{
+        writeRGBState(0, 0, 0);
+    }
+}
+
+void writeRGBState(byte r, byte g, byte b){
+    write(rgb[0], r);
+    write(rgb[1], g);
+    write(rgb[2], b);
+}
+
+void makeFun(){
+
+    Integer counter = 0;
+    Integer cycle  = 0;
+    Integer cycles = 4;
+
+    while(counter < numOfGraphLeds){
+        write(bargraph[counter], LOW);
+        counter = counter + 1;
+    }
+
+    while(cycle < cycles){
+        counter = 0;
+        
+        while(counter < numOfGraphLeds){
+            if(counter < numOfGraphLeds){
+                write(bargraph[counter], HIGH);
+            }else{
+                write(bargraph[counter], LOW);
+            }
+            
+            counter = counter + 1;
+            sleep(50);
+        }
+
+        while(counter > 0){
+            if(counter-1 > numOfGraphLeds){
+                write(bargraph[counter], HIGH);
+            }else{
+                write(bargraph[counter], LOW);
+            }
+            counter = counter - 1;
+            sleep(50);
+        }
+
+        cycle = cycle + 1;
+    }
+
+    inFunMode = false;
+}
+
+Big Integer map(big x, big in_min, big in_max, big out_min, big out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
