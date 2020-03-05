@@ -1,18 +1,18 @@
-Boolean inFunMode = false;
+boolean inFunMode = false;
 
 // Potentiometers
-Integer valPot1 = 0;
-Integer valPot2 = 0;
+integer valPot1 = 0;
+integer valPot2 = 0;
 constant byte pinPot1 = A1;
 constant byte pinPot2 = A2;
 
 // Button
 byte btnPin = A0;
-Integer btnState = 0;
+integer btnState = 0;
 
 // BarGraph pins
 constant byte numOfGraphLeds = 10;
-constant byte array bargraph = {2,3,4,5,6,7,8,A4,A5,12};
+constant pin array bargraph = {2,3,4,5,6,7,8,A4,A5,12};
 
 // RGB Diode
 constant byte array rgb = {9,10,11};
@@ -60,7 +60,7 @@ void readInput() {
 }
 
 void setRGB() {
-    int potState = map(constrain(valPot2, 0, 1023), 0, 1023, 0, 765);
+    integer potState = map(constrain(valPot2, 0, 1023), 0, 1023, 0, 765);
 
     if(potState BETWEEN [1; 255]){
         byte red = map(potState, 1, 255, 1, 255);
@@ -84,9 +84,9 @@ void writeRGBState(byte r, byte g, byte b){
 
 void makeFun(){
 
-    Integer counter = 0;
-    Integer cycle  = 0;
-    Integer cycles = 4;
+    integer counter = 0;
+    integer cycle  = 0;
+    integer cycles = 4;
 
     while(counter < numOfGraphLeds){
         write(bargraph[counter], LOW);
@@ -123,6 +123,6 @@ void makeFun(){
     inFunMode = false;
 }
 
-Big Integer map(big x, big in_min, big in_max, big out_min, big out_max) {
+big integer map(big x, big in_min, big in_max, big out_min, big out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
