@@ -3,7 +3,7 @@
 ## Resourcer
 
 **Gruppe e-mail:**<br>
-TBA
+sw418f20@cs.aau.dk
 
 **Mappe på Google:**<br>
 [Google drive](https://drive.google.com/drive/folders/1-HIOyeOl25tUC56HXqpKgGgdqqzFzoX_?usp=sharing)
@@ -19,5 +19,5 @@ TBA
 | JKL | Jakob Kjeldbjerg Lund | jlund18@student.aau.dk | 42489540 |
 | ??? | Zohra Amini | ??? | ??? |
 
-## Vejledere
-TBA
+## Vejleder
+Lone Leth Thomsen
