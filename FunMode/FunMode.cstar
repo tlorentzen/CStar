@@ -3,11 +3,11 @@ boolean inFunMode = false;
 // Potentiometers
 integer valPot1 = 0;
 integer valPot2 = 0;
-constant byte pinPot1 = A1;
-constant byte pinPot2 = A2;
+constant pin pinPot1 = A1;
+constant pin pinPot2 = A2;
 
 // Button
-byte btnPin = A0;
+constant pin btnPin = A0;
 integer btnState = 0;
 
 // BarGraph pins
@@ -15,7 +15,7 @@ constant byte numOfGraphLeds = 10;
 constant pin array bargraph = {2,3,4,5,6,7,8,A4,A5,12};
 
 // RGB Diode
-constant byte array rgb = {9,10,11};
+constant pin array rgb = {9,10,11};
 
 void setup() {
     console.begin(9600);
