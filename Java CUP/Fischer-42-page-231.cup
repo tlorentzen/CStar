@@ -1,0 +1,60 @@
+/* Simple +/-/* expression language; parser evaluates constant expressions on the fly*/
+import java_cup.runtime.*;
+
+parser code {:
+    // Connect this parser to a scanner!
+    scanner s;
+    Parser(scanner s){ this.s=s; }
+:}
+
+/* define how to connect to the scanner! */
+init with {: s.init(); :};
+scan with {: return s.next_token(); :};
+
+/* Terminals (tokens returned by the scanner). */
+terminal            SEMI, IF, ELSE, WHILE, EQUAL, VOID, PIPE, PLUS, MINUS, TIMES, DIVIDE, INTEGER, FLOAT, DOUBLE, DECIMAL, BYTE, PIN, LPAREN, RPAREN;
+//terminal Integer    NUMBER;        // our scanner provides numbers as integers
+
+/* Non terminals */
+non terminal        Prog, Type, Val, Id, CondExpr, CompOp, Factor, Term;
+non terminal        ArithmExpr, Expr, Assign, Dcl, Blk, Iterative;
+non terminal        Selection, Stmt, Return;
+
+/* Precedences */
+precedence left PLUS, MINUS;
+precedence left TIMES;
+
+/* The grammar rules */
+Start ::= Stmt SEMI         {: System.out.println(Stmt);:}
+;
+Stmt      ::=  Unmatched:e1                                 {: RESULT = e1 :}
+             | Matched:e1                                   {: RESULT = e1 :}
+;
+Matched   ::= IF E:e1 THEN Matched:e2 ELSE Matched:e3       {: RESULT = if(e1) {e2} else {e3}  :}
+            | OTHER:e1                                      {: RESULT = e1 :}
+;
+Unmatched ::= IF E:e1 THEN Matched:e2 ELSE Unmatched:e3     {: RESULT = if(e1) {e2} else {e3}  :}
+            | IF E:e1 THEN Unmatched:e2                     {: RESULT = if(e1) {e2} :}
+            | OTHER:e1                                      {: RESULT = e1 :}
+;
+
+
+
+Assign     ::= ID:e1 EQUALS Expr:e2 {: RESULT = e1=e2 :};
+
+Expr       ::= ArithmExpr:e1 {: RESULT = e1 :}
+             | CondExpr:e1   {: RESULT = e1 :};
+
+ArithmExpr ::= 
+
+
+Factor     ::= ID:e1 {:  :}
+             | Val:e1 {:  :}
+             | LPAREN Expr:e RPAREN {: RETURN = e :}
+
+Type       ::= INTEGER:e  {: RESULT = e :}
+             | DECIMAL:e  {: RESULT = e :}
+             | BYTE:e     {: RESULT = e :};
+
+Return     ::= Type:e {: RESULT = e :}
+             | VOID:e {: RESULT = e :};
