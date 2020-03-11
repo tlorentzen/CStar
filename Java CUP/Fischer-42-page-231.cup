@@ -16,16 +16,19 @@ terminal            SEMI, IF, ELSE, WHILE, EQUAL, VOID, PIPE, PLUS, MINUS, TIMES
 //terminal Integer    NUMBER;        // our scanner provides numbers as integers
 
 /* Non terminals */
-non terminal        Prog, Type, Val, Id, CondExpr, CompOp, Factor, Term;
-non terminal        ArithmExpr, Expr, Assign, Dcl, Blk, Iterative;
-non terminal        Selection, Stmt, Return;
+non terminal        Prog, Stmt, Selection, Iterative, Blk, Dcls, Dcl;
+non terminal        Func, Param, FuncCall;
+non terminal        Assign, Expr, ArtihmExpr, Term, Factor, CondExpr;
+non terminal        CompOp, AssignOp, Plus, Minus, Multiply, Division;
+non terminal        Id, Val, IntLiteral, LongLiteral, FloatLiteral, CharLiteral, PinLiteral, ArrayLiteral;
+non terminal        Type, ReturnType;
 
 /* Precedences */
 precedence left PLUS, MINUS;
 precedence left TIMES;
 
 /* The grammar rules */
-Start ::= Stmt SEMI         {: System.out.println(Stmt);:}
+Start ::= Stmt SEMI         {: System.out.println(Stmt); :}
 ;
 Stmt      ::=  Unmatched:e1                                 {: RESULT = e1 :}
              | Matched:e1                                   {: RESULT = e1 :}
@@ -37,7 +40,6 @@ Unmatched ::= IF E:e1 THEN Matched:e2 ELSE Unmatched:e3     {: RESULT = if(e1) {
             | IF E:e1 THEN Unmatched:e2                     {: RESULT = if(e1) {e2} :}
             | OTHER:e1                                      {: RESULT = e1 :}
 ;
-
 
 
 Assign     ::= ID:e1 EQUALS Expr:e2 {: RESULT = e1=e2 :};
