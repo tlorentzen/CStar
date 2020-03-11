@@ -19,7 +19,7 @@ func: return_type ID LEFT_PAREN param RIGHT_PAREN blk;
 param: TYPE ID (COMMA param)*;
 func_call: ID LEFT_PAREN ID (COMMA ID)* RIGHT_PAREN;
 
-blk: LEFT_BRACKET ( dcls | stmt )* RIGHT_BRACKET;
+blk: LEFT_BRACKET ( dcls | stmt | return)* RIGHT_BRACKET;
 
 stmt: ( assign SEMICOLON | expr SEMICOLON | func_call SEMICOLON | selection | iterative )+;
 
@@ -32,6 +32,8 @@ val: INT_LITERAL | LONG_LITERAL | FLOAT_LITERAL | CHAR_LITERAL | PIN_LITERAL ;
 array_call: ID LEFT_BRACE val RIGHT_BRACE (ASSIGN_OP val)? ;
 
 return_type: TYPE | VOID;
+
+return: ID | expr ;
 
 //TOKEN SPECIFICATION
 COMP_OP: LESS_THAN | GREATER_THAN | IS | ISNOT;

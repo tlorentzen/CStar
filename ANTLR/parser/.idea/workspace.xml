@@ -4,9 +4,6 @@
     <list default="true" id="f704721e-91c8-405c-b7e8-d17a84519624" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lexer.g4" beforeDir="false" afterPath="$PROJECT_DIR$/Lexer.g4" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gen/LexerLexer.interp" beforeDir="false" afterPath="$PROJECT_DIR$/gen/LexerLexer.interp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gen/LexerLexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/gen/LexerLexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gen/LexerLexer.tokens" beforeDir="false" afterPath="$PROJECT_DIR$/gen/LexerLexer.tokens" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
