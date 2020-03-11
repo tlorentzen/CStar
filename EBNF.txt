@@ -1,26 +1,11 @@
-<Prog>           →   <Prog> < $
-<Stuff>          →   <Stuff>, <Dcls>
-                 |   <Stuff>, <Funcs>
+EBNF
 
-<StmtList>       →   <Stmtlist> <Stmt>
-                 |   /* empty decllist */    
-
-<FuncList>       →   <FuncList> <Func>
-                 |   /* empty funclist */    
-
-<Stmt>           →   <Assign> ; 
-                 |   <Expr> ; 
-                 |   <Func call> ; 
-                 |   <Selection> 
-                 |   <Iterative>
-
-<Selection>      →   if (<CondExpr>) <Blk>
-                 |   if (<CondExpr>) <Blk> else <Blk>
-
+<Prog>           →   ( <Dcls> | <Funcs> )* $
+<Stmt>           →   ( <Assign> ; | <Expr> ; | <Func call> ; | <Selection> | <Iterative> )+ 
+<Selection>      →   if ( <Cond expr> ) <Blk> (else <Blk>)? 
 <Iterative>      →   while ( <Cond expr> ) repeat <Blk>
-
 <Blk>            →   { ( <Dcls> | <Stmt> )* }
-<Dcls>           →   <Dcls>, <Dcl>*
+<Dcls>           →   <Dcl>*
 <Dcl>            →   <Type> <Id> | <Type> ( <Assign> )? ; 
 
 <Func>           →   <Return type> <Id> ‘(‘ <Params>* ’)’ <Blk>
@@ -33,7 +18,7 @@
 <Term>           →   <Factor> ( ( * | / ) <Factor> )* 
 <Factor>         →   <Id> | <Val> | ( <Expr> ) 
 
-<CondExpr>      →   <Arithm expr> (<Comp op> <Arithm expr>)? (( OR | AND ) <Cond expr>)*
+<Cond expr>      →   <Arithm expr> (<Comp op> <Arithm expr>)? (( OR | AND ) <Cond expr>)*
 
 TOKEN SPECIFICATION
 <comp op>        →   < | > | IS | ISNOT
@@ -55,3 +40,6 @@ TOKEN SPECIFICATION
 <Type>           →   “integer” | “decimal” | “character” | “big integer” | “pin”
 <Return type>    →   <Type> | “void”
 <Struct??>       →   pin | array
+
+
+
