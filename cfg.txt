@@ -1,43 +1,43 @@
 EBNF
 
-<Prog>  →   ( <Dcls> | <Funcs> )* $
+<Prog>           →   ( <Dcls> | <Funcs> )* $
 
-<Stmt>      →   ( <Assign> ; | <Expr> ; | <Func call> ; | <Selection> | <Iterative> )+ 
-<Selection> →   if ( <Cond expr> ) <Blk> (else <Blk>)? 
-<Iterative> →   while ( <Cond expr> ) repeat <Blk>
-<Blk>       →   { ( <Dcls> | <Stmt> )* }
-<Dcls>      →   <Dcl>*
-<Dcl>       →   <Type> <Id> | <Type> ( <Assign> )? ; 
+<Stmt>           →   ( <Assign> ; | <Expr> ; | <Func call> ; | <Selection> | <Iterative> )+ 
+<Selection>      →   if ( <Cond expr> ) <Blk> (else <Blk>)? 
+<Iterative>      →   while ( <Cond expr> ) repeat <Blk>
+<Blk>            →   { ( <Dcls> | <Stmt> )* }
+<Dcls>           →   <Dcl>*
+<Dcl>            →   <Type> <Id> | <Type> ( <Assign> )? ; 
 
-<Func>  →   <Return type> <Id> ‘(‘ <Params>* ’)’ <Blk>
-<Param> →   <Type> <id> (, <Param>)*
-<Func call> →   <id> ‘(‘ <id> (, <id>)* ‘)’
+<Func>           →   <Return type> <Id> ‘(‘ <Params>* ’)’ <Blk>
+<Param>          →   <Type> <id> (, <Param>)*
+<Func call>      →   <id> ‘(‘ <id> (, <id>)* ‘)’
 
-<Assign>    →   <Id> = <Expr>
-<Expr>      →   <Cond expr>
-<Arithm expr>   →   <Term> ( ( + | - ) <Term> )*
-<Term>  →   <Factor> ( ( * | / ) <Factor> )* 
-<Factor>    →   <Id> | <Val> | ( <Expr> ) 
+<Assign>         →   <Id> = <Expr>
+<Expr>           →   <Cond expr>
+<Arithm expr>    →   <Term> ( ( + | - ) <Term> )*
+<Term>           →   <Factor> ( ( * | / ) <Factor> )* 
+<Factor>         →   <Id> | <Val> | ( <Expr> ) 
 
-<Cond expr> →   <Arithm expr> (<Comp op> <Arithm expr>)? (( OR | AND ) <Cond expr>)*
+<Cond expr>      →   <Arithm expr> (<Comp op> <Arithm expr>)? (( OR | AND ) <Cond expr>)*
 
 TOKEN SPECIFICATION
-<comp op>   →   < | > | IS | ISNOT
-<assign op> →   =
-<plus>      →   + 
-<minus> →   - 
-<multiply>  →   *
-<division>  →   /
+<comp op>        →   < | > | IS | ISNOT
+<assign op>      →   =
+<plus>           →   + 
+<minus>          →   - 
+<multiply>       →   *
+<division>       →   /
 
-<Id>        →   ( [a-z] | [A-Z] | [0-9] | _ | - )+
-<Val>       →   <int literal> | <float literal> | <char literal> | <pin literal> | <long literal>
-<int literal>   →   ( - )? [0-9]+
-<long literal>  →   ( - )? [0-9]+
-<float literal>     →   ( - )? [0-9]+ (.[0-9]+)?
-<char literal>  →   ‘ ( \ )? (.) ‘
-<pin literal>   →   ( a | A )? [0-9]+
-<array literal> →   [ <Val> [, <Val>]* ]
+<Id>             →   ( [a-z] | [A-Z] | [0-9] | _ | - )+
+<Val>            →   <int literal> | <float literal> | <char literal> | <pin literal> | <long literal>
+<int literal>    →   ( - )? [0-9]+
+<long literal>   →   ( - )? [0-9]+
+<float literal>  →   ( - )? [0-9]+ (.[0-9]+)?
+<char literal>   →   ‘ ( \ )? (.) ‘
+<pin literal>    →   ( a | A )? [0-9]+
+<array literal>  →   [ <Val> [, <Val>]* ]
 
-<Type>  →   “integer” | “decimal” | “character” | “big integer” | “pin”
-<Return type>   →   <Type> | “void”
-<Struct??>  →   pin | array
+<Type>           →   “integer” | “decimal” | “character” | “big integer” | “pin”
+<Return type>    →   <Type> | “void”
+<Struct??>       →   pin | array
