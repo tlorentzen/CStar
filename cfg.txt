@@ -8,35 +8,65 @@
 <FuncList>       →   <FuncList> <Func>
                  |   /* empty funclist */    
 
-<Stmt>           →   <Assign> ; 
+<Stmt>           →   <Dcls> ; 
                  |   <Expr> ; 
                  |   <Func call> ; 
-                 |   <Selection> 
-                 |   <Iterative>
-
-<Selection>      →   if (<CondExpr>) <Blk>
+                 |   if (<CondExpr>) <Blk>
                  |   if (<CondExpr>) <Blk> else <Blk>
+                 |   while ( <CondExpr> ) repeat <Blk>
 
-<Iterative>      →   while ( <Cond expr> ) repeat <Blk>
 
 <Blk>            →   { ( <Dcls> | <Stmt> )* }
-<Dcls>           →   <Dcls>, <Dcl>*
-<Dcl>            →   <Type> <Id> | <Type> ( <Assign> )? ; 
 
-<Func>           →   <Return type> <Id> ‘(‘ <Params>* ’)’ <Blk>
+
+<Dcls>           →   <Dcls>, <Dcl>
+<Dcl>            →   <Type> <Id> ; 
+                 |   <Type> <Id> = <Expr> ; 
+
+
+<Funcs>          →   <Funcs>, <Func>
+<Func>           →   <ReturnType> <Id> ‘(‘ <Params>* ’)’ <Blk>
+
 <Param>          →   <Type> <id> (, <Param>)*
 <Func call>      →   <id> ‘(‘ <id> (, <id>)* ‘)’
 
-<Assign>         →   <Id> = <Expr>
-<Expr>           →   <Cond expr>
-<Arithm expr>    →   <Term> ( ( + | - ) <Term> )*
-<Term>           →   <Factor> ( ( * | / ) <Factor> )* 
-<Factor>         →   <Id> | <Val> | ( <Expr> ) 
 
-<CondExpr>      →   <Arithm expr> (<Comp op> <Arithm expr>)? (( OR | AND ) <Cond expr>)*
+<Expr>           →   <CondExpr>
+<ArithmExpr>     →   <Term> ( ( + | - ) <Term> )*
+<Term>           →   <Factor> ( ( * | / ) <Factor> )* 
+
+<Factor>         →   <Id> 
+                 |   <Val> 
+                 |   ( <Expr> ) 
+
+<CondExpr>       →   <ArithmExpr> (<CompOp> <ArithmExpr>)? (( OR | AND ) <CondExpr>)*
+
+<ReturnType>     →   <Type>
+                 |   "void"
+
+<Type>           →   "integer" 
+                 |   "decimal"
+                 |   "character"
+                 |   "big integer" 
+                 |   "pin"
+                 |   "long"
+                 |   "array"
+ 
+
+
+ 
+<CompOp>         →   "<" 
+                 |   ">" 
+                 |   "IS" 
+                 |   "ISNOT"
+
+
+
+
+
 
 TOKEN SPECIFICATION
-<comp op>        →   < | > | IS | ISNOT
+
 <assign op>      →   =
 <plus>           →   + 
 <minus>          →   - 
@@ -52,6 +82,5 @@ TOKEN SPECIFICATION
 <pin literal>    →   ( a | A )? [0-9]+
 <array literal>  →   [ <Val> [, <Val>]* ]
 
-<Type>           →   “integer” | “decimal” | “character” | “big integer” | “pin”
-<Return type>    →   <Type> | “void”
+
 <Struct??>       →   pin | array
