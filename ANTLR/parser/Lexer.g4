@@ -5,7 +5,7 @@ prog: (dcls | func | stmt )* EOF;
 dcls: ( dcl SEMICOLON )+;
 dcl: TYPE ID | TYPE (assign | array_assign) ;
 
-return: (RETURN ID | RETURN expr) SEMICOLON ;
+return: RETURN expr SEMICOLON ;
 
 assign: ID ASSIGN_OP expr ;
 expr: cond_expr ;
