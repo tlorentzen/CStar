@@ -1,4 +1,4 @@
-grammar Cstar;
+parser grammar Parser;
 
 Prog: (Dcls | Func )* EOF;
 
@@ -23,39 +23,8 @@ Factor:	id | val | leftParen Expr rightParen;
 
 Cond_expr: Arithm_expr (comp_op Arithm_expr)? (( or | and ) Cond_expr)*;
 
-//TOKEN SPECIFICATION
-comp_op: less_than | greater_than | is | isNot;
-less_than: '<';
-greater_than: '>';
-is: 'IS';
-isNot: 'ISNOT';
-or: 'OR';
-and: 'AND';
-assign_op: '=';
-plus: '+';
-minus: '-';
-multiplication:	'*';
-division: '/';
-left_paren: '(';
-right_paren: ')';
-left_bracket: '{';
-right_bracket: '}';
-semicolon: ';';
-if: 'if';
-else: 'else';
-while: 'while';
-repeat: 'repeat';
-comma: ',';
-
-
-id: ( 'a'..'z' | 'A'..'Z' | '0'..'9' | '_' | '-' )+;
 Val: int_literal | float_literal | char_literal | pin_literal | long_literal;
-int_literal: ( '-' )? ('0'..'9')+;
-long_literal: ( '-' )? ('0'..'9')+;
-float_literal: ( '-' )? ('0'..'9')+ ('.' ('0'..'9')+ )?;
-char_literal: '\'' (.) '\'';
-pin_literal: ( 'a' | 'A' )?  ('0'..'9')+;
-array_literal: '[' Val (comma Val)* ']';
 
-Type: 'integer' | 'decimal' | 'character' | 'big integer' | 'pin';
-Return_type: Type | 'void';
+Array_literal: left_brace Val (comma Val)* right_brace;
+
+Return_type: Type | void;
