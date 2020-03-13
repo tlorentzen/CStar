@@ -5,7 +5,9 @@ prog: (dcls | func | stmt )* EOF;
 dcls: ( dcl SEMICOLON )+;
 dcl: TYPE ID | TYPE (assign | array_assign) ;
 
-assign: ID ASSIGN_OP (expr | array_assign) ;
+return: RETURN expr SEMICOLON ;
+
+assign: ID ASSIGN_OP expr ;
 expr: cond_expr ;
 cond_expr: arithm_expr (COMP_OP arithm_expr)? (( OR | AND ) cond_expr)*;
 arithm_expr: term ( ( PLUS | MINUS ) term )*;
@@ -32,8 +34,6 @@ val: INT_LITERAL | LONG_LITERAL | FLOAT_LITERAL | CHAR_LITERAL | PIN_LITERAL ;
 array_call: ID LEFT_BRACE val RIGHT_BRACE (ASSIGN_OP val)? ;
 
 return_type: TYPE | VOID;
-
-return: ID | expr ;
 
 //TOKEN SPECIFICATION
 COMP_OP: LESS_THAN | GREATER_THAN | IS | ISNOT;
@@ -63,13 +63,15 @@ COMMA: ',';
 VOID: 'void';
 TYPE: 'integer' | 'decimal' | 'character' | 'big integer' | 'pin';
 ARRAY: 'array';
+RETURN: 'return';
 
-PIN_LITERAL: ( 'a' | 'A' )?  ('0'..'9')+;
-ID: ( 'a'..'z' | 'A'..'Z' | '0'..'9' | '_' | '-' )+;
 INT_LITERAL: ( '-' )? ('0'..'9')+;
 LONG_LITERAL: ( '-' )? ('0'..'9')+;
 FLOAT_LITERAL: ( '-' )? ('0'..'9')+ ('.' ('0'..'9')+ )?;
+PIN_LITERAL: ( 'a' | 'A' )?  ('0'..'9')+;
 CHAR_LITERAL: '\'' (.) '\'';
+
+ID: ( 'a'..'z' | 'A'..'Z' | '0'..'9' | '_' )+;
 
 WHITESPACE: [ \t]+ -> skip;
 Newline: ('\r' '\n'? | '\n' ) -> skip;
