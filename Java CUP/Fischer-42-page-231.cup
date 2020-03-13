@@ -11,65 +11,170 @@ parser code {:
 init with {: s.init(); :};
 scan with {: return s.next_token(); :};
 
+
+terminal INT, LONG, CHAR; // integral_type
+terminal FLOAT; // floating_point_type
+terminal LBRACK, RBRACK; // array_type
+terminal SEMICOLON, MULT, COMMA, LBRACE, RBRACE, EQ, LPAREN, RPAREN, COLON;
+terminal VOID; // method_header
+terminal IF, ELSE; // if_then_statement, if_then_else_statement
+terminal WHILE, REPEAT; // while_statement
+terminal RETURN; // return_statement
+terminal PLUS, MINUS, COMP, DIV;
+terminal IS, ISNOT; // equality_expression
+terminal AND; // and_expression
+terminal OR;  // inclusive_or_expression
+
+// Reserved but unused:
+terminal GOTO;
+
+
 /* Terminals (tokens returned by the scanner). */
-terminal            SEMI, IF, ELSE, WHILE, EQUAL, VOID, PIPE, PLUS, MINUS, TIMES, DIVIDE, INTEGER, FLOAT, DOUBLE, DECIMAL, BYTE, PIN, LPAREN, RPAREN;
-//terminal Integer    NUMBER;        // our scanner provides numbers as integers
+terminal            , , , , , , , , , , , ,  , , LESSTHAN, GREATERTHAN, ;
+terminal            ARRAY, LPAREN, RPAREN, LBRACE, RBRACE;
+terminal Integer    INTEGER, PIN;        // our scanner provides numbers as integers
+terminal Float      DECIMAL;
+terminal Long       BIGINTEGER;
+terminal Char       CHARACTER;
+terminal Void       VOID;
+terminal java.lang.String IDENTIFIER; // name
+
+terminal java.lang.Number INTEGER_LITERAL;
+terminal java.lang.Number FLOATING_POINT_LITERAL;
+terminal java.lang.Character CHARACTER_LITERAL;
+terminal java.lang.String STRING_LITERAL;
+terminal NULL_LITERAL;
 
 /* Non terminals */
-non terminal        Prog, Stmt, Selection, Iterative, Blk, Dcls, Dcl;
-non terminal        Func, Param, FuncCall;
-non terminal        Assign, Expr, ArtihmExpr, Term, Factor, CondExpr;
-
-non terminal        CompOp, AssignOp;
-non terminal        Id, Val;
-non terminal        Type, ReturnType;
-
-
-non terminal Program        program;
-non terminal List<Dcl>      decllist;
-non terminal Dcl            dcl;
-non terminal List<Stmt>     stmtlist;
-non terminal List<Expr.Identifier>   identlist;
-non terminal Stmt           stmt;
-non terminal Expr           expr;
-non terminal Cond           cond;
+non terminal        prog, initt, stmt_list, func_list, func_params, dcl, stmt, func, param_list, param, type, returntype, separator, dcl_list, term, factor, val, comp_op, cond_expr_list, cond_expr;
+non terminal        expr, expr_list, func_call, array_call, blk, assign, jump_stmt;
 
 /* Precedences */
 precedence left PLUS, MINUS;
-precedence left TIMES;
+precedence left TIMES, DIVIDE;
 
-/* The grammar rules */ 
-Prog ::=  SEMI         {: System.out.println(Stmt); :}
+/* The grammar rules */
+prog      ::=  initt:e                                                                          {: System.out.println(e); :}
+;
+
+initt     ::= initt stmt_list
+          |   initt func_list
+;
+
+stmt_list  ::= stmt:e1 stmt_list:e2                                                             {: RESULT = e1; :}
+           |   stmt:e1                                                                          {: RESULT = e1; :}
+;
+
+stmt      ::= dcl_list
+          |   expr_list:e SEMI                                                                  {: RESULT = e; :}
+          |   func_call:e SEMI                                                                  {: RESULT = e; :}
+          |   IF LPAREN cond_expr:e1 RPAREN LBRACE blk:e2 RBRACE                                {: RESULT = if(e1) {e2}  :}
+          |   IF LPAREN cond_expr:e1 RPAREN LBRACE blk:e2 RBRACE ELSE LBRACE blk:e3 RBRACE      {: RESULT = if(e1) {e2} else {e3}  :}
+          |   WHILE LPAREN cond_expr:e1 RPAREN REPEAT LBRACE blk:e2 RBRACE                      {: RESULT = while(e1) {e2} :}
+          |   assign:e SEMI                                                                     {: RESULT = e; :}
+          |   jump_stmt:e SEMI                                                                  {: RESULT = e; :}
+;
+
+assign    ::= IDENTIFIER:e1 EQUAL expr:e2                                                               {: RESULT = e1 = e2; :}
+		  |   IDENTIFIER:e1 EQUAL array_call:e2                                                         {: RESULT = e1 = e2; :}
+;
+
+blk       ::= stmt:e1 blk:e2                                                                    {: RESULT = e1; :}
+          |   /*empty*/
+;
+
+dcl_list  ::= dcl:e1 dcl_list:e2                                                                {: RESULT = e1 e2; :}
+          |   dcl:e                                                                             {: RESULT = e; :}
+;
+
+dcl       ::= type:e1 IDENTIFIER:e2 SEMI                                                                {: RESULT = e1 e2; :}
+          |   type:e1 IDENTIFIER:e2 ASSIGN expr_list:e3 SEMI                                            {: RESULT = e1 e2 = e3; :}
+          |   type:e1 IDENTIFIER:e2 ASSIGN array_call:e3 SEMI                                           {: RESULT = e1 e2 = e3; :}
+;
+
+func_call ::= IDENTIFIER:e1 LPAREN func_params:e2 RPAREN SEMI                                           {: RESULT = e1 (e2); :}
+;
+
+func_params ::= IDENTIFIER:e1 separator:e2 func_params:e3                                               {: RESULT = e1 e2 e3 :}
+            |   IDENTIFIER:e                                                                            {: RESULT = e; :}
+            | /*empty*/
+;
+
+expr_list ::= expr:e1 expr_list:e2                                                              {: RESULT = e1 e2 :}
+          |   expr:e1                                                                           {: RESULT = e1; :}
+;
+
+expr      ::= term:e1                                                                           {: RESULT = e1; :}
+          |   expr:e1 PLUS term:e2                                                              {: RESULT = e1+e2; :}
+          |   expr:e1 MINUS term:e2                                                             {: RESULT = e1-e2; :}
+;
+
+term      ::= factor:e                                                                          {: RESULT = e; :}
+          |   term:e1 TIMES factor:e2                                                           {: RESULT = e1*e2; :}
+          |   term:e1 DIVIDE factor:e2                                                          {: RESULT = e1/e2; :}
+;
+
+factor    ::= IDENTIFIER:e                                                                              {: RESULT = e; :}
+          |   val:e                                                                             {: RESULT = e; :}
+          |   LPAREN expr:e RPAREN                                                              {: RESULT = e; :}
 ;
 
 
-Stmt      ::=  Unmatched:e1                                 {: RESULT = e1 :}
-             | Matched:e1                                   {: RESULT = e1 :}
-;
-Matched   ::= IF E:e1 THEN Matched:e2 ELSE Matched:e3       {: RESULT = if(e1) {e2} else {e3}  :}
-            | OTHER:e1                                      {: RESULT = e1 :}
-;
-Unmatched ::= IF E:e1 THEN Matched:e2 ELSE Unmatched:e3     {: RESULT = if(e1) {e2} else {e3}  :}
-            | IF E:e1 THEN Unmatched:e2                     {: RESULT = if(e1) {e2} :}
-            | OTHER:e1                                      {: RESULT = e1 :}
+func_list  ::= func:e func_list:e2                                                              {: RESULT = e; :}
+           |   func:e                                                                           {: RESULT = e; :}
+           |   /*empty*/
 ;
 
+func      ::= returntype:e1 IDENTIFIER:e2 RPAREN param_list:e3 LPAREN LBRACE blk:e4 RBRACE              {: RESULT = e1 e2 (e3) {e4} :}
+;
 
-Assign     ::= ID:e1 EQUALS Expr:e2 {: RESULT = e1=e2 :};
+param_list ::= param:e1 separator:e2 param_list:e3                                              {: RESULT = e1 e2 e3 :}
+           |   param:e                                                                          {: RESULT = e; :}
+           |   /*empty*/
+;
 
-Expr       ::= ArithmExpr:e1 {: RESULT = e1 :}
-             | CondExpr:e1   {: RESULT = e1 :};
+param     ::= type:e1 IDENTIFIER:e2                                                                     {: RESULT = e1 e2 :}
+;
 
-ArithmExpr ::= 
+separator ::= COMMA:e                                                                           {: RESULT = e; :}
+          |   /*empty*/
+;
+
+returntype::= type:e                                                                            {: RESULT = e; :}
+          |   VOID:e                                                                            {: RESULT = e; :}
+;
+
+type      ::= INTEGER:e                                                                         {: RESULT = e; :}
+          |   DECIMAL:e                                                                         {: RESULT = e; :}
+          |   CHARACTER:e                                                                       {: RESULT = e; :}
+          |   BIGINTEGER:e                                                                      {: RESULT = e; :}
+          |   PIN:e                                                                             {: RESULT = e; :}
+          |   ARRAY:e                                                                           {: RESULT = e; :}
+;
+
+comp_op   ::= LESSTHAN:e                                                                        {: RESULT = '<'; :}
+          |   GREATERTHAN:e                                                                     {: RESULT = '>'; :}
+          |   IS:e                                                                              {: RESULT = '=='; :}
+          |   ISNOT:e                                                                           {: RESULT = '!='; :}
+;
+
+cond_expr_list ::= cond_expr:e1 cond_expr_list                                                  {: RESULT = e1; :}
+		        |   OR cond_expr:e1 cond_expr_list                                              {: RESULT = '||' e1; :}
+		        |   AND cond_expr cond_expr_list                                                {: RESULT = '&&' e1; :}
+		        |   /*empty*/                                                                   {: RESULT :}
+;
+
+cond_expr       ::= expr:e                                                                      {: RESULT = e; :}
+		        |   expr:e1 comp_op:e2 expr:e3                                                  {: RESULT = e1 e2 e3; :}
+;
+
+jump_stmt	    ::= RETURN                                                                      {: RESULT = return; :}
+		        |   RETURN expr_list:e                                                          {: RESULT = return e; :}
+;
 
 
-Factor     ::= ID:e1 {:  :}
-             | Val:e1 {:  :}
-             | LPAREN Expr:e RPAREN {: RETURN = e :}
 
-Type       ::= INTEGER:e  {: RESULT = e :}
-             | DECIMAL:e  {: RESULT = e :}
-             | BYTE:e     {: RESULT = e :};
 
-Return     ::= Type:e {: RESULT = e :}
-             | VOID:e {: RESULT = e :};
+
+
+assignment_operator ::= EQ;
