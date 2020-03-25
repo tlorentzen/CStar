@@ -13,10 +13,15 @@ public class Main {
 
     public static void main(String[] args) {
 
+
+
         Path inputSource = null;
 
-        if(args.length == 2){
-            inputSource = Paths.get(args[1]);
+        if(args.length == 1){
+            inputSource = Paths.get(args[0]);
+
+            System.out.println("File: "+inputSource.getFileName());
+            System.out.println("Path: "+inputSource.toAbsolutePath());
 
             if(Files.exists(inputSource)){
 
@@ -27,7 +32,6 @@ public class Main {
                     CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
                     CStarParser parser = new CStarParser(commonTokenStream);
 
-
                     CStarVisitor visitor = new CStarBaseVisitor();
                     visitor.visit(parser.getContext());
 
@@ -37,5 +41,6 @@ public class Main {
 
             }
         }
+
     }
 }
