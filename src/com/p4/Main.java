@@ -4,6 +4,7 @@ import com.p4.parser.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,8 +13,6 @@ import java.nio.file.Paths;
 public class Main {
 
     public static void main(String[] args) {
-
-
 
         Path inputSource = null;
 
@@ -25,27 +24,37 @@ public class Main {
 
             if(Files.exists(inputSource)){
 
-                try{
-                    CharStream inputStream = CharStreams.fromPath(inputSource);
+                String ext = getFileExtension(new File(args[0]));
+                System.out.println("Ext:  "+ext);
 
-                    CStarLexer lexer = new CStarLexer(inputStream);
-                    CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-                    CStarParser parser = new CStarParser(commonTokenStream);
-                    parser.setBuildParseTree(true);
+                if(ext.equals("cstar")){
+                    try{
+                        CharStream inputStream = CharStreams.fromPath(inputSource);
 
+                        CStarLexer lexer = new CStarLexer(inputStream);
+                        CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+                        CStarParser parser = new CStarParser(commonTokenStream);
+                        parser.setBuildParseTree(true);
 
-                    ParseTree tree = parser.prog();
+                        ParseTree tree = parser.prog();
 
+                        System.out.println(tree.getText());
 
-                    System.out.println(tree.getText());
-
-
-                }catch (IOException e){
-                    System.out.println(e);
+                    }catch (IOException e){
+                        System.out.println(e);
+                    }
+                }else{
+                    System.out.println("Invalid source file...");
                 }
-
             }
         }
-
     }
+
+    private static String getFileExtension(File file) {
+        String fileName = file.getName();
+        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+            return fileName.substring(fileName.lastIndexOf(".")+1);
+        else return "";
+    }
+
 }
