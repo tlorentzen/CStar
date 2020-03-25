@@ -31,9 +31,14 @@ public class Main {
                     CStarLexer lexer = new CStarLexer(inputStream);
                     CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
                     CStarParser parser = new CStarParser(commonTokenStream);
+                    parser.setBuildParseTree(true);
 
-                    CStarVisitor visitor = new CStarBaseVisitor();
-                    visitor.visit(parser.getContext());
+
+                    ParseTree tree = parser.prog();
+
+
+                    System.out.println(tree.getText());
+
 
                 }catch (IOException e){
                     System.out.println(e);
