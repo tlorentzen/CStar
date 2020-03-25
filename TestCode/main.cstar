@@ -1,0 +1,3 @@
+void main(){
+    integer result = 2+2;
+}
