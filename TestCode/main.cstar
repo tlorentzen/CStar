@@ -1,3 +1,4 @@
 void main(){
     integer result = 2+2;
+    decimal ddd = 4.223;
 }

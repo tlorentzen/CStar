@@ -19,13 +19,16 @@ public class Main {
         if(args.length == 1){
             inputSource = Paths.get(args[0]);
 
+            System.out.println("####  The C* Parser ####");
             System.out.println("File: "+inputSource.getFileName());
             System.out.println("Path: "+inputSource.toAbsolutePath());
+
 
             if(Files.exists(inputSource)){
 
                 String ext = getFileExtension(new File(args[0]));
                 System.out.println("Ext:  "+ext);
+                System.out.println("");
 
                 if(ext.equals("cstar")){
                     try{
@@ -37,6 +40,7 @@ public class Main {
                         parser.setBuildParseTree(true);
 
                         ParseTree tree = parser.prog();
+                        CStarBaseVisitor visitor = new CStarBaseVisitor();
 
                         System.out.println(tree.getText());
 
