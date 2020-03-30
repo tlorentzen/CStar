@@ -1,7 +1,11 @@
 package com.p4.parser;
 
 
-public abstract class AstVisitor<T> extends CStarBaseVisitor {
+import jdk.jshell.spi.ExecutionControl;
+
+import java.util.Optional;
+
+public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     /**
      * {@inheritDoc}
@@ -9,21 +13,26 @@ public abstract class AstVisitor<T> extends CStarBaseVisitor {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    //@Override public T visitProg(CStarParser.ProgContext ctx) { return visitChildren(ctx); }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    //@Override public T visitDcls(CStarParser.DclsContext ctx) { return visitChildren(ctx); }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    //@Override public T visitDcl(CStarParser.DclContext ctx) { return visitChildren(ctx); }
+    @Override public AstNode visitDcl(CStarParser.DclContext ctx) {
+
+        System.out.println(ctx.TYPE().toString());
+
+        switch (ctx.TYPE().toString()){
+            case "integer":
+                return new IntegerDclNode();
+            case "decimal":
+                return new FloatDclNode();
+            case "pin":
+                return new PinDclNode();
+            case "big integer":
+                return new LongDclNode();
+            case "character":
+                return new CharDclNode();
+            default:
+                return null;
+        }
+
+    }
     /**
      * {@inheritDoc}
      *
@@ -38,13 +47,6 @@ public abstract class AstVisitor<T> extends CStarBaseVisitor {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     //@Override public T visitAssign(CStarParser.AssignContext ctx) { return visitChildren(ctx); }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    //@Override public T visitExpr(CStarParser.ExprContext ctx) { return visitChildren(ctx); }
     /**
      * {@inheritDoc}
      *

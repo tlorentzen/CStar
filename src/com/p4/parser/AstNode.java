@@ -3,9 +3,11 @@ package com.p4.parser;
 import java.util.List;
 
 public abstract class AstNode {
+    /*
     public void accept(Visitor vistor) {
         visitor.visit(this);
     }
+    */
 }
 
 abstract class InfixAstNode extends AstNode{
@@ -31,7 +33,24 @@ abstract class InfixAstNode extends AstNode{
 }
 
 class IntegerDclNode extends AstNode{
+    String id;
+    int value;
 
+    public String getId() {
+        return id;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
 }
 
 class FloatDclNode extends AstNode{
@@ -111,7 +130,7 @@ class AssignNode extends InfixAstNode{
 
 }
 
-
+/*
 - FuncNode
 - ExprNode (Arithm | Cond | Func)
 - TypeNode
@@ -139,3 +158,4 @@ class AssignNode extends InfixAstNode{
     array_call: ID LEFT_BRACE val RIGHT_BRACE (ASSIGN_OP val)? ;
 
     return_type: TYPE | VOID;
+*/
