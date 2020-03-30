@@ -1,9 +1,8 @@
 grammar CStar;
 
-prog: ( dcls | func | stmt )* EOF;
+prog: ( dcl | func | stmt )* EOF;
 
-dcls: ( dcl SEMICOLON )+;
-dcl: TYPE ID | TYPE (assign | array_assign) ;
+dcl: (TYPE ID | TYPE (assign | array_assign)) SEMICOLON ;
 
 return_exp: RETURN expr SEMICOLON ;
 
@@ -12,7 +11,7 @@ expr: cond_expr | func_call;
 cond_expr: arithm_expr (COMP_OP arithm_expr)? (( OR | AND ) cond_expr)*;
 arithm_expr: term ( ( PLUS | MINUS ) term )*;
 term: factor ( ( MULT | DIVISION ) factor )*;
-factor:	ID | val | array_call | LEFT_PAREN expr RIGHT_PAREN;
+factor:	ID | val | array_value | LEFT_PAREN expr RIGHT_PAREN;
 
 array_assign: ARRAY ID ASSIGN_OP array_expr ;
 array_expr: LEFT_BRACE val (COMMA val)* RIGHT_BRACE ;
@@ -21,7 +20,7 @@ func: return_type ID LEFT_PAREN param RIGHT_PAREN blk;
 param: (TYPE ID (COMMA param)*)*;
 func_call: (ID DOT)? ID LEFT_PAREN ((ID | val) (COMMA (ID | val))*)? RIGHT_PAREN;
 
-blk: LEFT_BRACKET ( dcls | stmt | return_exp)* RIGHT_BRACKET;
+blk: LEFT_BRACKET ( dcl | stmt | return_exp)* RIGHT_BRACKET;
 
 stmt: ( assign SEMICOLON | expr SEMICOLON | func_call SEMICOLON | selection | iterative )+;
 
@@ -31,7 +30,7 @@ iterative: WHILE LEFT_PAREN cond_expr RIGHT_PAREN REPEAT blk;
 
 val: INT_LITERAL | LONG_LITERAL | FLOAT_LITERAL | CHAR_LITERAL | PIN_LITERAL ;
 
-array_call: ID LEFT_BRACE val RIGHT_BRACE (ASSIGN_OP val)? ;
+array_value: ID LEFT_BRACE val RIGHT_BRACE (ASSIGN_OP val)? ;
 
 return_type: TYPE | VOID;
 
