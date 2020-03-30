@@ -1,14 +1,14 @@
 package com.p4.parser;
 
-import org.antlr.v4.runtime.tree.xpath.XPathRuleAnywhereElement;
-
-import java.lang.reflect.Parameter;
 import java.util.List;
 
 public abstract class AstNode {
+    /*
     public void accept(Visitor vistor) {
         visitor.visit(this);
     }
+
+     */
 }
 
 abstract class InfixAstNode extends AstNode{
@@ -109,7 +109,7 @@ class MultNode extends InfixAstNode{
 class DivNode extends InfixAstNode{
 
 }
-
+/*
 - AssignNode
 - FuncNode
 - ExprNode (Arithm | Cond | Func)
@@ -138,3 +138,6 @@ class DivNode extends InfixAstNode{
     array_call: ID LEFT_BRACE val RIGHT_BRACE (ASSIGN_OP val)? ;
 
     return_type: TYPE | VOID;
+
+
+ */

@@ -42,6 +42,10 @@ public class Main {
                         ParseTree tree = parser.prog();
                         CStarBaseVisitor visitor = new CStarBaseVisitor();
 
+
+                        visitor.visit(tree);
+
+
                         System.out.println(tree.getText());
 
                     }catch (IOException e){
