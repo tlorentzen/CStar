@@ -1,7 +1,8 @@
 void main(){
-    integer result = 2+2;
+    integer result;
     decimal ddd = 4.223;
     pin     sdf = 10;
     big integer hest = 100000000;
     character tis = '1';
+    integer array hest2 = [1,2,3,4];
 }

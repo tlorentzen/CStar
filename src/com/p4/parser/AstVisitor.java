@@ -15,10 +15,21 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      */
     @Override public AstNode visitDcl(CStarParser.DclContext ctx) {
 
-        System.out.println(ctx.TYPE().toString());
+        System.out.println(ctx.assign());
+
+        // Test for type
+        AssignContext assign = ctx.assign();
+        Array_assignContext array_assign = ctx.array_assign();
 
         switch (ctx.TYPE().toString()){
             case "integer":
+                if(assign != null){
+                    //Lav assign node
+                    visit(assign);
+                }else(array_assign != null){
+                    //Visit array_assign
+                    visit(array_assign);
+                }
                 return new IntegerDclNode();
             case "decimal":
                 return new FloatDclNode();
@@ -31,8 +42,20 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             default:
                 return null;
         }
-
     }
+    /*if(ctx.assign()){
+        //Assign dcl kode
+    }
+    else(ctx.array_assign()){
+        //Array assign kode
+    }*/
+    //@Override public T visitAssign(CStarParser.AssignContext ctx) { return visitChildren(ctx); }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
     /**
      * {@inheritDoc}
      *
@@ -46,13 +69,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    //@Override public T visitAssign(CStarParser.AssignContext ctx) { return visitChildren(ctx); }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     //@Override public T visitCond_expr(CStarParser.Cond_exprContext ctx) { return visitChildren(ctx); }
     /**
      * {@inheritDoc}
