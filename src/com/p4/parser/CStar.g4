@@ -22,7 +22,7 @@ func_call: (ID DOT)? ID LEFT_PAREN ((ID | val) (COMMA (ID | val))*)? RIGHT_PAREN
 
 blk: LEFT_BRACKET ( dcl | stmt | return_exp)* RIGHT_BRACKET;
 
-stmt: ( assign SEMICOLON | expr SEMICOLON | func_call SEMICOLON | selection | iterative )+;
+stmt: ( assign SEMICOLON | expr SEMICOLON | selection | iterative )+;
 
 selection: IF LEFT_PAREN cond_expr RIGHT_PAREN blk ( ELSE blk )?;
 

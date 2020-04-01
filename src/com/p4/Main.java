@@ -43,7 +43,6 @@ public class Main {
                         CStarBaseVisitor visitor = new AstVisitor();
                         visitor.visit(tree);
 
-
                         System.out.println(tree.getText());
 
                     }catch (IOException e){

@@ -1,7 +1,7 @@
 package com.p4.parser;
 
-
 import jdk.jshell.spi.ExecutionControl;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Optional;
 
@@ -14,54 +14,143 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public AstNode visitDcl(CStarParser.DclContext ctx) {
-
-        System.out.println(ctx.assign());
+//        System.out.println(ctx.ID().toString());
 
         // Test for type
-        AssignContext assign = ctx.assign();
-        Array_assignContext array_assign = ctx.array_assign();
+        CStarParser.AssignContext assign = ctx.assign();
+        CStarParser.Array_assignContext array_assign = ctx.array_assign();
 
         switch (ctx.TYPE().toString()){
             case "integer":
                 if(assign != null){
-                    //Lav assign node
+                    //Make assign node
                     visit(assign);
-                }else(array_assign != null){
+                }else if(array_assign != null){
                     //Visit array_assign
                     visit(array_assign);
                 }
-                return new IntegerDclNode();
+                else{
+                    return new IntegerDclNode(ctx.ID().toString());
+                }
             case "decimal":
-                return new FloatDclNode();
+                if(assign != null){
+                    //Make assign node
+                    visit(assign);
+                }else if(array_assign != null){
+                    //Visit array_assign
+                    visit(array_assign);
+                }
+                else{
+                    return new FloatDclNode(ctx.ID().toString());
+                }
             case "pin":
-                return new PinDclNode();
+                if(assign != null){
+                    //Make assign node
+                    visit(assign);
+                }else if(array_assign != null){
+                    //Visit array_assign
+                    visit(array_assign);
+                }
+                else{
+                    return new PinDclNode(ctx.ID().toString());
+                }
             case "big integer":
-                return new LongDclNode();
+                if(assign != null){
+                //Make assign node
+                    visit(assign);
+                }else if(array_assign != null){
+                    //Visit array_assign
+                    visit(array_assign);
+                }
+                else{
+                    return new LongDclNode(ctx.ID().toString());
+                }
             case "character":
-                return new CharDclNode();
+                if(assign != null){
+                    //Make assign node
+                    visit(assign);
+                }else if(array_assign != null){
+                    //Visit array_assign
+                    visit(array_assign);
+                }
+                else{
+                    return new CharDclNode(ctx.ID().toString());
+                }
             default:
                 return null;
         }
     }
-    /*if(ctx.assign()){
-        //Assign dcl kode
+
+    @Override public AstNode visitAssign(CStarParser.AssignContext ctx) {
+
+        String id = ctx.ID().toString();
+        CStarParser.ExprContext exprCtx = ctx.expr();
+        AstNode expr = visit(exprCtx);
+
+        ParserRuleContext parent = ctx.getParent();
+        String classes = parent.getClass().toString();
+        
+
+        if(classes.equals("class com.p4.parser.CStarParser$DclContext")){
+            var child = parent.getChild(0);
+
+            switch (child.toString()){
+                case "integer":
+                    IntegerDclNode intDclNode = new IntegerDclNode(id);
+                    return new AssignNode(intDclNode, expr);
+                case "decimal":
+                    FloatDclNode floatDclNode = new FloatDclNode(id);
+                    return new AssignNode(floatDclNode, expr);
+                case "pin":
+                    PinDclNode pinDclNode = new PinDclNode(id);
+                    return new AssignNode(pinDclNode, expr);
+                case "long integer":
+                    LongDclNode longDclNode = new LongDclNode(id);
+                    return new AssignNode(longDclNode, expr);
+                case "character":
+                    CharDclNode charDclNode = new CharDclNode(id);
+                    return new AssignNode(charDclNode, expr);
+                default:
+                    return null;
+            }
+        }
+
+        return new AssignNode(id, expr);
+
     }
-    else(ctx.array_assign()){
-        //Array assign kode
-    }*/
-    //@Override public T visitAssign(CStarParser.AssignContext ctx) { return visitChildren(ctx); }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
+    @Override public AstNode visitVal(CStarParser.ValContext ctx) {
+        var child = ctx.getChild(0);
+        String type = "INT_LITERAL";
+        if(type == "INT_LITERAL") {
+            //System.out.println("test");
+            return new IntegerNode();
+        } // bruge equals
+        else if(type == "FLOAT_LITERAL") {
+           return new IntegerNode();
+        }
+        else if(type == "PIN_LITERAL") {
+            //return new PinNode(value);
+            return new IntegerNode();
+        }
+        else if(type == "LONG_LITERAL") {
+            // return new LongNode(value);
+            return new IntegerNode();
+        }
+        else if(type == "CHAR_LITERAL") {
+            //return new CharNode(value);
+            return new IntegerNode();
+        }
+        else {
+            return null;
+        }
+    }
+    //@Override public AstNode visitExpr(CStarParser.ExprContext ctx) {
+
+      //  return visitChildren(ctx);
+    //}
+
+
     //@Override public T visitReturn_exp(CStarParser.Return_expContext ctx) { return visitChildren(ctx); }
     /**
      * {@inheritDoc}
