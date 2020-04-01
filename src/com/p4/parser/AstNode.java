@@ -171,23 +171,78 @@ class IdNode extends AstNode implements Parameters{
 }
 
 class IntegerNode extends AstNode implements Parameters{
+    int Value;
+    public IntegerNode(int value){
+        Value = value;
+    }
 
+    public int getValue() {
+        return Value;
+    }
+
+    public void setValue(int value) {
+        Value = value;
+    }
 }
 
 class FloatNode extends AstNode implements Parameters{
+    float Value;
+    public FloatNode(float value){
+        Value = value;
+    }
 
+    public float getValue() {
+        return Value;
+    }
+
+    public void setValue(float value) {
+        Value = value;
+    }
 }
 
 class PinNode extends AstNode implements Parameters{
+    int Value;
+    public PinNode(int value){
+        Value = value;
+    }
 
+    public int getValue() {
+        return Value;
+    }
+
+    public void setValue(int value) {
+        Value = value;
+    }
 }
 
 class LongNode extends AstNode implements Parameters{
-    long value;
+    long Value;
+    public LongNode(long value){
+        Value = value;
+    }
+
+    public long getValue() {
+        return Value;
+    }
+
+    public void setValue(long value) {
+        Value = value;
+    }
 }
 
 class CharNode extends AstNode implements Parameters{
+    char Value;
+    public CharNode(char value){
+        Value = value;
+    }
 
+    public char getValue() {
+        return Value;
+    }
+
+    public void setValue(char value) {
+        Value = value;
+    }
 }
 
 class ExprNode<T> extends AstNode {

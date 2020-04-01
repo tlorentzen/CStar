@@ -122,24 +122,23 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitVal(CStarParser.ValContext ctx) {
         var child = ctx.getChild(0);
         String type = "INT_LITERAL";
-        if(type == "INT_LITERAL") {
-            //System.out.println("test");
-            return new IntegerNode();
+
+        if(ctx.INT_LITERAL() != null) {
+            return new IntegerNode(Integer.parseInt(ctx.INT_LITERAL().getText()));
         } // bruge equals
-        else if(type == "FLOAT_LITERAL") {
-           return new IntegerNode();
+        else if(ctx.FLOAT_LITERAL() != null) {
+           return new FloatNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()));
         }
-        else if(type == "PIN_LITERAL") {
-            //return new PinNode(value);
-            return new IntegerNode();
+        else if(ctx.PIN_LITERAL() != null) {
+            return new PinNode(Integer.parseInt(ctx.CHAR_LITERAL().getText()));
         }
-        else if(type == "LONG_LITERAL") {
-            // return new LongNode(value);
-            return new IntegerNode();
+        else if(ctx.LONG_LITERAL() != null) {
+            return new LongNode(Long.parseLong(ctx.LONG_LITERAL().getText()));
         }
-        else if(type == "CHAR_LITERAL") {
-            //return new CharNode(value);
-            return new IntegerNode();
+        else if(ctx.CHAR_LITERAL() != null) {
+            String temp = ctx.CHAR_LITERAL().getText();
+            char c = temp.charAt(0);
+            return new CharNode(c);
         }
         else {
             return null;
