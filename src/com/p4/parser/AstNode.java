@@ -1,6 +1,9 @@
 package com.p4.parser;
 
+import java.util.ArrayList;
 import java.util.List;
+
+
 
 public abstract class AstNode {
     /*
@@ -9,6 +12,34 @@ public abstract class AstNode {
     }
     */
 }
+
+/*
+abstract class DclNode<T> extends AstNode {
+    String id;
+    String type;
+    T value;
+
+    public DclNode(String id){
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+}
+*/
 
 abstract class InfixAstNode extends AstNode{
     public ExprNode Left;
@@ -162,9 +193,6 @@ class CharDclNode extends AstNode{
     }
 }
 
-class ArrayNode extends AstNode implements Parameters{
-
-}
 
 class IdNode extends AstNode implements Parameters{
 
@@ -260,6 +288,10 @@ class CallNode extends AstNode{
 
 class AddNode extends InfixAstNode{
 
+    public AddNode(ExprNode Left, ExprNode Right){
+        this.Left = Left;
+        this.Right = Right;
+    }
 }
 
 class SubNode extends InfixAstNode{
@@ -315,6 +347,115 @@ class AssignNode extends AstNode{
         return DclNode;
     }
 
+
+}
+
+class ArrayAssignNode extends AstNode{
+    //Left side is the array node
+    //Right side is the array expression node
+    AstNode ArrayExprNode;
+    AstNode ArrayNode;
+
+    public ArrayAssignNode(AstNode arrayNode, AstNode arrayExprNode){
+        ArrayNode = arrayNode;
+        ArrayExprNode = arrayExprNode;
+    }
+
+    public AstNode getArrayExprNode() {
+        return ArrayExprNode;
+    }
+
+    public AstNode getArrayNode() {
+        return ArrayNode;
+    }
+
+    public void setArrayExprNode(AstNode arrayExprNode) {
+        ArrayExprNode = arrayExprNode;
+    }
+
+    public void setArrayNode(AstNode arrayNode) {
+        ArrayNode = arrayNode;
+    }
+}
+
+class ArrayNode extends AstNode implements Parameters{
+    String Id;
+    String Type;
+
+    public ArrayNode(String id, String type){
+        Id = id;
+        Type = type;
+    }
+
+    public String getId() {
+        return Id;
+    }
+
+    public String getType() {
+        return Type;
+    }
+
+    public void setId(String id) {
+        Id = id;
+    }
+
+    public void setType(String type) {
+        Type = type;
+    }
+}
+
+class ArrayExprNode extends AstNode{
+    public List<AstNode> Literals;
+
+    public ArrayExprNode(){
+        List<AstNode> Literals = new ArrayList<AstNode>();
+    }
+
+    public List<AstNode> getLiterals() {
+        return Literals;
+    }
+
+    public void setLiterals(List<AstNode> literals) {
+        Literals = literals;
+    }
+}
+
+class FuncNode extends AstNode{
+    String id;
+    String returnType;
+    ParamNode paramNode;
+    BlkNode blkNode;
+
+    public String getId() {
+        return id;
+    }
+
+    public String getReturnType() {
+        return returnType;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setReturnType(String returnType) {
+        this.returnType = returnType;
+    }
+}
+
+class BlkNode extends AstNode{
+    //blk: LEFT_BRACE ( dcl | stmt | return_exp)* RIGHT_BRACE;
+
+    List<StmtNode> stmtNodes;
+    List<ReturnExpNode> returnExpNodes;
+
+}
+
+class StmtNode extends AstNode{
+
+}
+
+class ReturnExpNode extends AstNode{
 
 }
 

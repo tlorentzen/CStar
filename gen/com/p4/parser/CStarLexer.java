@@ -1,4 +1,4 @@
-// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
+// Generated from /home/tlorentzen/Documents/GitHub/P4/src/com/p4/parser/CStar.g4 by ANTLR 4.8
 package com.p4.parser;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -46,7 +46,7 @@ public class CStarLexer extends Lexer {
 	private static String[] makeLiteralNames() {
 		return new String[] {
 			null, null, "'<'", "'>'", "'IS'", "'ISNOT'", "'OR'", "'AND'", "'='", 
-			"'+'", "'-'", "'*'", "'/'", "'('", "')'", "'{'", "'}'", "'['", "']'", 
+			"'+'", "'-'", "'*'", "'/'", "'('", "')'", "'['", "']'", "'{'", "'}'",
 			"';'", "'.'", "'if'", "'else'", "'while'", "'repeat'", "','", "'void'", 
 			null, "'array'", "'return'"
 		};
@@ -163,8 +163,8 @@ public class CStarLexer extends Lexer {
 		"\3\2\2\2`a\7Q\2\2ab\7T\2\2b\16\3\2\2\2cd\7C\2\2de\7P\2\2ef\7F\2\2f\20"+
 		"\3\2\2\2gh\7?\2\2h\22\3\2\2\2ij\7-\2\2j\24\3\2\2\2kl\7/\2\2l\26\3\2\2"+
 		"\2mn\7,\2\2n\30\3\2\2\2op\7\61\2\2p\32\3\2\2\2qr\7*\2\2r\34\3\2\2\2st"+
-		"\7+\2\2t\36\3\2\2\2uv\7}\2\2v \3\2\2\2wx\7\177\2\2x\"\3\2\2\2yz\7]\2\2"+
-		"z$\3\2\2\2{|\7_\2\2|&\3\2\2\2}~\7=\2\2~(\3\2\2\2\177\u0080\7\60\2\2\u0080"+
+		"\7+\2\2t\36\3\2\2\2uv\7]\2\2v \3\2\2\2wx\7_\2\2x\"\3\2\2\2yz\7}\2\2z$"+
+		"\3\2\2\2{|\7\177\2\2|&\3\2\2\2}~\7=\2\2~(\3\2\2\2\177\u0080\7\60\2\2\u0080"+
 		"*\3\2\2\2\u0081\u0082\7k\2\2\u0082\u0083\7h\2\2\u0083,\3\2\2\2\u0084\u0085"+
 		"\7g\2\2\u0085\u0086\7n\2\2\u0086\u0087\7u\2\2\u0087\u0088\7g\2\2\u0088"+
 		".\3\2\2\2\u0089\u008a\7y\2\2\u008a\u008b\7j\2\2\u008b\u008c\7k\2\2\u008c"+

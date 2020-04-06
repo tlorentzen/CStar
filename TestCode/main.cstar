@@ -1,3 +1,8 @@
 void main(){
     integer result = 10;
+    testFunc(2, 4);
+}
+
+integer testFunc(integer i1, pin p1){
+    return i1+5;
 }
