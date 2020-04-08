@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
 
-public abstract class AstNode {
+public class AstNode {
     Token token; // node is derived from which token?
     List<AstNode> children; // operands
     public AstNode(Token token) { this.token = token; }
