@@ -1,4 +1,4 @@
-// Generated from /home/tlorentzen/Documents/GitHub/P4/src/com/p4/parser/CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
 package com.p4.parser;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -46,7 +46,7 @@ public class CStarLexer extends Lexer {
 	private static String[] makeLiteralNames() {
 		return new String[] {
 			null, null, "'<'", "'>'", "'IS'", "'ISNOT'", "'OR'", "'AND'", "'='", 
-			"'+'", "'-'", "'*'", "'/'", "'('", "')'", "'['", "']'", "'{'", "'}'",
+			"'+'", "'-'", "'*'", "'/'", "'('", "')'", "'['", "']'", "'{'", "'}'", 
 			"';'", "'.'", "'if'", "'else'", "'while'", "'repeat'", "','", "'void'", 
 			null, "'array'", "'return'"
 		};

@@ -1,4 +1,4 @@
-// Generated from /home/tlorentzen/Documents/GitHub/P4/src/com/p4/parser/CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
 package com.p4.parser;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -41,7 +41,7 @@ public class CStarParser extends Parser {
 	private static String[] makeLiteralNames() {
 		return new String[] {
 			null, null, "'<'", "'>'", "'IS'", "'ISNOT'", "'OR'", "'AND'", "'='", 
-			"'+'", "'-'", "'*'", "'/'", "'('", "')'", "'['", "']'", "'{'", "'}'",
+			"'+'", "'-'", "'*'", "'/'", "'('", "')'", "'['", "']'", "'{'", "'}'", 
 			"';'", "'.'", "'if'", "'else'", "'while'", "'repeat'", "','", "'void'", 
 			null, "'array'", "'return'"
 		};
@@ -1379,7 +1379,7 @@ public class CStarParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(192);
+			setState(192); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1423,7 +1423,7 @@ public class CStarParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(194);
+				setState(194); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,21,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
