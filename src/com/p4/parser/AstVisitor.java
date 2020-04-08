@@ -201,9 +201,24 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             visit(ctx.term(0));
         }
         else{
-            for(int i = 0; i < (childCount-1)/2; i++){
+            int operatorCount = (childCount-1)/2;
+            int opIndex;
+            for(int i = 0; i < operatorCount; i++){
                 //lav plus/minus-node som barn til et forrige
                 //lav venstre barn til minus/plus-node
+                opIndex = (i * 2) + 1;
+                if(ctx.getChild(opIndex).getText().equals("+")){
+                    AddNode addNode = new AddNode();
+                    visit
+                }
+                else if(ctx.getChild(opIndex).getText().equals("-")){
+                    SubNode addNode = new SubNode();
+                }
+                System.out.println(ctx.getChild(opIndex).getText());
+
+
+
+
                 visit(ctx.term(0));
 
                 var child = ctx.getChild(i);
@@ -212,6 +227,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 if(classes.equals("class com.p4.parser.CStarParser$TermContext")) {
                     AstNode literal = visit(child);
                     //arrayExprNode.Literals.add(literal);
+
                 }
                 //lav sidste højre side
         }
