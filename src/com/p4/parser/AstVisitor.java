@@ -24,14 +24,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             case "integer":
                 if(assign != null){
                     //Make assign node
-                    AstNode tempNode = visit(assign);
-                    AssignNode node = (AssignNode) tempNode;
+                    AssignNode node = (AssignNode) visit(assign);
                     return node;
 
                 }else if(array_assign != null){
                     //Visit array_assign
-                    AstNode tempNode = visit(array_assign);
-                    ArrayAssignNode node = (ArrayAssignNode) tempNode;
+                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
                     return node;
                 }
                 else{
@@ -40,16 +38,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             case "decimal":
                 if(assign != null){
                     //Make assign node
-                    AstNode tempNode = visit(assign);
-                    AssignNode node = (AssignNode) tempNode;
+                    AssignNode node = (AssignNode) visit(assign);
                     return node;
 
                 }else if(array_assign != null){
                     //Visit array_assign
-                  //  visit(array_assign);
-                  AstNode tempNode = visit(array_assign);
-                  ArrayAssignNode node = (ArrayAssignNode) tempNode;
-                  return node;
+                  //  visit(array_assign)
+                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
+                    return node;
                 }
                 else{  
                     return new FloatDclNode(ctx.ID().toString());
@@ -57,14 +53,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             case "pin":
                 if(assign != null){
                     //Make assign node
-                    AstNode tempNode = visit(assign);
-                    AssignNode node = (AssignNode) tempNode;
+                    AssignNode node = (AssignNode) visit(assign);
                     return node;
 
                 }else if(array_assign != null){
                     //Visit array_assign
-                    AstNode tempNode = visit(array_assign);
-                    ArrayAssignNode node = (ArrayAssignNode) tempNode;
+                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
                     return node;
                 }
                 else{
@@ -73,14 +67,13 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             case "big integer":
                 if(assign != null){
                 //Make assign node
-                    AstNode tempNode = visit(assign);
-                    AssignNode node = (AssignNode) tempNode;
+                    AssignNode node = (AssignNode) visit(assign);
+
                     return node;
 
                 }else if(array_assign != null){
                     //Visit array_assign
-                    AstNode tempNode = visit(array_assign);
-                    ArrayAssignNode node = (ArrayAssignNode) tempNode;
+                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
                     return node;
                 }
                 else{
@@ -95,8 +88,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
                 }else if(array_assign != null){
                     //Visit array_assign
-                    AstNode tempNode = visit(array_assign);
-                    ArrayAssignNode node = (ArrayAssignNode) tempNode;
+                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
                     return node;
                 }
                 else{
