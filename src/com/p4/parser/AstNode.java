@@ -5,12 +5,9 @@ import java.util.List;
 import java.util.*;
 
 public abstract class AstNode {
-    String type;
-    /*
-    public void accept(Visitor vistor) {
-        visitor.visit(this);
+
     }
-    */
+    
 }
 
 abstract class DclNode<T> extends AstNode {
