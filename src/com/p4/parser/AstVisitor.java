@@ -105,37 +105,57 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         String id = ctx.ID().toString();
         CStarParser.ExprContext exprCtx = ctx.expr();
-        AstNode expr = visit(exprCtx);
+        AstNode exprNode = visit(exprCtx);
 
         ParserRuleContext parent = ctx.getParent();
         String classes = parent.getClass().toString();
 
         if(classes.equals("class com.p4.parser.CStarParser$DclContext")){
             var child = parent.getChild(0);
+            String type = child.toString();
 
-            switch (child.toString()){
+            switch (type){
                 case "integer":
                     AssignNode integerAssign = new AssignNode();
                     IntegerDclNode intDclNode = new IntegerDclNode(id);
-                    return
+                    integerAssign.children.add(intDclNode);
+                    integerAssign.children.add(new IdNode(id, type));
+                    integerAssign.children.add(exprNode);
+                    return integerAssign;
                 case "decimal":
+                    AssignNode floatAssign = new AssignNode();
                     FloatDclNode floatDclNode = new FloatDclNode(id);
+                    floatAssign.children.add(floatDclNode);
+                    floatAssign.children.add(new IdNode(id, type));
+                    floatAssign.children.add(exprNode);
                     return new AssignNode();
                 case "pin":
+                    AssignNode pinAssign = new AssignNode();
                     PinDclNode pinDclNode = new PinDclNode(id);
+                    pinAssign.children.add(pinDclNode);
+                    pinAssign.children.add(new IdNode(id, type));
+                    pinAssign.children.add(exprNode);
                     return new AssignNode();
                 case "long integer":
+                    AssignNode longAssign = new AssignNode();
                     LongDclNode longDclNode = new LongDclNode(id);
+                    longAssign.children.add(longDclNode);
+                    longAssign.children.add(new IdNode(id, type));
+                    longAssign.children.add(exprNode);
                     return new AssignNode();
                 case "character":
+                    AssignNode charAssign = new AssignNode();
                     CharDclNode charDclNode = new CharDclNode(id);
+                    charAssign.children.add(charDclNode);
+                    charAssign.children.add(new IdNode(id, type));
+                    charAssign.children.add(exprNode);
                     return new AssignNode();
                 default:
                     return null;
             }
         }
 
-        return new AssignNode(id, expr);
+        return new AssignNode();
 
     }
 

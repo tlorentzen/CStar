@@ -109,7 +109,16 @@ class CharDclNode extends DclNode<Character>{
 
 
 class IdNode extends AstNode implements Parameters{
+    String Id;
+    String Type;
 
+    public IdNode(String Id){
+        this.Id = Id;
+    }
+    public IdNode(String Id, String Type){
+        this.Id = Id;
+        this.Type = Type;
+    }
 }
 
 class IntegerNode extends LiteralNode<Integer>{
