@@ -1,6 +1,6 @@
 void main(){
     integer result = 10;
-    int i = 1 + 2 * 12;
+    integer i = 1 + 2 * 12;
     testFunc(2, 4);
 }
 

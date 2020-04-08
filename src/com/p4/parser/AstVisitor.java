@@ -340,21 +340,23 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    //@Override public T visitStmt(CStarParser.StmtContext ctx) { return visitChildren(ctx); }
+    //@Override public AstNode visitStmt(CStarParser.StmtContext ctx) { return visitChildren(ctx); }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    //@Override public T visitSelection(CStarParser.SelectionContext ctx) { return visitChildren(ctx); }
+    @Override public AstNode visitSelection(CStarParser.SelectionContext ctx) {
+        return visitChildren(ctx);
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    //@Override public T visitIterative(CStarParser.IterativeContext ctx) { return visitChildren(ctx); }
+    @Override public AstNode visitIterative(CStarParser.IterativeContext ctx) { return visitChildren(ctx); }
     /**
      * {@inheritDoc}
      *

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.*;
 
 public abstract class AstNode {
+    String type;
     /*
     public void accept(Visitor vistor) {
         visitor.visit(this);
@@ -35,6 +36,21 @@ abstract class DclNode<T> extends AstNode {
 
     public void setValue(T value) {
         this.value = value;
+    }
+}
+
+abstract class LiteralNode<T> extends AstNode{
+    T Value;
+    public LiteralNode(T value){
+        Value = value;
+    }
+
+    public T getValue() {
+        return Value;
+    }
+
+    public void setValue(T value) {
+        Value = value;
     }
 }
 
@@ -101,78 +117,33 @@ class IdNode extends AstNode implements Parameters{
 
 }
 
-class IntegerNode extends AstNode implements Parameters{
-    int Value;
-    public IntegerNode(int value){
-        Value = value;
-    }
-
-    public int getValue() {
-        return Value;
-    }
-
-    public void setValue(int value) {
-        Value = value;
+class IntegerNode extends LiteralNode<Integer>{
+    public IntegerNode(Integer value){
+        super(value);
     }
 }
 
-class FloatNode extends AstNode implements Parameters{
-    float Value;
-    public FloatNode(float value){
-        Value = value;
-    }
-
-    public float getValue() {
-        return Value;
-    }
-
-    public void setValue(float value) {
-        Value = value;
+class FloatNode extends LiteralNode<Float>{
+    public FloatNode(Float value){
+        super(value);
     }
 }
 
-class PinNode extends AstNode implements Parameters{
-    int Value;
-    public PinNode(int value){
-        Value = value;
-    }
-
-    public int getValue() {
-        return Value;
-    }
-
-    public void setValue(int value) {
-        Value = value;
+class PinNode extends LiteralNode<Integer>{
+    public PinNode(Integer value){
+        super(value);
     }
 }
 
-class LongNode extends AstNode implements Parameters{
-    long Value;
-    public LongNode(long value){
-        Value = value;
-    }
-
-    public long getValue() {
-        return Value;
-    }
-
-    public void setValue(long value) {
-        Value = value;
+class LongNode extends LiteralNode<Long>{
+    public LongNode(Long value){
+        super(value);
     }
 }
 
-class CharNode extends AstNode implements Parameters{
-    char Value;
+class CharNode extends LiteralNode<Character>{
     public CharNode(char value){
-        Value = value;
-    }
-
-    public char getValue() {
-        return Value;
-    }
-
-    public void setValue(char value) {
-        Value = value;
+        super(value);
     }
 }
 
@@ -416,6 +387,7 @@ class FuncNode extends AstNode{
 
 class BlkNode extends AstNode{
     //blk: LEFT_BRACE ( dcl | stmt | return_exp)* RIGHT_BRACE;
+    List<AstNode> children = new ArrayList<>();
     List<DclNode<?>> dclNodes = new ArrayList<>();
     List<StmtNode> stmtNodes = new ArrayList<>();
     List<ReturnExpNode> returnExpNodes = new ArrayList<>();
