@@ -4,6 +4,8 @@ import jdk.jshell.spi.ExecutionControl;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
@@ -113,20 +115,21 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
             switch (child.toString()){
                 case "integer":
+                    AssignNode integerAssign = new AssignNode();
                     IntegerDclNode intDclNode = new IntegerDclNode(id);
-                    return new AssignNode(intDclNode, expr);
+                    return
                 case "decimal":
                     FloatDclNode floatDclNode = new FloatDclNode(id);
-                    return new AssignNode(floatDclNode, expr);
+                    return new AssignNode();
                 case "pin":
                     PinDclNode pinDclNode = new PinDclNode(id);
-                    return new AssignNode(pinDclNode, expr);
+                    return new AssignNode();
                 case "long integer":
                     LongDclNode longDclNode = new LongDclNode(id);
-                    return new AssignNode(longDclNode, expr);
+                    return new AssignNode();
                 case "character":
                     CharDclNode charDclNode = new CharDclNode(id);
-                    return new AssignNode(charDclNode, expr);
+                    return new AssignNode();
                 default:
                     return null;
             }

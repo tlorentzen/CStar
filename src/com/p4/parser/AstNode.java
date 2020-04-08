@@ -268,46 +268,8 @@ class DivNode extends InfixAstNode{
 
 class AssignNode extends AstNode{
     //Venstre side ID node
-    //Hoejre side er en expr nod
-    String Left;
-    AstNode Right;
-    AstNode DclNode;
-
-    public AssignNode(String left, AstNode right){
-        Left = left;
-        Right = right;
-    }
-
-    public AssignNode(AstNode dclNode, AstNode right){
-        DclNode = dclNode;
-        Right = right;
-    }
-
-    public void setLeft(String left) {
-        Left = left;
-    }
-
-    public void setRight(AstNode right) {
-        Right = right;
-    }
-
-    public String getLeft() {
-        return Left;
-    }
-
-    public AstNode getRight() {
-        return Right;
-    }
-
-    public void setDclNode(AstNode dclNode) {
-        DclNode = dclNode;
-    }
-
-    public AstNode getDclNode() {
-        return DclNode;
-    }
-
-
+    //Hoejre side er en expr node
+    public AssignNode(){ }
 }
 
 class ArrayAssignNode extends AstNode{
