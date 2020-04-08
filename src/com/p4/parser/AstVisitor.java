@@ -185,8 +185,42 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 arrayExprNode.Literals.add(literal);
             }
         }
+
         return arrayExprNode;
     }
+
+    @Override public AstNode visitArithm_expr(CStarParser.Arithm_exprContext ctx){
+        //ArrayExprNode arrayExprNode = new ArrayExprNode();
+        int childCount = ctx.getChildCount();
+        int termCount = 0;
+
+
+        if(childCount == 1){
+            //TODO Husk at visit skal return noget
+            visit(ctx.term(0));
+        }
+        else{
+            for(int i = 0; i < (childCount-1)/2; i++){
+                //lav plus/minus-node som barn til et forrige
+                //lav venstre barn til minus/plus-node
+                visit(ctx.term(0));
+
+                var child = ctx.getChild(i);
+                String classes = child.getClass().toString();
+                //checks if child is a value node
+                if(classes.equals("class com.p4.parser.CStarParser$TermContext")) {
+                    AstNode literal = visit(child);
+                    //arrayExprNode.Literals.add(literal);
+                }
+                //lav sidste højre side
+        }
+
+
+        }
+
+        return null;
+    }
+
 
     //@Override public T visitReturn_exp(CStarParser.Return_expContext ctx) { return visitChildren(ctx); }
     /**
@@ -203,13 +237,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    //@Override public T visitArithm_expr(CStarParser.Arithm_exprContext ctx) { return visitChildren(ctx); }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
    // @Override public T visitTerm(CStarParser.TermContext ctx) { return visitChildren(ctx); }
     /**
      * {@inheritDoc}
@@ -249,26 +277,29 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitParam(CStarParser.ParamContext ctx) {
         ParamNode node = new ParamNode();
         
-
-        
         for(CStarParser.ParamContext param : ctx.param()){
 
             System.out.println(param.ID());
-            /*
+
             switch (param.TYPE().toString()){
                 case "Integer":
                     node.params.add(new IntegerNode(Integer.parseInt(param.ID(0).toString())));
                     break;
                 case "Decimal":
-                    node.params.add(new DecimalNode(Integer.parseInt(param.ID(0).toString())));
+                    node.params.add(new FloatNode(Float.parseFloat(param.ID(0).toString())));
+                    break;
+                case "Pin":
+                    node.params.add(new PinNode(Integer.parseInt(param.ID(0).toString())));
+                    break;
+                case "Long":
+                    node.params.add(new LongNode(Long.parseLong(param.ID(0).toString())));
+                    break;
+                case "Char":
+                    node.params.add(new CharNode(param.ID(0).toString().charAt(0)));
                     break;
             }
-
-             */
         }
-            
 
-            
         return node;
     }
     /**
@@ -287,7 +318,18 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitBlk(CStarParser.BlkContext ctx) {
 
         BlkNode node = new BlkNode();
-        //node.stmtNodes = visit(ctx.stmt());
+
+        for(CStarParser.DclsContext dcl : ctx.dcls()){
+            node.dclNodes.add((DclNode<?>) visit(dcl));
+        }
+
+        for(CStarParser.StmtContext stmt : ctx.stmt()) {
+            node.stmtNodes.add((StmtNode) visit(stmt));
+        }
+
+        for(CStarParser.Return_expContext rexp : ctx.return_exp()){
+            node.returnExpNodes.add((ReturnExpNode) visit(rexp));
+        }
 
         return visitChildren(ctx);
     }

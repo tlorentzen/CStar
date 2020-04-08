@@ -2,8 +2,7 @@ package com.p4.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-
-
+import java.util.*;
 
 public abstract class AstNode {
     /*
@@ -13,7 +12,6 @@ public abstract class AstNode {
     */
 }
 
-/*
 abstract class DclNode<T> extends AstNode {
     String id;
     String type;
@@ -27,7 +25,7 @@ abstract class DclNode<T> extends AstNode {
         return id;
     }
 
-    public int getValue() {
+    public T getValue() {
         return value;
     }
 
@@ -35,11 +33,10 @@ abstract class DclNode<T> extends AstNode {
         this.id = id;
     }
 
-    public void setValue(int value) {
+    public void setValue(T value) {
         this.value = value;
     }
 }
-*/
 
 abstract class InfixAstNode extends AstNode{
     public ExprNode Left;
@@ -63,133 +60,39 @@ abstract class InfixAstNode extends AstNode{
 
 }
 
-class IntegerDclNode extends AstNode{
-    String id;
-    String type = "Integer";
-    int value;
-
+class IntegerDclNode extends DclNode<Integer>{
     public IntegerDclNode(String id){
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
+        super(id);
+        super.type = "Float";
     }
 }
 
-class FloatDclNode extends AstNode{
-    String id;
-    String type = "Float";
-    float value;
-
+class FloatDclNode extends DclNode<Float>{
     public FloatDclNode(String id){
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public float getValue() {
-        return value;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setValue(float value) {
-        this.value = value;
+        super(id);
+        super.type = "Float";
     }
 }
 
-class PinDclNode extends AstNode{
-    String id;
-    String type = "Pin";
-    int value;
-
+class PinDclNode extends DclNode<Integer>{
     public PinDclNode(String id){
-        this.id = id;
+        super(id);
+        super.type = "Pin";
     }
-    public String getId() {
-        return id;
-    }
-
-    public float getValue() {
-        return value;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
-
 }
 
-class LongDclNode extends AstNode{
-    long value;
-    String type = "Long";
-    String id;
-    
+class LongDclNode extends DclNode<Long>{
+
     public LongDclNode(String id){
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public long getValue() {
-        return value;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setValue(long value) {
-        this.value = value;
+        super(id);
+        super.type = "Long";
     }
 }
 
-class CharDclNode extends AstNode{
-    String id;
-    String type = "Char";
-    char value;
-
+class CharDclNode extends DclNode<Character>{
     public CharDclNode(String id){
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public char getValue() {
-        return value;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setValue(char value) {
-        this.value = value;
+        super(id);
+        super.type = "Char";
     }
 }
 
@@ -292,10 +195,52 @@ class AddNode extends InfixAstNode{
         this.Left = Left;
         this.Right = Right;
     }
+
+    @Override
+    public void setLeft(ExprNode left) {
+        super.setLeft(left);
+    }
+
+    @Override
+    public void setRight(ExprNode right) {
+        super.setRight(right);
+    }
+
+    @Override
+    public ExprNode getLeft() {
+        return super.getLeft();
+    }
+
+    @Override
+    public ExprNode getRight() {
+        return super.getRight();
+    }
 }
 
 class SubNode extends InfixAstNode{
 
+    SubNode(ExprNode Left, ExprNode Right){
+
+    }
+    @Override
+    public void setLeft(ExprNode left) {
+        super.setLeft(left);
+    }
+
+    @Override
+    public void setRight(ExprNode right) {
+        super.setRight(right);
+    }
+
+    @Override
+    public ExprNode getLeft() {
+        return super.getLeft();
+    }
+
+    @Override
+    public ExprNode getRight() {
+        return super.getRight();
+    }
 }
 
 class MultNode extends InfixAstNode{
@@ -445,14 +390,14 @@ class FuncNode extends AstNode{
 
 class BlkNode extends AstNode{
     //blk: LEFT_BRACE ( dcl | stmt | return_exp)* RIGHT_BRACE;
-
+    List<DclNode<?>> dclNodes;
     List<StmtNode> stmtNodes;
     List<ReturnExpNode> returnExpNodes;
 
 }
 
 class StmtNode extends AstNode{
-
+    // stmt: ( assign SEMICOLON | expr SEMICOLON | func_call SEMICOLON | selection | iterative )+;
 }
 
 class ReturnExpNode extends AstNode{
