@@ -162,90 +162,115 @@ class CallNode extends AstNode{
 
 class AddNode extends InfixAstNode{
 
-    public AddNode(ExprNode Left, ExprNode Right){
+    public AddNode(AstNode Left, AstNode Right){
         super.Left = Left;
         super.Right = Right;
     }
 
     @Override
-    public void setLeft(ExprNode left) {
+    public void setLeft(AstNode left) {
         super.setLeft(left);
     }
 
     @Override
-    public void setRight(ExprNode right) {
+    public void setRight(AstNode right) {
         super.setRight(right);
     }
 
     @Override
-    public ExprNode getLeft() {
+    public AstNode getLeft() {
         return super.getLeft();
     }
 
     @Override
-    public ExprNode getRight() {
+    public AstNode getRight() {
         return super.getRight();
     }
 }
 
 class SubNode extends InfixAstNode{
 
-    SubNode(ExprNode Left, ExprNode Right){
+
+    SubNode(AstNode Left, AstNode Right){
         super.Left = Left;
         super.Right = Right;
     }
 
     @Override
-    public void setLeft(ExprNode left) {
+    public void setLeft(AstNode left) {
         super.setLeft(left);
     }
 
     @Override
-    public void setRight(ExprNode right) {
+    public void setRight(AstNode right) {
         super.setRight(right);
     }
 
     @Override
-    public ExprNode getLeft() {
+    public AstNode getLeft() {
         return super.getLeft();
     }
 
     @Override
-    public ExprNode getRight() {
+    public AstNode getRight() {
         return super.getRight();
     }
 }
 
 class MultNode extends InfixAstNode{
 
-    MultNode(ExprNode Left, ExprNode Right){
+    MultNode(AstNode Left, AstNode Right){
         super.Left = Left;
         super.Right = Right;
     }
 
     @Override
-    public void setLeft(ExprNode left) {
+    public void setLeft(AstNode left) {
         super.setLeft(left);
     }
 
     @Override
-    public void setRight(ExprNode right) {
+    public void setRight(AstNode right) {
         super.setRight(right);
     }
 
     @Override
-    public ExprNode getLeft() {
+    public AstNode getLeft() {
         return super.getLeft();
     }
 
     @Override
-    public ExprNode getRight() {
+    public AstNode getRight() {
         return super.getRight();
     }
 }
 
 class DivNode extends InfixAstNode{
 
+    DivNode(AstNode Left, AstNode Right){
+        super.Left = Left;
+        super.Right = Right;
+    }
+
+    @Override
+    public void setLeft(AstNode left) {
+        super.setLeft(left);
+    }
+
+    @Override
+    public void setRight(AstNode right) {
+        super.setRight(right);
+    }
+
+    @Override
+    public AstNode getLeft() {
+        return super.getLeft();
+    }
+
+    @Override
+    public AstNode getRight() {
+        return super.getRight();
+    }
 }
 
 class AssignNode extends AstNode{
