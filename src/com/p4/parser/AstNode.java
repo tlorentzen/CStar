@@ -192,8 +192,8 @@ class CallNode extends AstNode{
 class AddNode extends InfixAstNode{
 
     public AddNode(ExprNode Left, ExprNode Right){
-        this.Left = Left;
-        this.Right = Right;
+        super.Left = Left;
+        super.Right = Right;
     }
 
     @Override
@@ -220,8 +220,10 @@ class AddNode extends InfixAstNode{
 class SubNode extends InfixAstNode{
 
     SubNode(ExprNode Left, ExprNode Right){
-
+        super.Left = Left;
+        super.Right = Right;
     }
+
     @Override
     public void setLeft(ExprNode left) {
         super.setLeft(left);
@@ -245,6 +247,30 @@ class SubNode extends InfixAstNode{
 
 class MultNode extends InfixAstNode{
 
+    MultNode(ExprNode Left, ExprNode Right){
+        super.Left = Left;
+        super.Right = Right;
+    }
+
+    @Override
+    public void setLeft(ExprNode left) {
+        super.setLeft(left);
+    }
+
+    @Override
+    public void setRight(ExprNode right) {
+        super.setRight(right);
+    }
+
+    @Override
+    public ExprNode getLeft() {
+        return super.getLeft();
+    }
+
+    @Override
+    public ExprNode getRight() {
+        return super.getRight();
+    }
 }
 
 class DivNode extends InfixAstNode{
