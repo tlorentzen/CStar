@@ -1,15 +1,19 @@
 package com.p4.parser;
 
+import org.antlr.v4.runtime.Token;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
 
 public abstract class AstNode {
-    /*
-    public void accept(Visitor vistor) {
-        visitor.visit(this);
+    Token token; // node is derived from which token?
+    List<AstNode> children; // operands
+    public AstNode(Token token) { this.token = token; }
+    public void addChild(AstNode t) {
+        if ( children==null ) children = new ArrayList<AstNode>();
+        children.add(t);
     }
-    */
 }
 
 abstract class DclNode<T> extends AstNode {
@@ -39,22 +43,22 @@ abstract class DclNode<T> extends AstNode {
 }
 
 abstract class InfixAstNode extends AstNode{
-    public ExprNode Left;
-    public ExprNode Right;
+    public AstNode Left;
+    public AstNode Right;
 
-    public void setLeft(ExprNode left) {
+    public void setLeft(AstNode left) {
         Left = left;
     }
 
-    public void setRight(ExprNode right) {
+    public void setRight(AstNode right) {
         Right = right;
     }
 
-    public ExprNode getLeft() {
+    public AstNode getLeft() {
         return Left;
     }
 
-    public ExprNode getRight() {
+    public AstNode getRight() {
         return Right;
     }
 
@@ -191,6 +195,8 @@ class CallNode extends AstNode{
 
 class AddNode extends InfixAstNode{
 
+    public AddNode(){ }
+
     public AddNode(AstNode Left, AstNode Right){
         super.Left = Left;
         super.Right = Right;
@@ -219,8 +225,9 @@ class AddNode extends InfixAstNode{
 
 class SubNode extends InfixAstNode{
 
+    public SubNode(){ }
 
-    SubNode(AstNode Left, AstNode Right){
+    public SubNode(AstNode Left, AstNode Right){
         super.Left = Left;
         super.Right = Right;
     }
@@ -248,7 +255,9 @@ class SubNode extends InfixAstNode{
 
 class MultNode extends InfixAstNode{
 
-    MultNode(AstNode Left, AstNode Right){
+    public MultNode(){ }
+
+    public MultNode(AstNode Left, AstNode Right){
         super.Left = Left;
         super.Right = Right;
     }
@@ -276,7 +285,9 @@ class MultNode extends InfixAstNode{
 
 class DivNode extends InfixAstNode{
 
-    DivNode(AstNode Left, AstNode Right){
+    public DivNode(){ }
+
+    public DivNode(AstNode Left, AstNode Right){
         super.Left = Left;
         super.Right = Right;
     }
@@ -402,6 +413,7 @@ class ArrayNode extends AstNode implements Parameters{
 
 class ArrayExprNode extends AstNode{
     public List<AstNode> Literals;
+
 
     public ArrayExprNode(){
         List<AstNode> Literals = new ArrayList<AstNode>();
