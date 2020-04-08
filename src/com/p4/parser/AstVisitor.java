@@ -2,7 +2,6 @@ package com.p4.parser;
 
 import jdk.jshell.spi.ExecutionControl;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.*;
 
 import java.util.List;
@@ -337,13 +336,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         BlkNode node = new BlkNode();
         int numChildren = ctx.getChildCount();
-        AstNode astNode;
-        ParseTree tree;
 
         for(int i = 0; i < numChildren; i++){
-            tree = ctx.getChild(i);
-            astNode = new AstNode((Token) tree.getPayload());
-            node.children.add(astNode);
+            ParseTree tree = ctx.getChild(i);
+            AstNode astNode = new AstNode(tree.getPayload().toString());
+            System.out.println(tree.getPayload().toString());
         }
 
         return visitChildren(ctx);
