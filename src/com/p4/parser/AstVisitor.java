@@ -4,6 +4,7 @@ import jdk.jshell.spi.ExecutionControl;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.*;
 
+import java.util.List;
 import java.util.Optional;
 
 public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
@@ -318,17 +319,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitBlk(CStarParser.BlkContext ctx) {
 
         BlkNode node = new BlkNode();
+        int numChildren = ctx.getChildCount();
 
-        for(CStarParser.DclsContext dcl : ctx.dcls()){
-            node.dclNodes.add((DclNode<?>) visit(dcl));
-        }
-
-        for(CStarParser.StmtContext stmt : ctx.stmt()) {
-            node.stmtNodes.add((StmtNode) visit(stmt));
-        }
-
-        for(CStarParser.Return_expContext rexp : ctx.return_exp()){
-            node.returnExpNodes.add((ReturnExpNode) visit(rexp));
+        for(int i = 0; i < numChildren; i++){
+            ParseTree tree = ctx.getChild(i);
+            AstNode astNode = new AstNode(tree.getPayload().toString());
+            System.out.println(tree.getPayload().toString());
         }
 
         return visitChildren(ctx);
