@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
 
-public abstract class AstNode {
-
-    }
-
-}
+public abstract class AstNode { }
 
 abstract class DclNode<T> extends AstNode {
     String id;
@@ -52,22 +48,22 @@ abstract class LiteralNode<T> extends AstNode{
 }
 
 abstract class InfixAstNode extends AstNode{
-    public ExprNode Left;
-    public ExprNode Right;
+    public AstNode Left;
+    public AstNode Right;
 
-    public void setLeft(ExprNode left) {
+    public void setLeft(AstNode left) {
         Left = left;
     }
 
-    public void setRight(ExprNode right) {
+    public void setRight(AstNode right) {
         Right = right;
     }
 
-    public ExprNode getLeft() {
+    public AstNode getLeft() {
         return Left;
     }
 
-    public ExprNode getRight() {
+    public AstNode getRight() {
         return Right;
     }
 

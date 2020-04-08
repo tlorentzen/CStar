@@ -282,7 +282,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             System.out.println(param.ID());
 
             switch (param.TYPE().toString()){
-                case "Integer":
+               /*case "Integer":
                     node.params.add(new IntegerNode(Integer.parseInt(param.ID(0).toString())));
                     break;
                 case "Decimal":
@@ -296,7 +296,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     break;
                 case "Char":
                     node.params.add(new CharNode(param.ID(0).toString().charAt(0)));
-                    break;
+                    break;*/
             }
         }
 
