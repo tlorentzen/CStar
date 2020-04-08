@@ -47,7 +47,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
                     return node;
                 }
-                else{  
+                else{
                     return new FloatDclNode(ctx.ID().toString());
                 }
             case "pin":
@@ -276,7 +276,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      */
     @Override public AstNode visitParam(CStarParser.ParamContext ctx) {
         ParamNode node = new ParamNode();
-        
+
         for(CStarParser.ParamContext param : ctx.param()){
 
             System.out.println(param.ID());

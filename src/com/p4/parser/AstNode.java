@@ -7,7 +7,7 @@ import java.util.*;
 public abstract class AstNode {
 
     }
-    
+
 }
 
 abstract class DclNode<T> extends AstNode {
