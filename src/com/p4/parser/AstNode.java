@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
 
-public abstract class AstNode { }
+public class AstNode {
+    List<AstNode> children = new ArrayList<>();
+}
 
 abstract class DclNode<T> extends AstNode {
     String id;
