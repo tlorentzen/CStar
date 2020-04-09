@@ -4,4 +4,8 @@ void main(){
     integer hest = 10;
 
     integer test = i + hest;
+
+    if(3 < 4 AND (0 > 4 OR 9 < 3)){
+
+    }
 }
