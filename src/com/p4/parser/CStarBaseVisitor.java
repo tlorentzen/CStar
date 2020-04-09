@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  * operations with no return type.
  */
 public class CStarBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements CStarVisitor<T> {
+
 	/**
 	 * {@inheritDoc}
 	 *

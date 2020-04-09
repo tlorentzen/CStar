@@ -153,17 +153,8 @@ class CharNode extends LiteralNode<Character>{
     }
 }
 
-class ExprNode<T> extends AstNode {
-    T expr;
-}
-
 class ParamNode extends AstNode{
     List<Parameters> params;
-}
-
-class CallNode extends AstNode{
-    IdNode id;
-    ParamNode params;
 }
 
 class AddNode extends AstNode{
