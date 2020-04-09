@@ -1,6 +1,4 @@
 void main(){
-
-<<<<<<< HEAD
     integer i = 1 + 2 + 3 + 4;
     integer hest = 10;
 
@@ -9,7 +7,4 @@ void main(){
     if(3 < 4 AND (0 > 4 OR 9 < 3)){
 
     }
-=======
-  integer i = 5*5;
->>>>>>> 463606db88ea90d99b293d90d2ce77d9a687e512
 }
