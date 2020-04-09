@@ -1,5 +1,7 @@
 package com.p4.parser;
 
+import org.antlr.v4.runtime.CommonToken;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
@@ -164,61 +166,12 @@ class CallNode extends AstNode{
     ParamNode params;
 }
 
-class AddNode extends InfixAstNode{
-
-    public AddNode(AstNode Left, AstNode Right){
-        super.Left = Left;
-        super.Right = Right;
-    }
-
-    @Override
-    public void setLeft(AstNode left) {
-        super.setLeft(left);
-    }
-
-    @Override
-    public void setRight(AstNode right) {
-        super.setRight(right);
-    }
-
-    @Override
-    public AstNode getLeft() {
-        return super.getLeft();
-    }
-
-    @Override
-    public AstNode getRight() {
-        return super.getRight();
-    }
+class AddNode extends AstNode{
+    CommonToken token = new CommonToken(9);
 }
 
-class SubNode extends InfixAstNode{
-
-
-    SubNode(AstNode Left, AstNode Right){
-        super.Left = Left;
-        super.Right = Right;
-    }
-
-    @Override
-    public void setLeft(AstNode left) {
-        super.setLeft(left);
-    }
-
-    @Override
-    public void setRight(AstNode right) {
-        super.setRight(right);
-    }
-
-    @Override
-    public AstNode getLeft() {
-        return super.getLeft();
-    }
-
-    @Override
-    public AstNode getRight() {
-        return super.getRight();
-    }
+class SubNode extends AstNode{
+    CommonToken token = new CommonToken(10);
 }
 
 class MultNode extends InfixAstNode{
@@ -334,12 +287,8 @@ class ArrayExprNode extends AstNode{
 class FuncNode extends AstNode{
     String id;
     String returnType;
-    ParamNode paramNode;
-    BlkNode blkNode;
 
-    public String getId() {
-        return id;
-    }
+    public String getId() { return id; }
 
     public String getReturnType() {
         return returnType;
@@ -377,6 +326,14 @@ class IterativeNode extends AstNode{
 class FuncCallNode extends  AstNode{
     //index 0 is ID, Everything that follows is parameter values
     public FuncCallNode(){}
+}
+
+class CondNode extends AstNode{
+    private String operator;
+
+    public String getOperator() { return operator; }
+
+    public void setOperator(String operator) { this.operator = operator; }
 }
 
 /*

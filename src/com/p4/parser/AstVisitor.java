@@ -178,7 +178,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         else if(ctx.LONG_LITERAL() != null) {
             return new LongNode(Long.parseLong(ctx.LONG_LITERAL().getText()));
         }
-
         else if(ctx.CHAR_LITERAL() != null) {
             String temp = ctx.CHAR_LITERAL().getText();
             char c = temp.charAt(0);
@@ -226,29 +225,17 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         int childCount = ctx.getChildCount();
         int termCount = 0;
 
-
+        //If there are no operations with plus and minus
         if(childCount == 1){
             //TODO Husk at visit skal return noget
             visit(ctx.term(0));
         }
-        else{
-            for(int i = 0; i < (childCount-1)/2; i++){
-                //lav plus/minus-node som barn til et forrige
-                //lav venstre barn til minus/plus-node
-                visit(ctx.term(0));
-
-                var child = ctx.getChild(i);
-                String classes = child.getClass().toString();
-                //checks if child is a value node
-                if(classes.equals("class com.p4.parser.CStarParser$TermContext")) {
-                    AstNode literal = visit(child);
-                    //arrayExprNode.Literals.add(literal);
-                }
-                //lav sidste højre side
-            }
+        else {
+            visitArithm_exprChild(ctx.getChild(1), ctx, 1);
         }
         return null;
     }
+
 
     @Override public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
         //index 0 is ID, Everything that follows is parameter values
@@ -277,6 +264,54 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return funcCallNode;
     }
 
+    //Todo evt lav den general ved at lave en generisk metode
+    public AstNode visitArithm_exprChild(ParseTree child, CStarParser.Arithm_exprContext parent, int operatorIndex){
+        int termIndex = (operatorIndex - 1) / 2;
+
+        if(child.getText().equals("+")) {
+            AddNode addNode = new AddNode();
+
+            //Enters if there are more operators in the tree
+            if(parent.getChild(operatorIndex + 2) != null) {
+                operatorIndex += 2;
+
+                //Add left child (term)
+                addNode.children.add(visitTerm(parent.term(termIndex)));
+                //Add right child (operator)
+                addNode.children.add(visitArithm_exprChild(parent.getChild(operatorIndex), parent, operatorIndex));
+            }
+            //Enters if there is only a term child left
+            else{
+                // Add left and right child (terms)
+                addNode.children.add(visitTerm(parent.term(termIndex)));
+                addNode.children.add(visitTerm(parent.term(termIndex + 1)));
+            }
+
+            return addNode;
+        }
+        else {
+            SubNode subNode = new SubNode();
+
+            //Enters if there are more operators in the tree
+            if(parent.getChild(operatorIndex + 2) != null) {
+                operatorIndex += 2;
+
+                //Add left child (term)
+                subNode.children.add(visitTerm(parent.term(termIndex)));
+                //Add right child (operator)
+                subNode.children.add(visitArithm_exprChild(parent.getChild(operatorIndex), parent, operatorIndex));
+            }
+            //Enters if there is only a term child left
+            else{
+                // Add left and right child (terms)
+                subNode.children.add(visitTerm(parent.term(termIndex)));
+                subNode.children.add(visitTerm(parent.term(termIndex + 1)));
+            }
+
+            return subNode;
+        }
+    }
+
 
     //@Override public T visitReturn_exp(CStarParser.Return_expContext ctx) { return visitChildren(ctx); }
     /**
@@ -286,7 +321,47 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
 
-    //@Override public T visitCond_expr(CStarParser.Cond_exprContext ctx) { return visitChildren(ctx); }
+    @Override public AstNode visitCond_expr(CStarParser.Cond_exprContext ctx) {
+        CondNode node = new CondNode();
+
+        int numChildren = ctx.getChildCount();
+
+        for(int i = 0; i < numChildren; i++){
+            ParseTree c = ctx.getChild(i);
+            Object o = c.getPayload();
+
+            if(o instanceof CommonToken){
+                CommonToken t = (CommonToken) o;
+
+                if(t.getType() == CStarParser.COMP_OP){
+                    node.setOperator(t.getText());
+                }
+
+                if(t.getType() == CStarParser.AND || t.getType() == CStarParser.OR){
+                    node.children.add(visit(c));
+                    CondNode newCondNode = new CondNode();
+
+                    newCondNode.children.addAll(node.children);
+                    node.children.clear();
+                    node.children.add(newCondNode);
+                }
+
+                node.setOperator(c.getPayload().toString());
+
+                continue;
+            }
+
+            AstNode childResult = visit(c);
+            node.children.add(childResult);
+            System.out.println(c.toString());
+        }
+
+        //System.out.println("Final operator: " + node.getOperator());
+
+        return node;
+
+
+    }
     /**
      * {@inheritDoc}
      *
@@ -317,8 +392,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         FuncNode node = new FuncNode();
         node.id = ctx.ID().toString();
         node.returnType = (ctx.return_type().TYPE() != null ? ctx.return_type().TYPE().toString() : "void");
-        node.paramNode = (ParamNode)visit(ctx.param());
-        node.blkNode = (BlkNode)visit(ctx.blk());
+        node.children.add(visit(ctx.param()));
+        node.children.add(visit(ctx.blk()));
         System.out.println(ctx.toString());
 
         return node;
@@ -433,4 +508,3 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     //@Override public T visitArray_call(CStarParser.Array_callContext ctx) { return visitChildren(ctx); }
 
 }
-

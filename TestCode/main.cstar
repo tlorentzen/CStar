@@ -1,17 +1,5 @@
 void main(){
-    integer result = 10;
-    integer i = 1 + 2 * 12;
-    testFunc(2, 4);
 
-    if(1 < 0){
-        integer i2 = 0;
-    }
+    integer i = 1 + 2 + 3 + 4;
 
-    while(1<0) repeat {
-        integer i3 = 0;
-    }
-}
-
-integer testFunc(integer i1, pin p1){
-    return i1+5;
 }
