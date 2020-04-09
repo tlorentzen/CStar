@@ -302,6 +302,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     node.children.clear();
                     node.children.add(newCondNode);
                 }
+
                 node.setOperator(t.getText());
             } else{
                 node.children.add(visit(c));
@@ -313,7 +314,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             return node;
         }
     }
-    
+
     /**
      * {@inheritDoc}
      *

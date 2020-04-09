@@ -4,18 +4,29 @@ import java.util.List;
 
 public class AstTreeVisitor {
     public void visit(int localIndent, AstNode node){
-        this.print(localIndent, node.getClass().toString());
+        if(node != null){
+            switch (node.getClass().toString()){
+                case "class com.p4.parser.CondNode":
+                    this.print(localIndent, node.getClass().toString() + " with the operator: " + ((CondNode)node).getOperator());
+                    break;
+                case "class com.p4.parser.IntegerDclNode":
+                    this.print(localIndent, node.getClass().toString() + " with the ID: " + ((IntegerDclNode)node).getId());
+                    break;
+                case "class com.p4.parser.IntegerNode":
+                    this.print(localIndent, node.getClass().toString() + " with the value: " + ((IntegerNode)node).Value);
+                    break;
+                default:
+                    this.print(localIndent, node.getClass().toString());
+                    break;
+            }
 
-        switch (node.getClass().toString()){
-            case "class com.p4.parser.CondNode":
-                this.print(localIndent, ((CondNode)node).getOperator());
-                break;
-            default:
-                break;
-        }
-
-        for (AstNode childNode : node.getChildren()){
-            this.visit(localIndent + 1, childNode);
+            for (AstNode childNode : node.getChildren()){
+                if(childNode == null){
+                    this.print(localIndent + 1, node.getClass().toString());
+                    this.print(localIndent + 1, node.getChildren().toString());
+                }
+                this.visit(localIndent + 1, childNode);
+            }
         }
     }
 
