@@ -51,8 +51,9 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitAssign(CStarParser.AssignContext ctx) {
 
         String id = ctx.ID().toString();
-        CStarParser.ExprContext exprCtx = ctx.expr();
-        AstNode exprNode = visit(exprCtx);
+        AstNode exprNode = visit(ctx.expr());
+
+        AstNode node;
 
         ParserRuleContext parent = ctx.getParent();
         String classes = parent.getClass().toString();
@@ -63,46 +64,32 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
             switch (type){
                 case "integer":
-                    AssignNode integerAssign = new AssignNode();
-                    IntegerDclNode intDclNode = new IntegerDclNode(id);
-                    integerAssign.children.add(intDclNode);
-                    integerAssign.children.add(exprNode);
-                    return integerAssign;
+                    node = new IntegerDclNode(id);
+                    break;
                 case "decimal":
-                    AssignNode floatAssign = new AssignNode();
-                    FloatDclNode floatDclNode = new FloatDclNode(id);
-                    floatAssign.children.add(floatDclNode);
-                    floatAssign.children.add(exprNode);
-                    return floatAssign;
+                    node = new FloatDclNode(id);
+                    break;
                 case "pin":
-                    AssignNode pinAssign = new AssignNode();
-                    PinDclNode pinDclNode = new PinDclNode(id);
-                    pinAssign.children.add(pinDclNode);
-                    pinAssign.children.add(exprNode);
-                    return pinAssign;
+                    node = new PinDclNode(id);
+                    break;
                 case "long integer":
-                    AssignNode longAssign = new AssignNode();
-                    LongDclNode longDclNode = new LongDclNode(id);
-                    longAssign.children.add(longDclNode);
-                    longAssign.children.add(exprNode);
-                    return longAssign;
+                    node = new LongDclNode(id);
+                    break;
                 case "character":
-                    AssignNode charAssign = new AssignNode();
-                    CharDclNode charDclNode = new CharDclNode(id);
-                    charAssign.children.add(charDclNode);
-                    charAssign.children.add(exprNode);
-                    return charAssign;
+                    node = new CharDclNode(id);
+                    break;
                 default:
                     return null;
             }
         }
         else{
-            AssignNode assignNode = new AssignNode();
-            IdNode idNode = new IdNode(id);
-            assignNode.children.add(idNode);
-            assignNode.children.add(exprNode);
-            return assignNode;
+            node = new IdNode(id);
         }
+        AssignNode assignNode = new AssignNode();
+        assignNode.children.add(node);
+        System.out.println(node.getClass());
+        assignNode.children.add(exprNode);
+        return assignNode;
     }
 
     @Override public AstNode visitVal(CStarParser.ValContext ctx) {
