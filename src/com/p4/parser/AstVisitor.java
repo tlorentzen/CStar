@@ -265,15 +265,36 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitCond_expr(CStarParser.Cond_exprContext ctx) {
         CondNode node = new CondNode();
 
+
+
         int numChildren = ctx.getChildCount();
 
         for(int i = 0; i < numChildren; i++){
             ParseTree c = ctx.getChild(i);
-            if(c.getPayload() instanceof CommonToken){
+            Object o = c.getPayload();
+
+            if(o instanceof CommonToken){
+                CommonToken t = (CommonToken) o;
+
+                if(t.getType() == CStarParser.COMP_OP){
+                    System.out.println("COMP_OP!!!");
+                }
+
+
                 node.setOperator(c.getPayload().toString());
-                System.out.println("Temp operator: " + c.getPayload().toString());
+                //System.out.println("Temp operator: " + c.getPayload().toString());
                 continue;
+            }else{
+
+                if(o instanceof CStarParser.Arithm_exprContext){
+                    System.out.println("Arithm - stuff");
+                }else if(o instanceof  CStarParser.Cond_exprContext){
+                    System.out.println("Cond - stuff");
+                }
             }
+
+
+
             AstNode childResult = visit(c);
             node.children.add(childResult);
             System.out.println(c.toString());
