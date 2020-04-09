@@ -342,28 +342,18 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         BlkNode node = new BlkNode();
 
-        for(CStarParser.DclsContext dcl : ctx.dcls()){
-            node.dclNodes.add((DclNode<?>) visit(dcl));
+        int numChildren = ctx.getChildCount();
+
+        for (int i = 0; i < numChildren; i++){
+            ParseTree c = ctx.getChild(i);
+            AstNode childResult = visit(c);
+            node.children.add(childResult);
+            System.out.println(c.toString());
         }
 
-        for(CStarParser.StmtContext stmt : ctx.stmt()) {
-            node.stmtNodes.add((StmtNode) visit(stmt));
-        }
-
-        for(CStarParser.Return_expContext rexp : ctx.return_exp()){
-            node.returnExpNodes.add((ReturnExpNode) visit(rexp));
-        }
-
-        return visitChildren(ctx);
+        return node;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    //@Override public AstNode visitStmt(CStarParser.StmtContext ctx) { return visitChildren(ctx); }
     /**
      * {@inheritDoc}
      *
@@ -371,7 +361,15 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public AstNode visitSelection(CStarParser.SelectionContext ctx) {
-        return visitChildren(ctx);
+        SelectionNode node = new SelectionNode();
+
+        node.children.add(visit(ctx.cond_expr()));
+
+        for(CStarParser.BlkContext blk : ctx.blk()){
+            node.children.add(visit(blk));
+        }
+
+        return node;
     }
     /**
      * {@inheritDoc}
@@ -379,7 +377,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public AstNode visitIterative(CStarParser.IterativeContext ctx) { return visitChildren(ctx); }
+    @Override public AstNode visitIterative(CStarParser.IterativeContext ctx) {
+        IterativeNode node = new IterativeNode();
+
+        node.children.add(visit(ctx.cond_expr()));
+        node.children.add(visit(ctx.blk()));
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *

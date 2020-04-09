@@ -378,10 +378,6 @@ class FuncNode extends AstNode{
 
 class BlkNode extends AstNode{
     //blk: LEFT_BRACE ( dcl | stmt | return_exp)* RIGHT_BRACE;
-    List<AstNode> children = new ArrayList<>();
-    List<DclNode<?>> dclNodes = new ArrayList<>();
-    List<StmtNode> stmtNodes = new ArrayList<>();
-    List<ReturnExpNode> returnExpNodes = new ArrayList<>();
 }
 
 class StmtNode extends AstNode{
@@ -389,6 +385,14 @@ class StmtNode extends AstNode{
 }
 
 class ReturnExpNode extends AstNode{
+
+}
+
+class SelectionNode extends AstNode{
+
+}
+
+class IterativeNode extends AstNode{
 
 }
 
