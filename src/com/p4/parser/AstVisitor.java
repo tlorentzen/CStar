@@ -295,7 +295,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         node.returnType = (ctx.return_type().TYPE() != null ? ctx.return_type().TYPE().toString() : "void");
         node.paramNode = (ParamNode)visit(ctx.param());
         node.blkNode = (BlkNode)visit(ctx.blk());
-
         System.out.println(ctx.toString());
 
         return node;
@@ -359,7 +358,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 continue;
             AstNode childResult = visit(c);
             node.children.add(childResult);
-            System.out.println(c.toString());
+            System.out.println();
         }
 
         return node;
