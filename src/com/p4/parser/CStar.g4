@@ -22,8 +22,8 @@ return_exp: RETURN expr SEMICOLON;
 func_call: (ID DOT)? ID LEFT_PAREN ((ID | val) (COMMA (ID | val))*)? RIGHT_PAREN;
 
 stmt: ( assign SEMICOLON | expr SEMICOLON | selection | iterative )+;
-selection: IF LEFT_PAREN cond_expr RIGHT_PAREN blk ( ELSE blk )?;
 iterative: WHILE LEFT_PAREN cond_expr RIGHT_PAREN REPEAT blk;
+selection: IF LEFT_PAREN cond_expr RIGHT_PAREN blk ( ELSE blk )?;
 
 val: INT_LITERAL | LONG_LITERAL | FLOAT_LITERAL | CHAR_LITERAL | PIN_LITERAL ;
 
