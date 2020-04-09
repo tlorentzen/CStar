@@ -245,12 +245,36 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     //arrayExprNode.Literals.add(literal);
                 }
                 //lav sidste højre side
+            }
         }
-
-
-        }
-
         return null;
+    }
+
+    @Override public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
+        //index 0 is ID, Everything that follows is parameter values
+
+        FuncCallNode funcCallNode = new FuncCallNode();
+
+        //TODO duplicate code fra visitBlkNode
+        int numChildren = ctx.getChildCount();
+
+        for (int i = 0; i < numChildren; i++){
+            ParseTree c = ctx.getChild(i);
+            String classes = c.getClass().toString();
+            String id = c.getText();
+
+            //checks if child is a value node
+            //TODO find en mere elegant maade at sortere ID fra andre symboler
+            if(classes.equals("class com.p4.parser.CStarParser$ValContext")) {
+                AstNode childResult = visit(c);
+                funcCallNode.children.add(childResult);
+            }
+            else if(!id.equals("(") && !id.equals(")") && !id.equals(",")){
+                IdNode idNode = new IdNode(id);
+                funcCallNode.children.add(idNode);
+            }
+        }
+        return funcCallNode;
     }
 
 
@@ -339,13 +363,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-   // @Override public T visitFunc_call(CStarParser.Func_callContext ctx) { return visitChildren(ctx); }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override public AstNode visitBlk(CStarParser.BlkContext ctx) {
 
         BlkNode node = new BlkNode();
@@ -372,11 +390,15 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      */
     @Override public AstNode visitSelection(CStarParser.SelectionContext ctx) {
         SelectionNode node = new SelectionNode();
+        String symbol;
 
         node.children.add(visit(ctx.cond_expr()));
 
         for(CStarParser.BlkContext blk : ctx.blk()){
-            node.children.add(visit(blk));
+            //symbol = blk.getText();
+            //if(!symbol.equals("(") && !symbol.equals(")")){
+                node.children.add(visit(blk));
+            //}
         }
 
         return node;

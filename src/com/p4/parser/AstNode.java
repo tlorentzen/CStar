@@ -374,6 +374,11 @@ class IterativeNode extends AstNode{
 
 }
 
+class FuncCallNode extends  AstNode{
+    //index 0 is ID, Everything that follows is parameter values
+    public FuncCallNode(){}
+}
+
 /*
 - FuncNode
 - ExprNode (Arithm | Cond | Func)
