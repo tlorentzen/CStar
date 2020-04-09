@@ -1,6 +1,7 @@
 package com.p4.parser;
 
 import jdk.jshell.spi.ExecutionControl;
+import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.*;
 
@@ -173,7 +174,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         else if(ctx.LONG_LITERAL() != null) {
             return new LongNode(Long.parseLong(ctx.LONG_LITERAL().getText()));
         }
-
         else if(ctx.CHAR_LITERAL() != null) {
             String temp = ctx.CHAR_LITERAL().getText();
             char c = temp.charAt(0);
@@ -217,31 +217,83 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         int childCount = ctx.getChildCount();
         int termCount = 0;
 
-
+        //If there are no operations with plus and minus
         if(childCount == 1){
             //TODO Husk at visit skal return noget
             visit(ctx.term(0));
         }
-        else{
-            for(int i = 0; i < (childCount-1)/2; i++){
-                //lav plus/minus-node som barn til et forrige
-                //lav venstre barn til minus/plus-node
-                visit(ctx.term(0));
-
-                var child = ctx.getChild(i);
-                String classes = child.getClass().toString();
-                //checks if child is a value node
-                if(classes.equals("class com.p4.parser.CStarParser$TermContext")) {
-                    AstNode literal = visit(child);
-                    //arrayExprNode.Literals.add(literal);
-                }
-                //lav sidste højre side
+        else {
+            visitArithm_exprChild(ctx.getChild(1), ctx, 1);
         }
-
-
-        }
-
         return null;
+    }
+
+    //Todo evt lav den general ved at lave en generisk metode
+    public AstNode visitArithm_exprChild(ParseTree child, CStarParser.Arithm_exprContext parent, int operatorIndex){
+        int termIndex = (operatorIndex - 1) / 2;
+
+        if(child.getText().equals("+")) {
+            AddNode addNode = new AddNode();
+
+            //Enters if there are more operators in the tree
+            if(parent.getChild(operatorIndex + 2) != null) {
+                operatorIndex += 2;
+
+                //Add left child (term)
+                addNode.children.add(visitTerm(parent.term(termIndex)));
+                //Add right child (operator)
+                addNode.children.add(visitArithm_exprChild(parent.getChild(operatorIndex), parent, operatorIndex));
+
+                System.out.println(operatorIndex - 2);
+                for (AstNode childLoop : addNode.children) {
+                    System.out.println(childLoop.toString());
+                }
+            }
+            //Enters if there is only a term child left
+            else{
+                // Add left and right child (terms)
+                addNode.children.add(visitTerm(parent.term(termIndex)));
+                addNode.children.add(visitTerm(parent.term(termIndex + 1)));
+
+                System.out.println(operatorIndex);
+                for (AstNode childLoop : addNode.children) {
+                    System.out.println(childLoop.toString());
+                }
+            }
+
+            return addNode;
+        }
+        else {
+            SubNode subNode = new SubNode();
+
+            //Enters if there are more operators in the tree
+            if(parent.getChild(operatorIndex + 2) != null) {
+                operatorIndex += 2;
+
+                //Add left child (term)
+                subNode.children.add(visitTerm(parent.term(termIndex)));
+                //Add right child (operator)
+                subNode.children.add(visitArithm_exprChild(parent.getChild(operatorIndex), parent, operatorIndex));
+
+                System.out.println(operatorIndex - 2);
+                for (AstNode childLoop : subNode.children) {
+                    System.out.println(childLoop.toString());
+                }
+            }
+            //Enters if there is only a term child left
+            else{
+                // Add left and right child (terms)
+                subNode.children.add(visitTerm(parent.term(termIndex)));
+                subNode.children.add(visitTerm(parent.term(termIndex + 1)));
+
+                System.out.println(operatorIndex);
+                for (AstNode childLoop : subNode.children) {
+                    System.out.println(childLoop.toString());
+                }
+            }
+
+            return subNode;
+        }
     }
 
 
