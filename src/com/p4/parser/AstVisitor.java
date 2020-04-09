@@ -51,9 +51,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitAssign(CStarParser.AssignContext ctx) {
 
         String id = ctx.ID().toString();
-        AstNode exprNode = visit(ctx.expr());
-
-        AstNode node;
+        CStarParser.ExprContext exprCtx = ctx.expr();
+        AstNode exprNode = visit(exprCtx);
 
         ParserRuleContext parent = ctx.getParent();
         String classes = parent.getClass().toString();
@@ -64,32 +63,46 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
             switch (type){
                 case "integer":
-                    node = new IntegerDclNode(id);
-                    break;
+                    AssignNode integerAssign = new AssignNode();
+                    IntegerDclNode intDclNode = new IntegerDclNode(id);
+                    integerAssign.children.add(intDclNode);
+                    integerAssign.children.add(exprNode);
+                    return integerAssign;
                 case "decimal":
-                    node = new FloatDclNode(id);
-                    break;
+                    AssignNode floatAssign = new AssignNode();
+                    FloatDclNode floatDclNode = new FloatDclNode(id);
+                    floatAssign.children.add(floatDclNode);
+                    floatAssign.children.add(exprNode);
+                    return floatAssign;
                 case "pin":
-                    node = new PinDclNode(id);
-                    break;
+                    AssignNode pinAssign = new AssignNode();
+                    PinDclNode pinDclNode = new PinDclNode(id);
+                    pinAssign.children.add(pinDclNode);
+                    pinAssign.children.add(exprNode);
+                    return pinAssign;
                 case "long integer":
-                    node = new LongDclNode(id);
-                    break;
+                    AssignNode longAssign = new AssignNode();
+                    LongDclNode longDclNode = new LongDclNode(id);
+                    longAssign.children.add(longDclNode);
+                    longAssign.children.add(exprNode);
+                    return longAssign;
                 case "character":
-                    node = new CharDclNode(id);
-                    break;
+                    AssignNode charAssign = new AssignNode();
+                    CharDclNode charDclNode = new CharDclNode(id);
+                    charAssign.children.add(charDclNode);
+                    charAssign.children.add(exprNode);
+                    return charAssign;
                 default:
                     return null;
             }
         }
         else{
-            node = new IdNode(id);
+            AssignNode assignNode = new AssignNode();
+            IdNode idNode = new IdNode(id);
+            assignNode.children.add(idNode);
+            assignNode.children.add(exprNode);
+            return assignNode;
         }
-        AssignNode assignNode = new AssignNode();
-        assignNode.children.add(node);
-        System.out.println(node.getClass());
-        assignNode.children.add(exprNode);
-        return assignNode;
     }
 
     @Override public AstNode visitVal(CStarParser.ValContext ctx) {
@@ -151,14 +164,17 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitArithm_expr(CStarParser.Arithm_exprContext ctx){
         //ArrayExprNode arrayExprNode = new ArrayExprNode();
         int childCount = ctx.getChildCount();
+        int termCount = 0;
 
         //If there are no operations with plus and minus
         if(childCount == 1){
-            return visit(ctx.term(0));
+            //TODO Husk at visit skal return noget
+            visit(ctx.term(0));
         }
         else {
-            return visitArithm_exprChild(ctx.getChild(1), ctx, 1);
+            visitArithm_exprChild(ctx.getChild(1), ctx, 1);
         }
+        return null;
     }
 
 
@@ -167,6 +183,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         FuncCallNode funcCallNode = new FuncCallNode();
 
+        //TODO duplicate code fra visitBlkNode
         int numChildren = ctx.getChildCount();
 
         for (int i = 0; i < numChildren; i++){
@@ -175,22 +192,17 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             String id = c.getText();
 
             //checks if child is a value node
-            //TODO lave funktioner istedet for det nedenunder
+            //TODO find en mere elegant maade at sortere ID fra andre symboler
             if(classes.equals("class com.p4.parser.CStarParser$ValContext")) {
                 AstNode childResult = visit(c);
                 funcCallNode.children.add(childResult);
             }
-
-            else if(isID(id)){
+            else if(!id.equals("(") && !id.equals(")") && !id.equals(",")){
                 IdNode idNode = new IdNode(id);
                 funcCallNode.children.add(idNode);
             }
         }
         return funcCallNode;
-    }
-
-    public boolean isID(String id){
-        return !id.equals(CStarParser.LEFT_PAREN) && !id.equals(CStarParser.RIGHT_PAREN) && !id.equals(CStarParser.COMMA);
     }
 
     //Todo evt lav den general ved at lave en generisk metode
@@ -205,15 +217,15 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 operatorIndex += 2;
 
                 //Add left child (term)
-                addNode.children.add(visit(parent.term(termIndex)));
+                addNode.children.add(visitTerm(parent.term(termIndex)));
                 //Add right child (operator)
                 addNode.children.add(visitArithm_exprChild(parent.getChild(operatorIndex), parent, operatorIndex));
             }
             //Enters if there is only a term child left
             else{
                 // Add left and right child (terms)
-                addNode.children.add(visit(parent.term(termIndex)));
-                addNode.children.add(visit(parent.term(termIndex + 1)));
+                addNode.children.add(visitTerm(parent.term(termIndex)));
+                addNode.children.add(visitTerm(parent.term(termIndex + 1)));
             }
 
             return addNode;
@@ -226,105 +238,21 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 operatorIndex += 2;
 
                 //Add left child (term)
-                subNode.children.add(visit(parent.term(termIndex)));
+                subNode.children.add(visitTerm(parent.term(termIndex)));
                 //Add right child (operator)
                 subNode.children.add(visitArithm_exprChild(parent.getChild(operatorIndex), parent, operatorIndex));
             }
             //Enters if there is only a term child left
             else{
                 // Add left and right child (terms)
-                subNode.children.add(visit(parent.term(termIndex)));
-                subNode.children.add(visit(parent.term(termIndex + 1)));
+                subNode.children.add(visitTerm(parent.term(termIndex)));
+                subNode.children.add(visitTerm(parent.term(termIndex + 1)));
             }
 
             return subNode;
         }
     }
 
-    @Override public AstNode visitTerm(CStarParser.TermContext ctx) {
-        int childCount = ctx.getChildCount();
-
-        //If there are no operations with mult or div
-        if(childCount == 1){
-            return visit(ctx.factor(0));
-        }
-        else {
-            return visitTermChild(ctx.getChild(1), ctx, 1);
-        }
-    }
-
-    //Todo evt lav den general ved at lave en generisk metode
-    public AstNode visitTermChild(ParseTree child, CStarParser.TermContext parent, int operatorIndex){
-        int factorIndex = (operatorIndex - 1) / 2;
-
-        if(child.getText().equals("*")) {
-            MultNode multNode = new MultNode();
-
-            //Enters if there are more operators in the tree
-            if(parent.getChild(operatorIndex + 2) != null) {
-                operatorIndex += 2;
-
-                //Add left child (term)
-                multNode.children.add(visit(parent.factor(factorIndex)));
-                //Add right child (operator)
-                multNode.children.add(visitTermChild(parent.getChild(operatorIndex), parent, operatorIndex));
-            }
-            //Enters if there is only a term child left
-            else if (child.getText().equals("/")) {
-                // Add left and right child (terms)
-                multNode.children.add(visit(parent.factor(factorIndex)));
-                multNode.children.add(visit(parent.factor(factorIndex + 1)));
-            }
-            return multNode;
-        }
-        else if (child.getText().equals("/")) {
-          DivNode divNode = new DivNode();
-
-            //Enters if there are more operators in the tree
-            if(parent.getChild(operatorIndex + 2) != null) {
-                operatorIndex += 2;
-
-                //Add left child (term)
-                divNode.children.add(visit(parent.factor(factorIndex)));
-                //Add right child (operator)
-                divNode.children.add(visitTermChild(parent.getChild(operatorIndex), parent, operatorIndex));
-            }
-            //Enters if there is only a term child left
-            else if (child.getText().equals("/")) {
-                // Add left and right child (terms)
-                divNode.children.add(visit(parent.factor(factorIndex)));
-                divNode.children.add(visit(parent.factor(factorIndex + 1)));
-            }
-
-            return divNode;
-        }
-        //todo error handling
-        else {
-            return null;
-        }
-    }
-
-    @Override public AstNode visitFactor(CStarParser.FactorContext ctx) {
-        var child = ctx.getChild(0);
-        String classes = child.getClass().toString();
-
-        switch (classes){
-            case "class com.p4.parser.CStarParser$ValContext":
-                return visit(ctx.val());
-            case "class com.p4.parser.CStarParser$Array_valueContext":
-                return visit(ctx.array_value());
-            case "class org.antlr.v4.runtime.tree.TerminalNodeImpl":
-                if (child.getText().equals("(")) {
-                    return visit(ctx.expr());
-                }
-                else {
-                    return new IdNode(child.getText());
-                }
-            default:
-                //todo error handling
-               return null;
-        }
-    }
 
     //@Override public T visitReturn_exp(CStarParser.Return_expContext ctx) { return visitChildren(ctx); }
     /**
@@ -338,10 +266,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         CondNode node = new CondNode();
 
         int numChildren = ctx.getChildCount();
-
-        if(numChildren == 1){
-            return visit(ctx.arithm_expr(0));
-        }
 
         for(int i = 0; i < numChildren; i++){
             ParseTree c = ctx.getChild(i);
@@ -386,9 +310,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
 
-
-
-
+   // @Override public T visitTerm(CStarParser.TermContext ctx) { return visitChildren(ctx); }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+   // @Override public T visitFactor(CStarParser.FactorContext ctx) { return visitChildren(ctx); }
     /**
      * {@inheritDoc}
      *
@@ -399,6 +328,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     @Override public AstNode visitFunc(CStarParser.FuncContext ctx) {
 
+        System.out.println(ctx.ID().toString());
 
         FuncNode node = new FuncNode();
         node.id = ctx.ID().toString();
@@ -446,8 +376,9 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 continue;
             AstNode childResult = visit(c);
             node.children.add(childResult);
+            System.out.println();
         }
-        //TODO ArrayAssignValueNode bliver altid til null. No idea why.
+
         return node;
     }
 
@@ -505,7 +436,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         IdNode id = new IdNode(ctx.getChild(0).getText());
         arrayAssignValueNode.children.add(id);
 
-        //TODO dette er en duplicate
         int numChildren = ctx.getChildCount();
 
         for (int i = 0; i < numChildren; i++){
