@@ -25,13 +25,10 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         if(assign != null){
             //Make assign node
-            AssignNode node = (AssignNode) visit(assign);
-            return node;
-
+            return visit(assign);
         } else if(array_assign != null){
             //Visit array_assign
-            ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
-            return node;
+            return visit(array_assign);
         } else{
             //Make normal dlcNode
             switch (ctx.TYPE().toString()){
