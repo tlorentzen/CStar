@@ -269,17 +269,35 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         for(int i = 0; i < numChildren; i++){
             ParseTree c = ctx.getChild(i);
-            if(c.getPayload() instanceof CommonToken){
-                
-                System.out.println("Temp operator: " + c.getPayload().toString());
+            Object o = c.getPayload();
+
+            if(o instanceof CommonToken){
+                CommonToken t = (CommonToken) o;
+
+                if(t.getType() == CStarParser.COMP_OP){
+                    node.setOperator(t.getText());
+                }
+
+                if(t.getType() == CStarParser.AND || t.getType() == CStarParser.OR){
+                    node.children.add(visit(c));
+                    CondNode newCondNode = new CondNode();
+
+                    newCondNode.children.addAll(node.children);
+                    node.children.clear();
+                    node.children.add(newCondNode);
+                }
+
+                node.setOperator(c.getPayload().toString());
+
                 continue;
             }
+
             AstNode childResult = visit(c);
             node.children.add(childResult);
             System.out.println(c.toString());
         }
 
-        System.out.println("Final operator: " + node.getOperator());
+        //System.out.println("Final operator: " + node.getOperator());
 
         return node;
 
