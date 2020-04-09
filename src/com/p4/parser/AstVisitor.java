@@ -270,8 +270,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         for(int i = 0; i < numChildren; i++){
             ParseTree c = ctx.getChild(i);
             if(c.getPayload() instanceof CommonToken){
-                node.setOperator(c.getPayload().toString());
-              //  System.out.println("Temp operator: " + c.getPayload().toString());
+                
+                System.out.println("Temp operator: " + c.getPayload().toString());
                 continue;
             }
             AstNode childResult = visit(c);
@@ -279,7 +279,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             System.out.println(c.toString());
         }
 
-        //System.out.println("Final operator: " + node.getOperator());
+        System.out.println("Final operator: " + node.getOperator());
 
         return node;
 
