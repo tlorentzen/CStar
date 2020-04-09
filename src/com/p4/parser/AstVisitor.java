@@ -89,8 +89,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             case "character":
                 if(assign != null){
                     //Make assign node
-                    AstNode tempNode = visit(assign);
-                    AssignNode node = (AssignNode) tempNode;
+                    AstNode node = (AssignNode) visit(assign);
                     return node;
 
                 }else if(array_assign != null){
@@ -465,15 +464,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      */
     @Override public AstNode visitSelection(CStarParser.SelectionContext ctx) {
         SelectionNode node = new SelectionNode();
-        String symbol;
 
         node.children.add(visit(ctx.cond_expr()));
 
         for(CStarParser.BlkContext blk : ctx.blk()){
-            //symbol = blk.getText();
-            //if(!symbol.equals("(") && !symbol.equals(")")){
-                node.children.add(visit(blk));
-            //}
+            node.children.add(visit(blk));
         }
 
         return node;
@@ -507,4 +502,24 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      */
     //@Override public T visitArray_call(CStarParser.Array_callContext ctx) { return visitChildren(ctx); }
 
+    @Override public AstNode visitArray_value(CStarParser.Array_valueContext ctx) {
+        //Id is index 0, the Index is at index 1, and the assigned value is at 2
+        ArrayAssignValueNode arrayAssignValueNode = new ArrayAssignValueNode();
+
+        //First add ID at index 0
+        IdNode id = new IdNode(ctx.getChild(0).getText());
+        arrayAssignValueNode.children.add(id);
+
+        int numChildren = ctx.getChildCount();
+
+        for (int i = 0; i < numChildren; i++){
+            ParseTree c = ctx.getChild(i);
+            if(c.getPayload() instanceof CommonToken)
+                continue;
+            AstNode childResult = visit(c);
+            arrayAssignValueNode.children.add(childResult);
+        }
+
+        return arrayAssignValueNode;
+    }
 }

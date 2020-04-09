@@ -284,6 +284,10 @@ class ArrayExprNode extends AstNode{
     }
 }
 
+class ArrayAssignValueNode extends AstNode{
+    public ArrayAssignValueNode(){}
+}
+
 class FuncNode extends AstNode{
     String id;
     String returnType;
