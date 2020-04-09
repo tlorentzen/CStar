@@ -40,8 +40,11 @@ public class Main {
                         parser.setBuildParseTree(true);
 
                         ParseTree tree = parser.prog();
-                        CStarBaseVisitor visitor = new AstVisitor();
-                        visitor.visit(tree);
+                        CStarBaseVisitor<?> visitor = new AstVisitor<>();
+                        AstNode ast = (AstNode) visitor.visit(tree);
+
+                        AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
+                        astTreeVisitor.visit(0, ast);
 
                         System.out.println(tree.getText());
 

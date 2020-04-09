@@ -8,6 +8,13 @@ import java.util.*;
 
 public class AstNode {
     List<AstNode> children = new ArrayList<>();
+
+    public List<AstNode> getChildren() { return children; }
+    public void setChildren(List<AstNode> children) { this.children = children; }
+
+    public void accept(AstTreeVisitor visitor){
+        visitor.visit(0,this);
+    }
 }
 
 abstract class DclNode<T> extends AstNode {
@@ -78,6 +85,10 @@ class IntegerDclNode extends DclNode<Integer>{
         super(id);
         super.type = "Integer";
     }
+}
+
+class ProgNode extends AstNode{
+
 }
 
 class FloatDclNode extends DclNode<Float>{

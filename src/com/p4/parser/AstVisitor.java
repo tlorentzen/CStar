@@ -11,6 +11,22 @@ import java.util.Optional;
 
 public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
+    @Override public AstNode visitProg(CStarParser.ProgContext ctx){
+        ProgNode node = new ProgNode();
+
+        int numChildren = ctx.getChildCount();
+
+        for (int i = 0; i < numChildren; i++){
+            ParseTree c = ctx.getChild(i);
+            if(c.getPayload() instanceof CommonToken)
+                continue;
+            AstNode childResult = visit(c);
+            node.children.add(childResult);
+        }
+
+        return node;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -323,7 +339,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 node.children.add(visit(c));
             }
         }
-        return node;
+        if(node.getOperator() == null){
+            return node.getChildren().get(0);
+        } else{
+            return node;
+        }
     }
 
     @Override public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
