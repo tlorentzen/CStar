@@ -87,7 +87,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         }
         AssignNode assignNode = new AssignNode();
         assignNode.children.add(node);
-        System.out.println(node.getClass());
         assignNode.children.add(exprNode);
         return assignNode;
     }
@@ -123,7 +122,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         var child = parent.getChild(0);
         String type = child.toString();
         ArrayNode arrayNode = new ArrayNode(id, type);
-        AstNode arrayExprNode = (ArrayExprNode) visit(ctx.array_expr());
+        AstNode arrayExprNode = visit(ctx.array_expr());
         ArrayAssignNode arrayAssignNode = new ArrayAssignNode();
         arrayAssignNode.children.add(arrayNode);
         arrayAssignNode.children.add(arrayExprNode);
@@ -160,34 +159,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         else {
             return visitArithm_exprChild(ctx.getChild(1), ctx, 1);
         }
-    }
-
-
-    @Override public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
-        //index 0 is ID, Everything that follows is parameter values
-
-        FuncCallNode funcCallNode = new FuncCallNode();
-
-        //TODO duplicate code fra visitBlkNode
-        int numChildren = ctx.getChildCount();
-
-        for (int i = 0; i < numChildren; i++){
-            ParseTree c = ctx.getChild(i);
-            String classes = c.getClass().toString();
-            String id = c.getText();
-
-            //checks if child is a value node
-            //TODO find en mere elegant maade at sortere ID fra andre symboler
-            if(classes.equals("class com.p4.parser.CStarParser$ValContext")) {
-                AstNode childResult = visit(c);
-                funcCallNode.children.add(childResult);
-            }
-            else if(!id.equals("(") && !id.equals(")") && !id.equals(",")){
-                IdNode idNode = new IdNode(id);
-                funcCallNode.children.add(idNode);
-            }
-        }
-        return funcCallNode;
     }
 
     //Todo evt lav den general ved at lave en generisk metode
@@ -257,19 +228,18 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         
         if(child.getText().equals("*")) {
             MultNode multNode = new MultNode();
-
             //Enters if there are more operators in the tree
             if(parent.getChild(operatorIndex + 2) != null) {
                 operatorIndex += 2;
 
-                //Add left child (term)
+                //Add left child (factor)
                 multNode.children.add(visit(parent.factor(factorIndex)));
                 //Add right child (operator)
                 multNode.children.add(visitTermChild(parent.getChild(operatorIndex), parent, operatorIndex));
             }
-            //Enters if there is only a term child left
-            else if (child.getText().equals("/")) {
-                // Add left and right child (terms)
+            //Enters if there is only a factor child left
+            else {
+                // Add left and right child (factors)
                 multNode.children.add(visit(parent.factor(factorIndex)));
                 multNode.children.add(visit(parent.factor(factorIndex + 1)));
             }
@@ -288,7 +258,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 divNode.children.add(visitTermChild(parent.getChild(operatorIndex), parent, operatorIndex));
             }
             //Enters if there is only a term child left
-            else if (child.getText().equals("/")) {
+            else {
                 // Add left and right child (terms)
                 divNode.children.add(visit(parent.factor(factorIndex)));
                 divNode.children.add(visit(parent.factor(factorIndex + 1)));
@@ -353,11 +323,37 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 node.children.add(visit(c));
             }
         }
-
         return node;
-
-
     }
+
+    @Override public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
+        //index 0 is ID, Everything that follows is parameter values
+
+        FuncCallNode funcCallNode = new FuncCallNode();
+
+        //TODO duplicate code fra visitBlkNode
+        int numChildren = ctx.getChildCount();
+
+        for (int i = 0; i < numChildren; i++){
+            ParseTree c = ctx.getChild(i);
+            String classes = c.getClass().toString();
+            String id = c.getText();
+
+            //checks if child is a value node
+            //TODO find en mere elegant maade at sortere ID fra andre symboler
+            if(classes.equals("class com.p4.parser.CStarParser$ValContext")) {
+                AstNode childResult = visit(c);
+                funcCallNode.children.add(childResult);
+            }
+            else if(!id.equals("(") && !id.equals(")") && !id.equals(",")){
+                IdNode idNode = new IdNode(id);
+                funcCallNode.children.add(idNode);
+            }
+        }
+        return funcCallNode;
+    }
+
+
     /**
      * {@inheritDoc}
      *
@@ -384,7 +380,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         node.returnType = (ctx.return_type().TYPE() != null ? ctx.return_type().TYPE().toString() : "void");
         node.children.add(visit(ctx.param()));
         node.children.add(visit(ctx.blk()));
-        System.out.println(ctx.toString());
 
         return node;
     }
@@ -400,7 +395,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         if(ctx.getChildCount() > 0)
 
         for(CStarParser.ParamContext param : ctx.param()){
-            System.out.println(param.ID());
             node.children.add(visit(param));
         }
 
@@ -444,7 +438,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         for(CStarParser.BlkContext blk : ctx.blk()){
             node.children.add(visit(blk));
         }
-
         return node;
     }
     /**
