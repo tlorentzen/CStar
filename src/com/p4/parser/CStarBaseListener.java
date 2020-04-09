@@ -1,5 +1,6 @@
-// Generated from C:/Users/Jakob/Desktop/AntlrTest\CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
 package com.p4.parser;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -22,18 +23,6 @@ public class CStarBaseListener implements CStarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitProg(CStarParser.ProgContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterDcls(CStarParser.DclsContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDcls(CStarParser.DclsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -255,13 +244,13 @@ public class CStarBaseListener implements CStarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterArray_call(CStarParser.Array_callContext ctx) { }
+	@Override public void enterArray_value(CStarParser.Array_valueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitArray_call(CStarParser.Array_callContext ctx) { }
+	@Override public void exitArray_value(CStarParser.Array_valueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
