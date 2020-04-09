@@ -1,4 +1,4 @@
-// Generated from C:/Users/Jakob/Desktop/AntlrTest\CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
 package com.p4.parser;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -17,16 +17,6 @@ public interface CStarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitProg(CStarParser.ProgContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CStarParser#dcls}.
-	 * @param ctx the parse tree
-	 */
-	void enterDcls(CStarParser.DclsContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CStarParser#dcls}.
-	 * @param ctx the parse tree
-	 */
-	void exitDcls(CStarParser.DclsContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CStarParser#dcl}.
 	 * @param ctx the parse tree
@@ -208,15 +198,15 @@ public interface CStarListener extends ParseTreeListener {
 	 */
 	void exitVal(CStarParser.ValContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CStarParser#array_call}.
+	 * Enter a parse tree produced by {@link CStarParser#array_value}.
 	 * @param ctx the parse tree
 	 */
-	void enterArray_call(CStarParser.Array_callContext ctx);
+	void enterArray_value(CStarParser.Array_valueContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CStarParser#array_call}.
+	 * Exit a parse tree produced by {@link CStarParser#array_value}.
 	 * @param ctx the parse tree
 	 */
-	void exitArray_call(CStarParser.Array_callContext ctx);
+	void exitArray_value(CStarParser.Array_valueContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CStarParser#return_type}.
 	 * @param ctx the parse tree

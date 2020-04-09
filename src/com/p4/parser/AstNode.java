@@ -76,7 +76,7 @@ abstract class InfixAstNode extends AstNode{
 class IntegerDclNode extends DclNode<Integer>{
     public IntegerDclNode(String id){
         super(id);
-        super.type = "Float";
+        super.type = "Integer";
     }
 }
 
@@ -231,37 +231,15 @@ class DivNode extends InfixAstNode{
 }
 
 class AssignNode extends AstNode{
-    //Venstre side ID node
-    //Hoejre side er en expr node
-    public AssignNode(){ }
+
+    String symbol = "="; //Maybe.. maybe not
+    public AssignNode(){}
 }
 
 class ArrayAssignNode extends AstNode{
-    //Left side is the array node
-    //Right side is the array expression node
-    AstNode ArrayExprNode;
-    AstNode ArrayNode;
 
-    public ArrayAssignNode(AstNode arrayNode, AstNode arrayExprNode){
-        ArrayNode = arrayNode;
-        ArrayExprNode = arrayExprNode;
-    }
+    public ArrayAssignNode(){}
 
-    public AstNode getArrayExprNode() {
-        return ArrayExprNode;
-    }
-
-    public AstNode getArrayNode() {
-        return ArrayNode;
-    }
-
-    public void setArrayExprNode(AstNode arrayExprNode) {
-        ArrayExprNode = arrayExprNode;
-    }
-
-    public void setArrayNode(AstNode arrayNode) {
-        ArrayNode = arrayNode;
-    }
 }
 
 class ArrayNode extends AstNode implements Parameters{
@@ -309,12 +287,8 @@ class ArrayExprNode extends AstNode{
 class FuncNode extends AstNode{
     String id;
     String returnType;
-    ParamNode paramNode;
-    BlkNode blkNode;
 
-    public String getId() {
-        return id;
-    }
+    public String getId() { return id; }
 
     public String getReturnType() {
         return returnType;
@@ -331,10 +305,6 @@ class FuncNode extends AstNode{
 
 class BlkNode extends AstNode{
     //blk: LEFT_BRACE ( dcl | stmt | return_exp)* RIGHT_BRACE;
-    List<AstNode> children = new ArrayList<>();
-    List<DclNode<?>> dclNodes = new ArrayList<>();
-    List<StmtNode> stmtNodes = new ArrayList<>();
-    List<ReturnExpNode> returnExpNodes = new ArrayList<>();
 }
 
 class StmtNode extends AstNode{
@@ -343,6 +313,22 @@ class StmtNode extends AstNode{
 
 class ReturnExpNode extends AstNode{
 
+}
+
+class SelectionNode extends AstNode{
+
+}
+
+class IterativeNode extends AstNode{
+
+}
+
+class CondNode extends AstNode{
+    private String operator;
+
+    public String getOperator() { return operator; }
+
+    public void setOperator(String operator) { this.operator = operator; }
 }
 
 /*

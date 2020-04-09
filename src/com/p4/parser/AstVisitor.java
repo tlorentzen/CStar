@@ -18,7 +18,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public AstNode visitDcl(CStarParser.DclContext ctx) {
-
+        // All nodes will be returned to the blkNode visitor, where the children will be saved
         // Test for type
         CStarParser.AssignContext assign = ctx.assign();
         CStarParser.Array_assignContext array_assign = ctx.array_assign();
@@ -36,6 +36,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     return node;
                 }
                 else{
+                    //Make normal dlcNode
                     return new IntegerDclNode(ctx.ID().toString());
                 }
             case "decimal":
@@ -51,6 +52,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     return node;
                 }
                 else{
+                    //Make normal dlcNode
                     return new FloatDclNode(ctx.ID().toString());
                 }
             case "pin":
@@ -65,11 +67,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     return node;
                 }
                 else{
+                    //Make normal dlcNode
                     return new PinDclNode(ctx.ID().toString());
                 }
             case "big integer":
                 if(assign != null){
-                //Make assign node
+                    //Make assign node
                     AssignNode node = (AssignNode) visit(assign);
 
                     return node;
@@ -80,6 +83,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     return node;
                 }
                 else{
+                    //Make normal dlcNode
                     return new LongDclNode(ctx.ID().toString());
                 }
             case "character":
@@ -95,6 +99,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     return node;
                 }
                 else{
+                    //Make normal dlcNode
                     return new CharDclNode(ctx.ID().toString());
                 }
             default:
@@ -120,44 +125,43 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     AssignNode integerAssign = new AssignNode();
                     IntegerDclNode intDclNode = new IntegerDclNode(id);
                     integerAssign.children.add(intDclNode);
-                    integerAssign.children.add(new IdNode(id, type));
                     integerAssign.children.add(exprNode);
                     return integerAssign;
                 case "decimal":
                     AssignNode floatAssign = new AssignNode();
                     FloatDclNode floatDclNode = new FloatDclNode(id);
                     floatAssign.children.add(floatDclNode);
-                    floatAssign.children.add(new IdNode(id, type));
                     floatAssign.children.add(exprNode);
-                    return new AssignNode();
+                    return floatAssign;
                 case "pin":
                     AssignNode pinAssign = new AssignNode();
                     PinDclNode pinDclNode = new PinDclNode(id);
                     pinAssign.children.add(pinDclNode);
-                    pinAssign.children.add(new IdNode(id, type));
                     pinAssign.children.add(exprNode);
-                    return new AssignNode();
+                    return pinAssign;
                 case "long integer":
                     AssignNode longAssign = new AssignNode();
                     LongDclNode longDclNode = new LongDclNode(id);
                     longAssign.children.add(longDclNode);
-                    longAssign.children.add(new IdNode(id, type));
                     longAssign.children.add(exprNode);
-                    return new AssignNode();
+                    return longAssign;
                 case "character":
                     AssignNode charAssign = new AssignNode();
                     CharDclNode charDclNode = new CharDclNode(id);
                     charAssign.children.add(charDclNode);
-                    charAssign.children.add(new IdNode(id, type));
                     charAssign.children.add(exprNode);
-                    return new AssignNode();
+                    return charAssign;
                 default:
                     return null;
             }
         }
-
-        return new AssignNode();
-
+        else{
+            AssignNode assignNode = new AssignNode();
+            IdNode idNode = new IdNode(id);
+            assignNode.children.add(idNode);
+            assignNode.children.add(exprNode);
+            return assignNode;
+        }
     }
 
     @Override public AstNode visitVal(CStarParser.ValContext ctx) {
@@ -183,6 +187,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             return null;
         }
     }
+
     @Override public AstNode visitArray_assign(CStarParser.Array_assignContext ctx) {
         //We get the ID from current node and the type from the parent (dclnode) by converting the child to a string
         String id = ctx.ID().toString();
@@ -190,11 +195,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         var child = parent.getChild(0);
         String type = child.toString();
         ArrayNode arrayNode = new ArrayNode(id, type);
-        AstNode tempArrayExprNode = visit(ctx.array_expr());
-        ArrayExprNode arrayExprNode= (ArrayExprNode) tempArrayExprNode;
+        AstNode arrayExprNode = (ArrayExprNode) visit(ctx.array_expr());
+        ArrayAssignNode arrayAssignNode = new ArrayAssignNode();
+        arrayAssignNode.children.add(arrayNode);
+        arrayAssignNode.children.add(arrayExprNode);
 
-        return new ArrayAssignNode(arrayNode, arrayExprNode);
+        return arrayAssignNode;
     }
+
     @Override public AstNode visitArray_expr(CStarParser.Array_exprContext ctx) {
         ArrayExprNode arrayExprNode = new ArrayExprNode();
         int childCount = ctx.getChildCount();
@@ -205,7 +213,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             //checks if child is a value node
             if(classes.equals("class com.p4.parser.CStarParser$ValContext")) {
                 AstNode literal = visit(child);
-                arrayExprNode.Literals.add(literal);
+                arrayExprNode.children.add(literal);
             }
         }
 
@@ -305,7 +313,50 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
 
-    //@Override public T visitCond_expr(CStarParser.Cond_exprContext ctx) { return visitChildren(ctx); }
+    @Override public AstNode visitCond_expr(CStarParser.Cond_exprContext ctx) {
+        CondNode node = new CondNode();
+
+
+
+        int numChildren = ctx.getChildCount();
+
+        for(int i = 0; i < numChildren; i++){
+            ParseTree c = ctx.getChild(i);
+            Object o = c.getPayload();
+
+            if(o instanceof CommonToken){
+                CommonToken t = (CommonToken) o;
+
+                if(t.getType() == CStarParser.COMP_OP){
+                    System.out.println("COMP_OP!!!");
+                }
+
+                node.setOperator(c.getPayload().toString());
+                //System.out.println("Temp operator: " + c.getPayload().toString());
+
+                continue;
+            }else{
+
+                if(o instanceof CStarParser.Arithm_exprContext){
+                    System.out.println("Arithm - stuff");
+                }else if(o instanceof  CStarParser.Cond_exprContext){
+                    System.out.println("Cond - stuff");
+                }
+            }
+
+
+
+            AstNode childResult = visit(c);
+            node.children.add(childResult);
+            System.out.println(c.toString());
+        }
+
+        //System.out.println("Final operator: " + node.getOperator());
+
+        return node;
+
+
+    }
     /**
      * {@inheritDoc}
      *
@@ -336,9 +387,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         FuncNode node = new FuncNode();
         node.id = ctx.ID().toString();
         node.returnType = (ctx.return_type().TYPE() != null ? ctx.return_type().TYPE().toString() : "void");
-        node.paramNode = (ParamNode)visit(ctx.param());
-        node.blkNode = (BlkNode)visit(ctx.blk());
-
+        node.children.add(visit(ctx.param()));
+        node.children.add(visit(ctx.blk()));
         System.out.println(ctx.toString());
 
         return node;
@@ -394,28 +444,20 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         BlkNode node = new BlkNode();
 
-        for(CStarParser.DclsContext dcl : ctx.dcls()){
-            node.dclNodes.add((DclNode<?>) visit(dcl));
+        int numChildren = ctx.getChildCount();
+
+        for (int i = 0; i < numChildren; i++){
+            ParseTree c = ctx.getChild(i);
+            if(c.getPayload() instanceof CommonToken)
+                continue;
+            AstNode childResult = visit(c);
+            node.children.add(childResult);
+            System.out.println();
         }
 
-        for(CStarParser.StmtContext stmt : ctx.stmt()) {
-            node.stmtNodes.add((StmtNode) visit(stmt));
-        }
-
-        for(CStarParser.Return_expContext rexp : ctx.return_exp()){
-            node.returnExpNodes.add((ReturnExpNode) visit(rexp));
-        }
-
-        return visitChildren(ctx);
+        return node;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    //@Override public AstNode visitStmt(CStarParser.StmtContext ctx) { return visitChildren(ctx); }
     /**
      * {@inheritDoc}
      *
@@ -423,7 +465,15 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public AstNode visitSelection(CStarParser.SelectionContext ctx) {
-        return visitChildren(ctx);
+        SelectionNode node = new SelectionNode();
+
+        node.children.add(visit(ctx.cond_expr()));
+
+        for(CStarParser.BlkContext blk : ctx.blk()){
+            node.children.add(visit(blk));
+        }
+
+        return node;
     }
     /**
      * {@inheritDoc}
@@ -431,7 +481,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public AstNode visitIterative(CStarParser.IterativeContext ctx) { return visitChildren(ctx); }
+    @Override public AstNode visitIterative(CStarParser.IterativeContext ctx) {
+        IterativeNode node = new IterativeNode();
+
+        node.children.add(visit(ctx.cond_expr()));
+        node.children.add(visit(ctx.blk()));
+
+        return node;
+    }
     /**
      * {@inheritDoc}
      *
