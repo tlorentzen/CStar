@@ -399,27 +399,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitParam(CStarParser.ParamContext ctx) {
         ParamNode node = new ParamNode();
 
+        if(ctx.getChildCount() > 0)
+
         for(CStarParser.ParamContext param : ctx.param()){
-
             System.out.println(param.ID());
-
-            switch (param.TYPE().toString()){
-               /*case "Integer":
-                    node.params.add(new IntegerNode(Integer.parseInt(param.ID(0).toString())));
-                    break;
-                case "Decimal":
-                    node.params.add(new FloatNode(Float.parseFloat(param.ID(0).toString())));
-                    break;
-                case "Pin":
-                    node.params.add(new PinNode(Integer.parseInt(param.ID(0).toString())));
-                    break;
-                case "Long":
-                    node.params.add(new LongNode(Long.parseLong(param.ID(0).toString())));
-                    break;
-                case "Char":
-                    node.params.add(new CharNode(param.ID(0).toString().charAt(0)));
-                    break;*/
-            }
+            node.children.add(visit(param));
         }
 
         return node;
