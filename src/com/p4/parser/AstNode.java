@@ -186,7 +186,7 @@ class DivNode extends InfixAstNode{
 
 class AssignNode extends AstNode{
 
-    String symbol = "="; //Maybe.. maybe not
+    String symbol = "="; //TODO Maybe.. maybe not
     public AssignNode(){}
 }
 

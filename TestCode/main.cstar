@@ -1,7 +1,3 @@
 void main(){
-
-    integer i = 1 + 2 + 3 + 4;
-    integer hest = 10;
-
-    integer test = i + hest;
+  i[1] = 20;
 }

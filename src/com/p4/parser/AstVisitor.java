@@ -154,7 +154,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         //If there are no operations with plus and minus
         if(childCount == 1){
-            //TODO Husk at visit skal return noget
             return visit(ctx.term(0));
         }
         else {
@@ -168,7 +167,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         FuncCallNode funcCallNode = new FuncCallNode();
 
-        //TODO duplicate code fra visitBlkNode
         int numChildren = ctx.getChildCount();
 
         for (int i = 0; i < numChildren; i++){
@@ -177,17 +175,22 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             String id = c.getText();
 
             //checks if child is a value node
-            //TODO find en mere elegant maade at sortere ID fra andre symboler
+            //TODO lave funktioner istedet for det nedenunder
             if(classes.equals("class com.p4.parser.CStarParser$ValContext")) {
                 AstNode childResult = visit(c);
                 funcCallNode.children.add(childResult);
             }
-            else if(!id.equals("(") && !id.equals(")") && !id.equals(",")){
+
+            else if(isID(id)){
                 IdNode idNode = new IdNode(id);
                 funcCallNode.children.add(idNode);
             }
         }
         return funcCallNode;
+    }
+
+    public boolean isID(String id){
+        return !id.equals(CStarParser.LEFT_PAREN) && !id.equals(CStarParser.RIGHT_PAREN) && !id.equals(CStarParser.COMMA);
     }
 
     //Todo evt lav den general ved at lave en generisk metode
@@ -243,7 +246,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         //If there are no operations with mult or div
         if(childCount == 1){
-            //TODO Husk at visit skal return noget
             return visit(ctx.factor(0));
         }
         else {
@@ -254,7 +256,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     //Todo evt lav den general ved at lave en generisk metode
     public AstNode visitTermChild(ParseTree child, CStarParser.TermContext parent, int operatorIndex){
         int factorIndex = (operatorIndex - 1) / 2;
-        
+
         if(child.getText().equals("*")) {
             MultNode multNode = new MultNode();
 
@@ -309,6 +311,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         switch (classes){
             case "class com.p4.parser.CStarParser$ValContext":
                 return visit(ctx.val());
+            case "class com.p4.parser.CStarParser$Array_valueContext":
+                return visit(ctx.array_value());
             case "class org.antlr.v4.runtime.tree.TerminalNodeImpl":
                 if (child.getText().equals("(")) {
                     return visit(ctx.expr());
@@ -334,6 +338,10 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         CondNode node = new CondNode();
 
         int numChildren = ctx.getChildCount();
+
+        if(numChildren == 1){
+            return visit(ctx.arithm_expr(0));
+        }
 
         for(int i = 0; i < numChildren; i++){
             ParseTree c = ctx.getChild(i);
@@ -380,7 +388,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
 
 
-  
+
     /**
      * {@inheritDoc}
      *
@@ -439,7 +447,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             AstNode childResult = visit(c);
             node.children.add(childResult);
         }
-
+        //TODO ArrayAssignValueNode bliver altid til null. No idea why.
         return node;
     }
 
@@ -497,6 +505,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         IdNode id = new IdNode(ctx.getChild(0).getText());
         arrayAssignValueNode.children.add(id);
 
+        //TODO dette er en duplicate
         int numChildren = ctx.getChildCount();
 
         for (int i = 0; i < numChildren; i++){
