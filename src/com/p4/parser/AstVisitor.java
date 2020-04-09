@@ -280,9 +280,9 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     System.out.println("COMP_OP!!!");
                 }
 
-
                 node.setOperator(c.getPayload().toString());
                 //System.out.println("Temp operator: " + c.getPayload().toString());
+
                 continue;
             }else{
 
@@ -300,7 +300,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             System.out.println(c.toString());
         }
 
-        System.out.println("Final operator: " + node.getOperator());
+        //System.out.println("Final operator: " + node.getOperator());
 
         return node;
 
