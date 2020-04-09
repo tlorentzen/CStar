@@ -356,12 +356,8 @@ class ArrayExprNode extends AstNode{
 class FuncNode extends AstNode{
     String id;
     String returnType;
-    ParamNode paramNode;
-    BlkNode blkNode;
 
-    public String getId() {
-        return id;
-    }
+    public String getId() { return id; }
 
     public String getReturnType() {
         return returnType;
@@ -394,6 +390,14 @@ class SelectionNode extends AstNode{
 
 class IterativeNode extends AstNode{
 
+}
+
+class CondNode extends AstNode{
+    private String operator;
+
+    public String getOperator() { return operator; }
+
+    public void setOperator(String operator) { this.operator = operator; }
 }
 
 /*

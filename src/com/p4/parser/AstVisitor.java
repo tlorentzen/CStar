@@ -254,7 +254,29 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
 
-    //@Override public T visitCond_expr(CStarParser.Cond_exprContext ctx) { return visitChildren(ctx); }
+    @Override public AstNode visitCond_expr(CStarParser.Cond_exprContext ctx) {
+        CondNode node = new CondNode();
+
+        int numChildren = ctx.getChildCount();
+
+        for(int i = 0; i < numChildren; i++){
+            ParseTree c = ctx.getChild(i);
+            if(c.getPayload() instanceof CommonToken){
+                node.setOperator(c.getPayload().toString());
+                System.out.println("Temp operator: " + c.getPayload().toString());
+                continue;
+            }
+            AstNode childResult = visit(c);
+            node.children.add(childResult);
+            System.out.println(c.toString());
+        }
+
+        System.out.println("Final operator: " + node.getOperator());
+
+        return node;
+
+
+    }
     /**
      * {@inheritDoc}
      *
@@ -285,8 +307,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         FuncNode node = new FuncNode();
         node.id = ctx.ID().toString();
         node.returnType = (ctx.return_type().TYPE() != null ? ctx.return_type().TYPE().toString() : "void");
-        node.paramNode = (ParamNode)visit(ctx.param());
-        node.blkNode = (BlkNode)visit(ctx.blk());
+        node.children.add(visit(ctx.param()));
+        node.children.add(visit(ctx.blk()));
 
         System.out.println(ctx.toString());
 
