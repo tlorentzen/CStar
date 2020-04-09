@@ -1,7 +1,4 @@
 void main(){
 
-    integer i = 1 + 2 + 3 + 4;
-    integer hest = 10;
-
-    integer test = i + hest;
+  integer i = 5*5;
 }
