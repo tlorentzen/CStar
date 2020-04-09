@@ -74,7 +74,7 @@ abstract class InfixAstNode extends AstNode{
 class IntegerDclNode extends DclNode<Integer>{
     public IntegerDclNode(String id){
         super(id);
-        super.type = "Float";
+        super.type = "Integer";
     }
 }
 
@@ -278,37 +278,15 @@ class DivNode extends InfixAstNode{
 }
 
 class AssignNode extends AstNode{
-    //Venstre side ID node
-    //Hoejre side er en expr node
-    public AssignNode(){ }
+
+    String symbol = "="; //Maybe.. maybe not
+    public AssignNode(){}
 }
 
 class ArrayAssignNode extends AstNode{
-    //Left side is the array node
-    //Right side is the array expression node
-    AstNode ArrayExprNode;
-    AstNode ArrayNode;
 
-    public ArrayAssignNode(AstNode arrayNode, AstNode arrayExprNode){
-        ArrayNode = arrayNode;
-        ArrayExprNode = arrayExprNode;
-    }
+    public ArrayAssignNode(){}
 
-    public AstNode getArrayExprNode() {
-        return ArrayExprNode;
-    }
-
-    public AstNode getArrayNode() {
-        return ArrayNode;
-    }
-
-    public void setArrayExprNode(AstNode arrayExprNode) {
-        ArrayExprNode = arrayExprNode;
-    }
-
-    public void setArrayNode(AstNode arrayNode) {
-        ArrayNode = arrayNode;
-    }
 }
 
 class ArrayNode extends AstNode implements Parameters{
