@@ -23,87 +23,31 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         CStarParser.AssignContext assign = ctx.assign();
         CStarParser.Array_assignContext array_assign = ctx.array_assign();
 
-        switch (ctx.TYPE().toString()){
-            case "integer":
-                if(assign != null){
-                    //Make assign node
-                    AssignNode node = (AssignNode) visit(assign);
-                    return node;
+        if(assign != null){
+            //Make assign node
+            AssignNode node = (AssignNode) visit(assign);
+            return node;
 
-                }else if(array_assign != null){
-                    //Visit array_assign
-                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
-                    return node;
-                }
-                else{
-                    //Make normal dlcNode
+        } else if(array_assign != null){
+            //Visit array_assign
+            ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
+            return node;
+        } else{
+            //Make normal dlcNode
+            switch (ctx.TYPE().toString()){
+                case "integer":
                     return new IntegerDclNode(ctx.ID().toString());
-                }
-            case "decimal":
-                if(assign != null){
-                    //Make assign node
-                    AssignNode node = (AssignNode) visit(assign);
-                    return node;
-
-                }else if(array_assign != null){
-                    //Visit array_assign
-                  //  visit(array_assign)
-                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
-                    return node;
-                }
-                else{
-                    //Make normal dlcNode
+                case "decimal":
                     return new FloatDclNode(ctx.ID().toString());
-                }
-            case "pin":
-                if(assign != null){
-                    //Make assign node
-                    AssignNode node = (AssignNode) visit(assign);
-                    return node;
-
-                }else if(array_assign != null){
-                    //Visit array_assign
-                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
-                    return node;
-                }
-                else{
-                    //Make normal dlcNode
+                case "pin":
                     return new PinDclNode(ctx.ID().toString());
-                }
-            case "big integer":
-                if(assign != null){
-                    //Make assign node
-                    AssignNode node = (AssignNode) visit(assign);
-
-                    return node;
-
-                }else if(array_assign != null){
-                    //Visit array_assign
-                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
-                    return node;
-                }
-                else{
-                    //Make normal dlcNode
+                case "big integer":
                     return new LongDclNode(ctx.ID().toString());
-                }
-            case "character":
-                if(assign != null){
-                    //Make assign node
-                    AstNode tempNode = visit(assign);
-                    AssignNode node = (AssignNode) tempNode;
-                    return node;
-
-                }else if(array_assign != null){
-                    //Visit array_assign
-                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
-                    return node;
-                }
-                else{
-                    //Make normal dlcNode
+                case "character":
                     return new CharDclNode(ctx.ID().toString());
-                }
-            default:
-                return null;
+                default:
+                    return null;
+            }
         }
     }
 
