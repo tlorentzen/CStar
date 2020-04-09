@@ -184,13 +184,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         //If there are no operations with plus and minus
         if(childCount == 1){
-            //TODO Husk at visit skal return noget
-            visit(ctx.term(0));
+            return visit(ctx.term(0));
         }
         else {
-            visitArithm_exprChild(ctx.getChild(1), ctx, 1);
+            return visitArithm_exprChild(ctx.getChild(1), ctx, 1);
         }
-        return null;
     }
 
 
@@ -199,7 +197,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         FuncCallNode funcCallNode = new FuncCallNode();
 
-        //TODO duplicate code fra visitBlkNode
         int numChildren = ctx.getChildCount();
 
         for (int i = 0; i < numChildren; i++){
@@ -208,17 +205,22 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             String id = c.getText();
 
             //checks if child is a value node
-            //TODO find en mere elegant maade at sortere ID fra andre symboler
+            //TODO lave funktioner til det nedenunder da det bliver brugt mange steder
             if(classes.equals("class com.p4.parser.CStarParser$ValContext")) {
                 AstNode childResult = visit(c);
                 funcCallNode.children.add(childResult);
+
             }
-            else if(!id.equals("(") && !id.equals(")") && !id.equals(",")){
+            else if(isID(id)){
                 IdNode idNode = new IdNode(id);
                 funcCallNode.children.add(idNode);
             }
         }
         return funcCallNode;
+    }
+
+    private boolean isID(String id){
+        return !id.equals(CStarParser.LEFT_PAREN) && !id.equals(CStarParser.RIGHT_PAREN) && !id.equals(CStarParser.COMMA);
     }
 
     //Todo evt lav den general ved at lave en generisk metode
@@ -282,6 +284,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         CondNode node = new CondNode();
 
         int numChildren = ctx.getChildCount();
+
+        //If there is one child, then its not a condExpr
+        if(numChildren == 1){
+            return visit(ctx.arithm_expr(0));
+        }
 
         for(int i = 0; i < numChildren; i++){
             ParseTree c = ctx.getChild(i);
@@ -379,7 +386,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitBlk(CStarParser.BlkContext ctx) {
 
         BlkNode node = new BlkNode();
-
+        // linje 435 findes duplikatet
         int numChildren = ctx.getChildCount();
 
         for (int i = 0; i < numChildren; i++){
@@ -388,18 +395,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 continue;
             AstNode childResult = visit(c);
             node.children.add(childResult);
-            System.out.println();
         }
-
+        //TODO debug her, returnerer ikke array assign value men istedet NULL
         return node;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override public AstNode visitSelection(CStarParser.SelectionContext ctx) {
         SelectionNode node = new SelectionNode();
 
@@ -411,6 +411,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         return node;
     }
+
     /**
      * {@inheritDoc}
      *
@@ -419,7 +420,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      */
     @Override public AstNode visitIterative(CStarParser.IterativeContext ctx) {
         IterativeNode node = new IterativeNode();
-
         node.children.add(visit(ctx.cond_expr()));
         node.children.add(visit(ctx.blk()));
 

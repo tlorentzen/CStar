@@ -12,8 +12,14 @@ public class AstTreeVisitor {
                 case "class com.p4.parser.IntegerDclNode":
                     this.print(localIndent, node.getClass().toString() + " with the ID: " + ((IntegerDclNode)node).getId());
                     break;
+                case "class com.p4.parser.FloatDclNode":
+                    this.print(localIndent, node.getClass().toString() + " with the ID: " + ((FloatDclNode)node).getId());
+                    break;
                 case "class com.p4.parser.IntegerNode":
                     this.print(localIndent, node.getClass().toString() + " with the value: " + ((IntegerNode)node).Value);
+                    break;
+                case "class com.p4.parser.FloatNode":
+                    this.print(localIndent, node.getClass().toString() + " with the value: " + ((FloatNode)node).Value);
                     break;
                 default:
                     this.print(localIndent, node.getClass().toString());
@@ -21,10 +27,6 @@ public class AstTreeVisitor {
             }
 
             for (AstNode childNode : node.getChildren()){
-                if(childNode == null){
-                    this.print(localIndent + 1, node.getClass().toString());
-                    this.print(localIndent + 1, node.getChildren().toString());
-                }
                 this.visit(localIndent + 1, childNode);
             }
         }
