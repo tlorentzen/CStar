@@ -341,25 +341,18 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
             if(o instanceof CommonToken){
                 CommonToken t = (CommonToken) o;
-
                 if (t.getType() == CStarParser.AND || t.getType() == CStarParser.OR){
-                    node.children.add(visit(c));
                     CondNode newCondNode = new CondNode();
                     newCondNode.children.addAll(node.children);
+                    newCondNode.setOperator(node.getOperator());
                     node.children.clear();
                     node.children.add(newCondNode);
                 }
-
                 node.setOperator(t.getText());
-                continue;
+            } else{
+                node.children.add(visit(c));
             }
-
-            AstNode childResult = visit(c);
-            node.children.add(childResult);
-            System.out.println(c.toString());
         }
-
-        System.out.println("Final operator: " + node.getOperator());
 
         return node;
 
