@@ -238,6 +238,10 @@ class ArrayExprNode extends AstNode{
     }
 }
 
+class ArrayAssignValueNode extends AstNode{
+    public ArrayAssignValueNode(){}
+}
+
 class FuncNode extends AstNode{
     String id;
     String returnType;
@@ -275,6 +279,11 @@ class SelectionNode extends AstNode{
 
 class IterativeNode extends AstNode{
 
+}
+
+class FuncCallNode extends  AstNode{
+    //index 0 is ID, Everything that follows is parameter values
+    public FuncCallNode(){}
 }
 
 class CondNode extends AstNode{

@@ -23,94 +23,37 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         CStarParser.AssignContext assign = ctx.assign();
         CStarParser.Array_assignContext array_assign = ctx.array_assign();
 
-        switch (ctx.TYPE().toString()){
-            case "integer":
-                if(assign != null){
-                    //Make assign node
-                    AssignNode node = (AssignNode) visit(assign);
-                    return node;
-
-                }else if(array_assign != null){
-                    //Visit array_assign
-                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
-                    return node;
-                }
-                else{
-                    //Make normal dlcNode
+        if(assign != null){
+            //Make assign node
+            return visit(assign);
+        } else if(array_assign != null){
+            //Visit array_assign
+            return visit(array_assign);
+        } else{
+            //Make normal dlcNode
+            switch (ctx.TYPE().toString()){
+                case "integer":
                     return new IntegerDclNode(ctx.ID().toString());
-                }
-            case "decimal":
-                if(assign != null){
-                    //Make assign node
-                    AssignNode node = (AssignNode) visit(assign);
-                    return node;
-                }else if(array_assign != null){
-                    //Visit array_assign
-                  //  visit(array_assign)
-                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
-                    return node;
-                }
-                else{
-                    //Make normal dlcNode
+                case "decimal":
                     return new FloatDclNode(ctx.ID().toString());
-                }
-            case "pin":
-                if(assign != null){
-                    //Make assign node
-                    AssignNode node = (AssignNode) visit(assign);
-                    return node;
-
-                }else if(array_assign != null){
-                    //Visit array_assign
-                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
-                    return node;
-                }
-                else{
-                    //Make normal dlcNode
+                case "pin":
                     return new PinDclNode(ctx.ID().toString());
-                }
-            case "big integer":
-                if(assign != null){
-                    //Make assign node
-                    AssignNode node = (AssignNode) visit(assign);
-
-                    return node;
-
-                }else if(array_assign != null){
-                    //Visit array_assign
-                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
-                    return node;
-                }
-                else{
-                    //Make normal dlcNode
+                case "big integer":
                     return new LongDclNode(ctx.ID().toString());
-                }
-            case "character":
-                if(assign != null){
-                    //Make assign node
-                    AstNode tempNode = visit(assign);
-                    AssignNode node = (AssignNode) tempNode;
-                    return node;
-
-                }else if(array_assign != null){
-                    //Visit array_assign
-                    ArrayAssignNode node = (ArrayAssignNode) visit(array_assign);
-                    return node;
-                }
-                else{
-                    //Make normal dlcNode
+                case "character":
                     return new CharDclNode(ctx.ID().toString());
-                }
-            default:
-                return null;
+                default:
+                    return null;
+            }
         }
     }
 
     @Override public AstNode visitAssign(CStarParser.AssignContext ctx) {
 
         String id = ctx.ID().toString();
-        CStarParser.ExprContext exprCtx = ctx.expr();
-        AstNode exprNode = visit(exprCtx);
+        AstNode exprNode = visit(ctx.expr());
+
+        AstNode node;
 
         ParserRuleContext parent = ctx.getParent();
         String classes = parent.getClass().toString();
@@ -121,46 +64,32 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
             switch (type){
                 case "integer":
-                    AssignNode integerAssign = new AssignNode();
-                    IntegerDclNode intDclNode = new IntegerDclNode(id);
-                    integerAssign.children.add(intDclNode);
-                    integerAssign.children.add(exprNode);
-                    return integerAssign;
+                    node = new IntegerDclNode(id);
+                    break;
                 case "decimal":
-                    AssignNode floatAssign = new AssignNode();
-                    FloatDclNode floatDclNode = new FloatDclNode(id);
-                    floatAssign.children.add(floatDclNode);
-                    floatAssign.children.add(exprNode);
-                    return floatAssign;
+                    node = new FloatDclNode(id);
+                    break;
                 case "pin":
-                    AssignNode pinAssign = new AssignNode();
-                    PinDclNode pinDclNode = new PinDclNode(id);
-                    pinAssign.children.add(pinDclNode);
-                    pinAssign.children.add(exprNode);
-                    return pinAssign;
+                    node = new PinDclNode(id);
+                    break;
                 case "long integer":
-                    AssignNode longAssign = new AssignNode();
-                    LongDclNode longDclNode = new LongDclNode(id);
-                    longAssign.children.add(longDclNode);
-                    longAssign.children.add(exprNode);
-                    return longAssign;
+                    node = new LongDclNode(id);
+                    break;
                 case "character":
-                    AssignNode charAssign = new AssignNode();
-                    CharDclNode charDclNode = new CharDclNode(id);
-                    charAssign.children.add(charDclNode);
-                    charAssign.children.add(exprNode);
-                    return charAssign;
+                    node = new CharDclNode(id);
+                    break;
                 default:
                     return null;
             }
         }
         else{
-            AssignNode assignNode = new AssignNode();
-            IdNode idNode = new IdNode(id);
-            assignNode.children.add(idNode);
-            assignNode.children.add(exprNode);
-            return assignNode;
+            node = new IdNode(id);
         }
+        AssignNode assignNode = new AssignNode();
+        assignNode.children.add(node);
+        System.out.println(node.getClass());
+        assignNode.children.add(exprNode);
+        return assignNode;
     }
 
     @Override public AstNode visitVal(CStarParser.ValContext ctx) {
@@ -231,6 +160,34 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         else {
             return visitArithm_exprChild(ctx.getChild(1), ctx, 1);
         }
+    }
+
+
+    @Override public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
+        //index 0 is ID, Everything that follows is parameter values
+
+        FuncCallNode funcCallNode = new FuncCallNode();
+
+        //TODO duplicate code fra visitBlkNode
+        int numChildren = ctx.getChildCount();
+
+        for (int i = 0; i < numChildren; i++){
+            ParseTree c = ctx.getChild(i);
+            String classes = c.getClass().toString();
+            String id = c.getText();
+
+            //checks if child is a value node
+            //TODO find en mere elegant maade at sortere ID fra andre symboler
+            if(classes.equals("class com.p4.parser.CStarParser$ValContext")) {
+                AstNode childResult = visit(c);
+                funcCallNode.children.add(childResult);
+            }
+            else if(!id.equals("(") && !id.equals(")") && !id.equals(",")){
+                IdNode idNode = new IdNode(id);
+                funcCallNode.children.add(idNode);
+            }
+        }
+        return funcCallNode;
     }
 
     //Todo evt lav den general ved at lave en generisk metode
@@ -386,20 +343,22 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 CommonToken t = (CommonToken) o;
 
                 if(t.getType() == CStarParser.COMP_OP){
+                    node.setOperator(t.getText());
+                }
+
+                if(t.getType() == CStarParser.AND || t.getType() == CStarParser.OR){
+                    node.children.add(visit(c));
+                    CondNode newCondNode = new CondNode();
+
+                    newCondNode.children.addAll(node.children);
+                    node.children.clear();
+                    node.children.add(newCondNode);
                 }
 
                 node.setOperator(c.getPayload().toString());
-                //System.out.println("Temp operator: " + c.getPayload().toString());
 
                 continue;
-            }else{
-
-                if(o instanceof CStarParser.Arithm_exprContext){
-                }else if(o instanceof  CStarParser.Cond_exprContext){
-                }
             }
-
-
 
             AstNode childResult = visit(c);
             node.children.add(childResult);
@@ -451,27 +410,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitParam(CStarParser.ParamContext ctx) {
         ParamNode node = new ParamNode();
 
+        if(ctx.getChildCount() > 0)
+
         for(CStarParser.ParamContext param : ctx.param()){
-
             System.out.println(param.ID());
-
-            switch (param.TYPE().toString()){
-               /*case "Integer":
-                    node.params.add(new IntegerNode(Integer.parseInt(param.ID(0).toString())));
-                    break;
-                case "Decimal":
-                    node.params.add(new FloatNode(Float.parseFloat(param.ID(0).toString())));
-                    break;
-                case "Pin":
-                    node.params.add(new PinNode(Integer.parseInt(param.ID(0).toString())));
-                    break;
-                case "Long":
-                    node.params.add(new LongNode(Long.parseLong(param.ID(0).toString())));
-                    break;
-                case "Char":
-                    node.params.add(new CharNode(param.ID(0).toString().charAt(0)));
-                    break;*/
-            }
+            node.children.add(visit(param));
         }
 
         return node;
@@ -482,13 +425,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-   // @Override public T visitFunc_call(CStarParser.Func_callContext ctx) { return visitChildren(ctx); }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override public AstNode visitBlk(CStarParser.BlkContext ctx) {
 
         BlkNode node = new BlkNode();
@@ -552,5 +489,24 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      */
     //@Override public T visitArray_call(CStarParser.Array_callContext ctx) { return visitChildren(ctx); }
 
-}
+    @Override public AstNode visitArray_value(CStarParser.Array_valueContext ctx) {
+        //Id is index 0, the Index is at index 1, and the assigned value is at 2
+        ArrayAssignValueNode arrayAssignValueNode = new ArrayAssignValueNode();
 
+        //First add ID at index 0
+        IdNode id = new IdNode(ctx.getChild(0).getText());
+        arrayAssignValueNode.children.add(id);
+
+        int numChildren = ctx.getChildCount();
+
+        for (int i = 0; i < numChildren; i++){
+            ParseTree c = ctx.getChild(i);
+            if(c.getPayload() instanceof CommonToken)
+                continue;
+            AstNode childResult = visit(c);
+            arrayAssignValueNode.children.add(childResult);
+        }
+
+        return arrayAssignValueNode;
+    }
+}
