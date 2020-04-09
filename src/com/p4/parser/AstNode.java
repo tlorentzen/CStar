@@ -174,60 +174,14 @@ class SubNode extends AstNode{
     CommonToken token = new CommonToken(10);
 }
 
-class MultNode extends InfixAstNode{
-
-    MultNode(AstNode Left, AstNode Right){
-        super.Left = Left;
-        super.Right = Right;
-    }
-
-    @Override
-    public void setLeft(AstNode left) {
-        super.setLeft(left);
-    }
-
-    @Override
-    public void setRight(AstNode right) {
-        super.setRight(right);
-    }
-
-    @Override
-    public AstNode getLeft() {
-        return super.getLeft();
-    }
-
-    @Override
-    public AstNode getRight() {
-        return super.getRight();
-    }
+class MultNode extends AstNode{
+    CommonToken token = new CommonToken(11);
 }
 
 class DivNode extends InfixAstNode{
 
-    DivNode(AstNode Left, AstNode Right){
-        super.Left = Left;
-        super.Right = Right;
-    }
+    CommonToken token = new CommonToken(12);
 
-    @Override
-    public void setLeft(AstNode left) {
-        super.setLeft(left);
-    }
-
-    @Override
-    public void setRight(AstNode right) {
-        super.setRight(right);
-    }
-
-    @Override
-    public AstNode getLeft() {
-        return super.getLeft();
-    }
-
-    @Override
-    public AstNode getRight() {
-        return super.getRight();
-    }
 }
 
 class AssignNode extends AstNode{
