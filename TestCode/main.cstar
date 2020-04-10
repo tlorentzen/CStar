@@ -1,11 +1,3 @@
-void main(){
-  integer i = 2 + 4;
-
-  integer test = i + 3;
-
-  if(test > i){
-    decimal detErSandt = 1.0;
-  }
-
-  pin pin1 = 3;
+integer hej (integer i, integer j){
+ return 0;
 }

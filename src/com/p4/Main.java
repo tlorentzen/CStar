@@ -64,5 +64,4 @@ public class Main {
             return fileName.substring(fileName.lastIndexOf(".")+1);
         else return "";
     }
-
 }

@@ -1,4 +1,4 @@
-// Generated from /Users/lenasaid/floobits/share/ichris18/P4/src/com/p4/parser/CStar.g4 by ANTLR 4.8
+// Generated from /Users/lenasaid/Desktop/Desktop/OneDrive/Uni/Semester 4/P4/src/com/p4/parser/CStar.g4 by ANTLR 4.8
 package com.p4.parser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -22,12 +22,6 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitDcl(CStarParser.DclContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CStarParser#return_exp}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitReturn_exp(CStarParser.Return_expContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CStarParser#assign}.
 	 * @param ctx the parse tree
@@ -77,11 +71,23 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArray_expr(CStarParser.Array_exprContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CStarParser#array_value}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArray_value(CStarParser.Array_valueContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CStarParser#func}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitFunc(CStarParser.FuncContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CStarParser#return_type}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReturn_type(CStarParser.Return_typeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CStarParser#param}.
 	 * @param ctx the parse tree
@@ -89,17 +95,23 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParam(CStarParser.ParamContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CStarParser#func_call}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunc_call(CStarParser.Func_callContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link CStarParser#blk}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitBlk(CStarParser.BlkContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CStarParser#return_exp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReturn_exp(CStarParser.Return_expContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CStarParser#func_call}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunc_call(CStarParser.Func_callContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CStarParser#stmt}.
 	 * @param ctx the parse tree
@@ -107,33 +119,21 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStmt(CStarParser.StmtContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CStarParser#selection}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSelection(CStarParser.SelectionContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link CStarParser#iterative}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitIterative(CStarParser.IterativeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CStarParser#selection}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSelection(CStarParser.SelectionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CStarParser#val}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitVal(CStarParser.ValContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CStarParser#array_value}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArray_value(CStarParser.Array_valueContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CStarParser#return_type}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitReturn_type(CStarParser.Return_typeContext ctx);
 }

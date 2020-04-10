@@ -1,4 +1,4 @@
-// Generated from /Users/lenasaid/floobits/share/ichris18/P4/src/com/p4/parser/CStar.g4 by ANTLR 4.8
+// Generated from /Users/lenasaid/Desktop/Desktop/OneDrive/Uni/Semester 4/P4/src/com/p4/parser/CStar.g4 by ANTLR 4.8
 package com.p4.parser;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -27,16 +27,6 @@ public interface CStarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDcl(CStarParser.DclContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CStarParser#return_exp}.
-	 * @param ctx the parse tree
-	 */
-	void enterReturn_exp(CStarParser.Return_expContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CStarParser#return_exp}.
-	 * @param ctx the parse tree
-	 */
-	void exitReturn_exp(CStarParser.Return_expContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CStarParser#assign}.
 	 * @param ctx the parse tree
@@ -118,6 +108,16 @@ public interface CStarListener extends ParseTreeListener {
 	 */
 	void exitArray_expr(CStarParser.Array_exprContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CStarParser#array_value}.
+	 * @param ctx the parse tree
+	 */
+	void enterArray_value(CStarParser.Array_valueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CStarParser#array_value}.
+	 * @param ctx the parse tree
+	 */
+	void exitArray_value(CStarParser.Array_valueContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CStarParser#func}.
 	 * @param ctx the parse tree
 	 */
@@ -127,6 +127,16 @@ public interface CStarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunc(CStarParser.FuncContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CStarParser#return_type}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturn_type(CStarParser.Return_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CStarParser#return_type}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturn_type(CStarParser.Return_typeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CStarParser#param}.
 	 * @param ctx the parse tree
@@ -138,16 +148,6 @@ public interface CStarListener extends ParseTreeListener {
 	 */
 	void exitParam(CStarParser.ParamContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CStarParser#func_call}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunc_call(CStarParser.Func_callContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CStarParser#func_call}.
-	 * @param ctx the parse tree
-	 */
-	void exitFunc_call(CStarParser.Func_callContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link CStarParser#blk}.
 	 * @param ctx the parse tree
 	 */
@@ -157,6 +157,26 @@ public interface CStarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitBlk(CStarParser.BlkContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CStarParser#return_exp}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturn_exp(CStarParser.Return_expContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CStarParser#return_exp}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturn_exp(CStarParser.Return_expContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CStarParser#func_call}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunc_call(CStarParser.Func_callContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CStarParser#func_call}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunc_call(CStarParser.Func_callContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CStarParser#stmt}.
 	 * @param ctx the parse tree
@@ -168,16 +188,6 @@ public interface CStarListener extends ParseTreeListener {
 	 */
 	void exitStmt(CStarParser.StmtContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CStarParser#selection}.
-	 * @param ctx the parse tree
-	 */
-	void enterSelection(CStarParser.SelectionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CStarParser#selection}.
-	 * @param ctx the parse tree
-	 */
-	void exitSelection(CStarParser.SelectionContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link CStarParser#iterative}.
 	 * @param ctx the parse tree
 	 */
@@ -188,6 +198,16 @@ public interface CStarListener extends ParseTreeListener {
 	 */
 	void exitIterative(CStarParser.IterativeContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CStarParser#selection}.
+	 * @param ctx the parse tree
+	 */
+	void enterSelection(CStarParser.SelectionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CStarParser#selection}.
+	 * @param ctx the parse tree
+	 */
+	void exitSelection(CStarParser.SelectionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CStarParser#val}.
 	 * @param ctx the parse tree
 	 */
@@ -197,24 +217,4 @@ public interface CStarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVal(CStarParser.ValContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CStarParser#array_value}.
-	 * @param ctx the parse tree
-	 */
-	void enterArray_value(CStarParser.Array_valueContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CStarParser#array_value}.
-	 * @param ctx the parse tree
-	 */
-	void exitArray_value(CStarParser.Array_valueContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CStarParser#return_type}.
-	 * @param ctx the parse tree
-	 */
-	void enterReturn_type(CStarParser.Return_typeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CStarParser#return_type}.
-	 * @param ctx the parse tree
-	 */
-	void exitReturn_type(CStarParser.Return_typeContext ctx);
 }

@@ -164,8 +164,8 @@ class CharNode extends LiteralNode<Character>{
     }
 }
 
-class ParamNode extends AstNode{
-    List<Parameters> params;
+class ParamNode extends AstNode {
+
 }
 
 class AddNode extends AstNode{
@@ -272,7 +272,7 @@ class StmtNode extends AstNode{
 }
 
 class ReturnExpNode extends AstNode{
-
+    CommonToken token = new CommonToken(29);
 }
 
 class SelectionNode extends AstNode{
@@ -283,7 +283,7 @@ class IterativeNode extends AstNode{
 
 }
 
-class FuncCallNode extends  AstNode{
+class FuncCallNode extends AstNode{
     //index 0 is ID, Everything that follows is parameter values
     public FuncCallNode(){}
 }

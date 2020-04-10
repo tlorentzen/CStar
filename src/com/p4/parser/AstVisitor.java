@@ -27,12 +27,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override public AstNode visitDcl(CStarParser.DclContext ctx) {
         // All nodes will be returned to the blkNode visitor, where the children will be saved
         // Test for type
@@ -177,6 +171,36 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return arrayExprNode;
     }
 
+    @Override public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
+        //index 0 is ID, Everything that follows is parameter values
+
+        FuncCallNode funcCallNode = new FuncCallNode();
+
+        int numChildren = ctx.getChildCount();
+
+        for (int childIndex = 0; childIndex < numChildren; childIndex++){
+            ParseTree c = ctx.getChild(childIndex);
+            String classes = c.getClass().toString();
+            String id = c.getText();
+
+            //checks if child is a value node
+            //TODO lave funktioner til det nedenunder da det bliver brugt mange steder
+            if(classes.equals("class com.p4.parser.CStarParser$ValContext")) {
+                AstNode childResult = visit(c);
+                funcCallNode.children.add(childResult);
+            }
+            else if(isID(id)){
+                IdNode idNode = new IdNode(id);
+                funcCallNode.children.add(idNode);
+            }
+        }
+        return funcCallNode;
+    }
+
+    private boolean isID(String id){
+        return !id.equals("(") && !id.equals(")") && !id.equals(",");
+    }
+
     @Override public AstNode visitArithm_expr(CStarParser.Arithm_exprContext ctx){
         //ArrayExprNode arrayExprNode = new ArrayExprNode();
         int childCount = ctx.getChildCount();
@@ -191,94 +215,121 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         }
     }
 
-
-    @Override public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
-        //index 0 is ID, Everything that follows is parameter values
-
-        FuncCallNode funcCallNode = new FuncCallNode();
-
-        int numChildren = ctx.getChildCount();
-
-        for (int i = 0; i < numChildren; i++){
-            ParseTree c = ctx.getChild(i);
-            String classes = c.getClass().toString();
-            String id = c.getText();
-
-            //checks if child is a value node
-            //TODO lave funktioner til det nedenunder da det bliver brugt mange steder
-            if(classes.equals("class com.p4.parser.CStarParser$ValContext")) {
-                AstNode childResult = visit(c);
-                funcCallNode.children.add(childResult);
-
-            }
-            else if(isID(id)){
-                IdNode idNode = new IdNode(id);
-                funcCallNode.children.add(idNode);
-            }
-        }
-        return funcCallNode;
-    }
-
-    private boolean isID(String id){
-        return !id.equals(CStarParser.LEFT_PAREN) && !id.equals(CStarParser.RIGHT_PAREN) && !id.equals(CStarParser.COMMA);
-    }
-
     //Todo evt lav den general ved at lave en generisk metode
     public AstNode visitArithm_exprChild(ParseTree child, CStarParser.Arithm_exprContext parent, int operatorIndex){
         int termIndex = (operatorIndex - 1) / 2;
+        AstNode node = new AstNode();
 
-        if(child.getText().equals("+")) {
-            AddNode addNode = new AddNode();
+        switch (child.getText()) {
+            case "+":
+                node = new AddNode();
+                break;
+            case "-":
+                node = new SubNode();
+                break;
+            default:
+                //todo error handling
+                break;
+        }
 
-            //Enters if there are more operators in the tree
-            if(parent.getChild(operatorIndex + 2) != null) {
-                operatorIndex += 2;
+        //Enters if there are more operators in the tree
+        if(parent.getChild(operatorIndex + 2) != null) {
+            operatorIndex += 2;
 
-                //Add left child (term)
-                addNode.children.add(visitTerm(parent.term(termIndex)));
-                //Add right child (operator)
-                addNode.children.add(visitArithm_exprChild(parent.getChild(operatorIndex), parent, operatorIndex));
-            }
-            //Enters if there is only a term child left
-            else{
-                // Add left and right child (terms)
-                addNode.children.add(visitTerm(parent.term(termIndex)));
-                addNode.children.add(visitTerm(parent.term(termIndex + 1)));
-            }
+            //Add left child (term)
+            node.children.add(visitTerm(parent.term(termIndex)));
+            //Add right child (operator)
+            node.children.add(visitArithm_exprChild(parent.getChild(operatorIndex), parent, operatorIndex));
+        }
+        //Enters if there is only a term child left
+        else{
+            // Add left and right child (terms)
+            node.children.add(visitTerm(parent.term(termIndex)));
+            node.children.add(visitTerm(parent.term(termIndex + 1)));
+        }
 
-            return addNode;
+        return node;
+    }
+
+    @Override public AstNode visitTerm(CStarParser.TermContext ctx) {
+        int childCount = ctx.getChildCount();
+
+        //If there are no operations with mult or div
+        if(childCount == 1){
+            //TODO Husk at visit skal return noget
+            return visit(ctx.factor(0));
         }
         else {
-            SubNode subNode = new SubNode();
-
-            //Enters if there are more operators in the tree
-            if(parent.getChild(operatorIndex + 2) != null) {
-                operatorIndex += 2;
-
-                //Add left child (term)
-                subNode.children.add(visitTerm(parent.term(termIndex)));
-                //Add right child (operator)
-                subNode.children.add(visitArithm_exprChild(parent.getChild(operatorIndex), parent, operatorIndex));
-            }
-            //Enters if there is only a term child left
-            else{
-                // Add left and right child (terms)
-                subNode.children.add(visitTerm(parent.term(termIndex)));
-                subNode.children.add(visitTerm(parent.term(termIndex + 1)));
-            }
-
-            return subNode;
+            return visitTermChild(ctx.getChild(1), ctx, 1);
         }
     }
 
+    //Todo evt lav den general ved at lave en generisk metode
+    public AstNode visitTermChild(ParseTree child, CStarParser.TermContext parent, int operatorIndex) {
+        int factorIndex = (operatorIndex - 1) / 2;
+        AstNode node = new AstNode();
 
-    //@Override public T visitReturn_exp(CStarParser.Return_expContext ctx) { return visitChildren(ctx); }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+        //Enters if there are more operators in the tree
+        switch (child.getText()) {
+            case "*":
+                node = new MultNode();
+                break;
+            case "/":
+                node = new DivNode();
+                break;
+            default:
+                //todo error handling
+                break;
+        }
+
+        //Enters if there are more operators in the tree
+        if (parent.getChild(operatorIndex + 2) != null) {
+            operatorIndex += 2;
+
+            //Add left child (term)
+            node.children.add(visit(parent.factor(factorIndex)));
+            //Add right child (operator)
+            node.children.add(visitTermChild(parent.getChild(operatorIndex), parent, operatorIndex));
+        }
+        //Enters if there is only a term child left
+        else {
+            // Add left and right child (terms)
+            node.children.add(visit(parent.factor(factorIndex)));
+            node.children.add(visit(parent.factor(factorIndex + 1)));
+        }
+
+        return node;
+    }
+    
+
+    @Override public AstNode visitFactor(CStarParser.FactorContext ctx) {
+        var child = ctx.getChild(0);
+        String classes = child.getClass().toString();
+
+        switch (classes){
+            case "class com.p4.parser.CStarParser$ValContext":
+                return visit(ctx.val());
+            case "class com.p4.parser.CStarParser$Array_valueContext":
+                return visit(ctx.array_value());
+            case "class org.antlr.v4.runtime.tree.TerminalNodeImpl":
+                if (child.getText().equals("(")) {
+                    return visit(ctx.expr());
+                }
+                else {
+                    return new IdNode(child.getText());
+                }
+            default:
+                //todo error handling
+                return null;
+        }
+    }
+
+    @Override public AstNode visitReturn_exp(CStarParser.Return_expContext ctx) {
+        ReturnExpNode node = new ReturnExpNode();
+        node.children.add(visit(ctx.expr()));
+
+        return node;
+    }
 
     @Override public AstNode visitCond_expr(CStarParser.Cond_exprContext ctx) {
         CondNode node = new CondNode();
@@ -322,29 +373,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-
-   // @Override public T visitTerm(CStarParser.TermContext ctx) { return visitChildren(ctx); }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-   // @Override public T visitFactor(CStarParser.FactorContext ctx) { return visitChildren(ctx); }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-
-
     @Override public AstNode visitFunc(CStarParser.FuncContext ctx) {
 
         System.out.println(ctx.ID().toString());
@@ -358,30 +386,37 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         return node;
     }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+    //todo virker hvis cstar.g4 bliver opdateret til de ændre der er lavet. Help.
     @Override public AstNode visitParam(CStarParser.ParamContext ctx) {
-        ParamNode node = new ParamNode();
+        ParamNode paramNode = new ParamNode();
+        int numChild = ctx.getChildCount();
 
-        if(ctx.getChildCount() > 0)
-
-        for(CStarParser.ParamContext param : ctx.param()){
-            System.out.println(param.ID());
-            node.children.add(visit(param));
+        for(int childIndex = 0; childIndex < numChild; childIndex++){ //Skips comma and jumps to type
+            switch (ctx.getChild(childIndex).toString()){
+                case "integer":
+                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "integer"));
+                    break;
+                case "decimal":
+                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "decimal"));
+                    break;
+                case "pin":
+                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "pin"));
+                    break;
+                case "big integer":
+                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "big integer"));
+                    break;
+                case "character":
+                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "character"));
+                    break;
+                default:
+                    return null;
+            }
         }
-
-        return node;
+        return paramNode;
     }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
+
+
 
     @Override public AstNode visitBlk(CStarParser.BlkContext ctx) {
 
@@ -396,7 +431,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             AstNode childResult = visit(c);
             node.children.add(childResult);
         }
-        //TODO debug her, returnerer ikke array assign value men istedet NULL
+        //TODO debug her, returnerer ikke array assign value men i stedet NULL
         return node;
     }
 
@@ -425,13 +460,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         return node;
     }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    //@Override public T visitVal(CStarParser.ValContext ctx) { return visitChildren(ctx); }
+
     /**
      * {@inheritDoc}
      *
