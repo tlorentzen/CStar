@@ -15,6 +15,8 @@ public class AstNode {
     public void accept(AstTreeVisitor visitor){
         visitor.visit(0,this);
     }
+
+    String type;
 }
 
 abstract class DclNode<T> extends AstNode {
