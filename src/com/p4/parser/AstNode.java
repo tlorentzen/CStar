@@ -45,8 +45,14 @@ abstract class DclNode<T> extends AstNode {
 
 abstract class LiteralNode<T> extends AstNode{
     T Value;
+    boolean IsNegative;
     public LiteralNode(T value){
         Value = value;
+        IsNegative = false;
+    }
+    public LiteralNode(T value, boolean isNegative){
+        Value = value;
+        IsNegative = isNegative;
     }
 
     public T getValue() {
@@ -124,6 +130,7 @@ class CharDclNode extends DclNode<Character>{
 class IdNode extends AstNode implements Parameters{
     String Id;
     String Type;
+    boolean IsNegative;
 
     public IdNode(String Id){
         this.Id = Id;
@@ -132,11 +139,17 @@ class IdNode extends AstNode implements Parameters{
         this.Id = Id;
         this.Type = Type;
     }
+    public IdNode(String Id, boolean isNegative){
+        this.Id = Id;
+        this.IsNegative = isNegative;
+    }
 }
 
 class IntegerNode extends LiteralNode<Integer>{
-    public IntegerNode(Integer value){
-        super(value);
+    public IntegerNode(Integer value){ super(value); }
+    public IntegerNode(Integer value, boolean isNegative){ 
+        super(value); 
+        super.IsNegative = isNegative;
     }
 }
 
@@ -144,11 +157,19 @@ class FloatNode extends LiteralNode<Float>{
     public FloatNode(Float value){
         super(value);
     }
+    public FloatNode(Float value, boolean isNegative){
+        super(value);
+        super.IsNegative = isNegative;
+    }
 }
 
 class PinNode extends LiteralNode<Integer>{
     public PinNode(Integer value){
         super(value);
+    }
+    public PinNode(Integer value, boolean isNegative){
+        super(value);
+        super.IsNegative = isNegative;
     }
 }
 
@@ -156,11 +177,19 @@ class LongNode extends LiteralNode<Long>{
     public LongNode(Long value){
         super(value);
     }
+    public LongNode(Long value, boolean isNegative){
+        super(value);
+        super.IsNegative = isNegative;
+    }
 }
 
 class CharNode extends LiteralNode<Character>{
     public CharNode(char value){
         super(value);
+    }
+    public CharNode(char value, boolean isNegative){
+        super(value);
+        super.IsNegative = isNegative;
     }
 }
 
@@ -201,6 +230,7 @@ class ArrayDclNode extends AstNode{
 class ArrayNode extends AstNode implements Parameters{
     String Id;
     String Type;
+    boolean isNegative;
 
     public ArrayNode(String id, String type){
         Id = id;
@@ -285,7 +315,8 @@ class IterativeNode extends AstNode{
 
 class FuncCallNode extends AstNode{
     //index 0 is ID, Everything that follows is parameter values
-    public FuncCallNode(){}
+    boolean IsNegative;
+    public FuncCallNode(boolean isNegative){this.IsNegative = isNegative;}
 }
 
 class CondNode extends AstNode{
