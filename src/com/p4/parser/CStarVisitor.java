@@ -59,11 +59,11 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFactor(CStarParser.FactorContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CStarParser#array_assign}.
+	 * Visit a parse tree produced by {@link CStarParser#array_dcl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArray_assign(CStarParser.Array_assignContext ctx);
+	T visitArray_dcl(CStarParser.Array_dclContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CStarParser#array_expr}.
 	 * @param ctx the parse tree
@@ -71,11 +71,11 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArray_expr(CStarParser.Array_exprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CStarParser#array_value}.
+	 * Visit a parse tree produced by {@link CStarParser#array_assign}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArray_value(CStarParser.Array_valueContext ctx);
+	T visitArray_assign(CStarParser.Array_assignContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CStarParser#func}.
 	 * @param ctx the parse tree

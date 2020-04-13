@@ -192,9 +192,9 @@ class AssignNode extends AstNode{
     public AssignNode(){}
 }
 
-class ArrayAssignNode extends AstNode{
+class ArrayDclNode extends AstNode{
 
-    public ArrayAssignNode(){}
+    public ArrayDclNode(){}
 
 }
 
@@ -240,8 +240,8 @@ class ArrayExprNode extends AstNode{
     }
 }
 
-class ArrayAssignValueNode extends AstNode{
-    public ArrayAssignValueNode(){}
+class ArrayAssignNode extends AstNode{
+    public ArrayAssignNode(){}
 }
 
 class FuncNode extends AstNode{
