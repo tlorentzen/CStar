@@ -40,18 +40,6 @@ public class CStarBaseListener implements CStarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterReturn_exp(CStarParser.Return_expContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitReturn_exp(CStarParser.Return_expContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterAssign(CStarParser.AssignContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -148,6 +136,18 @@ public class CStarBaseListener implements CStarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterArray_value(CStarParser.Array_valueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArray_value(CStarParser.Array_valueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterFunc(CStarParser.FuncContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -155,6 +155,18 @@ public class CStarBaseListener implements CStarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFunc(CStarParser.FuncContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterReturn_type(CStarParser.Return_typeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReturn_type(CStarParser.Return_typeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -172,18 +184,6 @@ public class CStarBaseListener implements CStarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFunc_call(CStarParser.Func_callContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFunc_call(CStarParser.Func_callContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterBlk(CStarParser.BlkContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -191,6 +191,30 @@ public class CStarBaseListener implements CStarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitBlk(CStarParser.BlkContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterReturn_exp(CStarParser.Return_expContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReturn_exp(CStarParser.Return_expContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFunc_call(CStarParser.Func_callContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunc_call(CStarParser.Func_callContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -208,18 +232,6 @@ public class CStarBaseListener implements CStarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSelection(CStarParser.SelectionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSelection(CStarParser.SelectionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterIterative(CStarParser.IterativeContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -232,6 +244,18 @@ public class CStarBaseListener implements CStarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSelection(CStarParser.SelectionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSelection(CStarParser.SelectionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterVal(CStarParser.ValContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -239,30 +263,6 @@ public class CStarBaseListener implements CStarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitVal(CStarParser.ValContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterArray_value(CStarParser.Array_valueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitArray_value(CStarParser.Array_valueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterReturn_type(CStarParser.Return_typeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitReturn_type(CStarParser.Return_typeContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

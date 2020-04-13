@@ -1,4 +1,4 @@
-// Generated from /Users/lenasaid/Desktop/Desktop/OneDrive/Uni/Semester 4/P4/src/com/p4/parser/CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
 package com.p4.parser;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -24,16 +24,16 @@ public class CStarParser extends Parser {
 		ARRAY=28, RETURN=29, INT_LITERAL=30, LONG_LITERAL=31, FLOAT_LITERAL=32, 
 		PIN_LITERAL=33, CHAR_LITERAL=34, ID=35, WHITESPACE=36, Newline=37;
 	public static final int
-		RULE_prog = 0, RULE_dcl = 1, RULE_assign = 2, RULE_expr = 3, RULE_cond_expr = 4,
-		RULE_arithm_expr = 5, RULE_term = 6, RULE_factor = 7, RULE_array_assign = 8,
-		RULE_array_expr = 9, RULE_array_value = 10, RULE_func = 11, RULE_return_type = 12,
-		RULE_param = 13, RULE_blk = 14, RULE_return_exp = 15, RULE_func_call = 16,
+		RULE_prog = 0, RULE_dcl = 1, RULE_assign = 2, RULE_expr = 3, RULE_cond_expr = 4, 
+		RULE_arithm_expr = 5, RULE_term = 6, RULE_factor = 7, RULE_array_assign = 8, 
+		RULE_array_expr = 9, RULE_array_value = 10, RULE_func = 11, RULE_return_type = 12, 
+		RULE_param = 13, RULE_blk = 14, RULE_return_exp = 15, RULE_func_call = 16, 
 		RULE_stmt = 17, RULE_iterative = 18, RULE_selection = 19, RULE_val = 20;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"prog", "dcl", "assign", "expr", "cond_expr", "arithm_expr", "term",
-			"factor", "array_assign", "array_expr", "array_value", "func", "return_type",
-			"param", "blk", "return_exp", "func_call", "stmt", "iterative", "selection",
+			"prog", "dcl", "assign", "expr", "cond_expr", "arithm_expr", "term", 
+			"factor", "array_assign", "array_expr", "array_value", "func", "return_type", 
+			"param", "blk", "return_exp", "func_call", "stmt", "iterative", "selection", 
 			"val"
 		};
 	}
@@ -1479,7 +1479,7 @@ public class CStarParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(197);
+			setState(197); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1523,7 +1523,7 @@ public class CStarParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(199);
+				setState(199); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,21,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
