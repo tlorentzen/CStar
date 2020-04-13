@@ -112,13 +112,13 @@ public class CStarBaseListener implements CStarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterArray_assign(CStarParser.Array_assignContext ctx) { }
+	@Override public void enterArray_dcl(CStarParser.Array_dclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitArray_assign(CStarParser.Array_assignContext ctx) { }
+	@Override public void exitArray_dcl(CStarParser.Array_dclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -136,13 +136,13 @@ public class CStarBaseListener implements CStarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterArray_value(CStarParser.Array_valueContext ctx) { }
+	@Override public void enterArray_assign(CStarParser.Array_assignContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitArray_value(CStarParser.Array_valueContext ctx) { }
+	@Override public void exitArray_assign(CStarParser.Array_assignContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

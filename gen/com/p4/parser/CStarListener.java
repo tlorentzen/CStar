@@ -88,15 +88,15 @@ public interface CStarListener extends ParseTreeListener {
 	 */
 	void exitFactor(CStarParser.FactorContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CStarParser#array_assign}.
+	 * Enter a parse tree produced by {@link CStarParser#array_dcl}.
 	 * @param ctx the parse tree
 	 */
-	void enterArray_assign(CStarParser.Array_assignContext ctx);
+	void enterArray_dcl(CStarParser.Array_dclContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CStarParser#array_assign}.
+	 * Exit a parse tree produced by {@link CStarParser#array_dcl}.
 	 * @param ctx the parse tree
 	 */
-	void exitArray_assign(CStarParser.Array_assignContext ctx);
+	void exitArray_dcl(CStarParser.Array_dclContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CStarParser#array_expr}.
 	 * @param ctx the parse tree
@@ -108,15 +108,15 @@ public interface CStarListener extends ParseTreeListener {
 	 */
 	void exitArray_expr(CStarParser.Array_exprContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CStarParser#array_value}.
+	 * Enter a parse tree produced by {@link CStarParser#array_assign}.
 	 * @param ctx the parse tree
 	 */
-	void enterArray_value(CStarParser.Array_valueContext ctx);
+	void enterArray_assign(CStarParser.Array_assignContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CStarParser#array_value}.
+	 * Exit a parse tree produced by {@link CStarParser#array_assign}.
 	 * @param ctx the parse tree
 	 */
-	void exitArray_value(CStarParser.Array_valueContext ctx);
+	void exitArray_assign(CStarParser.Array_assignContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CStarParser#func}.
 	 * @param ctx the parse tree

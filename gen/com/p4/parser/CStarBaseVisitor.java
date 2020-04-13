@@ -73,7 +73,7 @@ public class CStarBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitArray_assign(CStarParser.Array_assignContext ctx) { return visitChildren(ctx); }
+	@Override public T visitArray_dcl(CStarParser.Array_dclContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -87,7 +87,7 @@ public class CStarBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitArray_value(CStarParser.Array_valueContext ctx) { return visitChildren(ctx); }
+	@Override public T visitArray_assign(CStarParser.Array_assignContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
