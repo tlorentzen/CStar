@@ -11,10 +11,6 @@ public class AstNode {
     public List<AstNode> getChildren() { return children; }
     public void setChildren(List<AstNode> children) { this.children = children; }
 
-    public void accept(AstTreeVisitor visitor){
-        visitor.visit(0,this);
-    }
-
     public void accept(NodeVisitor visitor) { visitor.visit(this); }
 
     String type;
