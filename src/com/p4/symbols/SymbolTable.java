@@ -1,9 +1,5 @@
 package com.p4.symbols;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 public class SymbolTable {
 
     private CStarScope currentScope;
@@ -40,6 +36,10 @@ public class SymbolTable {
         }
 
         return attri;
+    }
+
+    public boolean declaredInCurrentScope(String symbol){
+        return this.currentScope.symbols.containsKey(symbol);
     }
 
     public void insert(String symbol, Attributes attributes){
