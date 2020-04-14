@@ -1,6 +1,8 @@
 package com.p4;
 
 import com.p4.parser.*;
+import com.p4.symbols.Attributes;
+import com.p4.symbols.SymbolTable;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
@@ -34,6 +36,8 @@ public class Main {
                     try{
                         CharStream inputStream = CharStreams.fromPath(inputSource);
 
+                        var symbolTable = new SymbolTable();
+
                         CStarLexer lexer = new CStarLexer(inputStream);
                         CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
                         CStarParser parser = new CStarParser(commonTokenStream);
@@ -43,8 +47,11 @@ public class Main {
                         CStarBaseVisitor<?> visitor = new AstVisitor<>();
                         AstNode ast = (AstNode) visitor.visit(tree);
 
-                        AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
-                        astTreeVisitor.visit(0, ast);
+                        //AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
+                        //astTreeVisitor.visit(0, ast);
+
+                        TopDeclVisitor topDeclVisitor = new TopDeclVisitor(symbolTable);
+                        topDeclVisitor.visit(ast);
 
                         System.out.println(tree.getText());
 

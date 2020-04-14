@@ -12,8 +12,8 @@ public class AstNode {
     public void setChildren(List<AstNode> children) { this.children = children; }
 
     public void accept(NodeVisitor visitor) { visitor.visit(this); }
-
-    String type;
+    
+    String type; //Todo: SKal fjernes, fordi type checking bliver håndteret andetsteds
 }
 
 interface AbstractNode{
