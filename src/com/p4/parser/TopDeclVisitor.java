@@ -1,5 +1,6 @@
 package com.p4.parser;
 
+import com.p4.symbols.Attributes;
 import com.p4.symbols.SymbolTable;
 
 public class TopDeclVisitor extends SemanticsVisitor {
@@ -17,7 +18,11 @@ public class TopDeclVisitor extends SemanticsVisitor {
             //Todo: Handle 'Already declared' error
             symbolTable.lookup(node.id).variableType = "Already declared error";
         } else {
+            var attr = new Attributes();
+            attr.variableType = node.type;
+            attr.kind = node.getClass().getName();
 
+            symbolTable.insert(node.id, attr);
         }
     }
 }

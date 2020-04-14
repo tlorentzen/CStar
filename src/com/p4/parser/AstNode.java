@@ -12,8 +12,6 @@ public class AstNode {
     public void setChildren(List<AstNode> children) { this.children = children; }
 
     public void accept(NodeVisitor visitor) { visitor.visit(this); }
-    
-    String type; //Todo: SKal fjernes, fordi type checking bliver håndteret andetsteds
 }
 
 interface AbstractNode{
@@ -104,14 +102,14 @@ class CharDclNode extends DclNode<Character>{
 
 class IdNode extends AstNode implements Parameters{
     String Id;
-    String Type;
+    String type;
 
-    public IdNode(String Id){
-        this.Id = Id;
+    public IdNode(String id){
+        this.Id = id;
     }
-    public IdNode(String Id, String Type){
-        this.Id = Id;
-        this.Type = Type;
+    public IdNode(String id, String type){
+        this.Id = id;
+        this.type = type;
     }
 }
 
@@ -171,12 +169,15 @@ class AssignNode extends AstNode{
     public AssignNode(){}
 }
 
-class ArrayDclNode extends AstNode{
-    public ArrayDclNode(){}
+class ArrayDclNode<T> extends DclNode<T>{
+    public ArrayDclNode(String id) {
+        super(id);
+    }
 }
 
 class ArrayNode extends AstNode implements Parameters{
     String Id;
+    String type;
 
     public ArrayNode(String id, String type){
         Id = id;

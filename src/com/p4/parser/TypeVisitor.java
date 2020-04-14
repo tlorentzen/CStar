@@ -11,6 +11,11 @@ public class TypeVisitor extends SemanticsVisitor {
     }
 
     public void visit(IdNode node){
-
+        var attr = symbolTable.lookup(node.Id);
+        if (attr != null && attr.kind.equals(node.getClass().getName())){
+            attr.variableType = node.type;
+        } else{
+            //Todo: "identifier is not a type name" error
+        }
     }
 }
