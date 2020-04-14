@@ -1,3 +1,5 @@
+integer i = 2;
 
-integer array hej = [5, 3];
-hej[0] = 3 + 5;
+decimal d = 4;
+
+integer z = 4 + 2 + 1 * 64 + 43;

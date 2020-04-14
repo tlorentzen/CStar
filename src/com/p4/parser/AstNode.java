@@ -4,7 +4,6 @@ import org.antlr.v4.runtime.CommonToken;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.*;
 
 public class AstNode {
     List<AstNode> children = new ArrayList<>();
@@ -16,7 +15,13 @@ public class AstNode {
         visitor.visit(0,this);
     }
 
+    public void accept(NodeVisitor visitor) { visitor.visit(this); }
+
     String type;
+}
+
+interface AbstractNode{
+    public void accept(NodeVisitor visitor);
 }
 
 abstract class DclNode<T> extends AstNode {
@@ -60,32 +65,10 @@ abstract class LiteralNode<T> extends AstNode{
     }
 }
 
-abstract class InfixAstNode extends AstNode{
-    public AstNode Left;
-    public AstNode Right;
-
-    public void setLeft(AstNode left) {
-        Left = left;
-    }
-
-    public void setRight(AstNode right) {
-        Right = right;
-    }
-
-    public AstNode getLeft() {
-        return Left;
-    }
-
-    public AstNode getRight() {
-        return Right;
-    }
-
-}
-
 class IntegerDclNode extends DclNode<Integer>{
     public IntegerDclNode(String id){
         super(id);
-        super.type = "Integer";
+        this.type = "integer";
     }
 }
 
@@ -96,14 +79,14 @@ class ProgNode extends AstNode{
 class FloatDclNode extends DclNode<Float>{
     public FloatDclNode(String id){
         super(id);
-        super.type = "Float";
+        this.type = "decimal";
     }
 }
 
 class PinDclNode extends DclNode<Integer>{
     public PinDclNode(String id){
         super(id);
-        super.type = "Pin";
+        this.type = "pin";
     }
 }
 
@@ -111,14 +94,14 @@ class LongDclNode extends DclNode<Long>{
 
     public LongDclNode(String id){
         super(id);
-        super.type = "Long";
+        this.type = "long";
     }
 }
 
 class CharDclNode extends DclNode<Character>{
     public CharDclNode(String id){
         super(id);
-        super.type = "Char";
+        this.type = "character";
     }
 }
 
@@ -182,31 +165,26 @@ class MultNode extends AstNode{
     CommonToken token = new CommonToken(11);
 }
 
-class DivNode extends InfixAstNode{
+class DivNode extends AstNode{
 
     CommonToken token = new CommonToken(12);
 
 }
 
 class AssignNode extends AstNode{
-
-    String symbol = "="; //TODO Maybe.. maybe not
     public AssignNode(){}
 }
 
 class ArrayDclNode extends AstNode{
-
     public ArrayDclNode(){}
-
 }
 
 class ArrayNode extends AstNode implements Parameters{
     String Id;
-    String Type;
 
     public ArrayNode(String id, String type){
         Id = id;
-        Type = type;
+        this.type = type;
     }
 
     public String getId() {
@@ -214,7 +192,7 @@ class ArrayNode extends AstNode implements Parameters{
     }
 
     public String getType() {
-        return Type;
+        return type;
     }
 
     public void setId(String id) {
@@ -222,7 +200,7 @@ class ArrayNode extends AstNode implements Parameters{
     }
 
     public void setType(String type) {
-        Type = type;
+        this.type = type;
     }
 }
 
