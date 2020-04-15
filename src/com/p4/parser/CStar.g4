@@ -4,11 +4,11 @@ prog: ( dcl | func | stmt )* EOF;
 
 dcl: TYPE (ID | assign | array_dcl) SEMICOLON; //done
 assign: ID ASSIGN_OP expr | array_assign; //done
-expr: cond_expr | func_call; //done
+expr: cond_expr; //done
 cond_expr: arithm_expr (COMP_OP arithm_expr)? (( OR | AND ) cond_expr)*; //done
 arithm_expr: term ( ( PLUS | MINUS ) term )*; //done
 term: factor ( ( MULT | DIVISION ) factor )*; //done
-factor:	ID | val | LEFT_PAREN expr RIGHT_PAREN; //done
+factor:	(MINUS)? (ID | val | LEFT_PAREN expr RIGHT_PAREN | func_call); //done
 
 array_dcl: ARRAY ID ASSIGN_OP array_expr; //done
 array_expr: LEFT_BRACKET expr (COMMA expr)* RIGHT_BRACKET; //done
@@ -58,11 +58,12 @@ TYPE: 'integer' | 'decimal' | 'character' | 'big integer' | 'pin';
 ARRAY: 'array';
 RETURN: 'return';
 
-INT_LITERAL: ( '-' )? ('0'..'9')+;
-LONG_LITERAL: ( '-' )? ('0'..'9')+;
-FLOAT_LITERAL: ( '-' )? ('0'..'9')+ ('.' ('0'..'9')+ )?;
+INT_LITERAL: ('0'..'9')+;
+LONG_LITERAL: ('0'..'9')+;
+FLOAT_LITERAL: ('0'..'9')+ ('.' ('0'..'9')+ )?;
 PIN_LITERAL: ( 'a' | 'A' )?  ('0'..'9')+;
 CHAR_LITERAL: '\'' (.) '\'';
+SIGN: '+'|'-';
 
 ID: ( 'a'..'z' | 'A'..'Z' | '0'..'9' | '_' )+;
 
