@@ -155,7 +155,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         String type = child.toString();
         ArrayNode arrayNode = new ArrayNode(id, type);
         AstNode arrayExprNode = (ArrayExprNode) visit(ctx.array_expr());
-        ArrayDclNode arrayDclNode = new ArrayDclNode();
+        ArrayDclNode arrayDclNode = new ArrayDclNode(id);
         arrayDclNode.children.add(arrayNode);
         arrayDclNode.children.add(arrayExprNode);
 
