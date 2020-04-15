@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AstNode {
+    String id;
     String type;
 
     List<AstNode> children = new ArrayList<>();
@@ -17,8 +18,6 @@ public class AstNode {
 }
 
 abstract class DclNode<T> extends AstNode {
-    String id;
-
     public DclNode(String id){
         this.id = id;
     }
@@ -90,13 +89,11 @@ class CharDclNode extends DclNode<Character>{
 
 
 class IdNode extends AstNode implements Parameters{
-    String Id;
-
     public IdNode(String id){
-        this.Id = id;
+        this.id = id;
     }
     public IdNode(String id, String type){
-        this.Id = id;
+        this.id = id;
         this.type = type;
     }
 }
@@ -165,15 +162,13 @@ class ArrayDclNode<T> extends DclNode<T>{
 }
 
 class ArrayNode extends AstNode implements Parameters{
-    String Id;
-
     public ArrayNode(String id, String type){
-        Id = id;
+        this.id = id;
         this.type = type;
     }
 
     public String getId() {
-        return Id;
+        return id;
     }
 
     public String getType() {
@@ -181,7 +176,7 @@ class ArrayNode extends AstNode implements Parameters{
     }
 
     public void setId(String id) {
-        Id = id;
+        this.id = id;
     }
 
     public void setType(String type) {

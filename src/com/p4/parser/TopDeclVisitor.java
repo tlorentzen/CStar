@@ -7,12 +7,8 @@ import com.p4.symbols.SymbolTable;
 
 public class TopDeclVisitor extends SemanticsVisitor {
 
-    private SymbolTable symbolTable;
-    private ErrorBag errors;
-
     public TopDeclVisitor(SymbolTable symbolTable, ErrorBag errors){
-        this.symbolTable = symbolTable;
-        this.errors = errors;
+        super(symbolTable, errors);
     }
 
     @Override
@@ -30,9 +26,10 @@ public class TopDeclVisitor extends SemanticsVisitor {
             this.visit((AssignNode) node);
         } else if(node instanceof DclNode<?>){
             this.visit((DclNode<?>) node);
+        } else if(node instanceof LiteralNode<?>){
+            this.visit((LiteralNode<?>) node);
         } else {
             //TODO: error
-            System.out.println("Not a good type");
         }
     }
 
@@ -53,9 +50,11 @@ public class TopDeclVisitor extends SemanticsVisitor {
         } else {
             var attr = new Attributes();
             attr.variableType = node.type;
-
             attr.kind = node.getClass().getName();
             symbolTable.insert(node.id, attr);
         }
+    }
+
+    public void visit(LiteralNode<?> node){
     }
 }

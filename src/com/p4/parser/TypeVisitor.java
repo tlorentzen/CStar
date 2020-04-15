@@ -6,16 +6,17 @@ import com.p4.symbols.SymbolTable;
 
 public class TypeVisitor extends SemanticsVisitor {
 
-    private SymbolTable symbolTable;
-    private ErrorBag errors;
-
     public TypeVisitor(SymbolTable symbolTable, ErrorBag errors){
-        this.symbolTable = symbolTable;
-        this.errors = errors;
+        super(symbolTable, errors);
+    }
+
+    @Override
+    public void visit(AstNode node) {
+
     }
 
     public void visit(IdNode node){
-        var attr = symbolTable.lookup(node.Id);
+        var attr = symbolTable.lookup(node.id);
         if (attr != null && attr.kind.equals(node.getClass().getName())){
             attr.variableType = node.type;
         } else{
@@ -28,6 +29,8 @@ public class TypeVisitor extends SemanticsVisitor {
         if(node.children.size() != 2){
             errors.addEntry("E1", "Assign should always have two operands", ErrorType.TYPE_ERROR);
         } else{
+            System.out.println(node.children.get(0).type);
+            System.out.println(node.children.get(1).type);
             if(!node.children.get(0).type.equals(node.children.get(1).type)){
                 //Todo: Handle type casting
                 System.out.println("Casting");

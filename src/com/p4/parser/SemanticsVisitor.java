@@ -1,14 +1,27 @@
 package com.p4.parser;
 
-public class SemanticsVisitor implements NodeVisitor {
+import com.p4.errors.ErrorBag;
+import com.p4.errors.ErrorType;
+import com.p4.symbols.SymbolTable;
 
-    @Override
-    public void visitChildren(AstNode node) {
+public class SemanticsVisitor extends NodeVisitor {
 
+    SymbolTable symbolTable;
+    ErrorBag errors;
+
+    public SemanticsVisitor(SymbolTable symbolTable, ErrorBag errors){
+        this.symbolTable = symbolTable;
+        this.errors = errors;
+    }
+
+    public void visit(IdNode node){
+        if(this.symbolTable.lookup(node.id) == null){
+            errors.addEntry("E10", node.id + " has not been declared", ErrorType.TYPE_ERROR);
+        }
     }
 
     @Override
-    public void visit(AstNode node) {
+    void visit(AstNode node) {
 
     }
 }
