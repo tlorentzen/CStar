@@ -40,9 +40,11 @@ public class Main {
                         var symbolTable = new SymbolTable();
                         ErrorBag errors = new ErrorBag();
 
+                        /*
                         errors.addEntry("E1", "Error here!", ErrorType.TYPE_ERROR);
                         errors.addEntry("W1", "Warning here!", ErrorType.TYPE_ERROR);
                         errors.addEntry("I1", "Information here!", ErrorType.TYPE_ERROR);
+                        */
 
                         CStarLexer lexer = new CStarLexer(inputStream);
                         CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
