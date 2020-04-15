@@ -1,5 +1,6 @@
 package com.p4;
 
+import com.p4.errors.ErrorBag;
 import com.p4.parser.*;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.SymbolTable;
@@ -25,7 +26,6 @@ public class Main {
             System.out.println("File: "+inputSource.getFileName());
             System.out.println("Path: "+inputSource.toAbsolutePath());
 
-
             if(Files.exists(inputSource)){
 
                 String ext = getFileExtension(new File(args[0]));
@@ -37,6 +37,7 @@ public class Main {
                         CharStream inputStream = CharStreams.fromPath(inputSource);
 
                         var symbolTable = new SymbolTable();
+                        ErrorBag errors = new ErrorBag();
 
                         CStarLexer lexer = new CStarLexer(inputStream);
                         CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
@@ -55,6 +56,7 @@ public class Main {
 
                         System.out.println(tree.getText());
 
+                        errors.display();
                     }catch (IOException e){
                         System.out.println(e);
                     }
