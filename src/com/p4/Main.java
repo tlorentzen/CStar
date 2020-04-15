@@ -39,8 +39,6 @@ public class Main {
                         var symbolTable = new SymbolTable();
                         ErrorBag errors = new ErrorBag();
 
-                        errors.addEntry("E10", "Der er sket en fejl!", ErrorBag.errorType.TYPE);
-
                         CStarLexer lexer = new CStarLexer(inputStream);
                         CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
                         CStarParser parser = new CStarParser(commonTokenStream);
