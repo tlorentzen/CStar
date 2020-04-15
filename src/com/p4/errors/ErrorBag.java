@@ -3,10 +3,12 @@ package com.p4.errors;
 import java.util.ArrayList;
 import java.util.List;
 
-enum errorType {TYPE};
+
 
 public class ErrorBag {
     private List<Item> errors = new ArrayList<>();
+
+    public enum errorType {TYPE};
 
     public void addEntry(String code, String message, errorType type){
         this.errors.add(new Item(code, message, type));
@@ -24,11 +26,11 @@ public class ErrorBag {
 }
 
 class Item{
-    errorType type;
+    ErrorBag.errorType type;
     String code;
     String message;
 
-    public Item(String code, String message, errorType type){
+    public Item(String code, String message, ErrorBag.errorType type){
         this.type = type;
         this.code = code;
         this.message = message;
