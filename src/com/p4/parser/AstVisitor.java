@@ -223,7 +223,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     //Todo evt lav den general ved at lave en generisk metode
     public AstNode visitArithm_exprChild(ParseTree child, CStarParser.Arithm_exprContext parent, int operatorIndex){
         int termIndex = (operatorIndex - 1) / 2;
-        AstNode node = new AstNode();
+        AstNode node;
 
         switch (child.getText()) {
             case "+":
@@ -234,7 +234,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 break;
             default:
                 //todo error handling
-                break;
+                return null;
         }
 
         //Enters if there are more operators in the tree
@@ -272,7 +272,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     //Todo evt lav den general ved at lave en generisk metode
     public AstNode visitTermChild(ParseTree child, CStarParser.TermContext parent, int operatorIndex) {
         int factorIndex = (operatorIndex - 1) / 2;
-        AstNode node = new AstNode();
+        AstNode node;
 
         //Enters if there are more operators in the tree
         switch (child.getText()) {
@@ -284,7 +284,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 break;
             default:
                 //todo error handling
-                break;
+                return null;
         }
 
         //Enters if there are more operators in the tree

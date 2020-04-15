@@ -10,11 +10,6 @@ public class TypeVisitor extends SemanticsVisitor {
         super(symbolTable, errors);
     }
 
-    @Override
-    public void visit(AstNode node) {
-
-    }
-
     public void visit(IdNode node){
         var attr = symbolTable.lookup(node.id);
         if (attr != null && attr.kind.equals(node.getClass().getName())){

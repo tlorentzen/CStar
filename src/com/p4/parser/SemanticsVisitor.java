@@ -42,7 +42,7 @@ public class SemanticsVisitor extends NodeVisitor {
     }
 
     public void visit(AssignNode node){
-        if(node.children.size() != 2){
+        if(node.children.size() != 2) {
             errors.addEntry("E1", "Assign should always have two operands", ErrorType.TYPE_ERROR);
         } else{
             System.out.println(node.children.get(0).type);
@@ -52,6 +52,23 @@ public class SemanticsVisitor extends NodeVisitor {
                 System.out.println("Casting");
             }
         }
+    }
+
+    public void visit(CondNode node){
+        if(node.children.size() == 2){
+            System.out.println(node.children.get(0).type);
+            System.out.println(node.children.get(1).type);
+            if(!node.children.get(0).type.equals(node.children.get(1).type)){
+                //Todo: Handle type casting
+                System.out.println("Casting");
+            }
+        } else{
+
+        }
+    }
+
+    public void visit(ProgNode node) {
+        this.visitChildren(node);
     }
 
     //Exprs

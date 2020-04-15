@@ -5,7 +5,7 @@ import org.antlr.v4.runtime.CommonToken;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AstNode {
+public abstract class AstNode {
     String id;
     String type;
 
@@ -14,7 +14,10 @@ public class AstNode {
     public List<AstNode> getChildren() { return children; }
     public void setChildren(List<AstNode> children) { this.children = children; }
 
-    public void accept(NodeVisitor visitor) { visitor.visit(this); }
+    public void accept(NodeVisitor visitor) {
+        System.out.println("Visitor type: " + visitor.getClass().getName() + " and node type" + this.getClass().getName());
+        visitor.visit(this);
+    }
 }
 
 abstract class DclNode<T> extends AstNode {
@@ -52,10 +55,6 @@ class IntegerDclNode extends DclNode<Integer>{
         super(id);
         this.type = "integer";
     }
-}
-
-class ProgNode extends AstNode{
-
 }
 
 class FloatDclNode extends DclNode<Float>{

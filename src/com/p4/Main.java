@@ -53,15 +53,15 @@ public class Main {
 
                         ParseTree tree = parser.prog();
                         CStarBaseVisitor<?> visitor = new AstVisitor<>();
-                        AstNode ast = (AstNode) visitor.visit(tree);
+                        ProgNode ast = (ProgNode) visitor.visit(tree);
 
                         /*
                         AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                         astTreeVisitor.visit(0, ast);
                         */
 
-                        TopDeclVisitor topDeclVisitor = new TopDeclVisitor(symbolTable, errors);
-                        topDeclVisitor.visit(ast);
+                        SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+                        semanticsVisitor.visit(ast);
 
                         //System.out.println(tree.getText());
 
