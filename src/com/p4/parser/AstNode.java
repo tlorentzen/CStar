@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AstNode {
+    String type;
+
     List<AstNode> children = new ArrayList<>();
 
     public List<AstNode> getChildren() { return children; }
@@ -14,14 +16,8 @@ public class AstNode {
     public void accept(NodeVisitor visitor) { visitor.visit(this); }
 }
 
-interface AbstractNode{
-    public void accept(NodeVisitor visitor);
-}
-
 abstract class DclNode<T> extends AstNode {
     String id;
-    String type;
-    T value;
 
     public DclNode(String id){
         this.id = id;
@@ -31,21 +27,14 @@ abstract class DclNode<T> extends AstNode {
         return id;
     }
 
-    public T getValue() {
-        return value;
-    }
-
     public void setId(String id) {
         this.id = id;
-    }
-
-    public void setValue(T value) {
-        this.value = value;
     }
 }
 
 abstract class LiteralNode<T> extends AstNode{
     T Value;
+
     public LiteralNode(T value){
         Value = value;
     }
@@ -102,7 +91,6 @@ class CharDclNode extends DclNode<Character>{
 
 class IdNode extends AstNode implements Parameters{
     String Id;
-    String type;
 
     public IdNode(String id){
         this.Id = id;
@@ -172,12 +160,12 @@ class AssignNode extends AstNode{
 class ArrayDclNode<T> extends DclNode<T>{
     public ArrayDclNode(String id) {
         super(id);
+        this.type = "array";
     }
 }
 
 class ArrayNode extends AstNode implements Parameters{
     String Id;
-    String type;
 
     public ArrayNode(String id, String type){
         Id = id;

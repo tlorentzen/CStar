@@ -48,8 +48,8 @@ public class Main {
                         CStarBaseVisitor<?> visitor = new AstVisitor<>();
                         AstNode ast = (AstNode) visitor.visit(tree);
 
-                        //AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
-                        //astTreeVisitor.visit(0, ast);
+                        AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
+                        astTreeVisitor.visit(0, ast);
 
                         TopDeclVisitor topDeclVisitor = new TopDeclVisitor(symbolTable, errors);
                         topDeclVisitor.visit(ast);
