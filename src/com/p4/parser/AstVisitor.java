@@ -1,13 +1,9 @@
 package com.p4.parser;
 
-import jdk.jshell.spi.ExecutionControl;
+import com.p4.parser.nodes.*;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 

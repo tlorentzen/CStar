@@ -2,6 +2,7 @@ package com.p4.parser;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
+import com.p4.parser.nodes.DclNode;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.SymbolTable;
 
