@@ -1,6 +1,7 @@
 package com.p4;
 
 import com.p4.errors.ErrorBag;
+import com.p4.errors.ErrorType;
 import com.p4.parser.*;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.SymbolTable;
@@ -39,6 +40,12 @@ public class Main {
                         var symbolTable = new SymbolTable();
                         ErrorBag errors = new ErrorBag();
 
+                        /*
+                        errors.addEntry("E1", "Error here!", ErrorType.TYPE_ERROR);
+                        errors.addEntry("W1", "Warning here!", ErrorType.TYPE_ERROR);
+                        errors.addEntry("I1", "Information here!", ErrorType.TYPE_ERROR);
+                        */
+
                         CStarLexer lexer = new CStarLexer(inputStream);
                         CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
                         CStarParser parser = new CStarParser(commonTokenStream);
@@ -54,7 +61,7 @@ public class Main {
                         TopDeclVisitor topDeclVisitor = new TopDeclVisitor(symbolTable, errors);
                         topDeclVisitor.visit(ast);
 
-                        System.out.println(tree.getText());
+                        //System.out.println(tree.getText());
 
                         errors.display();
                     }catch (IOException e){
