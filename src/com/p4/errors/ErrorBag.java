@@ -6,10 +6,14 @@ import java.util.List;
 enum errorType {TYPE};
 
 public class ErrorBag {
-    List<Item> errors = new ArrayList();
+    private List<Item> errors = new ArrayList();
 
     public void addEntry(String code, String message, errorType type){
         this.errors.add(new Item(code, message, type));
+    }
+
+    public boolean isEmpty(){
+        return this.errors.isEmpty();
     }
 
     public void display(){
