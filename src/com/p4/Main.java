@@ -51,7 +51,7 @@ public class Main {
                         //AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                         //astTreeVisitor.visit(0, ast);
 
-                        TopDeclVisitor topDeclVisitor = new TopDeclVisitor(symbolTable);
+                        TopDeclVisitor topDeclVisitor = new TopDeclVisitor(symbolTable, errors);
                         topDeclVisitor.visit(ast);
 
                         System.out.println(tree.getText());
