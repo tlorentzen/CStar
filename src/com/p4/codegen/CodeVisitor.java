@@ -2,12 +2,11 @@ package com.p4.codegen;
 
 import com.p4.parser.nodes.*;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.p4.parser.nodes.*;
-import java.io.File;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -21,12 +20,15 @@ public class CodeVisitor implements INodeVisitor{
     public void print() throws IOException {
         File f = new File(filePath);
         FileWriter fileWriter;
+        BufferedWriter writer = null;
         if(!f.exists()){
-            f.createNewFile();
-            fileWriter = new FileWriter(filePath);
+            //f.createNewFile();
+            //fileWriter = new FileWriter(filePath);
+            writer = new BufferedWriter(new FileWriter(filePath));
         }
         else{
-            fileWriter = new FileWriter(filePath);
+            writer = new BufferedWriter(new FileWriter(filePath));
+            //fileWriter = new FileWriter(filePath);
         }
         StringBuilder output = new StringBuilder();
 
@@ -37,7 +39,7 @@ public class CodeVisitor implements INodeVisitor{
         }
 
         String outputString = output.toString();
-        fileWriter.write(outputString);
+        writer.append(outputString);
         System.out.println(output);
     }
 
@@ -46,6 +48,10 @@ public class CodeVisitor implements INodeVisitor{
         for(AstNode child : node.children){
             child.accept(this);
         }
+    }
+
+    public void visitChild(AstNode node) {
+        node.accept(this);
     }
 
     @Override
@@ -58,32 +64,34 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(IntegerNode node) {
-
+        stringBuilder.append(node.value);
     }
 
     @Override
     public void visit(FloatNode node) {
-
+        stringBuilder.append(node.value);
     }
 
     @Override
     public void visit(PinNode node) {
-
+        stringBuilder.append(node.value);
     }
 
     @Override
     public void visit(LongNode node) {
-
+        stringBuilder.append(node.value);
     }
 
     @Override
     public void visit(CharNode node) {
-
+        stringBuilder.append(node.value);
     }
 
     @Override
     public void visit(AssignNode node) {
-
+        visitChild(node.children.get(0));
+        stringBuilder.append("=");
+        visitChild(node.children.get(1));
     }
 
     @Override
@@ -94,22 +102,50 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(ProgNode node) {
         this.visitChildren(node);
-        //this.print();
-        System.out.println(stringBuilder.toString());
+        try {
+            this.print();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void visit(ArrayAssignNode node) {
-
+        //Id is index 0, the Index is at index 1, and the assigned value is at 2
+        visitChild(node.children.get(0));
+        stringBuilder.append("[");
+        visitChild(node.children.get(1));
+        stringBuilder.append("] = ");
+        visitChild(node.children.get(2));
     }
 
     @Override
     public void visit(ArrayExprNode node) {
 
+        for(AstNode child : node.children){
+            visitChild(child);
+            stringBuilder.append(",");
+        }
+        //Deletes leftover comma
+        stringBuilder.deleteCharAt(stringBuilder.length()-1);
+
     }
 
     @Override
     public void visit(ArrayNode node) {
+        stringBuilder.append(node.type);
+        stringBuilder.append(node.getId());
+        stringBuilder.append("[]");
+    }
+
+    @Override
+    public void visit(ArrayDclNode<?> node) {
+        //int ledPins[] = {2, 7, 4, 6, 5, 3}; Arduino c
+        visitChild(node.children.get(0));
+        stringBuilder.append("=");
+        stringBuilder.append("{");
+        visitChild(node.children.get(1));
+        stringBuilder.append("}");
 
     }
 
@@ -123,22 +159,23 @@ public class CodeVisitor implements INodeVisitor{
 
     }
 
-    @Override
-    public void visit(ArrayDclNode<?> node) {
 
-    }
 
     @Override
     public void visit(BlkNode node) {
         //blk: LEFT_BRACE ( dcl | stmt | return_exp)* RIGHT_BRACE;
-        stringBuilder.append("{");
-        this.visitChildren(node);
-        stringBuilder.append("}");
+        stringBuilder.append("{\n");
+        for(AstNode child : node.children){
+            this.visitChild(child);
+            stringBuilder.append(";\n");
+        }
+
+        stringBuilder.append("\n}\n");
     }
 
     @Override
     public void visit(CharDclNode node) {
-
+        visitDclNode(node);
     }
 
     @Override
@@ -148,7 +185,7 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(FloatDclNode node) {
-
+        visitDclNode(node);
     }
 
     @Override
@@ -167,49 +204,52 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(IntegerDclNode node) {
+        visitDclNode(node);
+    }
+
+    @Override
+    public void visit(IterativeNode node) {
+
+    }
+
+    @Override
+    public void visit(LongDclNode node) {
+        visitDclNode(node);
+    }
+
+    @Override
+    public void visit(MultNode node) {
+
+    }
+
+    @Override
+    public void visit(ParamNode node) {
+        this.visitChildren(node);
+    }
+
+    @Override
+    public void visit(PinDclNode node) {
+
+    }
+
+    @Override
+    public void visit(SelectionNode node) {
+
+    }
+
+    @Override
+    public void visit(StmtNode node) {
+
+    }
+
+    @Override
+    public void visit(SubNode node) {
+
+    }
+
+    public void visitDclNode(DclNode node){
         stringBuilder.append(node.type);
         stringBuilder.append(node.id);
-        stringBuilder.append(";");
-    }
-
-    @Override
-    public void visit(IterativeNode iterativeNode) {
-
-    }
-
-    @Override
-    public void visit(LongDclNode longDclNode) {
-
-    }
-
-    @Override
-    public void visit(MultNode multNode) {
-
-    }
-
-    @Override
-    public void visit(ParamNode paramNode) {
-        this.visitChildren(paramNode);
-    }
-
-    @Override
-    public void visit(PinDclNode pinDclNode) {
-
-    }
-
-    @Override
-    public void visit(SelectionNode selectionNode) {
-
-    }
-
-    @Override
-    public void visit(StmtNode stmtNode) {
-
-    }
-
-    @Override
-    public void visit(SubNode subNode) {
-
     }
 }
 
