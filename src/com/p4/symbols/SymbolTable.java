@@ -1,16 +1,19 @@
 package com.p4.symbols;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SymbolTable {
 
     private CStarScope currentScope;
     int level = 0;
 
     public SymbolTable(){
-        this.currentScope = new CStarScope("global");
+        this.currentScope = new CStarScope("global", 0);
     }
 
     public void addScope(String scopeName){
-        CStarScope s = new CStarScope(scopeName);
+        CStarScope s = new CStarScope(scopeName, level+1);
         s.parent = currentScope;
         currentScope.children.add(s);
         currentScope = s;
@@ -20,10 +23,10 @@ public class SymbolTable {
 
     public void leaveScope(){
         if(currentScope.parent != null){
-            String currentScopeName = currentScope.ScopeName;
+            String currentScopeName = currentScope.scopeName;
             currentScope = currentScope.parent;
             level--;
-            System.out.println(">> Leaving scope: "+currentScopeName+" ("+(level+1)+") -> "+currentScope.ScopeName+" ("+(level)+")");
+            System.out.println(">> Leaving scope: "+currentScopeName+" ("+(level+1)+") -> "+currentScope.scopeName+" ("+(level)+")");
         }else{
             System.out.println(">> Leaving scope: Already in global scope! ("+level+")");
         }
@@ -34,6 +37,7 @@ public class SymbolTable {
     }
 
     public Attributes lookup(String symbol){
+
         Attributes attri = currentScope.symbols.getOrDefault(symbol, null);
 
         if(attri == null){
@@ -71,6 +75,19 @@ public class SymbolTable {
 
     public void insert(String symbol, Attributes attributes){
         currentScope.symbols.put(symbol, attributes);
+    }
+
+    public void outputAvailableSymbols(){
+        CStarScope scope = currentScope;
+
+        do{
+            for (Map.Entry<String, Attributes> entry : currentScope.symbols.entrySet()){
+                String key = entry.getKey();
+                Attributes value = entry.getValue();
+
+                System.out.printf("Symbol: %10s:%s \n", key, value.variableType);
+            }
+        }while((scope = scope.parent) != null);
     }
 }
 

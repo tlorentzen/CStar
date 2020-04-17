@@ -24,7 +24,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(IdNode node){
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
-            errors.addEntry("E10", node.id + " has not been declared in any accessible scope", ErrorType.TYPE_ERROR, node.lineNumber);
+            errors.addEntry(ErrorType.E_TYPE_ERROR, node.id + " has not been declared in any accessible scope", node.lineNumber);
         } else{
             node.type = symbolTable.lookup(node.id).variableType;
         }
@@ -52,7 +52,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(AssignNode node){
         if(node.children.size() != 2) {
-            errors.addEntry("E1", "Assign should always have two operands", ErrorType.TYPE_ERROR, node.lineNumber);
+            errors.addEntry(ErrorType.E_TYPE_ERROR, "Assign should always have two operands", node.lineNumber);
         } else{
             this.visitChildren(node);
             var leftChild = node.children.get(0);
@@ -74,7 +74,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else if(node.children.size() == 1){
             node.type = node.children.get(0).type;
         } else {
-            errors.addEntry("E1", "Unexpected number of operands in conditional expression", ErrorType.TYPE_ERROR, node.lineNumber);
+            errors.addEntry(ErrorType.E_TYPE_ERROR, "Unexpected number of operands in conditional expression", node.lineNumber);
         }
     }
 
@@ -137,12 +137,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(BlkNode node) {
-        System.out.println("S-blknode");
-        symbolTable.addScope("blkNode-"+System.currentTimeMillis());
-
         this.visitChildren(node);
-
-        symbolTable.leaveScope();
     }
 
     public void visit(CharDclNode node) {
@@ -173,7 +168,9 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(FuncNode node) {
-        //Todo: implement
+        symbolTable.addScope("FuncNode-"+System.currentTimeMillis());
+        this.visitChildren(node);
+        symbolTable.leaveScope();
     }
 
     public void visit(IntegerDclNode node) {
@@ -185,7 +182,9 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(IterativeNode node) {
-        //Todo: implement
+        symbolTable.addScope("IterativeNode-"+System.currentTimeMillis());
+        this.visitChildren(node);
+        symbolTable.leaveScope();
     }
 
     public void visit(LongDclNode node) {
@@ -216,7 +215,11 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(SelectionNode node) {
+        symbolTable.addScope("SelectionNode-"+System.currentTimeMillis());
         this.visitChildren(node);
+
+        symbolTable.outputAvailableSymbols();
+        symbolTable.leaveScope();
     }
 
     public void visit(StmtNode node) {
