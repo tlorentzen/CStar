@@ -2,8 +2,13 @@ integer i = 2;
 
 integer i = 3;
 
-if(i > 1){
-    integer hej = 5;
-}
 
 integer array ia = [2, 5.2, 6];
+
+void funcName(integer kl){
+    integer hest = 10000;
+
+    if(hest < 100000){
+        integer hej = 100;
+    }
+}
