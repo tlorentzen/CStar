@@ -37,21 +37,15 @@ public class SymbolTable {
     }
 
     public Attributes lookup(String symbol){
+        CStarScope scope = currentScope;
 
-        Attributes attri = currentScope.symbols.getOrDefault(symbol, null);
-
-        if(attri == null){
-            CStarScope scope = currentScope;
-
-            while((scope = scope.parent) != null){
-                attri = scope.symbols.getOrDefault(symbol, null);
-
-                if(attri != null)
-                    break;
+        do{
+            if(scope.symbols.containsKey(symbol)){
+                return scope.symbols.get(symbol);
             }
-        }
+        }while((scope = scope.parent) != null);
 
-        return attri;
+       return null;
     }
 
     public boolean declaredInAccessibleScope(String symbol){
@@ -81,7 +75,7 @@ public class SymbolTable {
         CStarScope scope = currentScope;
 
         do{
-            for (Map.Entry<String, Attributes> entry : currentScope.symbols.entrySet()){
+            for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
                 String key = entry.getKey();
                 Attributes value = entry.getValue();
 
