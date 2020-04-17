@@ -181,19 +181,8 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(FuncNode node) {
         symbolTable.addScope("FuncNode-"+System.currentTimeMillis());
 
-        for(AstNode n : node.getChildren()){
-            if(n instanceof IdNode){
-                IdNode param = (IdNode)n;
-
-                Attributes attr = new Attributes();
-                attr.variableType = param.type;
-                attr.kind = "funcnode";
-
-                symbolTable.insert(param.id, attr);
-            }
-        }
-
         this.visitChildren(node);
+        symbolTable.outputAvailableSymbols();
         symbolTable.leaveScope();
     }
 
@@ -213,6 +202,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(IterativeNode node) {
         symbolTable.addScope("IterativeNode-"+System.currentTimeMillis());
         this.visitChildren(node);
+        symbolTable.outputAvailableSymbols();
         symbolTable.leaveScope();
     }
 
@@ -237,6 +227,17 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ParamNode node) {
+
+        for(AstNode n : node.getChildren()){
+            IdNode param = (IdNode)n;
+
+            Attributes attr = new Attributes();
+            attr.variableType = param.type;
+            attr.kind = "param";
+
+            symbolTable.insert(param.id, attr);
+        }
+
         this.visitChildren(node);
     }
 
