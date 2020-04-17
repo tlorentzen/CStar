@@ -540,7 +540,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 return visit(ctx.assign());
             case "class com.p4.parser.CStarParser$ExprContext":
                 return visit(ctx.expr());
-            case "class com.p4.parser.CStarParser$SelectiveContext":
+            case "class com.p4.parser.CStarParser$SelectionContext":
                 return visit(ctx.selection());
             case "class com.p4.parser.CStarParser$IterativeContext":
                 return visit(ctx.iterative());
