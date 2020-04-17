@@ -5,7 +5,6 @@ import com.p4.parser.INodeVisitor;
 public class CharDclNode extends DclNode<Character> {
     public CharDclNode(String id){
         super(id);
-        this.type = "character";
     }
 
     @Override
