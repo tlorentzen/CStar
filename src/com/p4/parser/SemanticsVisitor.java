@@ -90,10 +90,12 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
         node.type = node.children.get(0).type;
         boolean nodeTypeChecked = false;
+        //Todo: reflect in report?
         while(!nodeTypeChecked){
             nodeTypeChecked = true;
             for(AstNode child : node.children){
                 if(!child.type.equals(node.type)){
+                    System.out.println(node.type + "-->" + child.type);
                     node.type = this.dominantTypeConversion(child.type, node.type);
                     child.type = node.type;
                     nodeTypeChecked = false;
@@ -104,7 +106,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ArrayNode node) {
-
+        this.visitChildren(node);
     }
 
     public void visit(ReturnExpNode node) {
@@ -251,6 +253,12 @@ public class SemanticsVisitor implements INodeVisitor {
 
     private String dominantTypeConversion(String type1, String type2) {
         //Todo: handling casting to dominant type
-        return type1;
+        if(type1.equals("float")){
+            return "float";
+        } else if(type2.equals("float")){
+            return "float";
+        } else{
+            return "float";
+        }
     }
 }

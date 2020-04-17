@@ -4,4 +4,4 @@ if(i > 1){
     integer hej = 5;
 }
 
-integer array ia = [2, 5, 6];
+integer array ia = [2, 5.2, 6];
