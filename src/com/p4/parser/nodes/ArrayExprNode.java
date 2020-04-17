@@ -22,6 +22,6 @@ public class ArrayExprNode extends AstNode {
 
     @Override
     public void accept(SemanticsVisitor visitor) {
-        visitor.visitArrayExpr(this);
+        visitor.visit(this);
     }
 }

@@ -7,6 +7,6 @@ public class AssignNode extends AstNode {
 
     @Override
     public void accept(SemanticsVisitor visitor) {
-        visitor.visitAssign(this);
+        visitor.visit(this);
     }
 }

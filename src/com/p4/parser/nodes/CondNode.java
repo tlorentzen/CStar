@@ -11,6 +11,6 @@ public class CondNode extends AstNode{
 
     @Override
     public void accept(SemanticsVisitor visitor) {
-        visitor.visitCond(this);
+        visitor.visit(this);
     }
 }

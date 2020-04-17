@@ -5,7 +5,7 @@ import com.p4.parser.SemanticsVisitor;
 public class IntegerDclNode extends DclNode<Integer> {
     public IntegerDclNode(String id){
         super(id);
-        this.type = "integer";
+        this.setType("integer");
     }
 
     public void accept(SemanticsVisitor visitor) {

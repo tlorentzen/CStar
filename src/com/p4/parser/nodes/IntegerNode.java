@@ -9,6 +9,6 @@ public class IntegerNode extends LiteralNode<Integer>{
     }
 
     public void accept(SemanticsVisitor visitor) {
-        visitor.visitInteger(this);
+        visitor.visit(this);
     }
 }

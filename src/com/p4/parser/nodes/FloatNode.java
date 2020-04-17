@@ -9,6 +9,6 @@ public class FloatNode extends LiteralNode<Float>{
     }
 
     public void accept(SemanticsVisitor visitor) {
-        visitor.visitFloat(this);
+        visitor.visit(this);
     }
 }

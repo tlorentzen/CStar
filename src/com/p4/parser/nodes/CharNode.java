@@ -10,6 +10,6 @@ public class CharNode extends LiteralNode<Character> {
 
     @Override
     public void accept(SemanticsVisitor visitor) {
-        visitor.visitChar(this);
+        visitor.visit(this);
     }
 }

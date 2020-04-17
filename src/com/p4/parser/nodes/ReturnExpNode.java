@@ -7,6 +7,6 @@ public class ReturnExpNode extends AstNode{
     CommonToken token = new CommonToken(29);
 
     public void accept(SemanticsVisitor visitor) {
-        visitor.visitReturnExpr(this);
+        visitor.visit(this);
     }
 }

@@ -9,6 +9,6 @@ public class LongNode extends LiteralNode<Long> {
     }
 
     public void accept(SemanticsVisitor visitor) {
-        visitor.visitLong(this);
+        visitor.visit(this);
     }
 }

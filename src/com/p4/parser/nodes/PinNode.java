@@ -9,6 +9,6 @@ public class PinNode extends LiteralNode<Integer> {
     }
 
     public void accept(SemanticsVisitor visitor) {
-        visitor.visitPin(this);
+        visitor.visit(this);
     }
 }

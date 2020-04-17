@@ -18,6 +18,6 @@ public class IdNode extends AstNode implements Parameters {
     }
 
     public void accept(SemanticsVisitor visitor) {
-        visitor.visitId(this);
+        visitor.visit(this);
     }
 }

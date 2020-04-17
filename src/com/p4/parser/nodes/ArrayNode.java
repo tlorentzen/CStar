@@ -31,6 +31,6 @@ public class ArrayNode extends AstNode implements Parameters {
 
     @Override
     public void accept(SemanticsVisitor visitor) {
-        visitor.visitArray(this);
+        visitor.visit(this);
     }
 }

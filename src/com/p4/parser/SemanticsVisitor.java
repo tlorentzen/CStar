@@ -15,46 +15,55 @@ public class SemanticsVisitor {
         this.errors = errors;
     }
 
-    public void visitId(IdNode node){
+    public void visit(IdNode node){
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
             errors.addEntry("E10", node.id + " has not been declared in any accessible scope", ErrorType.TYPE_ERROR);
         }
     }
 
-    public void visitInteger(IntegerNode node){
+    public void visit(IntegerNode node){
         node.type = "integer";
+        System.out.println("IntegerLit");
     }
 
-    public void visitFloat(FloatNode node){
+    public void visit(FloatNode node){
         node.type = "decimal";
     }
 
-    public void visitPin(PinNode node){
+    public void visit(PinNode node){
         node.type = "pin";
     }
 
-    public void visitLong(LongNode node){
+    public void visit(LongNode node){
         node.type = "long";
     }
 
-    public void visitChar(CharNode node){
+    public void visit(CharNode node){
         node.type = "character";
     }
 
-    public void visitAssign(AssignNode node){
+    public void visit(AssignNode node){
         if(node.children.size() != 2) {
             errors.addEntry("E1", "Assign should always have two operands", ErrorType.TYPE_ERROR);
         } else{
-            System.out.println(node.children.get(0));
-            System.out.println(node.children.get(1));
-            if(true){
+            var leftChild = node.children.get(0);
+            var rightChild = node.children.get(1);
+            System.out.println(leftChild);
+            System.out.println(rightChild);
+            leftChild.accept(this);
+            rightChild.accept(this);
+            System.out.println(leftChild.type);
+            System.out.println(rightChild.type);
+            if(!node.children.get(0).type.equals(node.children.get(1).type)){
                 //Todo: Handle type casting
                 System.out.println("Casting");
+            } else{
+                System.out.println("Not casting");
             }
         }
     }
 
-    public void visitCond(CondNode node){
+    public void visit(CondNode node){
         if(node.children.size() == 2){
             System.out.println(node.children.get(0).type);
             System.out.println(node.children.get(1).type);
@@ -67,37 +76,97 @@ public class SemanticsVisitor {
         }
     }
 
-    public void visitProg(ProgNode node) {
+    public void visit(ProgNode node) {
         this.visitChildren(node);
     }
 
     public void visitChildren(AstNode node) {
-        for(INode child : node.children){
+        for(AstNode child : node.children){
             child.accept(this);
         }
     }
 
-    public void visit(AstNode node) {
-        this.visitChildren( node);
-    }
-
-    public void visitArrayAssign(ArrayAssignNode node) {
+    public void visit(ArrayAssignNode node) {
         //Todo: implement
     }
 
-    public void visitArrayExpr(ArrayExprNode node) {
+    public void visit(ArrayExprNode node) {
         //Todo: implement
     }
 
-    public void visitArray(ArrayNode node) {
+    public void visit(ArrayNode node) {
         //Todo: implement
     }
 
-    public void visitReturnExpr(ReturnExpNode node) {
+    public void visit(ReturnExpNode node) {
         //Todo: implement
     }
 
+    public void visit(AddNode node) {
+        //Todo: implement
+    }
 
-    //Exprs
-    //Refs
+    public void visit(ArrayDclNode<?> node) {
+        //Todo: implement
+    }
+
+    public void visit(BlkNode node) {
+        //Todo: implement
+    }
+
+    public void visit(CharDclNode node) {
+        //Todo: implement
+    }
+
+    public void visit(DivNode node) {
+        //Todo: implement
+    }
+
+    public void visit(FloatDclNode node) {
+        //Todo: implement
+    }
+
+    public void visit(FuncCallNode node) {
+        //Todo: implement
+    }
+
+    public void visit(FuncNode node) {
+        //Todo: implement
+    }
+
+    public void visit(IntegerDclNode node) {
+        //Todo: implement
+    }
+
+    public void visit(IterativeNode iterativeNode) {
+        //Todo: implement
+    }
+
+    public void visit(LongDclNode longDclNode) {
+        //Todo: implement
+    }
+
+    public void visit(MultNode multNode) {
+        //Todo: implement
+    }
+
+    public void visit(ParamNode paramNode) {
+        //Todo: implement
+    }
+
+    public void visit(PinDclNode pinDclNode) {
+        //Todo: implement
+    }
+
+    public void visit(SelectionNode selectionNode) {
+        //Todo: implement
+    }
+
+    public void visit(StmtNode stmtNode) {
+        //Todo: implement
+    }
+
+    public void visit(SubNode subNode) {
+        //Todo: implement
+    }
 }
