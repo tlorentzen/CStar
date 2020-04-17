@@ -1,6 +1,10 @@
+integer hest;
+
 integer i = 2;
 
 decimal d = 4;
+
+
 
 integer z = 4 + 2 + 1 * 64 + 43;
 

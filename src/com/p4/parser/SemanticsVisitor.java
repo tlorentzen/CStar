@@ -3,6 +3,7 @@ package com.p4.parser;
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
 import com.p4.parser.nodes.*;
+import com.p4.symbols.Attributes;
 import com.p4.symbols.SymbolTable;
 
 public class SemanticsVisitor implements INodeVisitor {
@@ -114,6 +115,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(ArrayDclNode<?> node) {
         //Todo: implement
+
     }
 
     public void visit(BlkNode node) {
@@ -121,7 +123,10 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(CharDclNode node) {
-        //Todo: implement
+        Attributes attr = new Attributes();
+        attr.variableType = "char";
+        attr.kind = node.getType();
+        symbolTable.insert(node.id, attr);
     }
 
     public void visit(DivNode node) {
@@ -129,7 +134,10 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(FloatDclNode node) {
-        //Todo: implement
+        Attributes attr = new Attributes();
+        attr.variableType = "decimal";
+        attr.kind = node.getType();
+        symbolTable.insert(node.id, attr);
     }
 
     public void visit(FuncCallNode node) {
@@ -141,7 +149,10 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(IntegerDclNode node) {
-        //Todo: implement
+        Attributes attr = new Attributes();
+        attr.variableType = "integer";
+        attr.kind = node.getType();
+        symbolTable.insert(node.id, attr);
     }
 
     public void visit(IterativeNode iterativeNode) {
@@ -149,7 +160,10 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(LongDclNode longDclNode) {
-        //Todo: implement
+        Attributes attr = new Attributes();
+        attr.variableType = "long";
+        attr.kind = longDclNode.getType();
+        symbolTable.insert(longDclNode.id, attr);
     }
 
     public void visit(MultNode multNode) {
@@ -161,7 +175,10 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(PinDclNode pinDclNode) {
-        //Todo: implement
+        Attributes attr = new Attributes();
+        attr.variableType = "pin";
+        attr.kind = pinDclNode.getType();
+        symbolTable.insert(pinDclNode.id, attr);
     }
 
     public void visit(SelectionNode selectionNode) {
