@@ -4,6 +4,8 @@ import com.p4.errors.ErrorBag;
 import com.p4.parser.*;
 import com.p4.parser.nodes.ProgNode;
 import com.p4.symbols.SymbolTable;
+import com.p4.tgl.Circle;
+import com.p4.tgl.ExportVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -20,6 +22,11 @@ public class Main {
     public static void main(String[] args) {
 
         Path inputSource = null;
+
+        Circle c = new Circle();
+        ExportVisitor evisit = new ExportVisitor();
+        c.accept(evisit);
+
 
         if(args.length == 1){
             inputSource = Paths.get(args[0]);
