@@ -77,44 +77,36 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             var child = parent.getChild(0);
             String type = child.toString();
 
+            DclNode<?> dclNode;
+
             switch (type) {
                 case "integer":
-                    AssignNode integerAssign = new AssignNode();
-                    IntegerDclNode intDclNode = new IntegerDclNode(id);
-                    integerAssign.children.add(intDclNode);
-                    integerAssign.children.add(exprNode);
-                    return integerAssign;
+                    dclNode = new IntegerDclNode(id);
+                    break;
                 case "decimal":
-                    AssignNode floatAssign = new AssignNode();
-                    FloatDclNode floatDclNode = new FloatDclNode(id);
-                    floatAssign.children.add(floatDclNode);
-                    floatAssign.children.add(exprNode);
-                    return floatAssign;
+                    dclNode = new FloatDclNode(id);
+                    break;
                 case "pin":
-                    AssignNode pinAssign = new AssignNode();
-                    PinDclNode pinDclNode = new PinDclNode(id);
-                    pinAssign.children.add(pinDclNode);
-                    pinAssign.children.add(exprNode);
-                    return pinAssign;
+                    dclNode = new PinDclNode(id);
+                    break;
                 case "long integer":
-                    AssignNode longAssign = new AssignNode();
-                    LongDclNode longDclNode = new LongDclNode(id);
-                    longAssign.children.add(longDclNode);
-                    longAssign.children.add(exprNode);
-                    return longAssign;
+                    dclNode = new LongDclNode(id);
+                    break;
                 case "character":
-                    AssignNode charAssign = new AssignNode();
-                    CharDclNode charDclNode = new CharDclNode(id);
-                    charAssign.children.add(charDclNode);
-                    charAssign.children.add(exprNode);
-                    return charAssign;
+                    dclNode = new CharDclNode(id);
+                    break;
                 default:
                     return null;
             }
+            AssignNode assign = new AssignNode();
+            assign.lineNumber = ctx.start.getLine();
+            dclNode.lineNumber = ctx.start.getLine();
+            assign.children.add(dclNode);
+            assign.children.add(exprNode);
+            return assign;
         }
         else if (ctx.getChild(0).getClass().toString().equals("class com.p4.parser.CStarParser$Array_assignContext")) {
-            AstNode node = visit(ctx.array_assign());
-            return node;
+            return visit(ctx.array_assign());
         }
         else{
             String id = ctx.ID().toString();
