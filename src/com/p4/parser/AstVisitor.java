@@ -167,7 +167,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         ArrayNode arrayNode = new ArrayNode(id, type);
         arrayNode.lineNumber = ctx.start.getLine();
         AstNode arrayExprNode = (ArrayExprNode) visit(ctx.array_expr());
-        ArrayDclNode arrayDclNode = new ArrayDclNode(id);
+        var arrayDclNode = new ArrayDclNode(id);
         arrayDclNode.lineNumber = ctx.start.getLine();
         arrayDclNode.children.add(arrayNode);
         arrayDclNode.children.add(arrayExprNode);
@@ -483,7 +483,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         for(CStarParser.BlkContext blk : ctx.blk()){
             node.children.add(visit(blk));
         }
-
+        System.out.println(node);
         return node;
     }
 

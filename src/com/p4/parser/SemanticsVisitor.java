@@ -138,6 +138,7 @@ public class SemanticsVisitor implements INodeVisitor {
         attr.variableType = "decimal";
         attr.kind = node.getType();
         symbolTable.insert(node.id, attr);
+        node.type = attr.variableType;
     }
 
     public void visit(FuncCallNode node) {
@@ -153,17 +154,19 @@ public class SemanticsVisitor implements INodeVisitor {
         attr.variableType = "integer";
         attr.kind = node.getType();
         symbolTable.insert(node.id, attr);
+        node.type = attr.variableType;
     }
 
-    public void visit(IterativeNode iterativeNode) {
+    public void visit(IterativeNode node) {
         //Todo: implement
     }
 
-    public void visit(LongDclNode longDclNode) {
+    public void visit(LongDclNode node) {
         Attributes attr = new Attributes();
         attr.variableType = "long";
-        attr.kind = longDclNode.getType();
-        symbolTable.insert(longDclNode.id, attr);
+        attr.kind = node.getType();
+        symbolTable.insert(node.id, attr);
+        node.type = attr.variableType;
     }
 
     public void visit(MultNode node) {
@@ -173,22 +176,23 @@ public class SemanticsVisitor implements INodeVisitor {
         node.type = binaryOperationResultType(CStarParser.MULT, leftChild.type, rightChild.type);
     }
 
-    public void visit(ParamNode paramNode) {
+    public void visit(ParamNode node) {
         //Todo: implement
     }
 
-    public void visit(PinDclNode pinDclNode) {
+    public void visit(PinDclNode node) {
         Attributes attr = new Attributes();
         attr.variableType = "pin";
-        attr.kind = pinDclNode.getType();
-        symbolTable.insert(pinDclNode.id, attr);
+        attr.kind = node.getType();
+        symbolTable.insert(node.id, attr);
+        node.type = attr.variableType;
     }
 
-    public void visit(SelectionNode selectionNode) {
+    public void visit(SelectionNode node) {
         //Todo: implement
     }
 
-    public void visit(StmtNode stmtNode) {
+    public void visit(StmtNode node) {
         //Todo: implement
     }
 

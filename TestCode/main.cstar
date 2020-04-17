@@ -1,3 +1,5 @@
+integer i = 2;
+
 if(i > 1){
     integer hej = 5;
 }
