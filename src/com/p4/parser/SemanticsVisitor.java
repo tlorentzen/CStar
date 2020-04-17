@@ -114,9 +114,10 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(BlkNode node) {
+        System.out.println("S-blknode");
         symbolTable.addScope("blkNode-"+System.currentTimeMillis());
 
-        // TODO: Stuff...
+        this.visitChildren(node);
 
         symbolTable.leaveScope();
     }
