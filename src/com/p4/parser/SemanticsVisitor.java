@@ -5,7 +5,7 @@ import com.p4.errors.ErrorType;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.SymbolTable;
 
-public class SemanticsVisitor implements INodeVisitor {
+public class SemanticsVisitor {
 
     SymbolTable symbolTable;
     ErrorBag errors;
@@ -77,9 +77,8 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    @Override
-    public void visit(INode node) {
-        this.visitChildren((AstNode) node);
+    public void visit(AstNode node) {
+        this.visitChildren( node);
     }
 
     public void visitArrayAssign(ArrayAssignNode node) {
