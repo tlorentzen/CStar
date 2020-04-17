@@ -28,9 +28,9 @@ public class ErrorBag {
                     System.out.print(getColor(item.type.toString()));
                     System.out.print(item.type);
                     System.out.print(Color.RESET);
-                    System.out.print(": "+item.message+" ("+item.type.toString()+") on line "+item.lineNumber+"\n");
+                    System.out.print(": "+item.message+" ("+item.type.name()+") on line "+item.lineNumber+"\n");
                 }else{
-                    System.out.println(item.type.toString()+": "+item.message+" ("+item.type.toString()+") on line "+item.lineNumber);
+                    System.out.println(item.type.toString()+": "+item.message+" ("+item.type.name()+") on line "+item.lineNumber);
                 }
             }
         }
