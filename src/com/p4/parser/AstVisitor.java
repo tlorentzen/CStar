@@ -388,7 +388,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 CommonToken t = (CommonToken) object;
 
                 if(t.getType() == CStarParser.COMP_OP){
-                    node.setOperator(t.getText());
+                    node.setOperator(t.getType());
                 }
 
                 if(t.getType() == CStarParser.AND || t.getType() == CStarParser.OR){
@@ -400,12 +400,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     node.children.add(newCondNode);
                 }
 
-                node.setOperator(t.getText());
+                node.setOperator(t.getType());
             } else{
                 node.children.add(visit(child));
             }
         }
-        if(node.getOperator() == null){
+        if(node.getOperator() == -1){
             return node.getChildren().get(0);
         } else{
             return node;

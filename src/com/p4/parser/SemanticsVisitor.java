@@ -27,7 +27,6 @@ public class SemanticsVisitor implements INodeVisitor {
             errors.addEntry("E10", node.id + " has not been declared in any accessible scope", ErrorType.TYPE_ERROR, node.lineNumber);
         } else{
             node.type = symbolTable.lookup(node.id).variableType;
-            System.out.println(node.type);
         }
     }
 
@@ -55,33 +54,27 @@ public class SemanticsVisitor implements INodeVisitor {
         if(node.children.size() != 2) {
             errors.addEntry("E1", "Assign should always have two operands", ErrorType.TYPE_ERROR, node.lineNumber);
         } else{
+            this.visitChildren(node);
             var leftChild = node.children.get(0);
             var rightChild = node.children.get(1);
             System.out.println(leftChild);
             System.out.println(rightChild);
-            leftChild.accept(this);
-            rightChild.accept(this);
             System.out.println(leftChild.type);
             System.out.println(rightChild.type);
-            if(!node.children.get(0).type.equals(node.children.get(1).type)){
-                //Todo: Handle type casting
-                System.out.println("Casting");
-            } else{
-                System.out.println("Not casting");
-            }
+            node.type = binaryOperationResultType(CStarParser.ASSIGN_OP, leftChild.type, rightChild.type);
         }
     }
 
     public void visit(CondNode node){
+        this.visitChildren(node);
         if(node.children.size() == 2){
-            System.out.println(node.children.get(0).type);
-            System.out.println(node.children.get(1).type);
-            if(!node.children.get(0).type.equals(node.children.get(1).type)){
-                //Todo: Handle type casting
-                System.out.println("Casting");
-            }
-        } else{
-
+            String leftChild = node.children.get(0).type;
+            String rightChild = node.children.get(1).type;
+            node.type = binaryOperationResultType(node.getOperator(), leftChild, rightChild);
+        } else if(node.children.size() == 1){
+            node.type = node.children.get(0).type;
+        } else {
+            errors.addEntry("E1", "Unexpected number of operands in conditional expression", ErrorType.TYPE_ERROR, node.lineNumber);
         }
     }
 
@@ -109,7 +102,7 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
         var leftChild = node.children.get(0);
         var rightChild = node.children.get(1);
-        node.type = binaryOperationResultType('+', leftChild.type, rightChild.type);
+        node.type = binaryOperationResultType(CStarParser.PLUS, leftChild.type, rightChild.type);
     }
 
     public void visit(ArrayDclNode<?> node) {
@@ -125,7 +118,10 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(DivNode node) {
-        //Todo: implement
+        this.visitChildren(node);
+        var leftChild = node.children.get(0);
+        var rightChild = node.children.get(1);
+        node.type = binaryOperationResultType(CStarParser.DIVISION, leftChild.type, rightChild.type);
     }
 
     public void visit(FloatDclNode node) {
@@ -152,8 +148,11 @@ public class SemanticsVisitor implements INodeVisitor {
         //Todo: implement
     }
 
-    public void visit(MultNode multNode) {
-        //Todo: implement
+    public void visit(MultNode node) {
+        this.visitChildren(node);
+        var leftChild = node.children.get(0);
+        var rightChild = node.children.get(1);
+        node.type = binaryOperationResultType(CStarParser.MULT, leftChild.type, rightChild.type);
     }
 
     public void visit(ParamNode paramNode) {
@@ -172,11 +171,21 @@ public class SemanticsVisitor implements INodeVisitor {
         //Todo: implement
     }
 
-    public void visit(SubNode subNode) {
-        //Todo: implement
+    public void visit(SubNode node) {
+        this.visitChildren(node);
+        var leftChild = node.children.get(0);
+        var rightChild = node.children.get(1);
+        node.type = binaryOperationResultType(CStarParser.MINUS, leftChild.type, rightChild.type);
     }
 
-    private String binaryOperationResultType(char operator, String leftChild, String rightChild) {
-        return "";
+    private String binaryOperationResultType(int operator, String leftType, String rightType) {
+        //Todo: handle casting
+        return leftType;
+    }
+
+    private String unaryOperationResultType(int operator, String type) {
+        //Todo: handle casting
+        return type;
+        //Skal bruges, hvis vi implementerer negation som en node (lige som i bogen)
     }
 }
