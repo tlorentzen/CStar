@@ -3,18 +3,30 @@ package com.p4.symbols;
 public class SymbolTable {
 
     private CStarScope currentScope;
+    int level = 0;
 
     public SymbolTable(){
         this.currentScope = new CStarScope("global");
     }
 
     public void addScope(String scopeName){
-        currentScope.children.add(new CStarScope(scopeName));
+        CStarScope s = new CStarScope(scopeName);
+        s.parent = currentScope;
+        currentScope.children.add(s);
+        currentScope = s;
+        level++;
+        System.out.println(">> New scope added: "+scopeName+" ("+level+")");
     }
 
     public void leaveScope(){
-        if(currentScope.parent != null)
+        if(currentScope.parent != null){
+            String currentScopeName = currentScope.ScopeName;
             currentScope = currentScope.parent;
+            level--;
+            System.out.println(">> Leaving scope: "+currentScopeName+" ("+(level+1)+") -> "+currentScope.ScopeName+" ("+(level)+")");
+        }else{
+            System.out.println(">> Leaving scope: Already in global scope! ("+level+")");
+        }
     }
 
     public CStarScope getParent(){
