@@ -29,6 +29,9 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         CStarParser.AssignContext assign = ctx.assign();
         CStarParser.Array_dclContext array_dcl = ctx.array_dcl();
 
+        System.out.println(ctx.start.getLine());
+        System.out.println(ctx.stop.getLine());
+
         if(assign != null){
             //Make assign node
             return visit(assign);
@@ -55,7 +58,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     }
 
     @Override public AstNode visitAssign(CStarParser.AssignContext ctx) {
-
 
         ParserRuleContext parent = ctx.getParent();
         String classes = parent.getClass().toString();
