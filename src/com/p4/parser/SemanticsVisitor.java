@@ -5,7 +5,7 @@ import com.p4.errors.ErrorType;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.SymbolTable;
 
-public class SemanticsVisitor extends NodeVisitor {
+public class SemanticsVisitor {
 
     SymbolTable symbolTable;
     ErrorBag errors;
@@ -15,46 +15,46 @@ public class SemanticsVisitor extends NodeVisitor {
         this.errors = errors;
     }
 
-    public void visit(IdNode node){
+    public void visitId(IdNode node){
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
             errors.addEntry("E10", node.id + " has not been declared in any accessible scope", ErrorType.TYPE_ERROR, node.lineNumber);
         }
     }
 
-    public void visit(IntegerNode node){
+    public void visitInteger(IntegerNode node){
         node.type = "integer";
     }
 
-    public void visit(FloatNode node){
+    public void visitFloat(FloatNode node){
         node.type = "decimal";
     }
 
-    public void visit(PinNode node){
+    public void visitPin(PinNode node){
         node.type = "pin";
     }
 
-    public void visit(LongNode node){
+    public void visitLong(LongNode node){
         node.type = "long";
     }
 
-    public void visit(CharNode node){
+    public void visitChar(CharNode node){
         node.type = "character";
     }
 
-    public void visit(AssignNode node){
+    public void visitAssign(AssignNode node){
         if(node.children.size() != 2) {
             errors.addEntry("E1", "Assign should always have two operands", ErrorType.TYPE_ERROR, node.lineNumber);
         } else{
-            System.out.println(node.children.get(0).type);
-            System.out.println(node.children.get(1).type);
-            if(!node.children.get(0).type.equals(node.children.get(1).type)){
+            System.out.println(node.children.get(0));
+            System.out.println(node.children.get(1));
+            if(true){
                 //Todo: Handle type casting
                 System.out.println("Casting");
             }
         }
     }
 
-    public void visit(CondNode node){
+    public void visitCond(CondNode node){
         if(node.children.size() == 2){
             System.out.println(node.children.get(0).type);
             System.out.println(node.children.get(1).type);
@@ -67,9 +67,36 @@ public class SemanticsVisitor extends NodeVisitor {
         }
     }
 
-    public void visit(ProgNode node) {
+    public void visitProg(ProgNode node) {
         this.visitChildren(node);
     }
+
+    public void visitChildren(AstNode node) {
+        for(INode child : node.children){
+            child.accept(this);
+        }
+    }
+
+    public void visit(AstNode node) {
+        this.visitChildren( node);
+    }
+
+    public void visitArrayAssign(ArrayAssignNode node) {
+        //Todo: implement
+    }
+
+    public void visitArrayExpr(ArrayExprNode node) {
+        //Todo: implement
+    }
+
+    public void visitArray(ArrayNode node) {
+        //Todo: implement
+    }
+
+    public void visitReturnExpr(ReturnExpNode node) {
+        //Todo: implement
+    }
+
 
     //Exprs
     //Refs

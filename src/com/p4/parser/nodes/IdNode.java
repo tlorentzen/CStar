@@ -1,6 +1,7 @@
 package com.p4.parser.nodes;
 
 import com.p4.parser.Parameters;
+import com.p4.parser.SemanticsVisitor;
 
 public class IdNode extends AstNode implements Parameters {
     public String id;
@@ -14,5 +15,9 @@ public class IdNode extends AstNode implements Parameters {
     public IdNode(String id, String type){
         this.id = id;
         this.type = type;
+    }
+
+    public void accept(SemanticsVisitor visitor) {
+        visitor.visitId(this);
     }
 }
