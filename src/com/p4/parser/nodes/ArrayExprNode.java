@@ -1,6 +1,6 @@
 package com.p4.parser.nodes;
 
-import com.p4.parser.SemanticsVisitor;
+import com.p4.parser.INodeVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class ArrayExprNode extends AstNode {
     }
 
     @Override
-    public void accept(SemanticsVisitor visitor) {
+    public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }
 }

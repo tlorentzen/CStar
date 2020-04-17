@@ -1,6 +1,6 @@
 package com.p4.parser.nodes;
 
-import com.p4.parser.SemanticsVisitor;
+import com.p4.parser.INodeVisitor;
 
 public class ArrayDclNode<T> extends DclNode<T> {
     public ArrayDclNode(String id) {
@@ -9,7 +9,7 @@ public class ArrayDclNode<T> extends DclNode<T> {
     }
 
     @Override
-    public void accept(SemanticsVisitor visitor) {
+    public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }
 }

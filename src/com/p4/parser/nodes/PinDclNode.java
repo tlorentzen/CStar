@@ -1,6 +1,6 @@
 package com.p4.parser.nodes;
 
-import com.p4.parser.SemanticsVisitor;
+import com.p4.parser.INodeVisitor;
 
 public class PinDclNode extends DclNode<Integer> {
     public PinDclNode(String id){
@@ -8,7 +8,7 @@ public class PinDclNode extends DclNode<Integer> {
         this.type = "pin";
     }
 
-    public void accept(SemanticsVisitor visitor) {
+    public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }
 }

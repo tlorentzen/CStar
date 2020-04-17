@@ -5,7 +5,7 @@ import com.p4.errors.ErrorType;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.SymbolTable;
 
-public class SemanticsVisitor {
+public class SemanticsVisitor implements INodeVisitor {
 
     SymbolTable symbolTable;
     ErrorBag errors;
@@ -15,15 +15,22 @@ public class SemanticsVisitor {
         this.errors = errors;
     }
 
+    public void visitChildren(AstNode node) {
+        for(AstNode child : node.children){
+            child.accept(this);
+        }
+    }
+
     public void visit(IdNode node){
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
             errors.addEntry("E10", node.id + " has not been declared in any accessible scope", ErrorType.TYPE_ERROR, node.lineNumber);
+        } else{
+            node.type = symbolTable.lookup(node.id).variableType;
         }
     }
 
     public void visit(IntegerNode node){
         node.type = "integer";
-        System.out.println("IntegerLit");
     }
 
     public void visit(FloatNode node){
@@ -78,12 +85,6 @@ public class SemanticsVisitor {
 
     public void visit(ProgNode node) {
         this.visitChildren(node);
-    }
-
-    public void visitChildren(AstNode node) {
-        for(AstNode child : node.children){
-            child.accept(this);
-        }
     }
 
     public void visit(ArrayAssignNode node) {

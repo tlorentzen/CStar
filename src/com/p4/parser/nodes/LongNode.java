@@ -1,6 +1,6 @@
 package com.p4.parser.nodes;
 
-import com.p4.parser.SemanticsVisitor;
+import com.p4.parser.INodeVisitor;
 
 public class LongNode extends LiteralNode<Long> {
 
@@ -8,7 +8,7 @@ public class LongNode extends LiteralNode<Long> {
         super(value, isNegative);
     }
 
-    public void accept(SemanticsVisitor visitor) {
+    public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }
 }

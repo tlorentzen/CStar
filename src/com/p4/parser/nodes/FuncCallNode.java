@@ -1,6 +1,6 @@
 package com.p4.parser.nodes;
 
-import com.p4.parser.SemanticsVisitor;
+import com.p4.parser.INodeVisitor;
 
 public class FuncCallNode extends AstNode{
     public Boolean isNegative;
@@ -10,7 +10,7 @@ public class FuncCallNode extends AstNode{
         this.isNegative = isNegative;
     }
 
-    public void accept(SemanticsVisitor visitor) {
+    public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }
 }
