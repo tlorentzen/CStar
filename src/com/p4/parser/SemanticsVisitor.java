@@ -129,11 +129,16 @@ public class SemanticsVisitor implements INodeVisitor {
             errors.addEntry(ErrorType.TYPE_ERROR, "Array assigned to " + ArrayNode.type + " array is of type " + ArrayExprNode.type + " array", node.lineNumber);
         }
 
-        Attributes attr = new Attributes();
-        attr.variableType = ArrayNode.type;
-        attr.kind = node.getType();
-        symbolTable.insert(node.id, attr);
-        node.type = attr.variableType;
+        if(symbolTable.lookup(node.id) != null){
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable " + node.getId() + " already exists", node.lineNumber);
+            node.type = symbolTable.lookup(node.id).variableType;
+        } else {
+            Attributes attr = new Attributes();
+            attr.variableType = ArrayNode.type;
+            attr.kind = node.getType();
+            symbolTable.insert(node.id, attr);
+            node.type = attr.variableType;
+        }
     }
 
     public void visit(BlkNode node) {
@@ -141,11 +146,16 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(CharDclNode node) {
-        Attributes attr = new Attributes();
-        attr.variableType = "char";
-        attr.kind = node.getType();
-        symbolTable.insert(node.id, attr);
-        node.type = attr.variableType;
+        if(symbolTable.lookup(node.id) != null){
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable " + node.getId() + " already exists", node.lineNumber);
+            node.type = symbolTable.lookup(node.id).variableType;
+        } else {
+            Attributes attr = new Attributes();
+            attr.variableType = "char";
+            attr.kind = node.getType();
+            symbolTable.insert(node.id, attr);
+            node.type = attr.variableType;
+        }
     }
 
     public void visit(DivNode node) {
@@ -156,11 +166,16 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(FloatDclNode node) {
-        Attributes attr = new Attributes();
-        attr.variableType = "float";
-        attr.kind = node.getType();
-        symbolTable.insert(node.id, attr);
-        node.type = attr.variableType;
+        if(symbolTable.lookup(node.id) != null){
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable " + node.getId() + " already exists", node.lineNumber);
+            node.type = symbolTable.lookup(node.id).variableType;
+        } else {
+            Attributes attr = new Attributes();
+            attr.variableType = "float";
+            attr.kind = node.getType();
+            symbolTable.insert(node.id, attr);
+            node.type = attr.variableType;
+        }
     }
 
     public void visit(FuncCallNode node) {
@@ -174,11 +189,16 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(IntegerDclNode node) {
-        Attributes attr = new Attributes();
-        attr.variableType = "int";
-        attr.kind = node.getType();
-        symbolTable.insert(node.id, attr);
-        node.type = attr.variableType;
+        if(symbolTable.lookup(node.id) != null){
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable " + node.getId() + " already exists", node.lineNumber);
+            node.type = symbolTable.lookup(node.id).variableType;
+        } else {
+            Attributes attr = new Attributes();
+            attr.variableType = "int";
+            attr.kind = node.getType();
+            symbolTable.insert(node.id, attr);
+            node.type = attr.variableType;
+        }
     }
 
     public void visit(IterativeNode node) {
@@ -188,11 +208,16 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(LongDclNode node) {
-        Attributes attr = new Attributes();
-        attr.variableType = "long";
-        attr.kind = node.getType();
-        symbolTable.insert(node.id, attr);
-        node.type = attr.variableType;
+        if(symbolTable.lookup(node.id) != null){
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable " + node.getId() + " already exists", node.lineNumber);
+            node.type = symbolTable.lookup(node.id).variableType;
+        } else {
+            Attributes attr = new Attributes();
+            attr.variableType = "long";
+            attr.kind = node.getType();
+            symbolTable.insert(node.id, attr);
+            node.type = attr.variableType;
+        }
     }
 
     public void visit(MultNode node) {
@@ -207,11 +232,16 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(PinDclNode node) {
-        Attributes attr = new Attributes();
-        attr.variableType = "pin";
-        attr.kind = node.getType();
-        symbolTable.insert(node.id, attr);
-        node.type = attr.variableType;
+        if(symbolTable.lookup(node.id) != null){
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable " + node.getId() + " already exists", node.lineNumber);
+            node.type = symbolTable.lookup(node.id).variableType;
+        } else {
+            Attributes attr = new Attributes();
+            attr.variableType = "pin";
+            attr.kind = node.getType();
+            symbolTable.insert(node.id, attr);
+            node.type = attr.variableType;
+        }
     }
 
     public void visit(SelectionNode node) {
