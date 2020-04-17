@@ -1,5 +1,6 @@
 package com.p4.errors;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +10,8 @@ public class ErrorBag {
     private static String OS = System.getProperty("os.name").toLowerCase();
     private List<Item> errors = new ArrayList<>();
 
-    public void addEntry(String code, String message, ErrorType type){
-        this.errors.add(new Item(code, message, type));
+    public void addEntry(String code, String message, ErrorType type, int lineNumber){
+        this.errors.add(new Item(code, message, type, lineNumber));
     }
 
     public boolean isEmpty(){
@@ -29,9 +30,9 @@ public class ErrorBag {
                     System.out.print(getColor(item.code));
                     System.out.print(item.code);
                     System.out.print(Color.RESET);
-                    System.out.print(": "+item.message+" ("+item.type.toString()+")\n");
+                    System.out.print(": "+item.message+" ("+item.type.toString()+") on line "+item.lineNumber+"\n");
                 }else{
-                    System.out.println(item.code+": "+item.message+" ("+item.type.toString()+")");
+                    System.out.println(item.code+": "+item.message+" ("+item.type.toString()+") on line "+item.lineNumber);
                 }
             }
         }
@@ -54,10 +55,12 @@ class Item{
     ErrorType type;
     String code;
     String message;
+    int lineNumber;
 
-    public Item(String code, String message, ErrorType type){
+    public Item(String code, String message, ErrorType type, int lineNumber){
         this.type = type;
         this.code = code;
         this.message = message;
+        this.lineNumber = lineNumber;
     }
 }

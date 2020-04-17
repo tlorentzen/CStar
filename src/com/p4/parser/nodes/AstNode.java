@@ -20,4 +20,5 @@ public abstract class AstNode {
     public abstract void accept(SemanticsVisitor visitor);
 
     public String type;
+    public int lineNumber = 0;
 }
