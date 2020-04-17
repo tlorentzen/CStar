@@ -2,7 +2,9 @@ package com.p4.errors;
 
 public enum ErrorType {
     E_TYPE_ERROR("E1"),
-    DUPLICATE_VARS("E2");
+    DUPLICATE_VARS("E2"),
+    WARNING("W1"),
+    INFORMATION("I1");
 
     private final String code;
 
