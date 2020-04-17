@@ -23,7 +23,6 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(IdNode node){
-        System.out.println("Visit");
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
             errors.addEntry("E10", node.id + " has not been declared in any accessible scope", ErrorType.TYPE_ERROR, node.lineNumber);
         } else{
@@ -32,11 +31,11 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(IntegerNode node){
-        node.type = "integer";
+        node.type = "int";
     }
 
     public void visit(FloatNode node){
-        node.type = "decimal";
+        node.type = "float";
     }
 
     public void visit(PinNode node){
@@ -48,7 +47,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(CharNode node){
-        node.type = "character";
+        node.type = "char";
     }
 
     public void visit(AssignNode node){
@@ -136,7 +135,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(FloatDclNode node) {
         Attributes attr = new Attributes();
-        attr.variableType = "decimal";
+        attr.variableType = "float";
         attr.kind = node.getType();
         symbolTable.insert(node.id, attr);
         node.type = attr.variableType;
@@ -152,7 +151,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(IntegerDclNode node) {
         Attributes attr = new Attributes();
-        attr.variableType = "integer";
+        attr.variableType = "int";
         attr.kind = node.getType();
         symbolTable.insert(node.id, attr);
         node.type = attr.variableType;
@@ -206,6 +205,16 @@ public class SemanticsVisitor implements INodeVisitor {
 
     private String binaryOperationResultType(int operator, String leftType, String rightType) {
         //Todo: handle casting
+
+        if(leftType.equals(rightType))
+            return leftType;
+
+        switch(operator){
+            case CStarParser.ASSIGN_OP:
+
+
+        }
+
         return leftType;
     }
 
