@@ -1,9 +1,8 @@
 package com.p4;
 
 import com.p4.errors.ErrorBag;
-import com.p4.errors.ErrorType;
 import com.p4.parser.*;
-import com.p4.symbols.Attributes;
+import com.p4.parser.nodes.AstNode;
 import com.p4.symbols.SymbolTable;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
@@ -53,15 +52,15 @@ public class Main {
 
                         ParseTree tree = parser.prog();
                         CStarBaseVisitor<?> visitor = new AstVisitor<>();
-                        AstNode ast = (AstNode) visitor.visit(tree);
+                        ProgNode ast = (ProgNode) visitor.visit(tree);
 
                         /*
                         AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                         astTreeVisitor.visit(0, ast);
                         */
 
-                        TopDeclVisitor topDeclVisitor = new TopDeclVisitor(symbolTable, errors);
-                        topDeclVisitor.visit(ast);
+                        SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+                        semanticsVisitor.visit(ast);
 
                         //System.out.println(tree.getText());
 

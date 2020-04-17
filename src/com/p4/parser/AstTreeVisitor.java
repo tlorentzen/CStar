@@ -1,24 +1,24 @@
 package com.p4.parser;
 
-import java.util.List;
+import com.p4.parser.nodes.*;
 
 public class AstTreeVisitor {
     public void visit(int localIndent, AstNode node){
         if(node != null){
             switch (node.getClass().toString()){
-                case "class com.p4.parser.CondNode":
+                case "class com.p4.parser.nodes.CondNode":
                     this.print(localIndent, node.getClass().toString() + " with the operator: " + ((CondNode)node).getOperator());
                     break;
-                case "class com.p4.parser.IntegerDclNode":
+                case "class com.p4.parser.nodes.IntegerDclNode":
                     this.print(localIndent, node.getClass().toString() + " with the ID: " + ((IntegerDclNode)node).getId());
                     break;
-                case "class com.p4.parser.FloatDclNode":
+                case "class com.p4.parser.nodes.FloatDclNode":
                     this.print(localIndent, node.getClass().toString() + " with the ID: " + ((FloatDclNode)node).getId());
                     break;
-                case "class com.p4.parser.IntegerNode":
+                case "class com.p4.parser.nodes.IntegerNode":
                     this.print(localIndent, node.getClass().toString() + " with the value: " + ((IntegerNode)node).Value);
                     break;
-                case "class com.p4.parser.FloatNode":
+                case "class com.p4.parser.nodes.FloatNode":
                     this.print(localIndent, node.getClass().toString() + " with the value: " + ((FloatNode)node).Value);
                     break;
                 default:

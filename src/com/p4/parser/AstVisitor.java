@@ -1,13 +1,9 @@
 package com.p4.parser;
 
-import jdk.jshell.spi.ExecutionControl;
+import com.p4.parser.nodes.*;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
@@ -127,22 +123,27 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     }
 
     @Override public AstNode visitVal(CStarParser.ValContext ctx) {
+        boolean isNegative = false;
+        ParseTree parent = ctx.getParent();
+        if(parent.getChild(0).getClass().toString().equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")){
+            isNegative = true;
+        }
 
         if(ctx.INT_LITERAL() != null) {
-            return new IntegerNode(Integer.parseInt(ctx.INT_LITERAL().getText()));
+            return new IntegerNode(Integer.parseInt(ctx.INT_LITERAL().getText()), isNegative);
         } // use equals
         else if(ctx.FLOAT_LITERAL() != null) {
-           return new FloatNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()));
+           return new FloatNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()), isNegative);
         }
         else if(ctx.PIN_LITERAL() != null) {
-            return new PinNode(Integer.parseInt(ctx.CHAR_LITERAL().getText()));
+            return new PinNode(Integer.parseInt(ctx.CHAR_LITERAL().getText()), isNegative);
         }
         else if(ctx.LONG_LITERAL() != null) {
-            return new LongNode(Long.parseLong(ctx.LONG_LITERAL().getText()));
+            return new LongNode(Long.parseLong(ctx.LONG_LITERAL().getText()), isNegative);
         }
         else if(ctx.CHAR_LITERAL() != null) {
             String temp = ctx.CHAR_LITERAL().getText();
-            return new CharNode(temp.charAt(0));
+            return new CharNode(temp.charAt(0), isNegative);
         }
         else {
             return null;
@@ -182,7 +183,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     @Override public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
         //index 0 is ID, Everything that follows is parameter values
-        FuncCallNode funcCallNode = new FuncCallNode();
+        boolean isNegative = false;
+        ParseTree parent = ctx.getParent();
+        if(parent.getChild(0).getClass().toString().equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")){
+            isNegative = true;
+        }
+        FuncCallNode funcCallNode = new FuncCallNode(isNegative);
 
         int numChildren = ctx.getChildCount();
 
@@ -225,7 +231,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     //Todo evt lav den general ved at lave en generisk metode
     public AstNode visitArithm_exprChild(ParseTree child, CStarParser.Arithm_exprContext parent, int operatorIndex){
         int termIndex = (operatorIndex - 1) / 2;
-        AstNode node = new AstNode();
+        AstNode node;
 
         switch (child.getText()) {
             case "+":
@@ -236,7 +242,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 break;
             default:
                 //todo error handling
-                break;
+                return null;
         }
 
         //Enters if there are more operators in the tree
@@ -274,7 +280,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     //Todo evt lav den general ved at lave en generisk metode
     public AstNode visitTermChild(ParseTree child, CStarParser.TermContext parent, int operatorIndex) {
         int factorIndex = (operatorIndex - 1) / 2;
-        AstNode node = new AstNode();
+        AstNode node;
 
         //Enters if there are more operators in the tree
         switch (child.getText()) {
@@ -286,7 +292,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 break;
             default:
                 //todo error handling
-                break;
+                return null;
         }
 
         //Enters if there are more operators in the tree
@@ -312,17 +318,26 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitFactor(CStarParser.FactorContext ctx) {
         var child = ctx.getChild(0);
         String classes = child.getClass().toString();
+        boolean isNegative = false;
+
+        if (child.getText().equals("-")) { //checks if negative factor
+            child = ctx.getChild(1);
+            classes = child.getClass().toString();
+            isNegative = true;
+        }
 
         switch (classes){
-            case "class com.p4.parser.CStarParser$ValContext":
+            case "class com.p4.parser.CStarParser$ValContext": //if value
                 return visit(ctx.val());
-            case "class org.antlr.v4.runtime.tree.TerminalNodeImpl":
+            case "class org.antlr.v4.runtime.tree.TerminalNodeImpl": //if paren or id
                 if (child.getText().equals("(")) {
                     return visit(ctx.expr());
                 }
                 else {
-                    return new IdNode(child.getText());
+                    return new IdNode(child.getText(), isNegative);
                 }
+            case "class com.p4.parser.CStarParser$Func_callContext": // if func call
+                return visit(ctx.func_call());
             default:
                 //todo error handling
                 return null;
@@ -435,7 +450,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             AstNode childResult = visit(child);
             node.children.add(childResult);
         }
-        //TODO debug her, returnerer ikke array assign value men i stedet NULL
         return node;
     }
 
