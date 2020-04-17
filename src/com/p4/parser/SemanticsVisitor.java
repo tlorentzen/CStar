@@ -146,6 +146,19 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(FuncNode node) {
         symbolTable.addScope("FuncNode-"+System.currentTimeMillis());
+
+        for(AstNode n : node.getChildren()){
+            if(n instanceof IdNode){
+                IdNode param = (IdNode)n;
+
+                Attributes attr = new Attributes();
+                attr.variableType = param.type;
+                attr.kind = "funcnode";
+
+                symbolTable.insert(param.id, attr);
+            }
+        }
+
         this.visitChildren(node);
         symbolTable.leaveScope();
     }
