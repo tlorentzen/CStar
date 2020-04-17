@@ -3,3 +3,5 @@ integer i = 2;
 if(i > 1){
     integer hej = 5;
 }
+
+integer array ia = [2, 5, 6];

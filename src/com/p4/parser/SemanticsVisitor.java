@@ -87,11 +87,24 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ArrayExprNode node) {
-        //Todo: implement
+        this.visitChildren(node);
+        node.type = node.children.get(0).type;
+        boolean nodeTypeChecked = false;
+        while(!nodeTypeChecked){
+            nodeTypeChecked = true;
+            for(AstNode child : node.children){
+                if(!child.type.equals(node.type)){
+                    node.type = this.dominantTypeConversion(child.type, node.type);
+                    child.type = node.type;
+                    nodeTypeChecked = false;
+                    break;
+                }
+            }
+        }
     }
 
     public void visit(ArrayNode node) {
-        //Todo: implement
+
     }
 
     public void visit(ReturnExpNode node) {
@@ -106,8 +119,16 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ArrayDclNode<?> node) {
+        this.visitChildren(node);
+        var ArrayNode = node.children.get(0);
+        var ArrayExprNode = node.children.get(1);
+
+        if(!ArrayNode.type.equals(ArrayExprNode.type)){
+            errors.addEntry("E1", "Array assigned to " + ArrayNode.type + " array is of type " + ArrayExprNode.type, ErrorType.TYPE_ERROR, node.lineNumber);
+        }
+
         Attributes attr = new Attributes();
-        attr.variableType = "char";
+        attr.variableType = ArrayNode.type;
         attr.kind = node.getType();
         symbolTable.insert(node.id, attr);
         node.type = attr.variableType;
@@ -181,7 +202,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ParamNode node) {
-        //Todo: implement
+        this.visitChildren(node);
     }
 
     public void visit(PinDclNode node) {
@@ -226,5 +247,10 @@ public class SemanticsVisitor implements INodeVisitor {
         //Todo: handle casting
         return type;
         //Skal bruges, hvis vi implementerer negation som en node (lige som i bogen)
+    }
+
+    private String dominantTypeConversion(String type1, String type2) {
+        //Todo: handling casting to dominant type
+        return type1;
     }
 }
