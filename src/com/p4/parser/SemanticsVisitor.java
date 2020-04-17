@@ -57,10 +57,6 @@ public class SemanticsVisitor implements INodeVisitor {
             this.visitChildren(node);
             var leftChild = node.children.get(0);
             var rightChild = node.children.get(1);
-            System.out.println(leftChild);
-            System.out.println(rightChild);
-            System.out.println(leftChild.type);
-            System.out.println(rightChild.type);
             node.type = binaryOperationResultType(CStarParser.ASSIGN_OP, leftChild.type, rightChild.type);
         }
     }
