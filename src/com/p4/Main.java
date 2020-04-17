@@ -43,9 +43,9 @@ public class Main {
                         var symbolTable = new SymbolTable();
                         ErrorBag errors = new ErrorBag();
                         
-                        errors.addEntry(ErrorType.E_TYPE_ERROR, "Error here!", 1);
-                        errors.addEntry(ErrorType.E_TYPE_ERROR, "Warning here!", 1);
-                        errors.addEntry(ErrorType.E_TYPE_ERROR, "Information here!",1);
+                        errors.addEntry(ErrorType.TYPE_ERROR, "Error here!", 1);
+                        errors.addEntry(ErrorType.TYPE_ERROR, "Warning here!", 1);
+                        errors.addEntry(ErrorType.TYPE_ERROR, "Information here!",1);
                         errors.addEntry(ErrorType.WARNING, "Warning here!", 1);
                         errors.addEntry(ErrorType.WARNING, "Warning here!", 1);
                         errors.addEntry(ErrorType.WARNING, "Information here!",1);

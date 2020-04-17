@@ -24,7 +24,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(IdNode node){
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
-            errors.addEntry(ErrorType.E_TYPE_ERROR, node.id + " has not been declared in any accessible scope", node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope", node.lineNumber);
         } else{
             node.type = symbolTable.lookup(node.id).variableType;
         }
@@ -52,7 +52,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(AssignNode node){
         if(node.children.size() != 2) {
-            errors.addEntry(ErrorType.E_TYPE_ERROR, "Assign should always have two operands", node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, "Assign should always have two operands", node.lineNumber);
         } else{
             this.visitChildren(node);
             var leftChild = node.children.get(0);
@@ -74,7 +74,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else if(node.children.size() == 1){
             node.type = node.children.get(0).type;
         } else {
-            errors.addEntry(ErrorType.E_TYPE_ERROR, "Unexpected number of operands in conditional expression", node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, "Unexpected number of operands in conditional expression", node.lineNumber);
         }
     }
 
@@ -126,7 +126,7 @@ public class SemanticsVisitor implements INodeVisitor {
         var ArrayExprNode = node.children.get(1);
 
         if(!ArrayNode.type.equals(ArrayExprNode.type)){
-            errors.addEntry("E1", "Array assigned to " + ArrayNode.type + " array is of type " + ArrayExprNode.type, ErrorType.TYPE_ERROR, node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, "Array assigned to " + ArrayNode.type + " array is of type " + ArrayExprNode.type + " array", node.lineNumber);
         }
 
         Attributes attr = new Attributes();
