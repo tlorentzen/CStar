@@ -20,4 +20,5 @@ public abstract class AstNode {
     public void accept(NodeVisitor visitor) { visitor.visit(this); }
 
     public String type;
+    public int lineNumber = 0;
 }

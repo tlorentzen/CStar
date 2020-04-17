@@ -17,7 +17,7 @@ public class SemanticsVisitor extends NodeVisitor {
 
     public void visit(IdNode node){
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
-            errors.addEntry("E10", node.id + " has not been declared in any accessible scope", ErrorType.TYPE_ERROR);
+            errors.addEntry("E10", node.id + " has not been declared in any accessible scope", ErrorType.TYPE_ERROR, node.lineNumber);
         }
     }
 
@@ -43,7 +43,7 @@ public class SemanticsVisitor extends NodeVisitor {
 
     public void visit(AssignNode node){
         if(node.children.size() != 2) {
-            errors.addEntry("E1", "Assign should always have two operands", ErrorType.TYPE_ERROR);
+            errors.addEntry("E1", "Assign should always have two operands", ErrorType.TYPE_ERROR, node.lineNumber);
         } else{
             System.out.println(node.children.get(0).type);
             System.out.println(node.children.get(1).type);

@@ -14,7 +14,7 @@ public class TopDeclVisitor extends SemanticsVisitor {
 
     public void visit(DclNode<?> node){
         if(symbolTable.lookup(node.id) != null){
-            errors.addEntry("E2","Already declared", ErrorType.TYPE_ERROR);
+            errors.addEntry("E2","Already declared", ErrorType.TYPE_ERROR, node.lineNumber);
             symbolTable.lookup(node.id).variableType = "Already declared error";
         } else {
             var attr = new Attributes();

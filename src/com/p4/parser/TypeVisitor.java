@@ -18,7 +18,7 @@ public class TypeVisitor extends SemanticsVisitor {
             attr.variableType = node.type;
         } else{
             //Todo: "identifier is not a type name" error
-            errors.addEntry("E1", "Identifier is not a type name", ErrorType.TYPE_ERROR);
+            errors.addEntry("E1", "Identifier is not a type name", ErrorType.TYPE_ERROR, node.lineNumber);
         }
     }
 }
