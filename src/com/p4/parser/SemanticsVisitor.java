@@ -22,10 +22,12 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(IdNode node){
+        System.out.println("Visit");
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
             errors.addEntry("E10", node.id + " has not been declared in any accessible scope", ErrorType.TYPE_ERROR, node.lineNumber);
         } else{
             node.type = symbolTable.lookup(node.id).variableType;
+            System.out.println(node.type);
         }
     }
 
@@ -104,7 +106,10 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(AddNode node) {
-        //Todo: implement
+        this.visitChildren(node);
+        var leftChild = node.children.get(0);
+        var rightChild = node.children.get(1);
+        node.type = binaryOperationResultType('+', leftChild.type, rightChild.type);
     }
 
     public void visit(ArrayDclNode<?> node) {
@@ -169,5 +174,9 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(SubNode subNode) {
         //Todo: implement
+    }
+
+    private String binaryOperationResultType(char operator, String leftChild, String rightChild) {
+        return "";
     }
 }
