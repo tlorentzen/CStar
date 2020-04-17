@@ -1,5 +1,9 @@
 package com.p4.parser.nodes;
 
-public class ParamNode extends AstNode {
+import com.p4.parser.SemanticsVisitor;
 
+public class ParamNode extends AstNode {
+    public void accept(SemanticsVisitor visitor) {
+        visitor.visit(this);
+    }
 }

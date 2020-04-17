@@ -6,6 +6,4 @@ integer z = 4 + 2 + 1 * 64 + 43;
 
 decimal array da = [2.4,5,3];
 
-
-
 b = 4;

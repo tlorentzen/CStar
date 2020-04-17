@@ -1,5 +1,7 @@
 package com.p4.parser.nodes;
 
+import com.p4.parser.SemanticsVisitor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,5 +18,10 @@ public class ArrayExprNode extends AstNode {
 
     public void setLiterals(List<AstNode> literals) {
         Literals = literals;
+    }
+
+    @Override
+    public void accept(SemanticsVisitor visitor) {
+        visitor.visitArrayExpr(this);
     }
 }

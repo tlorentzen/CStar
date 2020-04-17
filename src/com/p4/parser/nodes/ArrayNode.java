@@ -1,6 +1,7 @@
 package com.p4.parser.nodes;
 
 import com.p4.parser.Parameters;
+import com.p4.parser.SemanticsVisitor;
 
 public class ArrayNode extends AstNode implements Parameters {
     String id;
@@ -26,5 +27,10 @@ public class ArrayNode extends AstNode implements Parameters {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public void accept(SemanticsVisitor visitor) {
+        visitor.visitArray(this);
     }
 }
