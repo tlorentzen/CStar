@@ -122,11 +122,12 @@ public class SemanticsVisitor implements INodeVisitor {
         var ArrayExprNode = node.children.get(1);
 
         if(!ArrayNode.type.equals(ArrayExprNode.type)){
-            errors.addEntry(ErrorType.TYPE_ERROR, "Array assigned to " + ArrayNode.type + " array is of type " + ArrayExprNode.type + " array", node.lineNumber);
+            //Todo: float, char, and int should be decimal, character, and integer
+            errors.addEntry(ErrorType.TYPE_ERROR,  ArrayExprNode.type.substring(0, 1).toUpperCase() + ArrayExprNode.type.substring(1) + " array assigned to " + ArrayNode.type + " array", node.lineNumber);
         }
 
         if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable " + node.getId() + " already exists", node.lineNumber);
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
             Attributes attr = new Attributes();
@@ -143,7 +144,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(CharDclNode node) {
         if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable " + node.getId() + " already exists", node.lineNumber);
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
             Attributes attr = new Attributes();
@@ -163,7 +164,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(FloatDclNode node) {
         if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable " + node.getId() + " already exists", node.lineNumber);
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
             Attributes attr = new Attributes();
@@ -199,7 +200,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(IntegerDclNode node) {
         if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable " + node.getId() + " already exists", node.lineNumber);
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
             Attributes attr = new Attributes();
@@ -218,7 +219,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(LongDclNode node) {
         if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable " + node.getId() + " already exists", node.lineNumber);
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
             Attributes attr = new Attributes();
@@ -242,7 +243,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(PinDclNode node) {
         if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable " + node.getId() + " already exists", node.lineNumber);
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
             Attributes attr = new Attributes();
