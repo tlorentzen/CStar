@@ -91,7 +91,6 @@ public class SemanticsVisitor implements INodeVisitor {
             nodeTypeChecked = true;
             for(AstNode child : node.children){
                 if(!child.type.equals(node.type)){
-                    System.out.println(node.type + "-->" + child.type);
                     node.type = this.dominantTypeConversion(child.type, node.type);
                     child.type = node.type;
                     nodeTypeChecked = false;
