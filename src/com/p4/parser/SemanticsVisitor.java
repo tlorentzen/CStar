@@ -106,8 +106,11 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ArrayDclNode<?> node) {
-        //Todo: implement
-
+        Attributes attr = new Attributes();
+        attr.variableType = "char";
+        attr.kind = node.getType();
+        symbolTable.insert(node.id, attr);
+        node.type = attr.variableType;
     }
 
     public void visit(BlkNode node) {
@@ -119,6 +122,7 @@ public class SemanticsVisitor implements INodeVisitor {
         attr.variableType = "char";
         attr.kind = node.getType();
         symbolTable.insert(node.id, attr);
+        node.type = attr.variableType;
     }
 
     public void visit(DivNode node) {

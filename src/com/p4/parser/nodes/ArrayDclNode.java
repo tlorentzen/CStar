@@ -5,7 +5,6 @@ import com.p4.parser.INodeVisitor;
 public class ArrayDclNode<T> extends DclNode<T> {
     public ArrayDclNode(String id) {
         super(id);
-        this.type = "array";
     }
 
     @Override
