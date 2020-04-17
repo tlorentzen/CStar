@@ -1,5 +1,7 @@
 package com.p4.parser;
 
-public class ProgNode extends AstNode{
+import com.p4.parser.nodes.AstNode;
+
+public class ProgNode extends AstNode {
 
 }
