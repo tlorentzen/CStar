@@ -16,10 +16,10 @@ public class AstTreeVisitor {
                     this.print(localIndent, node.getClass().toString() + " with the ID: " + ((FloatDclNode)node).getId());
                     break;
                 case "class com.p4.parser.nodes.IntegerNode":
-                    this.print(localIndent, node.getClass().toString() + " with the value: " + ((IntegerNode)node).Value);
+                    this.print(localIndent, node.getClass().toString() + " with the value: " + ((IntegerNode)node).getValue());
                     break;
                 case "class com.p4.parser.nodes.FloatNode":
-                    this.print(localIndent, node.getClass().toString() + " with the value: " + ((FloatNode)node).Value);
+                    this.print(localIndent, node.getClass().toString() + " with the value: " + ((FloatNode)node).getValue());
                     break;
                 default:
                     this.print(localIndent, node.getClass().toString());

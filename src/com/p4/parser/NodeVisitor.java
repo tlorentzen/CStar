@@ -9,7 +9,7 @@ public abstract class NodeVisitor {
         }
     }
 
-    void visit(AstNode node){
+    public void visit(AstNode node){
         node.accept(this);
     }
 }

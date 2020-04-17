@@ -1,17 +1,19 @@
 package com.p4.parser.nodes;
 
 abstract class LiteralNode<T> extends AstNode{
-    public T Value;
+    public T value;
+    public Boolean isNegative;
 
-    public LiteralNode(T value){
-        Value = value;
+    public LiteralNode(T value, Boolean isNegative){
+        this.value = value;
+        this.isNegative = isNegative;
     }
 
     public T getValue() {
-        return Value;
+        return value;
     }
 
     public void setValue(T value) {
-        Value = value;
+        this.value = value;
     }
 }

@@ -4,12 +4,13 @@ import com.p4.parser.Parameters;
 
 public class IdNode extends AstNode implements Parameters {
     public String id;
-    public String Type;
     boolean IsNegative;
 
-    public IdNode(String id){
+    public IdNode(String id, Boolean isNegative){
         this.id = id;
+        this.IsNegative = isNegative;
     }
+
     public IdNode(String id, String type){
         this.id = id;
         this.type = type;

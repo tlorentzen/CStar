@@ -113,7 +113,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             AstNode exprNode = visit(exprCtx);
 
             AssignNode assignNode = new AssignNode();
-            IdNode idNode = new IdNode(id);
+            IdNode idNode = new IdNode(id, false);
             assignNode.children.add(idNode);
             assignNode.children.add(exprNode);
             return assignNode;
@@ -186,6 +186,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         if(parent.getChild(0).getClass().toString().equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")){
             isNegative = true;
         }
+
         FuncCallNode funcCallNode = new FuncCallNode(isNegative);
 
         int numChildren = ctx.getChildCount();
@@ -201,7 +202,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 funcCallNode.children.add(visit(child));
             }
             else if(isID(id)){
-                IdNode idNode = new IdNode(id);
+                IdNode idNode = new IdNode(id, false);
                 funcCallNode.children.add(idNode);
             }
         }
@@ -490,7 +491,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         ArrayAssignNode arrayAssignNode = new ArrayAssignNode();
 
         //First add ID at index 0
-        IdNode id = new IdNode(ctx.getChild(0).getText());
+        IdNode id = new IdNode(ctx.getChild(0).getText(), false);
         arrayAssignNode.children.add(id);
 
         int numChildren = ctx.getChildCount();
