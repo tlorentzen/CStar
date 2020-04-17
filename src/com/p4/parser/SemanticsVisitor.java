@@ -119,7 +119,11 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(BlkNode node) {
-        //Todo: implement
+        symbolTable.addScope("blkNode-"+System.currentTimeMillis());
+
+        // TODO: Stuff...
+
+        symbolTable.leaveScope();
     }
 
     public void visit(CharDclNode node) {
