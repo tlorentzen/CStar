@@ -9,7 +9,12 @@ public class ArrayNode extends AstNode implements Parameters {
 
     public ArrayNode(String id, String type){
         this.id = id;
-        this.type = type;
+        switch (type) {
+            case "integer" -> this.type = "int";
+            case "decimal" -> this.type = "float";
+            case "character" -> this.type = "char";
+            default -> this.type = type;
+        }
     }
 
     public String getId() {

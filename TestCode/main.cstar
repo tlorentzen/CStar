@@ -1,5 +1,9 @@
 integer i = 2;
 
+integer i = 3;
+
 if(i > 1){
     integer hej = 5;
 }
+
+integer array ia = [2, 5.2, 6];
