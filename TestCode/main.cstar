@@ -4,8 +4,6 @@ big integer d = 34;
 
 integer array ia = [2, 5.2, 6];
 
-å
-
 void funcName(integer kl){
     integer hest = 10000;
 
@@ -15,3 +13,5 @@ void funcName(integer kl){
 }
 
 System.funcName(2);
+
+integer i = 5 / 0;
