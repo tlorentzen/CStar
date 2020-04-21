@@ -3,6 +3,8 @@ package com.p4.codegen;
 import com.p4.parser.INodeVisitor;
 import com.p4.parser.nodes.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class CodeVisitor implements INodeVisitor{
@@ -11,28 +13,9 @@ public class CodeVisitor implements INodeVisitor{
 
 
     public void print() throws IOException {
-        /*
         File f = new File(filePath);
-        BufferedWriter writer = null;
-        if(!f.exists()){
-            if(f.createNewFile()){
-                writer = new BufferedWriter(new FileWriter(filePath));
-            }
-        }
-        else{
-            writer = new BufferedWriter(new FileWriter(filePath));
-        }
-        StringBuilder output = new StringBuilder();
-
-        if(stringBuilder != null){
-            output = new StringBuilder(output.toString().concat(stringBuilder.toString()));
-        } else{
-            output = new StringBuilder(output.toString().concat("null"));
-        }
-
-        String outputString = output.toString();
-        writer.append(outputString);
-        System.out.println(output);*/
+        FileOutputStream oS = new FileOutputStream(f);
+        oS.write(stringBuilder.toString().getBytes());
     }
 
     @Override
@@ -117,11 +100,6 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(ProgNode node) {
         this.visitChildren(node);
-        try {
-            this.print();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

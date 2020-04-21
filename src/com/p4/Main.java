@@ -71,6 +71,11 @@ public class Main {
 
                         CodeVisitor codeVisitor = new CodeVisitor();
                         codeVisitor.visit(ast);
+                        try {
+                            codeVisitor.print();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
                         //System.out.println(tree.getText());
 
