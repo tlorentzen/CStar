@@ -195,7 +195,16 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(FuncCallNode node) {
+        AstNode id = node.children.get(0);
+        this.visitChild(id);
+        stringBuilder.append("(");
 
+        for(AstNode child : node.children.subList( 1, node.children.size() )){
+            this.visitChild(child);
+            stringBuilder.append(",");
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        stringBuilder.append(")");
     }
 
     @Override
