@@ -49,7 +49,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 case "pin":
                     node = new PinDclNode(ctx.ID().toString());
                     break;
-                case "big integer":
+                case "big integer": //Todo: rename
                     node = new LongDclNode(ctx.ID().toString());
                     break;
                 case "character":
@@ -89,7 +89,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 case "pin":
                     dclNode = new PinDclNode(id);
                     break;
-                case "long integer":
+                case "long integer": //Todo: rename
                     dclNode = new LongDclNode(id);
                     break;
                 case "character":

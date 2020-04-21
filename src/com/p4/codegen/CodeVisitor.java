@@ -1,16 +1,12 @@
 package com.p4.codegen;
 
+import com.p4.parser.INodeVisitor;
 import com.p4.parser.nodes.*;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import com.p4.parser.nodes.*;
-
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
-import com.p4.parser.*;
 
 public class CodeVisitor implements INodeVisitor{
     String filePath = System.getProperty("user.home") + "\\Desktop\\test.ino";
@@ -151,12 +147,17 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(ReturnExpNode node) {
-
+        stringBuilder.append("return ");
+        this.visitChild(node.children.get(0));
     }
 
     @Override
     public void visit(AddNode node) {
-
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+        this.visitChild(leftChild);
+        stringBuilder.append(" + ");
+        this.visitChild(rightChild);
     }
 
 
@@ -180,7 +181,11 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(DivNode node) {
-
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+        this.visitChild(leftChild);
+        stringBuilder.append(" / ");
+        this.visitChild(rightChild);
     }
 
     @Override

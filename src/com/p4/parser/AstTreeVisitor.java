@@ -21,6 +21,9 @@ public class AstTreeVisitor {
                 case "class com.p4.parser.nodes.FloatNode":
                     this.print(localIndent, node.getClass().toString() + " with the value: " + ((FloatNode)node).getValue());
                     break;
+                case "class com.p4.parser.nodes.IdNode":
+                    this.print(localIndent, node.getClass().toString() + " with the name: " + ((IdNode)node).id);
+                    break;
                 default:
                     this.print(localIndent, node.getClass().toString());
                     break;

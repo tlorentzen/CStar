@@ -19,7 +19,7 @@ return_type: TYPE | VOID; //done
 param: TYPE ID (COMMA TYPE ID)*;
 blk: LEFT_BRACE ( dcl | stmt | return_exp)* RIGHT_BRACE; //done
 return_exp: RETURN expr SEMICOLON; //done
-func_call: (ID DOT)? ID LEFT_PAREN (expr (COMMA expr)*)? RIGHT_PAREN; //done
+func_call: (ID | FUNCID) LEFT_PAREN (expr (COMMA expr)*)? RIGHT_PAREN; //done
 
 stmt: assign SEMICOLON | expr SEMICOLON | selection | iterative;
 iterative: WHILE LEFT_PAREN cond_expr RIGHT_PAREN REPEAT blk; //done
@@ -66,6 +66,7 @@ CHAR_LITERAL: '\'' (.) '\'';
 SIGN: '+'|'-';
 
 ID: ( 'a'..'z' | 'A'..'Z' | '0'..'9' | '_' )+;
+FUNCID: (('a'..'z' | 'A'..'Z' | '0'..'9' | '_')+('.')?)+;
 
 WHITESPACE: [ \t]+ -> skip;
 Newline: ('\r' '\n'? | '\n' ) -> skip;

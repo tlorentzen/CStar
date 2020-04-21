@@ -11,3 +11,5 @@ void funcName(integer kl){
         integer hej = 100;
     }
 }
+
+System.funcName(2);
