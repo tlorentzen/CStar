@@ -52,6 +52,7 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(IdNode node) {
         if(node.type != null){
             stringBuilder.append(node.type);
+            stringBuilder.append(" ");
         }
         stringBuilder.append(node.id);
     }
@@ -92,7 +93,26 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(CondNode node) {
         this.visitChild(node.children.get(0));
-        stringBuilder.append(node.getOperator());
+        switch (node.getOperator()){
+            case 2:
+                stringBuilder.append("<");
+                break;
+            case 3:
+                stringBuilder.append(">");
+                break;
+            case 4:
+                stringBuilder.append("==");
+                break;
+            case 5:
+                stringBuilder.append("!=");
+                break;
+            case 6:
+                stringBuilder.append("||");
+                break;
+            case 7:
+                stringBuilder.append("&&");
+                break;
+        }
         this.visitChild(node.children.get(1));
     }
 
@@ -252,7 +272,12 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(ParamNode node) {
         stringBuilder.append("(");
-        this.visitChildren(node);
+        for(AstNode child : node.children){
+            this.visitChild(child);
+            stringBuilder.append(", ");
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length()-2);
+        stringBuilder.deleteCharAt(stringBuilder.length()-1);
         stringBuilder.append(")");
     }
 
@@ -265,7 +290,7 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(SelectionNode node) {
         stringBuilder.append("if(");
-        visitChild(node.children.get(0));
+        this.visitChild(node.children.get(0));
         stringBuilder.append(")");
         visitChild(node.children.get(1));
         if(node.children.size() > 2){

@@ -376,32 +376,39 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             ParseTree child = ctx.getChild(i);
             Object object = child.getPayload();
 
-            if(object instanceof CommonToken){
-                CommonToken t = (CommonToken) object;
-
+            if(object instanceof CommonToken t){
                 if(t.getType() == CStarParser.COMP_OP){
-                    node.setOperator(t.getType());
-                }
-
-                if(t.getType() == CStarParser.AND || t.getType() == CStarParser.OR){
+                    switch (t.getText()){
+                        case "<":
+                            node.setOperator(CStarParser.LESS_THAN);
+                            break;
+                        case ">":
+                            node.setOperator(CStarParser.GREATER_THAN);
+                            break;
+                        case "IS":
+                            node.setOperator(CStarParser.IS);
+                            break;
+                        case "ISNOT":
+                            node.setOperator(CStarParser.ISNOT);
+                            break;
+                        default:
+                            //Todo: error handling
+                    }
+                } else if(t.getType() == CStarParser.AND || t.getType() == CStarParser.OR){
                     node.children.add(visit(child));
                     CondNode newCondNode = new CondNode();
                     newCondNode.lineNumber = ctx.start.getLine();
+                    newCondNode.setOperator(node.getOperator());
                     newCondNode.children.addAll(node.children);
                     node.children.clear();
                     node.children.add(newCondNode);
+                    node.setOperator(t.getType());
                 }
-
-                node.setOperator(t.getType());
             } else{
                 node.children.add(visit(child));
             }
         }
-        if(node.getOperator() == -1){
-            return node.getChildren().get(0);
-        } else{
-            return node;
-        }
+        return node;
     }
 
     @Override public AstNode visitFunc(CStarParser.FuncContext ctx) {
@@ -444,7 +451,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     break;
                 default:
                     //todo error handling
-                    return paramNode;
             }
         }
         return paramNode;
