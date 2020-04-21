@@ -1,7 +1,6 @@
 package com.p4;
 
 import com.p4.codegen.CodeVisitor;
-
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
 import com.p4.parser.*;
@@ -11,6 +10,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -65,23 +65,23 @@ public class Main {
                         parser.addErrorListener(new ParserErrorListener(errors));
                         ParseTree tree = parser.prog();
 
-                        if(!errors.containsErrors()){
-
+                        if(!errors.containsErrors()) {
                             CStarBaseVisitor<?> visitor = new AstVisitor<>();
                             ProgNode ast = (ProgNode) visitor.visit(tree);
 
-                            SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
-                            semanticsVisitor.visit(ast);
+                            //AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
+                            //astTreeVisitor.visit(0, ast);
 
-                            /*
-                            AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
-                            astTreeVisitor.visit(0, ast);
-                            */
-
+                            /*SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+                            semanticsVisitor.visit(ast);*/
 
                             CodeVisitor codeVisitor = new CodeVisitor();
                             codeVisitor.visit(ast);
-
+                            try {
+                                codeVisitor.print();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }catch (IOException e){
                         System.out.println(e);

@@ -3,40 +3,23 @@ package com.p4.codegen;
 import com.p4.parser.INodeVisitor;
 import com.p4.parser.nodes.*;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CodeVisitor implements INodeVisitor{
     String filePath = System.getProperty("user.home") + "\\Desktop\\test.ino";
     StringBuilder stringBuilder = new StringBuilder();
-
+    private Map<String, Boolean> pinDeclared = new HashMap<>();
 
     public void print() throws IOException {
         File f = new File(filePath);
-        FileWriter fileWriter;
-        BufferedWriter writer = null;
-        if(!f.exists()){
-            //f.createNewFile();
-            //fileWriter = new FileWriter(filePath);
-            writer = new BufferedWriter(new FileWriter(filePath));
-        }
-        else{
-            writer = new BufferedWriter(new FileWriter(filePath));
-            //fileWriter = new FileWriter(filePath);
-        }
-        StringBuilder output = new StringBuilder();
-
-        if(stringBuilder != null){
-            output = new StringBuilder(output.toString().concat(stringBuilder.toString()));
-        } else{
-            output = new StringBuilder(output.toString().concat("null"));
-        }
-
-        String outputString = output.toString();
-        writer.append(outputString);
-        System.out.println(output);
+        FileOutputStream oS = new FileOutputStream(f);
+        oS.write(stringBuilder.toString().getBytes());
+        //Debug print
+        System.out.println(stringBuilder.toString());
     }
 
     @Override
@@ -54,6 +37,7 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(IdNode node) {
         if(node.type != null){
             stringBuilder.append(node.type);
+            stringBuilder.append(" ");
         }
         stringBuilder.append(node.id);
     }
@@ -85,24 +69,58 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(AssignNode node) {
-        visitChild(node.children.get(0));
-        stringBuilder.append("=");
-        visitChild(node.children.get(1));
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+        leftChild.type = "pin";
+        if(leftChild.type.equals("pin")){
+            if(leftChild instanceof PinDclNode pinDclNode){
+                if(pinDeclared.getOrDefault(((PinDclNode)leftChild).id, false)){
+                    //Todo: implement pin write
+                } else{
+                    //Todo: implement pin dcl
+                }
+            } else{
+                stringBuilder.append(" = ");
+                this.visitChild(rightChild);
+                stringBuilder.append(";\n");
+            }
+        } else{
+            this.visitChild(leftChild);
+            stringBuilder.append(" = ");
+            this.visitChild(rightChild);
+            stringBuilder.append(";\n");
+        }
     }
 
     @Override
     public void visit(CondNode node) {
-
+        this.visitChild(node.children.get(0));
+        switch (node.getOperator()){
+            case 2:
+                stringBuilder.append(" < ");
+                break;
+            case 3:
+                stringBuilder.append(" > ");
+                break;
+            case 4:
+                stringBuilder.append(" == ");
+                break;
+            case 5:
+                stringBuilder.append(" != ");
+                break;
+            case 6:
+                stringBuilder.append(" || ");
+                break;
+            case 7:
+                stringBuilder.append(" && ");
+                break;
+        }
+        this.visitChild(node.children.get(1));
     }
 
     @Override
     public void visit(ProgNode node) {
         this.visitChildren(node);
-        try {
-            this.print();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -113,6 +131,7 @@ public class CodeVisitor implements INodeVisitor{
         visitChild(node.children.get(1));
         stringBuilder.append("] = ");
         visitChild(node.children.get(2));
+        stringBuilder.append(";\n");
     }
 
     @Override
@@ -120,28 +139,31 @@ public class CodeVisitor implements INodeVisitor{
 
         for(AstNode child : node.children){
             visitChild(child);
-            stringBuilder.append(",");
+            stringBuilder.append(", ");
         }
-        //Deletes leftover comma
+        //Deletes leftover comma and whitespace
+        stringBuilder.deleteCharAt(stringBuilder.length()-2);
         stringBuilder.deleteCharAt(stringBuilder.length()-1);
+
 
     }
 
     @Override
     public void visit(ArrayNode node) {
         stringBuilder.append(node.type);
+        stringBuilder.append(" ");
         stringBuilder.append(node.getId());
         stringBuilder.append("[]");
     }
 
     @Override
     public void visit(ArrayDclNode<?> node) {
-        //int ledPins[] = {2, 7, 4, 6, 5, 3}; Arduino c
         visitChild(node.children.get(0));
-        stringBuilder.append("=");
+        stringBuilder.append(" = ");
         stringBuilder.append("{");
         visitChild(node.children.get(1));
         stringBuilder.append("}");
+        stringBuilder.append(";\n");
 
     }
 
@@ -149,6 +171,7 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(ReturnExpNode node) {
         stringBuilder.append("return ");
         this.visitChild(node.children.get(0));
+        stringBuilder.append(";\n");
     }
 
     @Override
@@ -168,7 +191,6 @@ public class CodeVisitor implements INodeVisitor{
         stringBuilder.append("{\n");
         for(AstNode child : node.children){
             this.visitChild(child);
-            stringBuilder.append(";\n");
         }
 
         stringBuilder.append("\n}\n");
@@ -182,6 +204,7 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(DivNode node) {
         AstNode leftChild = node.children.get(0);
+        stringBuilder.append(" ");
         AstNode rightChild = node.children.get(1);
         this.visitChild(leftChild);
         stringBuilder.append(" / ");
@@ -195,15 +218,26 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(FuncCallNode node) {
+        AstNode id = node.children.get(0);
+        this.visitChild(id);
+        stringBuilder.append("(");
 
+        for(AstNode child : node.children.subList( 1, node.children.size() )){
+            this.visitChild(child);
+            stringBuilder.append(", ");
+        }
+        //Deletes leftover comma and whitespace
+        stringBuilder.deleteCharAt(stringBuilder.length()-2);
+        stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        stringBuilder.append(");\n");
     }
 
     @Override
     public void visit(FuncNode node) {
         //func: return_type ID LEFT_PAREN param? RIGHT_PAREN blk; //done
         stringBuilder.append(node.returnType);
+        stringBuilder.append(" ");
         stringBuilder.append(node.id);
-
         this.visitChildren(node);
     }
 
@@ -214,7 +248,10 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(IterativeNode node) {
-
+        stringBuilder.append("while(");
+        this.visitChild(node.children.get(0));
+        stringBuilder.append(")");
+        this.visitChild(node.children.get(1));
     }
 
     @Override
@@ -224,36 +261,64 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(MultNode node) {
-
+        AstNode leftChild = node.children.get(0);
+        stringBuilder.append(" ");
+        AstNode rightChild = node.children.get(1);
+        this.visitChild(leftChild);
+        stringBuilder.append(" * ");
+        this.visitChild(rightChild);
     }
 
     @Override
     public void visit(ParamNode node) {
-        this.visitChildren(node);
+        stringBuilder.append("(");
+        for(AstNode child : node.children){
+            this.visitChild(child);
+            stringBuilder.append(", ");
+        }
+        //Deletes leftover comma and whitespace
+        stringBuilder.deleteCharAt(stringBuilder.length()-2);
+        stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        stringBuilder.append(")");
     }
 
     @Override
     public void visit(PinDclNode node) {
-
+        stringBuilder.append("int ");
+        stringBuilder.append(node.id);
     }
 
     @Override
     public void visit(SelectionNode node) {
-
+        stringBuilder.append("if(");
+        this.visitChild(node.children.get(0));
+        stringBuilder.append(")");
+        visitChild(node.children.get(1));
+        if(node.children.size() > 2){
+            stringBuilder.append("else");
+            visitChild(node.children.get(2));
+        }
     }
 
     @Override
     public void visit(StmtNode node) {
         visitChildren(node);
+        stringBuilder.append(";\n");
     }
 
     @Override
     public void visit(SubNode node) {
-
+        AstNode leftChild = node.children.get(0);
+        stringBuilder.append(" ");
+        AstNode rightChild = node.children.get(1);
+        this.visitChild(leftChild);
+        stringBuilder.append(" - ");
+        this.visitChild(rightChild);
     }
 
-    public void visitDclNode(DclNode node){
+    public void visitDclNode(DclNode<?> node){
         stringBuilder.append(node.type);
+        stringBuilder.append(" ");
         stringBuilder.append(node.id);
     }
 }

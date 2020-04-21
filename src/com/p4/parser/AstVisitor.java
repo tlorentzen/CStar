@@ -136,7 +136,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
            return new FloatNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()), isNegative);
         }
         else if(ctx.PIN_LITERAL() != null) {
-            return new PinNode(Integer.parseInt(ctx.CHAR_LITERAL().getText()), isNegative);
+            var pinValue = ((TerminalNodeImpl)ctx.children.get(0)).symbol.getText();
+            int value;
+            if(pinValue.startsWith("A")){
+                value = -1 - Integer.parseInt(pinValue.substring(1));
+            } else {
+                value = Integer.parseInt(ctx.CHAR_LITERAL().getText());
+            }
+            return new PinNode(value, isNegative);
         }
         else if(ctx.LONG_LITERAL() != null) {
             return new LongNode(Long.parseLong(ctx.LONG_LITERAL().getText()), isNegative);
@@ -378,30 +385,38 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
             if(object instanceof CommonToken){
                 CommonToken t = (CommonToken) object;
-
                 if(t.getType() == CStarParser.COMP_OP){
-                    node.setOperator(t.getType());
-                }
-
-                if(t.getType() == CStarParser.AND || t.getType() == CStarParser.OR){
+                    switch (t.getText()){
+                        case "<":
+                            node.setOperator(CStarParser.LESS_THAN);
+                            break;
+                        case ">":
+                            node.setOperator(CStarParser.GREATER_THAN);
+                            break;
+                        case "IS":
+                            node.setOperator(CStarParser.IS);
+                            break;
+                        case "ISNOT":
+                            node.setOperator(CStarParser.ISNOT);
+                            break;
+                        default:
+                            //Todo: error handling
+                    }
+                } else if(t.getType() == CStarParser.AND || t.getType() == CStarParser.OR){
                     node.children.add(visit(child));
                     CondNode newCondNode = new CondNode();
                     newCondNode.lineNumber = ctx.start.getLine();
+                    newCondNode.setOperator(node.getOperator());
                     newCondNode.children.addAll(node.children);
                     node.children.clear();
                     node.children.add(newCondNode);
+                    node.setOperator(t.getType());
                 }
-
-                node.setOperator(t.getType());
             } else{
                 node.children.add(visit(child));
             }
         }
-        if(node.getOperator() == -1){
-            return node.getChildren().get(0);
-        } else{
-            return node;
-        }
+        return node;
     }
 
     @Override public AstNode visitFunc(CStarParser.FuncContext ctx) {
@@ -444,7 +459,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     break;
                 default:
                     //todo error handling
-                    return paramNode;
             }
         }
         return paramNode;

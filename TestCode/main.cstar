@@ -1,2 +1,1 @@
-integer i = 2 / 0;
-
+big integer i = 5 / 0;
