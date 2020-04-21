@@ -16,6 +16,8 @@ public class CodeVisitor implements INodeVisitor{
         File f = new File(filePath);
         FileOutputStream oS = new FileOutputStream(f);
         oS.write(stringBuilder.toString().getBytes());
+        //Debug print
+        System.out.println(stringBuilder.toString());
     }
 
     @Override
@@ -118,10 +120,12 @@ public class CodeVisitor implements INodeVisitor{
 
         for(AstNode child : node.children){
             visitChild(child);
-            stringBuilder.append(",");
+            stringBuilder.append(", ");
         }
-        //Deletes leftover comma
+        //Deletes leftover comma and whitespace
+        stringBuilder.deleteCharAt(stringBuilder.length()-2);
         stringBuilder.deleteCharAt(stringBuilder.length()-1);
+
 
     }
 
@@ -135,7 +139,6 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(ArrayDclNode<?> node) {
-        //int ledPins[] = {2, 7, 4, 6, 5, 3}; Arduino c
         visitChild(node.children.get(0));
         stringBuilder.append(" = ");
         stringBuilder.append("{");
@@ -202,8 +205,10 @@ public class CodeVisitor implements INodeVisitor{
 
         for(AstNode child : node.children.subList( 1, node.children.size() )){
             this.visitChild(child);
-            stringBuilder.append(",");
+            stringBuilder.append(", ");
         }
+        //Deletes leftover comma and whitespace
+        stringBuilder.deleteCharAt(stringBuilder.length()-2);
         stringBuilder.deleteCharAt(stringBuilder.length()-1);
         stringBuilder.append(");\n");
     }
@@ -252,6 +257,7 @@ public class CodeVisitor implements INodeVisitor{
             this.visitChild(child);
             stringBuilder.append(", ");
         }
+        //Deletes leftover comma and whitespace
         stringBuilder.deleteCharAt(stringBuilder.length()-2);
         stringBuilder.deleteCharAt(stringBuilder.length()-1);
         stringBuilder.append(")");
