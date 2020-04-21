@@ -89,10 +89,10 @@ public class Main {
                         System.out.println(e);
                     }
                 }else{
-                    errors.addEntry(ErrorType.WRONG_EXTENSION, "Wrong file extension, expected .cstar", 0);
+                    errors.addEntry(ErrorType.WRONG_EXTENSION, "Wrong file extension, expected .cstar");
                 }
             }else{
-                errors.addEntry(ErrorType.SOURCE_FILE_DOES_NOT_EXIST, "Source file not found.", 0);
+                errors.addEntry(ErrorType.SOURCE_FILE_DOES_NOT_EXIST, "Source file not found.");
             }
 
             errors.display();
