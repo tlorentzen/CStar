@@ -14,7 +14,8 @@ public class LexerErrorListener extends BaseErrorListener {
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e){
-        errors.addEntry(ErrorType.LEXER_ERROR, msg, line, charPositionInLine);
+        String token = e.toString().substring(27, 28);
+        errors.addEntry(ErrorType.LEXER_ERROR, "did not recognize the character '"+token+"'", line, charPositionInLine);
     }
 
 }
