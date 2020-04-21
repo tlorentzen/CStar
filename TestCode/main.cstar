@@ -1,12 +1,15 @@
 integer i = 2;
 
-if(4 < 9){
-    i = 3;
-} else {
-    i = 3;
+big integer d = 34;
+
+integer array ia = [2, 5, 6];
+
+integer i = 5 / 1;
+
+void funcName(integer kl){
+    integer hest = 10000;
+
+    if(hest < 100000){
+        integer hej = 100;
+    }
 }
-
-pin pinName = A100;
-pin pin2Name = 3;
-
-pinName = 3;
