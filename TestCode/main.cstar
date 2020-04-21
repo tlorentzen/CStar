@@ -1,20 +1,2 @@
-integer i = 2;
+integer i = 2 / 0;
 
-big integer d = 34;
-
-integer array ia = [2, 5.2, 6];
-
-int i = 5 /;
-
-void funcName(integer kl){
-    integer hest = 10000;
-
-    if(hest < 100000){
-        integer hej = 100;
-    }
-}
-
-System.funcName(2);
-
-integer i = 5 / 0;
-big integer i = 5 / 0;

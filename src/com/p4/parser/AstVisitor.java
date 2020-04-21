@@ -367,7 +367,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         int numChildren = ctx.getChildCount();
 
-        //If there is one child, then its not a condExpr
+        //If there is one child, then it's not a condExpr
         if(numChildren == 1){
             return visit(ctx.arithm_expr(0));
         }

@@ -66,6 +66,7 @@ public class Main {
                         ParseTree tree = parser.prog();
 
                         if(!errors.containsErrors()){
+
                             CStarBaseVisitor<?> visitor = new AstVisitor<>();
                             ProgNode ast = (ProgNode) visitor.visit(tree);
 
@@ -77,10 +78,10 @@ public class Main {
                             astTreeVisitor.visit(0, ast);
                             */
 
-                            /*
+
                             CodeVisitor codeVisitor = new CodeVisitor();
                             codeVisitor.visit(ast);
-                            */
+
                         }
                     }catch (IOException e){
                         System.out.println(e);

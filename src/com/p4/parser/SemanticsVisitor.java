@@ -64,13 +64,12 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-
     public void visit(CondNode node){
         this.visitChildren(node);
         if(node.children.size() == 2){
             String leftChild = node.children.get(0).type;
             String rightChild = node.children.get(1).type;
-            //node.type = binaryOperationResultType(node.getOperator(), leftChild, rightChild);
+            node.type = compareOperationResultType(node.getOperator(), leftChild, rightChild);
         } else if(node.children.size() == 1){
             node.type = node.children.get(0).type;
         } else {
@@ -339,13 +338,34 @@ public class SemanticsVisitor implements INodeVisitor {
 
     private boolean compareOperationResultType(int operator, String leftType, String rightType) {
         //Todo: handle casting
+        //forskellig for: (is isnot), (or, and), (greater, less)
 
-        if(leftType.equals(rightType)){
-            return true;
+        //Checks if the operator is IS or ISNOT
+        if(operator == 4 || operator == 5){
+            if(leftType.equals(rightType)){
+                return true;
+            }
+            else if(leftType.equals("char") || rightType.equals("char")){
+                return false;
+            }
+            else {
+                return true;
+            }
         }
-
-        return false;
+        //Checks if the operator is '>' or '<'
+        else if(operator == 2 || operator == 3) {
+           if(leftType.equals("char") || rightType.equals("char")){
+                return false;
+            }
+           else {
+               return true;
+            }
+        }
+        else {
+            return false;
+        }
     }
+    
 
     private String unaryOperationResultType(int operator, String type) {
         //Todo: handle casting
