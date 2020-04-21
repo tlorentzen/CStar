@@ -271,6 +271,7 @@ public class SemanticsVisitor implements INodeVisitor {
         var leftChild = node.children.get(0);
         var rightChild = node.children.get(1);
         node.type = binaryOperationResultType(CStarParser.MINUS, leftChild.type, rightChild.type);
+        //Todo: update type of children
     }
 
     private String binaryOperationResultType(int operator, String leftType, String rightType) {

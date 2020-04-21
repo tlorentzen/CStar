@@ -1,6 +1,6 @@
 integer i = 2;
 
-integer i = 3;
+big integer d = 34;
 
 integer array ia = [2, 5.2, 6];
 
