@@ -1,6 +1,7 @@
 package com.p4;
 
 import com.p4.errors.ErrorBag;
+import com.p4.errors.ErrorType;
 import com.p4.parser.*;
 import com.p4.parser.nodes.ProgNode;
 import com.p4.symbols.SymbolTable;
@@ -8,7 +9,6 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +20,7 @@ public class Main {
     public static void main(String[] args) {
 
         Path inputSource = null;
+        ErrorBag errors = new ErrorBag();
 
         if(args.length == 1){
             inputSource = Paths.get(args[0]);
@@ -39,7 +40,6 @@ public class Main {
                         CharStream inputStream = CharStreams.fromPath(inputSource);
 
                         var symbolTable = new SymbolTable();
-                        ErrorBag errors = new ErrorBag();
 
                         /*
                         errors.addEntry(ErrorType.TYPE_ERROR, "Error here!", 1);
@@ -58,29 +58,40 @@ public class Main {
                         CStarParser parser = new CStarParser(commonTokenStream);
                         parser.setBuildParseTree(true);
 
+
                         ParseTree tree = parser.prog();
                         CStarBaseVisitor<?> visitor = new AstVisitor<>();
                         ProgNode ast = (ProgNode) visitor.visit(tree);
 
+
+
+
                         AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                         astTreeVisitor.visit(0, ast);
 
-/*                        SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+/*
+                        SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
                         semanticsVisitor.visit(ast);
-
+*/
+                        /*
                         CodeVisitor codeVisitor = new CodeVisitor();
                         codeVisitor.visit(ast);
-*/
+                        */
+
                         //System.out.println(tree.getText());
 
-                        errors.display();
+
                     }catch (IOException e){
                         System.out.println(e);
                     }
                 }else{
                     System.out.println("Invalid source file...");
                 }
+            }else{
+                errors.addEntry(ErrorType.SOURCE_FILE_DOES_NOT_EXIST, "Source file not found.", 0);
             }
+
+            errors.display();
         }
     }
 

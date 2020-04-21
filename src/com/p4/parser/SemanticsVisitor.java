@@ -53,7 +53,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(AssignNode node){
         if(node.children.size() != 2) {
             errors.addEntry(ErrorType.TYPE_ERROR, "Assign should always have two operands", node.lineNumber);
-        } else{
+        }else{
             this.visitChildren(node);
             var leftChild = node.children.get(0);
             var rightChild = node.children.get(1);
