@@ -1,6 +1,6 @@
 integer i = 2;
 
-big integer d = 34;
+integer d = 34;
 
 integer array ia = [2, 5.2, 6];
 
@@ -13,3 +13,13 @@ void funcName(integer kl){
 }
 
 System.funcName(2);
+
+while(2 > 3) repeat {
+    i = 2;
+}
+
+if(4 < 9){
+    i = 3;
+} else {
+    i = 3;
+}
