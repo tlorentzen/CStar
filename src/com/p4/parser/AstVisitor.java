@@ -136,7 +136,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
            return new FloatNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()), isNegative);
         }
         else if(ctx.PIN_LITERAL() != null) {
-            return new PinNode(Integer.parseInt(ctx.CHAR_LITERAL().getText()), isNegative);
+            var pinValue = ((TerminalNodeImpl)ctx.children.get(0)).symbol.getText();
+            int value;
+            if(pinValue.startsWith("A")){
+                value = -1 - Integer.parseInt(pinValue.substring(1));
+            } else {
+                value = Integer.parseInt(ctx.CHAR_LITERAL().getText());
+            }
+            return new PinNode(value, isNegative);
         }
         else if(ctx.LONG_LITERAL() != null) {
             return new LongNode(Long.parseLong(ctx.LONG_LITERAL().getText()), isNegative);

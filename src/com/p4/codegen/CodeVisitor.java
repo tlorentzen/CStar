@@ -6,11 +6,13 @@ import com.p4.parser.nodes.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CodeVisitor implements INodeVisitor{
     String filePath = System.getProperty("user.home") + "\\Desktop\\test.ino";
     StringBuilder stringBuilder = new StringBuilder();
-
+    private Map<String, Boolean> pinDeclared = new HashMap<>();
 
     public void print() throws IOException {
         File f = new File(filePath);
@@ -67,10 +69,27 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(AssignNode node) {
-        visitChild(node.children.get(0));
-        stringBuilder.append(" = ");
-        visitChild(node.children.get(1));
-        stringBuilder.append(";\n");
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+        leftChild.type = "pin";
+        if(leftChild.type.equals("pin")){
+            if(leftChild instanceof PinDclNode pinDclNode){
+                if(pinDeclared.getOrDefault(((PinDclNode)leftChild).id, false)){
+                    //Todo: implement pin write
+                } else{
+                    //Todo: implement pin dcl
+                }
+            } else{
+                stringBuilder.append(" = ");
+                this.visitChild(rightChild);
+                stringBuilder.append(";\n");
+            }
+        } else{
+            this.visitChild(leftChild);
+            stringBuilder.append(" = ");
+            this.visitChild(rightChild);
+            stringBuilder.append(";\n");
+        }
     }
 
     @Override
