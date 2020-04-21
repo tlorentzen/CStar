@@ -4,10 +4,11 @@ prog: ( dcl | func | stmt )* EOF;
 
 dcl: TYPE (ID | assign | array_dcl) SEMICOLON; //done
 assign: ID ASSIGN_OP expr | array_assign; //done
-expr: cond_expr; //done
-cond_expr: arithm_expr (COMP_OP arithm_expr)? (( OR | AND ) cond_expr)*; //done
-arithm_expr: term ( ( PLUS | MINUS ) term )*; //done
-term: factor ( ( MULT | DIVISION ) factor )*; //done
+expr: logical_expr; //done
+logical_expr: cond_expr (( OR | AND ) cond_expr)*;
+cond_expr: arithm_expr (COMP_OP arithm_expr)?;
+arithm_expr: term (( PLUS | MINUS ) term)*; //done
+term: factor (( MULT | DIVISION ) factor)*; //done
 factor:	(MINUS)? (ID | val | LEFT_PAREN expr RIGHT_PAREN | func_call); //done
 
 array_dcl: ARRAY ID ASSIGN_OP array_expr; //done
@@ -22,8 +23,8 @@ return_exp: RETURN expr SEMICOLON; //done
 func_call: (ID | FUNCID) LEFT_PAREN (expr (COMMA expr)*)? RIGHT_PAREN; //done
 
 stmt: assign SEMICOLON | expr SEMICOLON | selection | iterative;
-iterative: WHILE LEFT_PAREN cond_expr RIGHT_PAREN REPEAT blk; //done
-selection: IF LEFT_PAREN cond_expr RIGHT_PAREN blk ( ELSE blk )?; //done
+iterative: WHILE LEFT_PAREN logical_expr RIGHT_PAREN REPEAT blk; //done
+selection: IF LEFT_PAREN logical_expr RIGHT_PAREN blk ( ELSE blk )?; //done
 
 val: INT_LITERAL | LONG_LITERAL | FLOAT_LITERAL | CHAR_LITERAL | PIN_LITERAL; // done
 

@@ -26,10 +26,11 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(IdNode node){
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
             errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope", node.lineNumber);
-        } else{
+        } else {
             node.type = symbolTable.lookup(node.id).variableType;
         }
     }
+
 
     public void visit(IntegerNode node){
         node.type = "int";
@@ -64,20 +65,40 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
+        public void visit(OrNode node){
+            //noget
+        }
+        public void visit(AndNode node){
+            //noget
+        }
+
     public void visit(CondNode node){
-        /*this.visitChildren(node);
+        boolean isValidType;
 
-        String leftChild = node.children.get(0).type;
-        String rightChild = node.children.get(1).type;
+        this.visitChildren(node);
 
-        
-        boolean isValidType = compareOperationValid(node.getOperator(), leftChild, rightChild);
+        String leftType = node.children.get(0).type;
+        String rightType = node.children.get(1).type;
+
+        //Checks if the node is AND or OR
+        if(node.getOperator() == 6 || node.getOperator() == 7){
+            isValidType = logicalOperationValid(leftType, rightType);
+        }
+        //Enters if the node is LESS, GREATER, IS, or ISNOT
+        else if (node.getOperator() == 2 || node.getOperator() == 3 ||
+                 node.getOperator() == 4 || node.getOperator() == 5){
+            isValidType = compareOperationValid(node.getOperator(), leftType, rightType);
+        }
+        else {
+            isValidType = false;
+        }
+
         if (!isValidType) {
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine" + leftChild + " with " + rightChild, node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine" + leftType + " with " + rightType, node.lineNumber);
         }
         else{
             node.type = "boolean";
-        }*/
+        }
 
         //todo is a syntax error so  should not be checked at td point!
         /*if(node.children.size() == 2){
