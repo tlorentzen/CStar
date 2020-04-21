@@ -7,6 +7,7 @@ public enum ErrorType {
     SOURCE_FILE_DOES_NOT_EXIST("E100"),
     PARSER_ERROR("E102"),
     LEXER_ERROR("E101"),
+    WRONG_EXTENSION("E103"),
     WARNING("W1"),
     INFORMATION("I1");
 

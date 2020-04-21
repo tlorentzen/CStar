@@ -89,7 +89,7 @@ public class Main {
                         System.out.println(e);
                     }
                 }else{
-                    System.out.println("Invalid source file...");
+                    errors.addEntry(ErrorType.WRONG_EXTENSION, "Wrong file extension, expected .cstar", 0);
                 }
             }else{
                 errors.addEntry(ErrorType.SOURCE_FILE_DOES_NOT_EXIST, "Source file not found.", 0);
