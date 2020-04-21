@@ -35,10 +35,6 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(IdNode node) {
-        if(node.type != null){
-            stringBuilder.append(node.type);
-            stringBuilder.append(" ");
-        }
         stringBuilder.append(node.id);
     }
 
@@ -74,15 +70,21 @@ public class CodeVisitor implements INodeVisitor{
         leftChild.type = "pin";
         if(leftChild.type.equals("pin")){
             if(leftChild instanceof PinDclNode pinDclNode){
-                if(pinDeclared.getOrDefault(((PinDclNode)leftChild).id, false)){
-                    //Todo: implement pin write
-                } else{
-                    //Todo: implement pin dcl
-                }
-            } else{
+                String pinNum = (rightChild instanceof PinNode ? "A" + ((((PinNode) rightChild).value * -1) - 1) : ((IntegerNode) rightChild).value.toString());
+                stringBuilder.append("int ").append(pinDclNode.id);
                 stringBuilder.append(" = ");
-                this.visitChild(rightChild);
+                stringBuilder.append(pinNum);
                 stringBuilder.append(";\n");
+            } else{
+                if(true){
+                    stringBuilder.append("analogWrite(");
+                } else{
+                    stringBuilder.append("digitalWrite(");
+                }
+                this.visitChild(leftChild);
+                stringBuilder.append(", ");
+                this.visitChild(rightChild);
+                stringBuilder.append(");\n");
             }
         } else{
             this.visitChild(leftChild);
@@ -183,8 +185,6 @@ public class CodeVisitor implements INodeVisitor{
         this.visitChild(rightChild);
     }
 
-
-
     @Override
     public void visit(BlkNode node) {
         //blk: LEFT_BRACE ( dcl | stmt | return_exp)* RIGHT_BRACE;
@@ -273,6 +273,7 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(ParamNode node) {
         stringBuilder.append("(");
         for(AstNode child : node.children){
+            stringBuilder.append(child.type).append(" ");
             this.visitChild(child);
             stringBuilder.append(", ");
         }

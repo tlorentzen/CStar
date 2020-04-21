@@ -1,12 +1,5 @@
-integer i = 2;
-
-if(4 < 9){
-    i = 3;
-} else {
-    i = 3;
-}
-
 pin pinName = A100;
 pin pin2Name = 3;
 
-pinName = 3;
+pinName = 3737;
+
