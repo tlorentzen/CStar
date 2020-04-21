@@ -7,9 +7,22 @@ import java.util.List;
 public class ErrorBag {
     private static String OS = System.getProperty("os.name").toLowerCase();
     private List<Item> errors = new ArrayList<>();
+    private boolean hasErrors = false;
+
+    public void addEntry(ErrorType type, String message){
+        this.addEntry(type, message, 0, 0);
+    }
 
     public void addEntry(ErrorType type, String message, int lineNumber){
-        this.errors.add(new Item(type, message, lineNumber));
+        this.addEntry(type, message, lineNumber, 0);
+    }
+
+    public void addEntry(ErrorType type, String message, int lineNumber, int column){
+        this.errors.add(new Item(type, message, lineNumber, column));
+
+        if(type.toString().startsWith("E")){
+            hasErrors = true;
+        }
     }
 
     public boolean isEmpty(){
@@ -48,16 +61,26 @@ public class ErrorBag {
 
         return Color.WHITE;
     }
+
+    public boolean containsErrors(){
+        return hasErrors;
+    }
 }
 
 class Item{
     ErrorType type;
     String message;
-    int lineNumber;
+    int lineNumber = 0;
+    int column = 0;
 
     public Item(ErrorType type, String message, int lineNumber){
+        this(type, message, lineNumber, 0);
+    }
+
+    public Item(ErrorType type, String message, int lineNumber, int column){
         this.type = type;
         this.message = message;
         this.lineNumber = lineNumber;
+        this.column = column;
     }
 }
