@@ -1,23 +1,5 @@
 integer i = 2;
 
-integer d = 34;
-
-integer array ia = [2, 5.2, 6];
-
-void funcName(integer kl, decimal l){
-    integer hest = 10000;
-
-    if(hest < 100000){
-        integer hej = 100;
-    }
-}
-
-System.funcName(2);
-
-while(2 > 3 AND 5 < 9) repeat {
-    i = 2;
-}
-
 if(4 < 9){
     i = 3;
 } else {
