@@ -17,3 +17,4 @@ void funcName(integer kl){
 System.funcName(2);
 
 integer i = 5 / 0;
+big integer i = 5 / 0;

@@ -178,13 +178,13 @@ public class SemanticsVisitor implements INodeVisitor {
             if(isDivByZero(rightChild)){
                 errors.addEntry(ErrorType.ZERO_DIVISION, "Cannot divide by zero", node.lineNumber);
             }
-
-            node.type = resultType;
+            else {
+                node.type = resultType;
+            }
         }
     }
     
     public boolean isDivByZero(AstNode denominator){
-
         return (denominator.type.equals("int") && ((IntegerNode)denominator).getValue() == 0) ||
                (denominator.type.equals("float") && ((FloatNode)denominator).getValue() == 0);
     }
