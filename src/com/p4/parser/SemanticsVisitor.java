@@ -65,7 +65,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(CondNode node){
-        this.visitChildren(node);
+        /*this.visitChildren(node);
 
         String leftChild = node.children.get(0).type;
         String rightChild = node.children.get(1).type;
@@ -77,7 +77,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
         else{
             node.type = "boolean";
-        }
+        }*/
 
         //todo is a syntax error so  should not be checked at td point!
         /*if(node.children.size() == 2){
