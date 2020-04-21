@@ -60,7 +60,9 @@ public class ErrorBag {
                 if(item.lines.size() > 0){
                     String indent = " ".repeat(item.type.toString().length());
                     for (String line : item.lines){
-                        System.out.println(indent+"| "+line);
+                        if(line.trim().length() > 0){
+                            System.out.println(indent+"| "+line);
+                        }
                     }
                     System.out.println();
                 }

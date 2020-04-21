@@ -66,15 +66,17 @@ public class Main {
                         ParseTree tree = parser.prog();
 
                         if(!errors.containsErrors()) {
+
                             CStarBaseVisitor<?> visitor = new AstVisitor<>();
                             ProgNode ast = (ProgNode) visitor.visit(tree);
 
                             //AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                             //astTreeVisitor.visit(0, ast);
 
-                            /*SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
-                            semanticsVisitor.visit(ast);*/
+                            SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+                            semanticsVisitor.visit(ast);
 
+                            /*
                             CodeVisitor codeVisitor = new CodeVisitor();
                             codeVisitor.visit(ast);
                             try {
@@ -82,6 +84,8 @@ public class Main {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
+                            */
+
                         }
                     }catch (IOException e){
                         System.out.println(e);

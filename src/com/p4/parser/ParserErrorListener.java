@@ -26,23 +26,17 @@ public class ParserErrorListener extends BaseErrorListener {
         CommonTokenStream tokens = (CommonTokenStream)recognizer.getInputStream();
 
         String input = tokens.getTokenSource().getInputStream().toString();
-        String[] lines = input.split("\n");
-        String errorLine = lines[line-1];
+        String errorLine = input.split("\n")[line-1];
         output.add(errorLine);
 
         StringBuilder pointer = new StringBuilder();
-
-        for (int i=0; i<charPositionInLine; i++){
-            pointer.append(" ");
-        }
+        pointer.append(" ".repeat(Math.max(0, charPositionInLine)));
 
         int start = offendingToken.getStartIndex();
         int stop = offendingToken.getStopIndex();
 
         if(start>=0 && stop>=0){
-            for (int i= start; i<=stop; i++){
-                pointer.append("^");
-            }
+            pointer.append("^".repeat(Math.max(0, stop - start + 1)));
         }
 
         output.add(pointer.toString());

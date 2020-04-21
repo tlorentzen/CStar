@@ -69,7 +69,7 @@ public class SemanticsVisitor implements INodeVisitor {
         if(node.children.size() == 2){
             String leftChild = node.children.get(0).type;
             String rightChild = node.children.get(1).type;
-            node.type = compareOperationResultType(node.getOperator(), leftChild, rightChild);
+            compareOperationResultType(node.getOperator(), leftChild, rightChild);
         } else if(node.children.size() == 1){
             node.type = node.children.get(0).type;
         } else {
