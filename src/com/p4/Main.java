@@ -54,10 +54,13 @@ public class Main {
                         */
 
                         CStarLexer lexer = new CStarLexer(inputStream);
+                        lexer.removeErrorListeners();
+                        lexer.addErrorListener(new LexerErrorListener(errors));
                         CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
                         CStarParser parser = new CStarParser(commonTokenStream);
                         parser.setBuildParseTree(true);
-
+                        parser.removeErrorListeners();
+                        parser.addErrorListener(new ParserErrorListener(errors));
 
                         ParseTree tree = parser.prog();
                         CStarBaseVisitor<?> visitor = new AstVisitor<>();
@@ -65,9 +68,11 @@ public class Main {
 
 
 
-
+/*
                         AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                         astTreeVisitor.visit(0, ast);
+
+ */
 
 /*
                         SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);

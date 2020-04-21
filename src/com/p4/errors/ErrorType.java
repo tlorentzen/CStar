@@ -4,6 +4,8 @@ public enum ErrorType {
     TYPE_ERROR("E1"),
     DUPLICATE_VARS("E2"),
     SOURCE_FILE_DOES_NOT_EXIST("E100"),
+    PARSER_ERROR("E102"),
+    LEXER_ERROR("E101"),
     WARNING("W1"),
     INFORMATION("I1");
 

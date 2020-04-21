@@ -4,6 +4,8 @@ big integer d = 34;
 
 integer array ia = [2, 5.2, 6];
 
+å
+
 void funcName(integer kl){
     integer hest = 10000;
 
