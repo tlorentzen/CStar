@@ -4,6 +4,7 @@ import com.p4.parser.INodeVisitor;
 
 public class IntegerNode extends LiteralNode<Integer>{
 
+
     public IntegerNode(Integer value, Boolean isNegative) {
         super(value, isNegative);
     }

@@ -22,6 +22,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
+    //Explicit declaration scope rule
     public void visit(IdNode node){
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
             errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope", node.lineNumber);
@@ -51,22 +52,25 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(AssignNode node){
+        //todo det er en SYNTAX ERROR, flyt til scanner/parser
         if(node.children.size() != 2) {
             errors.addEntry(ErrorType.TYPE_ERROR, "Assign should always have two operands", node.lineNumber);
         } else{
             this.visitChildren(node);
             var leftChild = node.children.get(0);
             var rightChild = node.children.get(1);
-            node.type = binaryOperationResultType(CStarParser.ASSIGN_OP, leftChild.type, rightChild.type);
+
+            //node.type = binaryOperationResultType(CStarParser.ASSIGN_OP, leftChild.type, rightChild.type);
         }
     }
+
 
     public void visit(CondNode node){
         this.visitChildren(node);
         if(node.children.size() == 2){
             String leftChild = node.children.get(0).type;
             String rightChild = node.children.get(1).type;
-            node.type = binaryOperationResultType(node.getOperator(), leftChild, rightChild);
+            //node.type = binaryOperationResultType(node.getOperator(), leftChild, rightChild);
         } else if(node.children.size() == 1){
             node.type = node.children.get(0).type;
         } else {
@@ -110,9 +114,16 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(AddNode node) {
         this.visitChildren(node);
-        var leftChild = node.children.get(0);
-        var rightChild = node.children.get(1);
-        node.type = binaryOperationResultType(CStarParser.PLUS, leftChild.type, rightChild.type);
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+        var resultType = arithOperationResultType(leftChild.type, rightChild.type);
+        
+        if (resultType.equals("error")){ 
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftChild.type + " with " + rightChild.type, node.lineNumber);
+        }
+        else {
+            node.type = resultType;
+        }
     }
 
     public void visit(ArrayDclNode<?> node) {
@@ -154,11 +165,28 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    public void visit(DivNode node) {
+    public void visit(DivNode node){
         this.visitChildren(node);
         var leftChild = node.children.get(0);
         var rightChild = node.children.get(1);
-        node.type = binaryOperationResultType(CStarParser.DIVISION, leftChild.type, rightChild.type);
+        var resultType = arithOperationResultType(leftChild.type, rightChild.type);
+
+        if(resultType.equals("error")){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftChild.type + " with " + rightChild.type, node.lineNumber);
+        }
+        else{
+            if(isDivByZero(rightChild)){
+                errors.addEntry(ErrorType.ZERO_DIVISION, "Cannot divide by zero", node.lineNumber);
+            }
+
+            node.type = resultType;
+        }
+    }
+    
+    public boolean isDivByZero(AstNode denominator){
+
+        return (denominator.type.equals("int") && ((IntegerNode)denominator).getValue() == 0) ||
+               (denominator.type.equals("float") && ((FloatNode)denominator).getValue() == 0);
     }
 
     public void visit(FloatDclNode node) {
@@ -223,7 +251,14 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
         var leftChild = node.children.get(0);
         var rightChild = node.children.get(1);
-        node.type = binaryOperationResultType(CStarParser.MULT, leftChild.type, rightChild.type);
+        var resultType = arithOperationResultType(leftChild.type, rightChild.type);
+
+        if (resultType.equals("error")){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftChild.type + " with " + rightChild.type, node.lineNumber);
+        }
+        else {
+            node.type = resultType;
+        }
     }
 
     public void visit(ParamNode node) {
@@ -270,23 +305,46 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
         var leftChild = node.children.get(0);
         var rightChild = node.children.get(1);
-        node.type = binaryOperationResultType(CStarParser.MINUS, leftChild.type, rightChild.type);
-        //Todo: update type of children
+        var resultType = arithOperationResultType(leftChild.type, rightChild.type);
+
+        if (resultType.equals("error")){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftChild.type + " with " + rightChild.type, node.lineNumber);
+        }
+        else {
+            node.type = resultType;
+        }
     }
 
-    private String binaryOperationResultType(int operator, String leftType, String rightType) {
+    private String arithOperationResultType(String leftType, String rightType) {
+        //Todo: handle casting
+        //first semantic rule
+        if(leftType.equals(rightType)){
+            return leftType;
+        }
+        //second semantic rule
+        else if((leftType.equals("int") || leftType.equals("long")) && rightType.equals("float") ||
+                leftType.equals("float") && (rightType.equals("long") || rightType.equals("int"))) {
+            return "float";
+        }
+        //third semantic rule
+        else if((leftType.equals("int") && rightType.equals("long")) ||
+                (leftType.equals("long") && rightType.equals("int"))) {
+            return "long";
+        }
+        //wrong semantic!
+        else{
+            return "error";
+        }
+    }
+
+    private boolean compareOperationResultType(int operator, String leftType, String rightType) {
         //Todo: handle casting
 
-        if(leftType.equals(rightType))
-            return leftType;
-
-        switch(operator){
-            case CStarParser.ASSIGN_OP:
-
-
+        if(leftType.equals(rightType)){
+            return true;
         }
 
-        return leftType;
+        return false;
     }
 
     private String unaryOperationResultType(int operator, String type) {

@@ -3,6 +3,7 @@ package com.p4.errors;
 public enum ErrorType {
     TYPE_ERROR("E1"),
     DUPLICATE_VARS("E2"),
+    ZERO_DIVISION("E3"),
     WARNING("W1"),
     INFORMATION("I1");
 

@@ -1,5 +1,6 @@
 package com.p4;
 
+import com.p4.codegen.CodeVisitor;
 import com.p4.errors.ErrorBag;
 import com.p4.parser.*;
 import com.p4.parser.nodes.ProgNode;
@@ -65,12 +66,12 @@ public class Main {
                         AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                         astTreeVisitor.visit(0, ast);
 
-/*                        SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+                       SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
                         semanticsVisitor.visit(ast);
 
                         CodeVisitor codeVisitor = new CodeVisitor();
                         codeVisitor.visit(ast);
-*/
+
                         //System.out.println(tree.getText());
 
                         errors.display();
