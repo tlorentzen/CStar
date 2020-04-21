@@ -294,11 +294,11 @@ public class SemanticsVisitor implements INodeVisitor {
         //Skal bruges, hvis vi implementerer negation som en node (lige som i bogen)
     }
 
-    private String dominantTypeConversion(String type1, String type2) {
+    private String dominantTypeConversion(String lhs, String rhs) {
         //Todo: handling casting to dominant type
-        if(type1.equals("float")){
+        if(lhs.equals("float")){
             return "float";
-        } else if(type2.equals("float")){
+        } else if(rhs.equals("float")){
             return "float";
         } else{
             return "float";

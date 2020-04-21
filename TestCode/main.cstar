@@ -2,7 +2,6 @@ integer i = 2;
 
 integer i = 3;
 
-
 integer array ia = [2, 5.2, 6];
 
 void funcName(integer kl){
