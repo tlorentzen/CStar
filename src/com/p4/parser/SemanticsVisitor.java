@@ -66,15 +66,29 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(CondNode node){
         this.visitChildren(node);
-        if(node.children.size() == 2){
+
+        String leftChild = node.children.get(0).type;
+        String rightChild = node.children.get(1).type;
+
+        
+        boolean isValidType = compareOperationValid(node.getOperator(), leftChild, rightChild);
+        if (!isValidType) {
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine" + leftChild + " with " + rightChild, node.lineNumber);
+        }
+        else{
+            node.type = "boolean";
+        }
+
+        //todo is a syntax error so  should not be checked at td point!
+        /*if(node.children.size() == 2){
             String leftChild = node.children.get(0).type;
             String rightChild = node.children.get(1).type;
-            node.type = compareOperationResultType(node.getOperator(), leftChild, rightChild);
+            boolean isValidType = compareOperationResultType(node.getOperator(), leftChild, rightChild);
         } else if(node.children.size() == 1){
             node.type = node.children.get(0).type;
         } else {
             errors.addEntry(ErrorType.TYPE_ERROR, "Unexpected number of operands in conditional expression", node.lineNumber);
-        }
+        }*/
     }
 
     public void visit(ProgNode node) {
@@ -113,12 +127,12 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(AddNode node) {
         this.visitChildren(node);
-        AstNode leftChild = node.children.get(0);
-        AstNode rightChild = node.children.get(1);
-        var resultType = arithOperationResultType(leftChild.type, rightChild.type);
+        String leftType = node.children.get(0).type;
+        String rightType = node.children.get(1).type;
+        String resultType = arithOperationResultType(leftType, rightType);
         
         if (resultType.equals("error")){ 
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftChild.type + " with " + rightChild.type, node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
         }
         else {
             node.type = resultType;
@@ -166,9 +180,9 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(DivNode node){
         this.visitChildren(node);
-        var leftChild = node.children.get(0);
-        var rightChild = node.children.get(1);
-        var resultType = arithOperationResultType(leftChild.type, rightChild.type);
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+        String resultType = arithOperationResultType(leftChild.type, rightChild.type);
 
         if(resultType.equals("error")){
             errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftChild.type + " with " + rightChild.type, node.lineNumber);
@@ -248,12 +262,12 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(MultNode node) {
         this.visitChildren(node);
-        var leftChild = node.children.get(0);
-        var rightChild = node.children.get(1);
-        var resultType = arithOperationResultType(leftChild.type, rightChild.type);
+        String leftType = node.children.get(0).type;
+        String rightType = node.children.get(1).type;
+        var resultType = arithOperationResultType(leftType, rightType);
 
         if (resultType.equals("error")){
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftChild.type + " with " + rightChild.type, node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
         }
         else {
             node.type = resultType;
@@ -302,12 +316,12 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(SubNode node) {
         this.visitChildren(node);
-        var leftChild = node.children.get(0);
-        var rightChild = node.children.get(1);
-        var resultType = arithOperationResultType(leftChild.type, rightChild.type);
+        String leftType = node.children.get(0).type;
+        String rightType = node.children.get(1).type;
+        String resultType = arithOperationResultType(leftType, rightType);
 
         if (resultType.equals("error")){
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftChild.type + " with " + rightChild.type, node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
         }
         else {
             node.type = resultType;
@@ -336,7 +350,16 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    private boolean compareOperationResultType(int operator, String leftType, String rightType) {
+    private boolean logicalOperationValid(String leftType, String rightType){
+        if (leftType.equals("int") && rightType.equals("int")){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    private boolean compareOperationValid(int operator, String leftType, String rightType) {
         //Todo: handle casting
         //forskellig for: (is isnot), (or, and), (greater, less)
 
