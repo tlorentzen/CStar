@@ -85,7 +85,7 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(AssignNode node) {
         visitChild(node.children.get(0));
-        stringBuilder.append("=");
+        stringBuilder.append(" = ");
         visitChild(node.children.get(1));
         stringBuilder.append(";\n");
     }
@@ -95,22 +95,22 @@ public class CodeVisitor implements INodeVisitor{
         this.visitChild(node.children.get(0));
         switch (node.getOperator()){
             case 2:
-                stringBuilder.append("<");
+                stringBuilder.append(" < ");
                 break;
             case 3:
-                stringBuilder.append(">");
+                stringBuilder.append(" > ");
                 break;
             case 4:
-                stringBuilder.append("==");
+                stringBuilder.append(" == ");
                 break;
             case 5:
-                stringBuilder.append("!=");
+                stringBuilder.append(" != ");
                 break;
             case 6:
-                stringBuilder.append("||");
+                stringBuilder.append(" || ");
                 break;
             case 7:
-                stringBuilder.append("&&");
+                stringBuilder.append(" && ");
                 break;
         }
         this.visitChild(node.children.get(1));
@@ -161,7 +161,7 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(ArrayDclNode<?> node) {
         //int ledPins[] = {2, 7, 4, 6, 5, 3}; Arduino c
         visitChild(node.children.get(0));
-        stringBuilder.append("=");
+        stringBuilder.append(" = ");
         stringBuilder.append("{");
         visitChild(node.children.get(1));
         stringBuilder.append("}");
