@@ -63,28 +63,25 @@ public class Main {
                         parser.setBuildParseTree(true);
                         parser.removeErrorListeners();
                         parser.addErrorListener(new ParserErrorListener(errors));
-
                         ParseTree tree = parser.prog();
-                        CStarBaseVisitor<?> visitor = new AstVisitor<>();
-                        ProgNode ast = (ProgNode) visitor.visit(tree);
 
+                        if(!errors.containsErrors()){
+                            CStarBaseVisitor<?> visitor = new AstVisitor<>();
+                            ProgNode ast = (ProgNode) visitor.visit(tree);
 
+                            SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+                            semanticsVisitor.visit(ast);
 
-/*
-                        AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
-                        astTreeVisitor.visit(0, ast);
+                            /*
+                            AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
+                            astTreeVisitor.visit(0, ast);
+                            */
 
-                        SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
-
-                        semanticsVisitor.visit(ast);
-                        /*
-                        CodeVisitor codeVisitor = new CodeVisitor();
-                        codeVisitor.visit(ast);
-                        */
-
-                        //System.out.println(tree.getText());
-
-
+                            /*
+                            CodeVisitor codeVisitor = new CodeVisitor();
+                            codeVisitor.visit(ast);
+                            */
+                        }
                     }catch (IOException e){
                         System.out.println(e);
                     }
