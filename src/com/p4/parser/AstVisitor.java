@@ -376,7 +376,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             ParseTree child = ctx.getChild(i);
             Object object = child.getPayload();
 
-            if(object instanceof CommonToken t){
+            if(object instanceof CommonToken){
+                CommonToken t = (CommonToken) object;
                 if(t.getType() == CStarParser.COMP_OP){
                     switch (t.getText()){
                         case "<":

@@ -3,9 +3,6 @@ package com.p4.codegen;
 import com.p4.parser.INodeVisitor;
 import com.p4.parser.nodes.*;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 public class CodeVisitor implements INodeVisitor{
@@ -14,6 +11,7 @@ public class CodeVisitor implements INodeVisitor{
 
 
     public void print() throws IOException {
+        /*
         File f = new File(filePath);
         BufferedWriter writer = null;
         if(!f.exists()){
@@ -34,7 +32,7 @@ public class CodeVisitor implements INodeVisitor{
 
         String outputString = output.toString();
         writer.append(outputString);
-        System.out.println(output);
+        System.out.println(output);*/
     }
 
     @Override
