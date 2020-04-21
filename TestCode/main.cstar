@@ -2,9 +2,9 @@ integer i = 2;
 
 big integer d = 34;
 
-integer array ia = [2, 5.2, 6];
+integer array ia = [2, 5, 6];
 
-int i = 5 /;
+integer i = 5 / 1;
 
 void funcName(integer kl){
     integer hest = 10000;
