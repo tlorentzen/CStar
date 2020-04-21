@@ -56,10 +56,13 @@ public class Main {
                         */
 
                         CStarLexer lexer = new CStarLexer(inputStream);
+                        lexer.removeErrorListeners();
+                        lexer.addErrorListener(new LexerErrorListener(errors));
                         CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
                         CStarParser parser = new CStarParser(commonTokenStream);
                         parser.setBuildParseTree(true);
-
+                        parser.removeErrorListeners();
+                        parser.addErrorListener(new ParserErrorListener(errors));
 
                         ParseTree tree = parser.prog();
                         CStarBaseVisitor<?> visitor = new AstVisitor<>();
@@ -67,11 +70,12 @@ public class Main {
 
 
 
-
+/*
                         AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                         astTreeVisitor.visit(0, ast);
 
-                       SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+                        SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+
                         semanticsVisitor.visit(ast);
                         /*
                         CodeVisitor codeVisitor = new CodeVisitor();
@@ -85,10 +89,10 @@ public class Main {
                         System.out.println(e);
                     }
                 }else{
-                    System.out.println("Invalid source file...");
+                    errors.addEntry(ErrorType.WRONG_EXTENSION, "Wrong file extension, expected .cstar");
                 }
             }else{
-                errors.addEntry(ErrorType.SOURCE_FILE_DOES_NOT_EXIST, "Source file not found.", 0);
+                errors.addEntry(ErrorType.SOURCE_FILE_DOES_NOT_EXIST, "Source file not found.");
             }
 
             errors.display();
