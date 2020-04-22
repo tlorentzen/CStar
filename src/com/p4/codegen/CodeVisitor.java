@@ -213,7 +213,7 @@ public class CodeVisitor implements INodeVisitor{
         stringBuilder.append(", INPUT);\n");
         this.visitChild(leftChild);
         stringBuilder.append(" = ");
-        stringBuilder.append("digitalRead(");
+        stringBuilder.append("digitalRead("); //Todo: update
         this.visitChild(rightChild);
         stringBuilder.append(");\n");
     }
@@ -464,8 +464,8 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(MultNode node) {
         AstNode leftChild = node.children.get(0);
-        stringBuilder.append(" ");
         AstNode rightChild = node.children.get(1);
+        stringBuilder.append(" ");
         this.visitChild(leftChild);
         stringBuilder.append(" * ");
         this.visitChild(rightChild);
