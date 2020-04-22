@@ -125,20 +125,21 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitVal(CStarParser.ValContext ctx) {
         boolean isNegative = false;
         ParseTree parent = ctx.getParent();
+
         if(parent.getChild(0).getClass().toString().equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")){
             isNegative = true;
         }
-
         if(ctx.INT_LITERAL() != null) {
             return new IntegerNode(Integer.parseInt(ctx.INT_LITERAL().getText()), isNegative);
-        } // use equals
+        }
         else if(ctx.FLOAT_LITERAL() != null) {
            return new FloatNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()), isNegative);
         }
         else if(ctx.PIN_LITERAL() != null) {
-            var pinValue = ((TerminalNodeImpl)ctx.children.get(0)).symbol.getText();
+            String pinValue = ((TerminalNodeImpl)ctx.children.get(0)).symbol.getText();
             int value;
-            if(pinValue.startsWith("A")){
+
+            if(pinValue.startsWith("A") || pinValue.startsWith("a")){
                 value = -1 - Integer.parseInt(pinValue.substring(1));
             } else {
                 value = Integer.parseInt(ctx.CHAR_LITERAL().getText());
@@ -383,15 +384,15 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     public AstNode visitLogicalChild(ParseTree child, CStarParser.Logical_exprContext parent, int operatorIndex) {
         int condIndex = (operatorIndex - 1) / 2;
-        AstNode node;
+        LogicalNode node = new LogicalNode();
 
         //Enters if there are more operators in the tree
         switch (child.getText()) {
             case "OR":
-                node = new OrNode();
+                node.setOperator(6);
                 break;
             case "AND":
-                node = new AndNode();
+                node.setOperator(7);
                 break;
             default:
                 //todo error handling
@@ -445,8 +446,10 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 break;
             case "IS":
                 node.setOperator(4);
+                break;
             case "ISNOT":
                 node.setOperator(5);
+                break;
             default:
                 //todo error handling
                 return null;
@@ -471,57 +474,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         }
         return node;
     }
-
-    /*@Override public AstNode visitCond_expr(CStarParser.Cond_exprContext ctx) {
-        CondNode node = new CondNode();
-        node.lineNumber = ctx.start.getLine();
-
-        int numChildren = ctx.getChildCount();
-
-        //If there is one child, then it's not a condExpr
-        if(numChildren == 1){
-            return visit(ctx.arithm_expr(0));
-        }
-        System.out.println(numChildren);
-        for(int i = 0; i < numChildren; i++){
-            ParseTree child = ctx.getChild(i);
-            Object object = child.getPayload();
-
-            if(object instanceof CommonToken){
-                CommonToken token = (CommonToken) object;
-                if(token.getType() == CStarParser.COMP_OP){
-                    switch (token.getText()){
-                        case "<":
-                            node.setOperator(CStarParser.LESS_THAN);
-                            break;
-                        case ">":
-                            node.setOperator(CStarParser.GREATER_THAN);
-                            break;
-                        case "IS":
-                            node.setOperator(CStarParser.IS);
-                            break;
-                        case "ISNOT":
-                            node.setOperator(CStarParser.ISNOT);
-                            break;
-                        default:
-                            //Todo: error handling
-                    }
-                } else if(token.getType() == CStarParser.AND || token.getType() == CStarParser.OR){
-                    node.children.add(visit(child));
-                    CondNode newCondNode = new CondNode();
-                    newCondNode.lineNumber = ctx.start.getLine();
-                    newCondNode.setOperator(node.getOperator());
-                    newCondNode.children.addAll(node.children);
-                    node.children.clear();
-                    node.children.add(newCondNode);
-                    node.setOperator(token.getType());
-                }
-            } else{
-                node.children.add(visit(child));
-            }
-        }
-        return node;
-    }*/
 
     @Override public AstNode visitFunc(CStarParser.FuncContext ctx) {
 
