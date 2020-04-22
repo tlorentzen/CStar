@@ -214,6 +214,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
         if(!ArrayNode.type.equals(ArrayExprNode.type)){
             //Todo: float, char, and int should be decimal, character, and integer
+            //Todo: handle integer array being assigned to decimal array
             errors.addEntry(ErrorType.TYPE_ERROR,  ArrayExprNode.type.substring(0, 1).toUpperCase() + ArrayExprNode.type.substring(1) + " array assigned to " + ArrayNode.type + " array", node.lineNumber);
         }
 
