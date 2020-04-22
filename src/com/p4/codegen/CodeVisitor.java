@@ -68,7 +68,8 @@ public class CodeVisitor implements INodeVisitor{
             stringBuilder.append("pinMode(");
             this.visitChild(leftChild);
             stringBuilder.append(", OUTPUT);\n");
-            if(leftChild instanceof PinDclNode pinDclNode){
+            if(leftChild instanceof PinDclNode){
+                PinDclNode pinDclNode = (PinDclNode) leftChild;
                 String pinNum = (rightChild instanceof PinNode ? "A" + ((((PinNode) rightChild).value * -1) - 1) : ((IntegerNode) rightChild).value.toString());
                 stringBuilder.append("int ");
                 stringBuilder.append(pinDclNode.id);
