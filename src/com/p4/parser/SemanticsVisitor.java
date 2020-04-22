@@ -29,6 +29,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(IdNode node){
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
             errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope", node.lineNumber);
+            //Todo: set the node.type to something to avoid null pointer exception
         } else {
             node.type = symbolTable.lookup(node.id).variableType;
         }
@@ -216,6 +217,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
         if(!ArrayNode.type.equals(ArrayExprNode.type)){
             //Todo: float, char, and int should be decimal, character, and integer
+            //Todo: handle integer array being assigned to decimal array
             errors.addEntry(ErrorType.TYPE_ERROR,  ArrayExprNode.type.substring(0, 1).toUpperCase() + ArrayExprNode.type.substring(1) + " array assigned to " + ArrayNode.type + " array", node.lineNumber);
         }
 
