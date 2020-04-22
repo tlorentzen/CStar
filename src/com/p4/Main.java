@@ -43,26 +43,17 @@ public class Main {
 
                         var symbolTable = new SymbolTable();
 
-                        /*
-                        errors.addEntry(ErrorType.TYPE_ERROR, "Error here!", 1);
-                        errors.addEntry(ErrorType.TYPE_ERROR, "Warning here!", 1);
-                        errors.addEntry(ErrorType.TYPE_ERROR, "Information here!",1);
-                        errors.addEntry(ErrorType.WARNING, "Warning here!", 1);
-                        errors.addEntry(ErrorType.WARNING, "Warning here!", 1);
-                        errors.addEntry(ErrorType.WARNING, "Information here!",1);
-                        errors.addEntry(ErrorType.INFORMATION, "Error here!", 1);
-                        errors.addEntry(ErrorType.INFORMATION, "Warning here!", 1);
-                        errors.addEntry(ErrorType.INFORMATION, "Information here!",1);
-                        */
-
                         CStarLexer lexer = new CStarLexer(inputStream);
                         lexer.removeErrorListeners();
                         lexer.addErrorListener(new LexerErrorListener(errors));
                         CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+
                         CStarParser parser = new CStarParser(commonTokenStream);
                         parser.setBuildParseTree(true);
+                        parser.setErrorHandler(new CStarErrorStrategy());
                         parser.removeErrorListeners();
                         parser.addErrorListener(new ParserErrorListener(errors));
+
                         ParseTree tree = parser.prog();
 
                         if(!errors.containsErrors()) {
@@ -70,12 +61,11 @@ public class Main {
                             CStarBaseVisitor<?> visitor = new AstVisitor<>();
                             ProgNode ast = (ProgNode) visitor.visit(tree);
 
-                            AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
-                            astTreeVisitor.visit(0, ast);
+                            //AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
+                            //astTreeVisitor.visit(0, ast);
 
                             SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
                             semanticsVisitor.visit(ast);
-
 
                             /*
                             CodeVisitor codeVisitor = new CodeVisitor();
