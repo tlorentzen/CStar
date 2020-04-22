@@ -8,20 +8,61 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class CodeVisitor implements INodeVisitor{
+    //FilePath is used to specify the location for the compiled Arduino file
     String filePath = System.getProperty("user.home") + "\\Desktop\\test.ino";
+
+    //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
 
+    /**
+     * Prints the content of the string builder to the file.
+     * @throws IOException thrown if anything doing the write fails.
+     */
     public void print() throws IOException {
+
+        //Instantiates new File object
         File f = new File(filePath);
+
+        //Instantiates new FileOutPutStream
         FileOutputStream oS = new FileOutputStream(f);
+
+        //Writes the string builder to the file, handling potential creation as well
         oS.write(stringBuilder.toString().getBytes());
         //Debug print Todo: delete
         System.out.println(stringBuilder.toString());
     }
 
+    /**
+     * Visits the children of the given node.
+     * @param node the node which children should be visited.
+     */
+    @Override
+    public void visitChildren(AstNode node) {
+        for(AstNode child : node.children){
+            child.accept(this);
+        }
+    }
 
+    /**
+     * Calls the accept method on the node given.
+     * @param node the node to run accept on.
+     */
+    public void visitChild(AstNode node) {
+        node.accept(this);
+    }
+
+    /**
+     * Converts the logical operator id to the actual logical operator '&&' or '||'.
+     * Only handles AND and OR.
+     * @param node is the logical node to be handled.
+     */
+    @Override
     public void visit(LogicalNode node){
+
+        //Left operand
         this.visitChild(node.children.get(0));
+
+        //Operator
         switch (node.getOperator()){
             case 6:
                 stringBuilder.append(" || ");
@@ -30,88 +71,83 @@ public class CodeVisitor implements INodeVisitor{
                 stringBuilder.append(" && ");
                 break;
         }
+
+        //Right operand
         this.visitChild(node.children.get(1));
     }
 
-    @Override
-    public void visitChildren(AstNode node) {
-        for(AstNode child : node.children){
-            child.accept(this);
-        }
-    }
-
-    public void visitChild(AstNode node) {
-        node.accept(this);
-    }
-
+    /**
+     * Adds the id of the node to the string builder.
+     * @param node is the id node to be handled.
+     */
     @Override
     public void visit(IdNode node) {
         stringBuilder.append(node.id);
     }
 
+    /**
+     * Adds the value of the node to the string builder.
+     * @param node is the integer node to be handled.
+     */
     @Override
     public void visit(IntegerNode node) {
         stringBuilder.append(node.value);
     }
 
+    /**
+     * Adds the value of the node to the string builder.
+     * @param node is the float node to be handled.
+     */
     @Override
     public void visit(FloatNode node) {
         stringBuilder.append(node.value);
     }
 
+    /**
+     * Adds the value of the node to the string builder.
+     * @param node is the pin node to be handled.
+     */
     @Override
     public void visit(PinNode node) {
         stringBuilder.append(node.value);
     }
 
+    /**
+     * Adds the value of the node to the string builder.
+     * @param node is the long node to be handled.
+     */
     @Override
     public void visit(LongNode node) {
         stringBuilder.append(node.value);
     }
 
+    /**
+     * Adds the value of the node to the string builder.
+     * @param node is the char node to be handled.
+     */
     @Override
     public void visit(CharNode node) {
         stringBuilder.append(node.value);
     }
 
+    /**
+     * Handles assignments and calls methods to handle pins when necessary.
+     * @param node is the assign node to be handled.
+     */
     @Override
     public void visit(AssignNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
+
+        //If pin appears on the right side, either declaration or write should be performed
         if(leftChild.type.equals("pin")){
-            stringBuilder.append("pinMode(");
-            this.visitChild(leftChild);
-            stringBuilder.append(", OUTPUT);\n");
-            if(leftChild instanceof PinDclNode){
-                PinDclNode pinDclNode = (PinDclNode) leftChild;
-                String pinNum = (rightChild instanceof PinNode ? "A" + ((((PinNode) rightChild).value * -1) - 1) : ((IntegerNode) rightChild).value.toString());
-                stringBuilder.append("int ");
-                stringBuilder.append(pinDclNode.id);
-                stringBuilder.append(" = ");
-                stringBuilder.append(pinNum);
-                stringBuilder.append(";\n");
-            } else{
-                if(rightChild.getClass().getName().equals("com.p4.parser.nodes.IntegerNode")){
-                    if(((IntegerNode) rightChild).value == 0 || ((IntegerNode) rightChild).value == 255){
-                        stringBuilder.append("digitalWrite(");
-                    } else{
-                        stringBuilder.append("analogWrite(");
-                    }
-                }
-                this.visitChild(leftChild);
-                stringBuilder.append(", ");
-                this.visitChild(rightChild);
-                stringBuilder.append(");\n");
-            }
+            pinValueOnLeftSide(leftChild, rightChild);
+
+        //If pin appears on the left side, read should be performed
         } else if (rightChild.type.equals("pin")){
-            stringBuilder.append("pinMode(");
-            this.visitChild(rightChild);
-            stringBuilder.append(", INPUT);\n");
-            this.visitChild(leftChild);
-            stringBuilder.append(" = ");
-            stringBuilder.append("digitalRead(");
-            this.visitChild(rightChild);
-            stringBuilder.append(");\n");
+            pinValueOnRightSide(leftChild, rightChild);
+
+        //If no pin is involved, generate normal assign of left child to right child
         } else{
             this.visitChild(leftChild);
             stringBuilder.append(" = ");
@@ -120,9 +156,79 @@ public class CodeVisitor implements INodeVisitor{
         }
     }
 
+    /**
+     * Handles the assignment of a pin, conversion between the value and the actual Arduino pin number,
+     * and write type.
+     * @param leftChild lhs of the assignment.
+     * @param rightChild rhs of the assignment.
+     */
+    private void pinValueOnLeftSide(AstNode leftChild, AstNode rightChild) {
+        //Sets the pin mode of the pin
+        stringBuilder.append("pinMode(");
+        this.visitChild(leftChild);
+        stringBuilder.append(", OUTPUT);\n");
+
+        //Handles assigning a value to a pin at declaration
+        if(leftChild instanceof PinDclNode){
+            PinDclNode pinDclNode = (PinDclNode) leftChild;
+
+            //Converts the value of the pin node to analog and digital pin numbers
+            String pinNum = (rightChild instanceof PinNode ? "A" + ((((PinNode) rightChild).value * -1) - 1) : ((IntegerNode) rightChild).value.toString());
+
+            //Declares the pin number as an int
+            stringBuilder.append("int ");
+            stringBuilder.append(pinDclNode.id);
+            stringBuilder.append(" = ");
+            stringBuilder.append(pinNum);
+            stringBuilder.append(";\n");
+        } else{
+
+            //Handles assigning a value to a pin after declaration, by using digital or analog write.
+            if(rightChild.getClass().getName().equals("com.p4.parser.nodes.IntegerNode")){
+                //If the operator is an integer node, analog write should be used, unless the value is 0 or 255.
+                if(((IntegerNode) rightChild).value == 0 || ((IntegerNode) rightChild).value == 255){
+                    stringBuilder.append("digitalWrite(");
+                } else{
+                    stringBuilder.append("analogWrite(");
+                }
+            }
+
+            //Ends the write statement with the pin and value
+            this.visitChild(leftChild);
+            stringBuilder.append(", ");
+            this.visitChild(rightChild);
+            stringBuilder.append(");\n");
+        }
+    }
+
+    /**
+     * Handles the assignment to a variable with a pin on the right side of the assignment.
+     * PinMode and the correct read function is handled within this function.
+     * @param leftChild lhs of the assignment.
+     * @param rightChild rhs of the assignment.
+     */
+    private void pinValueOnRightSide(AstNode leftChild, AstNode rightChild) {
+        stringBuilder.append("pinMode(");
+        this.visitChild(rightChild);
+        stringBuilder.append(", INPUT);\n");
+        this.visitChild(leftChild);
+        stringBuilder.append(" = ");
+        stringBuilder.append("digitalRead(");
+        this.visitChild(rightChild);
+        stringBuilder.append(");\n");
+    }
+
+    /**
+     * Converts the operator id to the actual logical operator '<', '>', '==', or '!='.
+     * Only handles '>', '<', 'IS', and 'ISNOT'.
+     * @param node is the conditional node to be handled.
+     */
     @Override
     public void visit(CondNode node) {
+        //Left operand
         this.visitChild(node.children.get(0));
+
+        //Operator
         switch (node.getOperator()){
             case 2:
                 stringBuilder.append(" < ");
@@ -137,9 +243,14 @@ public class CodeVisitor implements INodeVisitor{
                 stringBuilder.append(" != ");
                 break;
         }
+        //Right operand
         this.visitChild(node.children.get(1));
     }
 
+    /**
+     * Just visits the children of the program node, as no information should be added to the generated file.
+     * @param node is the program node to be handled.
+     */
     @Override
     public void visit(ProgNode node) {
         this.visitChildren(node);
@@ -166,8 +277,6 @@ public class CodeVisitor implements INodeVisitor{
         //Deletes leftover comma and whitespace
         stringBuilder.deleteCharAt(stringBuilder.length()-2);
         stringBuilder.deleteCharAt(stringBuilder.length()-1);
-
-
     }
 
     @Override
