@@ -9,6 +9,9 @@ public class AstTreeVisitor {
                 case "class com.p4.parser.nodes.CondNode":
                     this.print(localIndent, node.getClass().toString() + " with the operator: " + ((CondNode)node).getOperator());
                     break;
+                case "class com.p4.parser.nodes.LogicalNode":
+                    this.print(localIndent, node.getClass().toString() + " with the operator: " + ((LogicalNode)node).getOperator());
+                    break;
                 case "class com.p4.parser.nodes.IntegerDclNode":
                     this.print(localIndent, node.getClass().toString() + " with the ID: " + ((IntegerDclNode)node).getId());
                     break;

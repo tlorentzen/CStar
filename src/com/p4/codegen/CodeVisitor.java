@@ -22,12 +22,8 @@ public class CodeVisitor implements INodeVisitor{
         System.out.println(stringBuilder.toString());
     }
 
-    @Override
-    public void visit(OrNode node){
-        //noget
-    }
-    @Override
-    public void visit(AndNode node){
+
+    public void visit(LogicalNode node){
         //noget
     }
 
