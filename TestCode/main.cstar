@@ -1,1 +1,8 @@
-integer t = 5.5;
+
+
+void functionName (integer i, decimal d){
+
+}
+
+integer hej = 1;
+functionName(hej, 1);
