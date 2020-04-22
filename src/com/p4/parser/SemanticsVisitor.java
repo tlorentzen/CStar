@@ -26,6 +26,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(IdNode node){
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
             errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope", node.lineNumber);
+            //Todo: set the node.type to something to avoid null pointer exception
         } else {
             node.type = symbolTable.lookup(node.id).variableType;
         }
