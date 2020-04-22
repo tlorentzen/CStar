@@ -2,6 +2,7 @@ package com.p4.errors;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ErrorBag {
@@ -18,7 +19,16 @@ public class ErrorBag {
     }
 
     public void addEntry(ErrorType type, String message, int lineNumber, int column){
-        this.errors.add(new Item(type, message, lineNumber, column));
+        List<String> lines = new ArrayList<>();
+        this.addEntry(type, message, lineNumber, column, lines);
+
+        if(type.toString().startsWith("E")){
+            hasErrors = true;
+        }
+    }
+
+    public void addEntry(ErrorType type, String message, int lineNumber, int column, List<String> lines){
+        this.errors.add(new Item(type, message, lineNumber, column, lines));
 
         if(type.toString().startsWith("E")){
             hasErrors = true;
@@ -46,6 +56,16 @@ public class ErrorBag {
                 }else{
                     System.out.println(item.type.toString()+": "+item.message+" ("+item.type.name()+")" + (item.lineNumber > 0 ? " on line "+item.lineNumber : ""));
                 }
+
+                if(item.lines.size() > 0){
+                    String indent = " ".repeat(item.type.toString().length());
+                    for (String line : item.lines){
+                        if(line.trim().length() > 0){
+                            System.out.println(indent+"| "+line);
+                        }
+                    }
+                    System.out.println();
+                }
             }
         }
     }
@@ -72,15 +92,17 @@ class Item{
     String message;
     int lineNumber = 0;
     int column = 0;
+    List<String> lines;
 
-    public Item(ErrorType type, String message, int lineNumber){
-        this(type, message, lineNumber, 0);
+    public Item(ErrorType type, String message, int lineNumber, List<String> lines){
+        this(type, message, lineNumber, 0, lines);
     }
 
-    public Item(ErrorType type, String message, int lineNumber, int column){
+    public Item(ErrorType type, String message, int lineNumber, int column, List<String> lines){
         this.type = type;
         this.message = message;
         this.lineNumber = lineNumber;
         this.column = column;
+        this.lines = lines;
     }
 }

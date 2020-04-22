@@ -20,6 +20,15 @@ public class CodeVisitor implements INodeVisitor{
     }
 
     @Override
+    public void visit(OrNode node){
+        //noget
+    }
+    @Override
+    public void visit(AndNode node){
+        //noget
+    }
+
+    @Override
     public void visitChildren(AstNode node) {
         for(AstNode child : node.children){
             child.accept(this);

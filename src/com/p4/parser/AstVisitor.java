@@ -368,25 +368,129 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
+    @Override public AstNode visitLogical_expr(CStarParser.Logical_exprContext ctx) {
+        int childCount = ctx.getChildCount();
+
+        //If there are no operations with AND or OR
+        if(childCount == 1){
+            //TODO Husk at visit skal return noget
+            return visit(ctx.cond_expr(0));
+        }
+        else {
+            return visitLogicalChild(ctx.getChild(1), ctx, 1);
+        }
+    }
+
+    public AstNode visitLogicalChild(ParseTree child, CStarParser.Logical_exprContext parent, int operatorIndex) {
+        int condIndex = (operatorIndex - 1) / 2;
+        AstNode node;
+
+        //Enters if there are more operators in the tree
+        switch (child.getText()) {
+            case "OR":
+                node = new OrNode();
+                break;
+            case "AND":
+                node = new AndNode();
+                break;
+            default:
+                //todo error handling
+                return null;
+        }
+
+        node.lineNumber = parent.start.getLine();
+
+        //Enters if there are more operators in the tree
+        if (parent.getChild(operatorIndex + 2) != null) {
+            operatorIndex += 2;
+
+            //Add left child (cond_expr)
+            node.children.add(visit(parent.cond_expr(condIndex)));
+            //Add right child (operator)
+            node.children.add(visitLogicalChild(parent.getChild(operatorIndex), parent, operatorIndex));
+        }
+        //Enters if there is only a cond_expr child left
+        else {
+            // Add left and right child (cond_expr)
+            node.children.add(visit(parent.cond_expr(condIndex)));
+            node.children.add(visit(parent.cond_expr(condIndex + 1)));
+        }
+        return node;
+    }
+
     @Override public AstNode visitCond_expr(CStarParser.Cond_exprContext ctx) {
+        int childCount = ctx.getChildCount();
+
+        //If there is only an operator
+        if(childCount == 1){
+            //TODO Husk at visit skal return noget
+            return visit(ctx.arithm_expr(0));
+        }
+        else {
+            return visitCondChild(ctx.getChild(1), ctx, 1);
+        }
+    }
+
+    public AstNode visitCondChild(ParseTree child, CStarParser.Cond_exprContext parent, int operatorIndex) {
+        int arithIndex = (operatorIndex - 1) / 2;
+        CondNode node = new CondNode();
+
+        //Enters if there are more operators in the tree
+        switch (child.getText()) {
+            case "<":
+                node.setOperator(2);
+                break;
+            case ">":
+                node.setOperator(3);
+                break;
+            case "IS":
+                node.setOperator(4);
+            case "ISNOT":
+                node.setOperator(5);
+            default:
+                //todo error handling
+                return null;
+        }
+
+        node.lineNumber = parent.start.getLine();
+
+        //Enters if there are more operators in the tree
+        if (parent.getChild(operatorIndex + 2) != null) {
+            operatorIndex += 2;
+
+            //Add left child (arith_expr)
+            node.children.add(visit(parent.arithm_expr(arithIndex)));
+            //Add right child (operator)
+            node.children.add(visitCondChild(parent.getChild(operatorIndex), parent, operatorIndex));
+        }
+        //Enters if there is only a arith_expr child left
+        else {
+            // Add left and right child (arith_expr)
+            node.children.add(visit(parent.arithm_expr(arithIndex)));
+            node.children.add(visit(parent.arithm_expr(arithIndex + 1)));
+        }
+        return node;
+    }
+
+    /*@Override public AstNode visitCond_expr(CStarParser.Cond_exprContext ctx) {
         CondNode node = new CondNode();
         node.lineNumber = ctx.start.getLine();
 
         int numChildren = ctx.getChildCount();
 
-        //If there is one child, then its not a condExpr
+        //If there is one child, then it's not a condExpr
         if(numChildren == 1){
             return visit(ctx.arithm_expr(0));
         }
-
+        System.out.println(numChildren);
         for(int i = 0; i < numChildren; i++){
             ParseTree child = ctx.getChild(i);
             Object object = child.getPayload();
 
             if(object instanceof CommonToken){
-                CommonToken t = (CommonToken) object;
-                if(t.getType() == CStarParser.COMP_OP){
-                    switch (t.getText()){
+                CommonToken token = (CommonToken) object;
+                if(token.getType() == CStarParser.COMP_OP){
+                    switch (token.getText()){
                         case "<":
                             node.setOperator(CStarParser.LESS_THAN);
                             break;
@@ -402,7 +506,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                         default:
                             //Todo: error handling
                     }
-                } else if(t.getType() == CStarParser.AND || t.getType() == CStarParser.OR){
+                } else if(token.getType() == CStarParser.AND || token.getType() == CStarParser.OR){
                     node.children.add(visit(child));
                     CondNode newCondNode = new CondNode();
                     newCondNode.lineNumber = ctx.start.getLine();
@@ -410,14 +514,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     newCondNode.children.addAll(node.children);
                     node.children.clear();
                     node.children.add(newCondNode);
-                    node.setOperator(t.getType());
+                    node.setOperator(token.getType());
                 }
             } else{
                 node.children.add(visit(child));
             }
         }
         return node;
-    }
+    }*/
 
     @Override public AstNode visitFunc(CStarParser.FuncContext ctx) {
 
@@ -484,7 +588,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitSelection(CStarParser.SelectionContext ctx) {
         SelectionNode node = new SelectionNode();
         node.lineNumber = ctx.start.getLine();
-        node.children.add(visit(ctx.cond_expr()));
+        node.children.add(visit(ctx.logical_expr()));
 
         for(CStarParser.BlkContext blk : ctx.blk()){
             node.children.add(visit(blk));
@@ -502,7 +606,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitIterative(CStarParser.IterativeContext ctx) {
         IterativeNode node = new IterativeNode();
         node.lineNumber = ctx.start.getLine();
-        node.children.add(visit(ctx.cond_expr()));
+        node.children.add(visit(ctx.logical_expr()));
         node.children.add(visit(ctx.blk()));
 
         return node;
