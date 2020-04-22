@@ -31,13 +31,12 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-
     public void visit(IntegerNode node){
-        node.type = "int";
+        node.type = "integer";
     }
 
     public void visit(FloatNode node){
-        node.type = "float";
+        node.type = "decimal";
     }
 
     public void visit(PinNode node){
@@ -45,32 +44,69 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(LongNode node){
-        node.type = "long";
+        node.type = "long integer";
     }
 
     public void visit(CharNode node){
-        node.type = "char";
+        node.type = "character";
     }
 
     public void visit(AssignNode node){
-        //todo det er en SYNTAX ERROR, flyt til scanner/parser
-        if(node.children.size() != 2) {
-            errors.addEntry(ErrorType.TYPE_ERROR, "Assign should always have two operands", node.lineNumber);
-        }else{
-            this.visitChildren(node);
-            var leftChild = node.children.get(0);
-            var rightChild = node.children.get(1);
+        this.visitChildren(node);
 
-            //node.type = binaryOperationResultType(CStarParser.ASSIGN_OP, leftChild.type, rightChild.type);
+        String leftType = node.children.get(0).type;
+        String rightType= node.children.get(1).type;
+        String resultType = assignOperationResultType(leftType, rightType);
+        
+        if (resultType.equals("error")){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
+        }
+        else{
+            node.type = resultType;
+        }
+    }
+    
+    private String assignOperationResultType(String leftType, String rightType){
+        if (leftType.equals(rightType)){
+            return leftType;
+        }
+        else if (leftType.equals("decimal") && (rightType.equals("integer") || rightType.equals("long integer"))){
+            return leftType;             
+        }
+        else if ((leftType.equals("long integer") || leftType.equals("pin")) && rightType.equals("integer")){
+            return leftType;
+        }
+        else{
+            return "error";
         }
     }
 
-        public void visit(OrNode node){
-            //noget
+    public void visit(LogicalNode node){
+        boolean isValidType;
+
+        this.visitChildren(node);
+
+        String leftType = node.children.get(0).type;
+        String rightType = node.children.get(1).type;
+
+        isValidType = logicalOperationValid(leftType, rightType);
+
+        if (!isValidType) {
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
         }
-        public void visit(AndNode node){
-            //noget
+        else{
+            node.type = "integer";
         }
+    }
+
+    private boolean logicalOperationValid(String leftType, String rightType){
+        if (leftType.equals("integer") && rightType.equals("integer")){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
     public void visit(CondNode node){
         boolean isValidType;
@@ -80,36 +116,46 @@ public class SemanticsVisitor implements INodeVisitor {
         String leftType = node.children.get(0).type;
         String rightType = node.children.get(1).type;
 
-        //Checks if the node is AND or OR
-        if(node.getOperator() == 6 || node.getOperator() == 7){
-            isValidType = logicalOperationValid(leftType, rightType);
-        }
-        //Enters if the node is LESS, GREATER, IS, or ISNOT
-        else if (node.getOperator() == 2 || node.getOperator() == 3 ||
-                 node.getOperator() == 4 || node.getOperator() == 5){
-            isValidType = compareOperationValid(node.getOperator(), leftType, rightType);
-        }
-        else {
-            isValidType = false;
-        }
+        //Checks if the types of the children are valid
+        isValidType = compareOperationValid(node.getOperator(), leftType, rightType);
 
         if (!isValidType) {
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine" + leftType + " with " + rightType, node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
         }
         else{
-            node.type = "boolean";
+            //the result type will always be boolean
+            node.type = "integer";
         }
+    }
 
-        //todo is a syntax error so  should not be checked at td point!
-        /*if(node.children.size() == 2){
-            String leftChild = node.children.get(0).type;
-            String rightChild = node.children.get(1).type;
-            boolean isValidType = compareOperationResultType(node.getOperator(), leftChild, rightChild);
-        } else if(node.children.size() == 1){
-            node.type = node.children.get(0).type;
-        } else {
-            errors.addEntry(ErrorType.TYPE_ERROR, "Unexpected number of operands in conditional expression", node.lineNumber);
-        }*/
+    private boolean compareOperationValid(int operator, String leftType, String rightType) {
+        //Todo: handle casting
+        //forskellig for: (is isnot), (or, and), (greater, less)
+
+        //Checks if the operator is IS or ISNOT
+        if(operator == 4 || operator == 5){
+            if(leftType.equals(rightType)){
+                return true;
+            }
+            else if(leftType.equals("character") || rightType.equals("character")){
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        //Checks if the operator is '>' or '<'
+        else if(operator == 2 || operator == 3) {
+            if(leftType.equals("character") || rightType.equals("character")){
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            return false;
+        }
     }
 
     public void visit(ProgNode node) {
@@ -192,7 +238,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
             Attributes attr = new Attributes();
-            attr.variableType = "char";
+            attr.variableType = "character";
             attr.kind = node.getType();
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
@@ -219,8 +265,8 @@ public class SemanticsVisitor implements INodeVisitor {
     }
     
     public boolean isDivByZero(AstNode denominator){
-        return (denominator.type.equals("int") && ((IntegerNode)denominator).getValue() == 0) ||
-               (denominator.type.equals("float") && ((FloatNode)denominator).getValue() == 0);
+        return (denominator.type.equals("integer") && ((IntegerNode)denominator).getValue() == 0) ||
+               (denominator.type.equals("long integer") && ((FloatNode)denominator).getValue() == 0);
     }
 
     public void visit(FloatDclNode node) {
@@ -229,7 +275,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
             Attributes attr = new Attributes();
-            attr.variableType = "float";
+            attr.variableType = "decimal";
             attr.kind = node.getType();
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
@@ -254,7 +300,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
             Attributes attr = new Attributes();
-            attr.variableType = "int";
+            attr.variableType = "integer";
             attr.kind = node.getType();
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
@@ -274,7 +320,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
             Attributes attr = new Attributes();
-            attr.variableType = "long";
+            attr.variableType = "long integer";
             attr.kind = node.getType();
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
@@ -351,65 +397,25 @@ public class SemanticsVisitor implements INodeVisitor {
 
     private String arithOperationResultType(String leftType, String rightType) {
         //Todo: handle casting
-        //first semantic rule
+        //First semantic rule
         if(leftType.equals(rightType)){
             return leftType;
         }
-        //second semantic rule
-        else if((leftType.equals("int") || leftType.equals("long")) && rightType.equals("float") ||
-                leftType.equals("float") && (rightType.equals("long") || rightType.equals("int"))) {
-            return "float";
+        //Second semantic rule
+        else if((leftType.equals("integer") || leftType.equals("long integer")) && rightType.equals("decimal") ||
+                leftType.equals("decimal") && (rightType.equals("long integer") || rightType.equals("integer"))) {
+            return "decimal";
         }
-        //third semantic rule
-        else if((leftType.equals("int") && rightType.equals("long")) ||
-                (leftType.equals("long") && rightType.equals("int"))) {
-            return "long";
+        //Third semantic rule
+        else if((leftType.equals("integer") && rightType.equals("long integer")) ||
+                (leftType.equals("long integer") && rightType.equals("integer"))) {
+            return "long integer";
         }
-        //wrong semantic!
+        //Wrong semantic!
         else{
             return "error";
         }
     }
-
-    private boolean logicalOperationValid(String leftType, String rightType){
-        if (leftType.equals("int") && rightType.equals("int")){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
-    private boolean compareOperationValid(int operator, String leftType, String rightType) {
-        //Todo: handle casting
-        //forskellig for: (is isnot), (or, and), (greater, less)
-
-        //Checks if the operator is IS or ISNOT
-        if(operator == 4 || operator == 5){
-            if(leftType.equals(rightType)){
-                return true;
-            }
-            else if(leftType.equals("char") || rightType.equals("char")){
-                return false;
-            }
-            else {
-                return true;
-            }
-        }
-        //Checks if the operator is '>' or '<'
-        else if(operator == 2 || operator == 3) {
-           if(leftType.equals("char") || rightType.equals("char")){
-                return false;
-            }
-           else {
-               return true;
-            }
-        }
-        else {
-            return false;
-        }
-    }
-    
 
     private String unaryOperationResultType(int operator, String type) {
         //Todo: handle casting
@@ -419,12 +425,12 @@ public class SemanticsVisitor implements INodeVisitor {
 
     private String dominantTypeConversion(String lhs, String rhs) {
         //Todo: handling casting to dominant type
-        if(lhs.equals("float")){
-            return "float";
-        } else if(rhs.equals("float")){
-            return "float";
+        if(lhs.equals("decimal")){
+            return "decimal";
+        } else if(rhs.equals("decimal")){
+            return "decimal";
         } else{
-            return "float";
+            return "decimal";
         }
     }
 }

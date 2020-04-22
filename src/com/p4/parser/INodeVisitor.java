@@ -36,6 +36,5 @@ public interface INodeVisitor {
     void visit(SelectionNode selectionNode);
     void visit(StmtNode stmtNode);
     void visit(SubNode subNode);
-    void visit(AndNode andNode);
-    void visit(OrNode orNode);
+    void visit(LogicalNode node);
 }
