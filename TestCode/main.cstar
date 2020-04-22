@@ -1,15 +1,18 @@
-pin pinName = A100;
-pin pin2Name = 3;
+integer io = 4556;
+decimal hh = 3.4233;
+pin pin1 = A1;
 
-pinName = 3737;
-pin2Name = 1;
-integer i = 0;
-
-while(1) repeat{
-    pinName = i;
-    i = i + 1;
+if(io < 100000){
+    io = io + 10;
+} else {
+    hh = io + 1.5;
 }
 
-pinName = 120;
-pin2Name = 0;
-i = pinName;
+while (io > 10000) repeat {
+    io = io - 100;
+    if(io < 0){
+        io = 0;
+    }
+    pin1 = i0 / 1000;
+    result = pin1;
+}

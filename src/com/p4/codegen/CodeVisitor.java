@@ -15,7 +15,7 @@ public class CodeVisitor implements INodeVisitor{
         File f = new File(filePath);
         FileOutputStream oS = new FileOutputStream(f);
         oS.write(stringBuilder.toString().getBytes());
-        //Debug print
+        //Debug print Todo: delete
         System.out.println(stringBuilder.toString());
     }
 
@@ -77,18 +77,19 @@ public class CodeVisitor implements INodeVisitor{
                 stringBuilder.append(pinNum);
                 stringBuilder.append(";\n");
             } else{
-                if(rightChild.getClass().getName().equals("com.p4.parser.nodes.IntegerNode"))
+                if(rightChild.getClass().getName().equals("com.p4.parser.nodes.IntegerNode")){
                     if(((IntegerNode) rightChild).value == 0 || ((IntegerNode) rightChild).value == 255){
-                    stringBuilder.append("digitalWrite(");
-                } else{
-                    stringBuilder.append("analogWrite(");
+                        stringBuilder.append("digitalWrite(");
+                    } else{
+                        stringBuilder.append("analogWrite(");
+                    }
                 }
                 this.visitChild(leftChild);
                 stringBuilder.append(", ");
                 this.visitChild(rightChild);
                 stringBuilder.append(");\n");
             }
-        } else{
+        } else if (rightChild.type.equals("pin")){
             stringBuilder.append("pinMode(");
             this.visitChild(rightChild);
             stringBuilder.append(", INPUT);\n");
@@ -97,6 +98,11 @@ public class CodeVisitor implements INodeVisitor{
             stringBuilder.append("digitalRead(");
             this.visitChild(rightChild);
             stringBuilder.append(");\n");
+        } else{
+            this.visitChild(leftChild);
+            stringBuilder.append(" = ");
+            this.visitChild(rightChild);
+            stringBuilder.append(";\n");
         }
     }
 
