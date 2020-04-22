@@ -2,4 +2,14 @@ pin pinName = A100;
 pin pin2Name = 3;
 
 pinName = 3737;
+pin2Name = 1;
+integer i = 0;
 
+while(1) repeat{
+    pinName = i;
+    i = i + 1;
+}
+
+pinName = 120;
+pin2Name = 0;
+i = pinName;

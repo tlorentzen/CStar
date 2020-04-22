@@ -6,13 +6,10 @@ import com.p4.parser.nodes.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CodeVisitor implements INodeVisitor{
     String filePath = System.getProperty("user.home") + "\\Desktop\\test.ino";
     StringBuilder stringBuilder = new StringBuilder();
-    private Map<String, Boolean> pinDeclared = new HashMap<>();
 
     public void print() throws IOException {
         File f = new File(filePath);
@@ -67,19 +64,23 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(AssignNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
-        leftChild.type = "pin";
         if(leftChild.type.equals("pin")){
+            stringBuilder.append("pinMode(");
+            this.visitChild(leftChild);
+            stringBuilder.append(", OUTPUT);\n");
             if(leftChild instanceof PinDclNode pinDclNode){
                 String pinNum = (rightChild instanceof PinNode ? "A" + ((((PinNode) rightChild).value * -1) - 1) : ((IntegerNode) rightChild).value.toString());
-                stringBuilder.append("int ").append(pinDclNode.id);
+                stringBuilder.append("int ");
+                stringBuilder.append(pinDclNode.id);
                 stringBuilder.append(" = ");
                 stringBuilder.append(pinNum);
                 stringBuilder.append(";\n");
             } else{
-                if(true){
-                    stringBuilder.append("analogWrite(");
-                } else{
+                if(rightChild.getClass().getName().equals("com.p4.parser.nodes.IntegerNode"))
+                    if(((IntegerNode) rightChild).value == 0 || ((IntegerNode) rightChild).value == 255){
                     stringBuilder.append("digitalWrite(");
+                } else{
+                    stringBuilder.append("analogWrite(");
                 }
                 this.visitChild(leftChild);
                 stringBuilder.append(", ");
@@ -87,10 +88,14 @@ public class CodeVisitor implements INodeVisitor{
                 stringBuilder.append(");\n");
             }
         } else{
+            stringBuilder.append("pinMode(");
+            this.visitChild(rightChild);
+            stringBuilder.append(", INPUT);\n");
             this.visitChild(leftChild);
             stringBuilder.append(" = ");
+            stringBuilder.append("digitalRead(");
             this.visitChild(rightChild);
-            stringBuilder.append(";\n");
+            stringBuilder.append(");\n");
         }
     }
 
