@@ -21,7 +21,16 @@ public class CodeVisitor implements INodeVisitor{
 
 
     public void visit(LogicalNode node){
-        //noget
+        this.visitChild(node.children.get(0));
+        switch (node.getOperator()){
+            case 6:
+                stringBuilder.append(" || ");
+                break;
+            case 7:
+                stringBuilder.append(" && ");
+                break;
+        }
+        this.visitChild(node.children.get(1));
     }
 
     @Override
@@ -126,12 +135,6 @@ public class CodeVisitor implements INodeVisitor{
                 break;
             case 5:
                 stringBuilder.append(" != ");
-                break;
-            case 6:
-                stringBuilder.append(" || ");
-                break;
-            case 7:
-                stringBuilder.append(" && ");
                 break;
         }
         this.visitChild(node.children.get(1));

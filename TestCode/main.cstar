@@ -8,7 +8,7 @@ if(io < 100000){
     hh = io + 1.5;
 }
 
-while (io > 10000) repeat {
+while (io > 10000 AND 1 < 0 OR 2 IS 9 AND 8 ISNOT 9) repeat {
     io = io - 100;
     if(io < 0){
         io = 0;
