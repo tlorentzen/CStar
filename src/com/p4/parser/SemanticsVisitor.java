@@ -71,6 +71,10 @@ public class SemanticsVisitor implements INodeVisitor {
     }
     //todo bedre navn, så den også dækker over FuncCall's parameter type checking
     private String assignOperationResultType(String leftType, String rightType){
+        //Checks if either type is null
+        if (leftType == null || rightType == null){
+            return "error";
+        }
         if (leftType.equals(rightType)){
             return leftType;
         }
@@ -234,7 +238,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else {
             Attributes attr = new Attributes();
             attr.variableType = ArrayNode.type;
-            attr.kind = node.getType();
+            attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }
@@ -251,7 +255,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else {
             Attributes attr = new Attributes();
             attr.variableType = "character";
-            attr.kind = node.getType();
+            attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }
@@ -288,7 +292,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else {
             Attributes attr = new Attributes();
             attr.variableType = "decimal";
-            attr.kind = node.getType();
+            attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }
@@ -329,6 +333,11 @@ public class SemanticsVisitor implements INodeVisitor {
     private String findActualParamType(AstNode actualParam){
         String[] nodeType = actualParam.toString().split("@", 3);
 
+        //Checks if either type is null
+        if (nodeType[0] == null){
+            return "error";
+        }
+
         switch (nodeType[0]){
             case "com.p4.parser.nodes.IdNode":
                 Attributes attributes = symbolTable.lookup(((IdNode)actualParam).id);
@@ -368,7 +377,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else {
             Attributes attr = new Attributes();
             attr.variableType = "integer";
-            attr.kind = node.getType();
+            attr.kind = "dcl";
             System.out.println("HEEEEJ" + node.getType());
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
@@ -395,7 +404,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else {
             Attributes attr = new Attributes();
             attr.variableType = "long integer";
-            attr.kind = node.getType();
+            attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }
@@ -433,7 +442,6 @@ public class SemanticsVisitor implements INodeVisitor {
 
             functionAttributes.addParameter(param.id, attributes);
         }
-
         this.visitChildren(node);
     }
 
@@ -444,7 +452,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else {
             Attributes attr = new Attributes();
             attr.variableType = "pin";
-            attr.kind = node.getType();
+            attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }
@@ -460,10 +468,13 @@ public class SemanticsVisitor implements INodeVisitor {
         if(!(isCondOkType(conditionType))){
             errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type: the condition must be of type boolean or integer, but was of type " + conditionType, node.lineNumber);
         }
-
     }
 
     private boolean isCondOkType(String condType){
+        //Checks if either type is null
+        if (condType == null){
+            return false;
+        }
         if (condType.equals("integer") || condType.equals("boolean")){
             return true;
         }
@@ -492,6 +503,10 @@ public class SemanticsVisitor implements INodeVisitor {
 
     private String arithOperationResultType(String leftType, String rightType) {
         //Todo: handle casting
+        //Checks if either type is null
+        if (leftType == null || rightType == null){
+            return "error";
+        }
         //First semantic rule
         if(leftType.equals(rightType)){
             return leftType;
@@ -511,6 +526,7 @@ public class SemanticsVisitor implements INodeVisitor {
             return "error";
         }
     }
+    
 
     private String unaryOperationResultType(int operator, String type) {
         //Todo: handle casting
@@ -518,11 +534,15 @@ public class SemanticsVisitor implements INodeVisitor {
         //Skal bruges, hvis vi implementerer negation som en node (lige som i bogen)
     }
 
-    private String dominantTypeConversion(String lhs, String rhs) {
+    private String dominantTypeConversion(String leftType, String rightType) {
         //Todo: handling casting to dominant type
-        if(lhs.equals("decimal")){
+        if (leftType == null || rightType == null){
+            return "error";
+        }
+
+        if(leftType.equals("decimal")){
             return "decimal";
-        } else if(rhs.equals("decimal")){
+        } else if(rightType.equals("decimal")){
             return "decimal";
         } else{
             return "decimal";
