@@ -3,11 +3,9 @@ package com.p4.parser;
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
 import com.p4.parser.nodes.*;
-import com.p4.symbols.*;
-import org.w3c.dom.Attr;
-
-import javax.sound.midi.SysexMessage;
-import java.util.Map;
+import com.p4.symbols.Attributes;
+import com.p4.symbols.FunctionAttributes;
+import com.p4.symbols.SymbolTable;
 
 public class SemanticsVisitor implements INodeVisitor {
 
@@ -71,7 +69,10 @@ public class SemanticsVisitor implements INodeVisitor {
     }
     //todo bedre navn, så den også dækker over FuncCall's parameter type checking
     private String assignOperationResultType(String leftType, String rightType){
-        if (leftType.equals(rightType)){
+        if (leftType == null || rightType == null){
+            return "error";
+        }
+        else if (leftType.equals(rightType)){
             return leftType;
         }
         else if (leftType.equals("decimal") && (rightType.equals("integer") || rightType.equals("long integer"))){
@@ -107,12 +108,8 @@ public class SemanticsVisitor implements INodeVisitor {
         if(leftType == null || rightType == null){
             return false;
         }
-        if (leftType.equals("integer") && rightType.equals("integer")){
-            return true;
-        }
-        else{
-            return false;
-        }
+
+        return leftType.equals("integer") && rightType.equals("integer");
     }
 
     public void visit(CondNode node){
@@ -369,7 +366,6 @@ public class SemanticsVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = "integer";
             attr.kind = node.getType();
-            System.out.println("HEEEEJ" + node.getType());
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }

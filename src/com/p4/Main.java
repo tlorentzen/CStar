@@ -69,6 +69,7 @@ public class Main {
 
                             CodeVisitor codeVisitor = new CodeVisitor();
                             codeVisitor.visit(ast);
+
                             try {
                                 codeVisitor.print();
                             } catch (IOException e) {
