@@ -1,7 +1,5 @@
-
-
 void functionName (integer i, decimal d){
-
+    functionName(1, 3);
 }
 
 integer hej = 1;

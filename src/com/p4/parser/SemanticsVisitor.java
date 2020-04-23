@@ -309,7 +309,7 @@ public class SemanticsVisitor implements INodeVisitor {
             }
             // Checks if types are the same or if type widening is possible
             else {
-                String resultType = assignOperationResultType(actualParamType, formalParamType);
+                String resultType = assignOperationResultType(formalParamType, actualParamType);
 
                 if (resultType.equals("error")) {
                     errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
@@ -320,7 +320,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private String findActualParamType(AstNode actualParam){
-        String[] nodeType = actualParam.toString().split("@", 2);
+        String[] nodeType = actualParam.toString().split("@", 3);
 
         switch (nodeType[0]){
             case "com.p4.parser.nodes.IdNode":
@@ -445,7 +445,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(StmtNode node) {
-        //Todo: implement
+        //Todo: implement. Behøver den det?
     }
 
     public void visit(SubNode node) {

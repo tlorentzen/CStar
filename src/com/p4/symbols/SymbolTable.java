@@ -15,13 +15,14 @@ public class SymbolTable {
         currentScope = globalScope;
     }
 
+    //todo skal også tjekke om scope navn allerede findes
     public void addScope(String scopeName){
-        CStarScope s = new CStarScope(scopeName, level+1);
-        s.parent = currentScope;
-        currentScope.children.add(s);
-        currentScope = s;
+        CStarScope scope = new CStarScope(scopeName, level + 1);
+        scope.parent = currentScope;
+        currentScope.children.add(scope);
+        currentScope = scope;
         level++;
-        System.out.println(">> New scope added: "+scopeName+" ("+level+")");
+        System.out.println(">> New scope added: " + scopeName + " (" + level + ")");
     }
 
     public void leaveScope(){
