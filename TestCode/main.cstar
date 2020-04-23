@@ -1,6 +1,4 @@
-void functionName (integer i, decimal d){
-    functionName(1, 3);
+integer i = 0;
+while(0) repeat{
+    i = 2;
 }
-
-integer hej = 1;
-functionName(hej, 1);
