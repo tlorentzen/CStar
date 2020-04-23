@@ -34,7 +34,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(IntegerNode node){
-        node.type = CStarTypes.INTEGER;
+        node.type = "integer";
     }
 
     public void visit(FloatNode node){
