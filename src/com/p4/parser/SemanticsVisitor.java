@@ -3,8 +3,11 @@ package com.p4.parser;
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
 import com.p4.parser.nodes.*;
-import com.p4.symbols.Attributes;
-import com.p4.symbols.SymbolTable;
+import com.p4.symbols.*;
+import org.w3c.dom.Attr;
+
+import javax.sound.midi.SysexMessage;
+import java.util.Map;
 
 public class SemanticsVisitor implements INodeVisitor {
 
@@ -66,7 +69,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = resultType;
         }
     }
-    
+    //todo bedre navn, så den også dækker over FuncCall's parameter type checking
     private String assignOperationResultType(String leftType, String rightType){
         if (leftType.equals(rightType)){
             return leftType;
@@ -284,14 +287,69 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
+    //todo kan kun kalde en funktion hvis funktionen er erklæret før kaldet . Skal fixes i 2. iteration
+    //todo widening virker ikke helt endnu. fix det.
+    //If no errors occur, then the function call will be seen as well typed
     public void visit(FuncCallNode node) {
-        //Todo: implement
+        String actualParamType;
+        String formalParamType;
+        // Gets the function declaration
+        String functionName = ((IdNode)node.children.get(0)).id;
+        FunctionAttributes attributes = symbolTable.lookupParam("FuncNode-" + functionName, functionName);
+
+        int numOfChildren = node.getChildren().size();
+
+        //Goes through all parameters and compare each formal and actual parameter
+        for (int i = 1; i < numOfChildren; i++) {
+            actualParamType = findActualParamType(node.children.get(i));
+            formalParamType = attributes.parameters.get(i - 1).getAttributes().variableType;
+
+            if (actualParamType.equals("error")){
+                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
+            }
+            // Checks if types are the same or if type widening is possible
+            else {
+                String resultType = assignOperationResultType(actualParamType, formalParamType);
+
+                if (resultType.equals("error")) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
+                            + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
+                }
+            }
+        }
     }
 
+    private String findActualParamType(AstNode actualParam){
+        String[] nodeType = actualParam.toString().split("@", 2);
+
+        switch (nodeType[0]){
+            case "com.p4.parser.nodes.IdNode":
+                Attributes attributes = symbolTable.lookup(((IdNode)actualParam).id);
+                return attributes.variableType;
+            case "com.p4.parser.nodes.IntegerNode":
+                return "integer";
+            case "com.p4.parser.nodes.FloatNode":
+                return "decimal";
+            case "com.p4.parser.nodes.PinNode":
+                return "pin";
+            case "com.p4.parser.nodes.CharNode":
+                return "character";
+            default:
+                return "error";
+        }
+    }
+    
     public void visit(FuncNode node) {
-        symbolTable.addScope("FuncNode-"+System.currentTimeMillis());
+        FunctionAttributes attributes = new FunctionAttributes();
+        attributes.kind = "function";
+        attributes.variableType = node.returnType;
+
+        symbolTable.insert(node.id, attributes);
+        symbolTable.addScope("FuncNode-" + node.id);
 
         this.visitChildren(node);
+
+        //todo husk at slette?
         symbolTable.outputAvailableSymbols();
         symbolTable.leaveScope();
     }
@@ -344,15 +402,22 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ParamNode node) {
+        for(AstNode child : node.getChildren()){
+            IdNode param = (IdNode)child;
 
-        for(AstNode n : node.getChildren()){
-            IdNode param = (IdNode)n;
+            Attributes attributes = new Attributes();
+            attributes.variableType = param.type;
+            attributes.kind = "param";
+            attributes.scope = symbolTable.getCurrentScope();
 
-            Attributes attr = new Attributes();
-            attr.variableType = param.type;
-            attr.kind = "param";
+            symbolTable.insert(param.id, attributes);
 
-            symbolTable.insert(param.id, attr);
+            //finds the name of the function (the scope is called funcNode-NAME)
+            String[] scopeName = attributes.scope.split("-", 2);
+
+            FunctionAttributes functionAttributes = (FunctionAttributes)symbolTable.lookup(scopeName[1]);
+
+            functionAttributes.addParameter(param.id, attributes);
         }
 
         this.visitChildren(node);

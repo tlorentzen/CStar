@@ -5,9 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class CStarScope{
+    //Name of the scope
     String scopeName;
+    //Parent scope
     CStarScope parent;
+    //The symbols in the scope
     HashMap<String, Attributes> symbols = new HashMap<>();
+    //Nested scopes within the current scope
     List<CStarScope> children = new ArrayList<>();
     int level;
 

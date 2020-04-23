@@ -1,4 +1,8 @@
-integer t = 5.5;
-decimal d = 10;
-integer array hest = [1,2,3,4];
-integer i = a + 213;
+
+
+void functionName (integer i, decimal d){
+
+}
+
+integer hej = 1;
+functionName(hej, 1);
