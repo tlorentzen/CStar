@@ -1,0 +1,130 @@
+integer inFunMode = 0;
+
+integer valPot1 = 0;
+integer valPot2 = 0;
+pin pinPot1 = A1;
+pin pinPot2 = A2;
+
+pin btnPin = A0;
+integer btnState = 0;
+
+integer numOfGraphLeds = 10;
+pin array bargraph = [2,3,4,5,6,7,8,A4,A5,12];
+
+pin array rgb = [9,10,11];
+
+void setup() {
+    console.begin(9600);
+}
+
+void loop() {
+    if(inFunMode IS 0){
+        readInput();
+        setBarGraph();
+        setRGB();
+    }else{
+        makeFun();
+    }
+}
+
+void setBarGraph() {
+
+    integer counter = 0;
+    integer barState = map(constrain(valPot1, 0, 1023), 0, 1023, 0, 10);
+
+    while(counter < numOfGraphLeds) repeat{
+        integer bg = bargraph[counter];
+
+        if(barState > counter+1 AND barState IS counter+1){
+            write(bg, 255);
+        }else{
+            write(bg, 0);
+        }
+
+        counter = counter + 1;
+    }
+}
+
+void readInput() {
+    valPot1  = read(pinPot1);
+    valPot2  = read(pinPot2);
+    btnState = read(btnPin);
+
+    console.println(btnState);
+
+    if(btnState > 500){
+        inFunMode = true;
+    }
+}
+
+void setRGB() {
+    integer potState = map(constrain(valPot2, 0, 1023), 0, 1023, 0, 765);
+
+
+    if(potState IS 1 OR potState > 1 AND potState < 255 OR potState IS 255){
+        integer red = map(potState, 1, 255, 1, 255);
+        writeRGBState(red, 0, 0);
+    }
+
+    if(potState IS 256 OR potState > 256 AND potState < 510 OR potState IS 510){
+        integer green = map(potState, 256, 510, 1, 255);
+        writeRGBState(0, green, 0);
+    }
+
+    if(potState > 510){
+        integer blue = map(potState, 511, 765, 1, 255);
+        writeRGBState(0, 0, blue);
+    }
+
+}
+
+void writeRGBState(integer r, integer g, integer b){
+    write(rgb[0], r);
+    write(rgb[1], g);
+    write(rgb[2], b);
+}
+
+void makeFun(){
+
+    integer counter = 0;
+    integer cycle  = 0;
+    integer cycles = 4;
+
+    while(counter < numOfGraphLeds) repeat {
+        write(bargraph[counter], 0);
+        counter = counter + 1;
+    }
+
+    while(cycle < cycles) repeat {
+        counter = 0;
+
+        while(counter < numOfGraphLeds) repeat {
+            if(counter < numOfGraphLeds){
+                write(bargraph[counter], 1);
+            }else{
+                write(bargraph[counter], 0);
+            }
+
+            counter = counter + 1;
+            sleep(50);
+        }
+
+        while(counter > 0) repeat {
+            if(counter-1 > numOfGraphLeds){
+                write(bargraph[counter], 1);
+            }else{
+                write(bargraph[counter], 0);
+            }
+            counter = counter - 1;
+            sleep(50);
+        }
+
+        cycle = cycle + 1;
+    }
+
+    inFunMode = 0;
+}
+
+big integer map(big integer x, big integer in_min, big integer in_max, big integer out_min, big integer out_max) {
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}

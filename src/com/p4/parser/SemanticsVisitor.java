@@ -3,8 +3,11 @@ package com.p4.parser;
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
 import com.p4.parser.nodes.*;
-import com.p4.symbols.Attributes;
-import com.p4.symbols.SymbolTable;
+import com.p4.symbols.*;
+import org.w3c.dom.Attr;
+
+import javax.sound.midi.SysexMessage;
+import java.util.Map;
 
 public class SemanticsVisitor implements INodeVisitor {
 
@@ -25,7 +28,8 @@ public class SemanticsVisitor implements INodeVisitor {
     //Explicit declaration scope rule
     public void visit(IdNode node){
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
-            errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope", node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope. The type of " + node.id + " will be null", node.lineNumber);
+            //Todo: set the node.type to something to avoid null pointer exception½
         } else {
             node.type = symbolTable.lookup(node.id).variableType;
         }
@@ -65,7 +69,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = resultType;
         }
     }
-    
+    //todo bedre navn, så den også dækker over FuncCall's parameter type checking
     private String assignOperationResultType(String leftType, String rightType){
         if (leftType.equals(rightType)){
             return leftType;
@@ -100,6 +104,9 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private boolean logicalOperationValid(String leftType, String rightType){
+        if(leftType == null || rightType == null){
+            return false;
+        }
         if (leftType.equals("integer") && rightType.equals("integer")){
             return true;
         }
@@ -132,6 +139,10 @@ public class SemanticsVisitor implements INodeVisitor {
         //Todo: handle casting
         //forskellig for: (is isnot), (or, and), (greater, less)
 
+        //Checks if either type is null
+        if (leftType == null || rightType == null){
+            return false;
+        }
         //Checks if the operator is IS or ISNOT
         if(operator == 4 || operator == 5){
             if(leftType.equals(rightType)){
@@ -213,6 +224,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
         if(!ArrayNode.type.equals(ArrayExprNode.type)){
             //Todo: float, char, and int should be decimal, character, and integer
+            //Todo: handle integer array being assigned to decimal array
             errors.addEntry(ErrorType.TYPE_ERROR,  ArrayExprNode.type.substring(0, 1).toUpperCase() + ArrayExprNode.type.substring(1) + " array assigned to " + ArrayNode.type + " array", node.lineNumber);
         }
 
@@ -264,7 +276,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
     
-    public boolean isDivByZero(AstNode denominator){
+    private boolean isDivByZero(AstNode denominator){
         return (denominator.type.equals("integer") && ((IntegerNode)denominator).getValue() == 0) ||
                (denominator.type.equals("long integer") && ((FloatNode)denominator).getValue() == 0);
     }
@@ -282,14 +294,69 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
+    //todo kan kun kalde en funktion hvis funktionen er erklæret før kaldet . Skal fixes i 2. iteration
+    //todo widening virker ikke helt endnu. fix det.
+    //If no errors occur, then the function call will be seen as well typed
     public void visit(FuncCallNode node) {
-        //Todo: implement
+        String actualParamType;
+        String formalParamType;
+        // Gets the function declaration
+        String functionName = ((IdNode)node.children.get(0)).id;
+        FunctionAttributes attributes = symbolTable.lookupParam("FuncNode-" + functionName, functionName);
+
+        int numOfChildren = node.getChildren().size();
+
+        //Goes through all parameters and compare each formal and actual parameter
+        for (int i = 1; i < numOfChildren; i++) {
+            actualParamType = findActualParamType(node.children.get(i));
+            formalParamType = attributes.parameters.get(i - 1).getAttributes().variableType;
+
+            if (actualParamType.equals("error")){
+                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
+            }
+            // Checks if types are the same or if type widening is possible
+            else {
+                String resultType = assignOperationResultType(formalParamType, actualParamType);
+
+                if (resultType.equals("error")) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
+                            + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
+                }
+            }
+        }
     }
 
+    private String findActualParamType(AstNode actualParam){
+        String[] nodeType = actualParam.toString().split("@", 3);
+
+        switch (nodeType[0]){
+            case "com.p4.parser.nodes.IdNode":
+                Attributes attributes = symbolTable.lookup(((IdNode)actualParam).id);
+                return attributes.variableType;
+            case "com.p4.parser.nodes.IntegerNode":
+                return "integer";
+            case "com.p4.parser.nodes.FloatNode":
+                return "decimal";
+            case "com.p4.parser.nodes.PinNode":
+                return "pin";
+            case "com.p4.parser.nodes.CharNode":
+                return "character";
+            default:
+                return "error";
+        }
+    }
+    
     public void visit(FuncNode node) {
-        symbolTable.addScope("FuncNode-"+System.currentTimeMillis());
+        FunctionAttributes attributes = new FunctionAttributes();
+        attributes.kind = "function";
+        attributes.variableType = node.returnType;
+
+        symbolTable.insert(node.id, attributes);
+        symbolTable.addScope("FuncNode-" + node.id);
 
         this.visitChildren(node);
+
+        //todo husk at slette?
         symbolTable.outputAvailableSymbols();
         symbolTable.leaveScope();
     }
@@ -312,6 +379,12 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
         symbolTable.outputAvailableSymbols();
         symbolTable.leaveScope();
+
+        String conditionType = node.children.get(0).type;
+
+        if (!isCondOkType(conditionType)){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type: the condition must be of type boolean or integer, but was of type " + conditionType, node.lineNumber);
+        }
     }
 
     public void visit(LongDclNode node) {
@@ -342,15 +415,22 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ParamNode node) {
+        for(AstNode child : node.getChildren()){
+            IdNode param = (IdNode)child;
 
-        for(AstNode n : node.getChildren()){
-            IdNode param = (IdNode)n;
+            Attributes attributes = new Attributes();
+            attributes.variableType = param.type;
+            attributes.kind = "param";
+            attributes.scope = symbolTable.getCurrentScope();
 
-            Attributes attr = new Attributes();
-            attr.variableType = param.type;
-            attr.kind = "param";
+            symbolTable.insert(param.id, attributes);
 
-            symbolTable.insert(param.id, attr);
+            //finds the name of the function (the scope is called funcNode-NAME)
+            String[] scopeName = attributes.scope.split("-", 2);
+
+            FunctionAttributes functionAttributes = (FunctionAttributes)symbolTable.lookup(scopeName[1]);
+
+            functionAttributes.addParameter(param.id, attributes);
         }
 
         this.visitChildren(node);
@@ -372,13 +452,27 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(SelectionNode node) {
         symbolTable.addScope("SelectionNode-"+System.currentTimeMillis());
         this.visitChildren(node);
-
         symbolTable.outputAvailableSymbols();
         symbolTable.leaveScope();
+
+        String conditionType = node.children.get(0).type;
+        if(!(isCondOkType(conditionType))){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type: the condition must be of type boolean or integer, but was of type " + conditionType, node.lineNumber);
+        }
+
+    }
+
+    private boolean isCondOkType(String condType){
+        if (condType.equals("integer") || condType.equals("boolean")){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public void visit(StmtNode node) {
-        //Todo: implement
+        //Todo: implement. Behøver den det?
     }
 
     public void visit(SubNode node) {
