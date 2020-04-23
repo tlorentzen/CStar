@@ -17,6 +17,6 @@ public abstract class AstNode {
 
     public abstract void accept(INodeVisitor visitor);
 
-    public String type;
+    public int type;
     public int lineNumber = 0;
 }
