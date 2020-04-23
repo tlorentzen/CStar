@@ -22,10 +22,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         return node;
     }
-    /*@Override
-    public AstNode visitArray_access(CStarParser.Array_accessContext ctx) {
-        return super.visitArray_access(ctx);
-    }*/
+
     @Override public AstNode visitDcl(CStarParser.DclContext ctx) {
         // All nodes will be returned to the blkNode visitor, where the children will be saved
         // Test for type
@@ -588,9 +585,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         //First add ID at index 0
         IdNode id = new IdNode(ctx.getChild(0).getText(), false);
-        IntegerNode index = new IntegerNode(Integer.parseInt(ctx.getChild(2).getText()), false);
         arrayAccessNode.children.add(id);
-        arrayAccessNode.children.add(index);
+        System.out.println(ctx.getChild(2).getText());
+        System.out.println(ctx.getChild(2).getClass().toString());
+
+
+        arrayAccessNode.children.add(visit(ctx.children.get(2)));
 
         return arrayAccessNode;
     }
