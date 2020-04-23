@@ -586,10 +586,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         //First add ID at index 0
         IdNode id = new IdNode(ctx.getChild(0).getText(), false);
         arrayAccessNode.children.add(id);
-        System.out.println(ctx.getChild(2).getText());
-        System.out.println(ctx.getChild(2).getClass().toString());
-
-
         arrayAccessNode.children.add(visit(ctx.children.get(2)));
 
         return arrayAccessNode;

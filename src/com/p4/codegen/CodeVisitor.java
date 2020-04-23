@@ -141,6 +141,8 @@ public class CodeVisitor implements INodeVisitor{
         AstNode rightChild = node.children.get(1);
 
         //If pin appears on the right side, either declaration or write should be performed
+        leftChild.type = "array";
+        rightChild.type = "array";
         if(leftChild.type.equals("pin")){
             pinValueOnLeftSide(leftChild, rightChild);
 
@@ -269,9 +271,9 @@ public class CodeVisitor implements INodeVisitor{
         visitChild(node.children.get(0));
         stringBuilder.append("[");
         visitChild(node.children.get(1));
-        stringBuilder.append("] = ");
-        visitChild(node.children.get(2));
-        stringBuilder.append(";\n");
+        stringBuilder.append("]");
+        //visitChild(node.children.get(2));
+
     }
 
     /**
@@ -413,14 +415,16 @@ public class CodeVisitor implements INodeVisitor{
         this.visitChild(id);
         stringBuilder.append("(");
 
-        for(AstNode child : node.children.subList( 1, node.children.size() )){
+        int counter = node.children.subList( 1, node.children.size()).size();
+
+        for(AstNode child : node.children.subList( 1, node.children.size())){
             this.visitChild(child);
-            stringBuilder.append(", ");
+            counter--;
+            if(counter > 0){
+                stringBuilder.append(", ");
+            }
         }
-        //Deletes leftover comma and whitespace
-        stringBuilder.deleteCharAt(stringBuilder.length()-2);
-        stringBuilder.deleteCharAt(stringBuilder.length()-1);
-        stringBuilder.append(");\n");
+        stringBuilder.append(")");
     }
 
     /**

@@ -76,13 +76,13 @@ public class Main {
                             //SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
                             //semanticsVisitor.visit(ast);
 
-                            /*CodeVisitor codeVisitor = new CodeVisitor();
+                            CodeVisitor codeVisitor = new CodeVisitor();
                             codeVisitor.visit(ast);
                             try {
                                 codeVisitor.print();
                             } catch (IOException e) {
                                 e.printStackTrace();
-                            }*/
+                            }
 
                         }
                     }catch (IOException e){

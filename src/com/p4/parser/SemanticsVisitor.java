@@ -163,6 +163,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ArrayAccessNode node) {
+
         //Todo: implement
     }
 
