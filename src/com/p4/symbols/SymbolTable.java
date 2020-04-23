@@ -39,8 +39,7 @@ public class SymbolTable {
     public String getCurrentScope(){
         return currentScope.scopeName;
     }
-    
-    
+
     public CStarScope getParent(){
         return currentScope.parent;
     }
@@ -91,7 +90,6 @@ public class SymbolTable {
                 }
             });
         }
-
         return functionAttributes;
     }
 
@@ -106,7 +104,6 @@ public class SymbolTable {
             if(scope.symbols.containsKey(symbol))
                 return true;
         }
-
         return false;
     }
 
@@ -130,6 +127,5 @@ public class SymbolTable {
             }
         } while((scope = scope.parent) != null);
     }
-    
 }
 
