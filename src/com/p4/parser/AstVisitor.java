@@ -334,7 +334,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         return node;
     }
-    
+
 
     @Override public AstNode visitFactor(CStarParser.FactorContext ctx) {
         var child = ctx.getChild(0);
@@ -591,7 +591,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return arrayAccessNode;
     }
     @Override public AstNode visitStmt(CStarParser.StmtContext ctx) {
-        
+
         ParseTree child = ctx.getChild(0);
         String classes = child.getClass().toString();
         switch (classes) {

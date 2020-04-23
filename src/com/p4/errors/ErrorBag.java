@@ -43,7 +43,7 @@ public class ErrorBag {
         if(!isEmpty()){
             boolean displayColors = !(OS.contains("win") && System.console() != null);
 
-            System.out.println("Something went wrong...");
+            System.out.println("Something went wrong... Found "+errors.size()+ " errors");
             System.out.println("-----------------------");
 
             for (Item item : errors) {
