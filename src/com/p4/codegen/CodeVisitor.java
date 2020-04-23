@@ -315,7 +315,7 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(ArrayNode node) {
-        stringBuilder.append(node.type);
+        stringBuilder.append(getTargetType(node.type));
         stringBuilder.append(" ");
         stringBuilder.append(node.getId());
         stringBuilder.append("[]");
@@ -518,7 +518,7 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(ParamNode node) {
         stringBuilder.append("(");
         for(AstNode child : node.children){
-            stringBuilder.append(child.type).append(" ");
+            stringBuilder.append(getTargetType(child.type)).append(" ");
             this.visitChild(child);
             stringBuilder.append(", ");
         }
@@ -590,9 +590,26 @@ public class CodeVisitor implements INodeVisitor{
      * @param node
      */
     public void visitDclNode(DclNode<?> node){
-        stringBuilder.append(node.type);
+        stringBuilder.append(getTargetType(node.type));
         stringBuilder.append(" ");
         stringBuilder.append(node.id);
+    }
+
+    private String getTargetType(String type){
+        switch (type){
+            case "integer":
+            case "pin":
+                return "int";
+            case "decimal":
+                return "float";
+            case "long integer":
+                return "long";
+            case "character":
+                return "char";
+            default:
+                return type;
+        }
+
     }
 }
 
