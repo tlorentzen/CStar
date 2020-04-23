@@ -15,7 +15,7 @@ public interface INodeVisitor {
     void visit(AssignNode node);
     void visit(CondNode node);
     void visit(ProgNode node);
-    void visit(ArrayAssignNode node);
+    void visit(ArrayAccessNode node);
     void visit(ArrayExprNode node);
     void visit(ArrayNode node);
     void visit(ReturnExpNode node);

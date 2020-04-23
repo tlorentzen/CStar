@@ -162,7 +162,7 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
-    public void visit(ArrayAssignNode node) {
+    public void visit(ArrayAccessNode node) {
         //Todo: implement
     }
 

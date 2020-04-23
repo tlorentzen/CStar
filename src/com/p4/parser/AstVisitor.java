@@ -23,11 +23,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
-    @Override
-    public AstNode visitArray_access(CStarParser.Array_accessContext ctx) {
-        return super.visitArray_access(ctx);
-    }
-
     @Override public AstNode visitDcl(CStarParser.DclContext ctx) {
         // All nodes will be returned to the blkNode visitor, where the children will be saved
         // Test for type
@@ -73,6 +68,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         ParserRuleContext parent = ctx.getParent();
         String classes = parent.getClass().toString();
+        AssignNode assignNode = new AssignNode();
 
         if (classes.equals("class com.p4.parser.CStarParser$DclContext")) {
             String id = ctx.ID().toString();
@@ -103,22 +99,25 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 default:
                     return null;
             }
-            AssignNode assign = new AssignNode();
-            assign.lineNumber = ctx.start.getLine();
+
+            assignNode.lineNumber = ctx.start.getLine();
             dclNode.lineNumber = ctx.start.getLine();
-            assign.children.add(dclNode);
-            assign.children.add(exprNode);
-            return assign;
+            assignNode.children.add(dclNode);
+            assignNode.children.add(exprNode);
+            return assignNode;
         }
-        else if (ctx.getChild(0).getClass().toString().equals("class com.p4.parser.CStarParser$Array_assignContext")) {
-            return visit(ctx.array_access());
+
+        else if (ctx.getChild(0).getClass().toString().equals("class com.p4.parser.CStarParser$Array_accessContext")) {
+            assignNode.children.add(visit(ctx.array_access()));
+            assignNode.children.add(visit(ctx.expr()));
+            return assignNode;
         }
         else{
             String id = ctx.ID().toString();
             CStarParser.ExprContext exprCtx = ctx.expr();
             AstNode exprNode = visit(exprCtx);
 
-            AssignNode assignNode = new AssignNode();
+
             IdNode idNode = new IdNode(id, false);
             idNode.lineNumber = ctx.start.getLine();
             assignNode.children.add(idNode);
@@ -577,14 +576,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      */
     //@Override public T visitArray_call(CStarParser.Array_callContext ctx) { return visitChildren(ctx); }
 
-    @Override public AstNode visitArray_assign(CStarParser.Array_assignContext ctx) {
+    @Override public AstNode visitArray_access(CStarParser.Array_accessContext ctx) {
         //Id is index 0, the Index is at index 1, and the assigned value is at 2
-        ArrayAssignNode arrayAssignNode = new ArrayAssignNode();
-        arrayAssignNode.lineNumber = ctx.start.getLine();
+        ArrayAccessNode arrayAccessNode = new ArrayAccessNode();
+        arrayAccessNode.lineNumber = ctx.start.getLine();
 
         //First add ID at index 0
         IdNode id = new IdNode(ctx.getChild(0).getText(), false);
-        arrayAssignNode.children.add(id);
+        arrayAccessNode.children.add(id);
 
         int numChildren = ctx.getChildCount();
 
@@ -593,10 +592,10 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             if(child.getPayload() instanceof CommonToken)
                 continue;
             AstNode childResult = visit(child);
-            arrayAssignNode.children.add(childResult);
+            arrayAccessNode.children.add(childResult);
         }
 
-        return arrayAssignNode;
+        return arrayAccessNode;
     }
     @Override public AstNode visitStmt(CStarParser.StmtContext ctx) {
         

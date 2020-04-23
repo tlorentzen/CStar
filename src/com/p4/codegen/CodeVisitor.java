@@ -264,7 +264,7 @@ public class CodeVisitor implements INodeVisitor{
      * @param node is the array assign node to be handled.
      */
     @Override
-    public void visit(ArrayAssignNode node) {
+    public void visit(ArrayAccessNode node) {
         //Id is index 0, the Index is at index 1, and the assigned value is at 2
         visitChild(node.children.get(0));
         stringBuilder.append("[");
