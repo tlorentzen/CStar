@@ -33,9 +33,13 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    public void visit(IntegerNode node){ node.type = "int"; }
+    public void visit(IntegerNode node){
+        node.type = "integer";
+    }
 
-    public void visit(FloatNode node){ node.type = "decimal"; }
+    public void visit(FloatNode node){
+        node.type = "decimal";
+    }
 
     public void visit(PinNode node){
         node.type = "pin";
