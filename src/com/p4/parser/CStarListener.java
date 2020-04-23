@@ -1,4 +1,4 @@
-// Generated from C:/Users/ichris18/Documents/GitHub/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
 package com.p4.parser;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -127,6 +127,16 @@ public interface CStarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArray_assign(CStarParser.Array_assignContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CStarParser#array_access}.
+	 * @param ctx the parse tree
+	 */
+	void enterArray_access(CStarParser.Array_accessContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CStarParser#array_access}.
+	 * @param ctx the parse tree
+	 */
+	void exitArray_access(CStarParser.Array_accessContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CStarParser#func}.
 	 * @param ctx the parse tree

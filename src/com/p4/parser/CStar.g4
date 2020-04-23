@@ -3,17 +3,18 @@ grammar CStar;
 prog: ( dcl | func | stmt )* EOF;
 
 dcl: TYPE (ID | assign | array_dcl) SEMICOLON; //done
-assign: ID ASSIGN_OP expr | array_assign; //done
+assign: (ID | array_access) ASSIGN_OP expr; //done
 expr: logical_expr; //done
 logical_expr: cond_expr (( OR | AND ) cond_expr)*;
 cond_expr: arithm_expr (COMP_OP arithm_expr)?;
 arithm_expr: term (( PLUS | MINUS ) term)*; //done
 term: factor (( MULT | DIVISION ) factor)*; //done
-factor:	(MINUS)? (ID | val | LEFT_PAREN expr RIGHT_PAREN | func_call); //done
+factor:	(MINUS)? (ID | val | LEFT_PAREN expr RIGHT_PAREN | func_call | array_access); //done
 
 array_dcl: ARRAY ID ASSIGN_OP array_expr; //done
 array_expr: LEFT_BRACKET expr (COMMA expr)* RIGHT_BRACKET; //done
 array_assign: ID LEFT_BRACKET expr RIGHT_BRACKET (ASSIGN_OP expr)?; //done
+array_access: ID LEFT_BRACKET expr RIGHT_BRACKET;
 
 func: return_type ID LEFT_PAREN param? RIGHT_PAREN blk; //done
 return_type: TYPE | VOID; //done

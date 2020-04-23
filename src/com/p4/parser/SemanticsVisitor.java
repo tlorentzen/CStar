@@ -32,7 +32,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(IntegerNode node){
-        node.type = "integer";
+        node.type = "int";
     }
 
     public void visit(FloatNode node){

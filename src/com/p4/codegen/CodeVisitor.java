@@ -132,6 +132,7 @@ public class CodeVisitor implements INodeVisitor{
 
     /**
      * Handles assignments and calls methods to handle pins when necessary.
+     * Format in Arduino C: i = 10
      * @param node is the assign node to be handled.
      */
     @Override
@@ -256,6 +257,12 @@ public class CodeVisitor implements INodeVisitor{
         this.visitChildren(node);
     }
 
+    /**
+     * Creates an array assign
+     * First child is ID, second is the index value of the array, and third is the value to be assigned to.
+     * Format in Arduino C: intArray[0] = 10;
+     * @param node is the array assign node to be handled.
+     */
     @Override
     public void visit(ArrayAssignNode node) {
         //Id is index 0, the Index is at index 1, and the assigned value is at 2
@@ -267,6 +274,11 @@ public class CodeVisitor implements INodeVisitor{
         stringBuilder.append(";\n");
     }
 
+    /**
+     * Creates an array expr (array elements)
+     * All children are elements of an array
+     * @param node
+     */
     @Override
     public void visit(ArrayExprNode node) {
 
@@ -279,6 +291,11 @@ public class CodeVisitor implements INodeVisitor{
         stringBuilder.deleteCharAt(stringBuilder.length()-1);
     }
 
+    /**
+     * The array id of an array
+     * Format in Arduino C: int i[]
+     * @param node
+     */
     @Override
     public void visit(ArrayNode node) {
         stringBuilder.append(node.type);
@@ -288,8 +305,9 @@ public class CodeVisitor implements INodeVisitor{
     }
 
     /**
-     * Make an array dcl
-     * Format in Arduino C:
+     * Creates an array dcl
+     * First child is the array ID, second is the array expr (array elements)
+     * Format in Arduino C: int i[] = {1, 2, 3};
      * @param node
      */
     @Override
@@ -300,11 +318,10 @@ public class CodeVisitor implements INodeVisitor{
         visitChild(node.children.get(1));
         stringBuilder.append("}");
         stringBuilder.append(";\n");
-
     }
 
     /**
-     * Makes an return expr
+     * Creates an return expr
      * Format in Arduino C: return i + 10;
      * @param node
      */
@@ -350,7 +367,7 @@ public class CodeVisitor implements INodeVisitor{
     }
 
     /**
-     * Makes a char declaration
+     * Creates a char declaration
      * Format in Arduino C: char i;
      * @param node
      */
@@ -386,7 +403,7 @@ public class CodeVisitor implements INodeVisitor{
     }
 
     /**
-     * Makes a function call. First child is the ID, all subsequent children are parameters.
+     * Creates a function call. First child is the ID, all subsequent children are parameters.
      * Format in Arduino C: modulo(10, 20);
      * @param node
      */
