@@ -1,4 +1,2 @@
 integer i = 0;
-while(0) repeat{
-    i = 2;
-}
+

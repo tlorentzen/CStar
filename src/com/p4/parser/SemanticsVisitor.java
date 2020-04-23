@@ -369,6 +369,7 @@ public class SemanticsVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = "integer";
             attr.kind = node.getType();
+            System.out.println("HEEEEJ" + node.getType());
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }
