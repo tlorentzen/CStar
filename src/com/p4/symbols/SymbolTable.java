@@ -15,14 +15,13 @@ public class SymbolTable {
         currentScope = globalScope;
     }
 
-    //todo skal også tjekke om scope navn allerede findes
     public void addScope(String scopeName){
-        CStarScope scope = new CStarScope(scopeName, level + 1);
-        scope.parent = currentScope;
-        currentScope.children.add(scope);
-        currentScope = scope;
+        CStarScope s = new CStarScope(scopeName, level+1);
+        s.parent = currentScope;
+        currentScope.children.add(s);
+        currentScope = s;
         level++;
-        System.out.println(">> New scope added: " + scopeName + " (" + level + ")");
+        System.out.println(">> New scope added: "+scopeName+" ("+level+")");
     }
 
     public void leaveScope(){
@@ -39,7 +38,8 @@ public class SymbolTable {
     public String getCurrentScope(){
         return currentScope.scopeName;
     }
-
+    
+    
     public CStarScope getParent(){
         return currentScope.parent;
     }
@@ -90,6 +90,7 @@ public class SymbolTable {
                 }
             });
         }
+
         return functionAttributes;
     }
 
@@ -104,6 +105,7 @@ public class SymbolTable {
             if(scope.symbols.containsKey(symbol))
                 return true;
         }
+
         return false;
     }
 
@@ -127,5 +129,6 @@ public class SymbolTable {
             }
         } while((scope = scope.parent) != null);
     }
+    
 }
 

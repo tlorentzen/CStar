@@ -61,8 +61,8 @@ public class Main {
                             CStarBaseVisitor<?> visitor = new AstVisitor<>();
                             ProgNode ast = (ProgNode) visitor.visit(tree);
 
-                            AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
-                            astTreeVisitor.visit(0, ast);
+                            //AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
+                            //astTreeVisitor.visit(0, ast);
 
                             SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
                             semanticsVisitor.visit(ast);

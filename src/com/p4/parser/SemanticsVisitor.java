@@ -28,8 +28,8 @@ public class SemanticsVisitor implements INodeVisitor {
     //Explicit declaration scope rule
     public void visit(IdNode node){
         if(!this.symbolTable.declaredInAccessibleScope(node.id)){
-            errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope. The type of " + node.id + " will be null", node.lineNumber);
-            //Todo: set the node.type to something to avoid null pointer exception½
+            errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope", node.lineNumber);
+            //Todo: set the node.type to something to avoid null pointer exception
         } else {
             node.type = symbolTable.lookup(node.id).variableType;
         }
@@ -104,9 +104,6 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private boolean logicalOperationValid(String leftType, String rightType){
-        if(leftType == null || rightType == null){
-            return false;
-        }
         if (leftType.equals("integer") && rightType.equals("integer")){
             return true;
         }
@@ -139,10 +136,6 @@ public class SemanticsVisitor implements INodeVisitor {
         //Todo: handle casting
         //forskellig for: (is isnot), (or, and), (greater, less)
 
-        //Checks if either type is null
-        if (leftType == null || rightType == null){
-            return false;
-        }
         //Checks if the operator is IS or ISNOT
         if(operator == 4 || operator == 5){
             if(leftType.equals(rightType)){
@@ -234,7 +227,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else {
             Attributes attr = new Attributes();
             attr.variableType = ArrayNode.type;
-            attr.kind = node.getType();
+            attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }
@@ -251,7 +244,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else {
             Attributes attr = new Attributes();
             attr.variableType = "character";
-            attr.kind = node.getType();
+            attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }
@@ -276,7 +269,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
     
-    private boolean isDivByZero(AstNode denominator){
+    public boolean isDivByZero(AstNode denominator){
         return (denominator.type.equals("integer") && ((IntegerNode)denominator).getValue() == 0) ||
                (denominator.type.equals("long integer") && ((FloatNode)denominator).getValue() == 0);
     }
@@ -288,7 +281,8 @@ public class SemanticsVisitor implements INodeVisitor {
         } else {
             Attributes attr = new Attributes();
             attr.variableType = "decimal";
-            attr.kind = node.getType();
+            attr.kind = "dcl";
+            System.out.println(attr.kind);
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }
@@ -316,7 +310,7 @@ public class SemanticsVisitor implements INodeVisitor {
             }
             // Checks if types are the same or if type widening is possible
             else {
-                String resultType = assignOperationResultType(formalParamType, actualParamType);
+                String resultType = assignOperationResultType(actualParamType, formalParamType);
 
                 if (resultType.equals("error")) {
                     errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
@@ -327,7 +321,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private String findActualParamType(AstNode actualParam){
-        String[] nodeType = actualParam.toString().split("@", 3);
+        String[] nodeType = actualParam.toString().split("@", 2);
 
         switch (nodeType[0]){
             case "com.p4.parser.nodes.IdNode":
@@ -368,8 +362,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else {
             Attributes attr = new Attributes();
             attr.variableType = "integer";
-            attr.kind = node.getType();
-            System.out.println("HEEEEJ" + node.getType());
+            attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }
@@ -380,12 +373,6 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
         symbolTable.outputAvailableSymbols();
         symbolTable.leaveScope();
-
-        String conditionType = node.children.get(0).type;
-
-        if (!isCondOkType(conditionType)){
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type: the condition must be of type boolean or integer, but was of type " + conditionType, node.lineNumber);
-        }
     }
 
     public void visit(LongDclNode node) {
@@ -395,7 +382,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else {
             Attributes attr = new Attributes();
             attr.variableType = "long integer";
-            attr.kind = node.getType();
+            attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }
@@ -444,7 +431,7 @@ public class SemanticsVisitor implements INodeVisitor {
         } else {
             Attributes attr = new Attributes();
             attr.variableType = "pin";
-            attr.kind = node.getType();
+            attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
         }
@@ -453,27 +440,13 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(SelectionNode node) {
         symbolTable.addScope("SelectionNode-"+System.currentTimeMillis());
         this.visitChildren(node);
+
         symbolTable.outputAvailableSymbols();
         symbolTable.leaveScope();
-
-        String conditionType = node.children.get(0).type;
-        if(!(isCondOkType(conditionType))){
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type: the condition must be of type boolean or integer, but was of type " + conditionType, node.lineNumber);
-        }
-
-    }
-
-    private boolean isCondOkType(String condType){
-        if (condType.equals("integer") || condType.equals("boolean")){
-            return true;
-        }
-        else{
-            return false;
-        }
     }
 
     public void visit(StmtNode node) {
-        //Todo: implement. Behøver den det?
+        //Todo: implement
     }
 
     public void visit(SubNode node) {
