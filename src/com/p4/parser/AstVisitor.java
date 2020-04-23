@@ -23,6 +23,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
+    @Override
+    public AstNode visitArray_access(CStarParser.Array_accessContext ctx) {
+        return super.visitArray_access(ctx);
+    }
+
     @Override public AstNode visitDcl(CStarParser.DclContext ctx) {
         // All nodes will be returned to the blkNode visitor, where the children will be saved
         // Test for type
