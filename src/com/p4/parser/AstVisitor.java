@@ -106,7 +106,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             return assign;
         }
         else if (ctx.getChild(0).getClass().toString().equals("class com.p4.parser.CStarParser$Array_assignContext")) {
-            return visit(ctx.array_assign());
+            return visit(ctx.array_access());
         }
         else{
             String id = ctx.ID().toString();
