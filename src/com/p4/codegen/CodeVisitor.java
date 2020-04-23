@@ -271,9 +271,13 @@ public class CodeVisitor implements INodeVisitor{
         visitChild(node.children.get(0));
         stringBuilder.append("[");
         visitChild(node.children.get(1));
-        stringBuilder.append("]");
-        //visitChild(node.children.get(2));
+        //Deletes semicolon and new line if its found
+        int length = stringBuilder.length();
+        if(stringBuilder.charAt( length - 2) == ';'){
+            stringBuilder.delete(length -2, length);
 
+        }
+        stringBuilder.append("]");
     }
 
     /**
@@ -424,7 +428,7 @@ public class CodeVisitor implements INodeVisitor{
                 stringBuilder.append(", ");
             }
         }
-        stringBuilder.append(")");
+        stringBuilder.append(");\n");
     }
 
     /**
