@@ -73,10 +73,10 @@ public class Main {
                             AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                             astTreeVisitor.visit(0, ast);
 
-                            //SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
-                            //semanticsVisitor.visit(ast);
+                            SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+                            semanticsVisitor.visit(ast);
 
-                            CodeVisitor codeVisitor = new CodeVisitor();
+                            CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
                             codeVisitor.visit(ast);
                             try {
                                 codeVisitor.print();

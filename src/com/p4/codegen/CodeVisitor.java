@@ -2,6 +2,7 @@ package com.p4.codegen;
 
 import com.p4.parser.INodeVisitor;
 import com.p4.parser.nodes.*;
+import com.p4.symbols.SymbolTable;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,6 +14,11 @@ public class CodeVisitor implements INodeVisitor{
 
     //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
+    SymbolTable symbolTable = new SymbolTable();
+
+    public CodeVisitor(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
+    }
 
     /**
      * Prints the content of the string builder to the file.
@@ -71,7 +77,6 @@ public class CodeVisitor implements INodeVisitor{
                 stringBuilder.append(" && ");
                 break;
         }
-
         //Right operand
         this.visitChild(node.children.get(1));
     }
@@ -141,8 +146,6 @@ public class CodeVisitor implements INodeVisitor{
         AstNode rightChild = node.children.get(1);
 
         //If pin appears on the right side, either declaration or write should be performed
-        leftChild.type = "array";
-        rightChild.type = "array";
         if(leftChild.type.equals("pin")){
             pinValueOnLeftSide(leftChild, rightChild);
 
@@ -166,10 +169,7 @@ public class CodeVisitor implements INodeVisitor{
      * @param rightChild rhs of the assignment.
      */
     private void pinValueOnLeftSide(AstNode leftChild, AstNode rightChild) {
-        //Sets the pin mode of the pin
-        stringBuilder.append("pinMode(");
-        this.visitChild(leftChild);
-        stringBuilder.append(", OUTPUT);\n");
+
 
         //Handles assigning a value to a pin at declaration
         if(leftChild instanceof PinDclNode){
@@ -184,10 +184,21 @@ public class CodeVisitor implements INodeVisitor{
             stringBuilder.append(" = ");
             stringBuilder.append(pinNum);
             stringBuilder.append(";\n");
+
+            //Sets the pin mode of the pin
+            stringBuilder.append("pinMode(");
+            System.out.println(leftChild.getClass().toString());
+            stringBuilder.append(pinDclNode.id);
+            stringBuilder.append(", OUTPUT);\n");
         } else{
+            //Sets the pin mode of the pin
+            stringBuilder.append("pinMode(");
+            visitChild(leftChild);
+            stringBuilder.append(", OUTPUT);\n");
 
             //Handles assigning a value to a pin after declaration, by using digital or analog write.
             if(rightChild.getClass().getName().equals("com.p4.parser.nodes.IntegerNode")){
+
                 //If the operator is an integer node, analog write should be used, unless the value is 0 or 255.
                 if(((IntegerNode) rightChild).value == 0 || ((IntegerNode) rightChild).value == 255){
                     stringBuilder.append("digitalWrite(");
@@ -283,7 +294,7 @@ public class CodeVisitor implements INodeVisitor{
     /**
      * Creates an array expr (array elements)
      * All children are elements of an array
-     * @param node
+     * @param node is the array expr node to be handled.
      */
     @Override
     public void visit(ArrayExprNode node) {
@@ -300,7 +311,7 @@ public class CodeVisitor implements INodeVisitor{
     /**
      * The array id of an array
      * Format in Arduino C: int i[]
-     * @param node
+     * @param node is the array node to be handled.
      */
     @Override
     public void visit(ArrayNode node) {
@@ -314,7 +325,7 @@ public class CodeVisitor implements INodeVisitor{
      * Creates an array dcl
      * First child is the array ID, second is the array expr (array elements)
      * Format in Arduino C: int i[] = {1, 2, 3};
-     * @param node
+     * @param node is the array dcl node to be handled.
      */
     @Override
     public void visit(ArrayDclNode<?> node) {
@@ -329,7 +340,7 @@ public class CodeVisitor implements INodeVisitor{
     /**
      * Creates an return expr
      * Format in Arduino C: return i + 10;
-     * @param node
+     * @param node is the return expr node to be handled.
      */
     @Override
     public void visit(ReturnExpNode node) {
@@ -342,7 +353,7 @@ public class CodeVisitor implements INodeVisitor{
      * Creates an add operation.
      * First child is left side, second is right side
      * Format in Arduion C: 10 + 20
-     * @param node
+     * @param node is the add node to be handled.
      */
     @Override
     public void visit(AddNode node) {
@@ -359,13 +370,14 @@ public class CodeVisitor implements INodeVisitor{
      * {
      *     int i = 0;
      * }
-     * @param node
+     * @param node is the blk node to be handled.
      */
     @Override
     public void visit(BlkNode node) {
 
         stringBuilder.append("{\n");
         for(AstNode child : node.children){
+            stringBuilder.append("    ");
             this.visitChild(child);
         }
 
@@ -375,7 +387,7 @@ public class CodeVisitor implements INodeVisitor{
     /**
      * Creates a char declaration
      * Format in Arduino C: char i;
-     * @param node
+     * @param node is the char node to be handled.
      */
     @Override
     public void visit(CharDclNode node) {
@@ -386,7 +398,7 @@ public class CodeVisitor implements INodeVisitor{
      * Creates a division operation.
      * First child is left side, second is right side
      * Format in Arduion C: 10 / 20
-     * @param node
+     * @param node is the division node to be handled.
      */
     @Override
     public void visit(DivNode node) {
@@ -401,7 +413,7 @@ public class CodeVisitor implements INodeVisitor{
     /**
      * Creates a float declaration
      * Format in Arduino C: float i;
-     * @param node
+     * @param node is the float node to be handled.
      */
     @Override
     public void visit(FloatDclNode node) {
@@ -411,7 +423,7 @@ public class CodeVisitor implements INodeVisitor{
     /**
      * Creates a function call. First child is the ID, all subsequent children are parameters.
      * Format in Arduino C: modulo(10, 20);
-     * @param node
+     * @param node is the func call node to be handled.
      */
     @Override
     public void visit(FuncCallNode node) {
@@ -435,7 +447,7 @@ public class CodeVisitor implements INodeVisitor{
      * Creates a function declaration.
      * Children are parameters and a block.
      * Format in Arduino C: void main(char argv[]){ }
-     * @param node
+     * @param node is the func node to be handled.
      */
     @Override
     public void visit(FuncNode node) {
@@ -449,7 +461,7 @@ public class CodeVisitor implements INodeVisitor{
     /**
      * Creates an integer declaration
      * Format in Arduino C: int i;
-     * @param node
+     * @param node is the integer node to be handled.
      */
     @Override
     public void visit(IntegerDclNode node) {
@@ -460,7 +472,7 @@ public class CodeVisitor implements INodeVisitor{
      * Creates an iterative while loop
      * First child is logical expression, second is a block.
      * Format in Arduino C: while(10 < 20){ int i = 0; }
-     * @param node
+     * @param node is the iterative node to be handled.
      */
     @Override
     public void visit(IterativeNode node) {
@@ -473,7 +485,7 @@ public class CodeVisitor implements INodeVisitor{
     /**
      * Creates a long declaration
      * Format in Arduino C: long i;
-     * @param node
+     * @param node is the long dcl node to be handled.
      */
     @Override
     public void visit(LongDclNode node) {
@@ -484,7 +496,7 @@ public class CodeVisitor implements INodeVisitor{
      * Creates a multiply operation
      * First child is left side, second is right side
      * Format in Arduino C: 10 * 20
-     * @param node
+     * @param node is the return expr node to be handled.
      */
     @Override
     public void visit(MultNode node) {

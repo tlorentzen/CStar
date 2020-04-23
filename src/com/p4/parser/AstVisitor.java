@@ -505,19 +505,19 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         for(int childIndex = 0; childIndex < numChild; childIndex++){ //Skips comma and jumps to type
             switch (ctx.getChild(childIndex).toString()){
                 case "integer":
-                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "int"));
+                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "integer"));
                     break;
                 case "decimal":
-                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "float"));
+                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "decimal"));
                     break;
                 case "pin":
                     paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "pin"));
                     break;
-                case "big integer":
-                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "long"));
+                case "long integer":
+                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "long integer"));
                     break;
                 case "character":
-                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "char"));
+                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "character"));
                     break;
                 default:
                     //todo error handling
