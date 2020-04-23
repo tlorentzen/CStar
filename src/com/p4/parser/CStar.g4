@@ -56,7 +56,7 @@ WHILE: 'while';
 REPEAT: 'repeat';
 COMMA: ',';
 VOID: 'void';
-TYPE: 'integer' | 'decimal' | 'character' | 'big integer' | 'pin';
+TYPE: 'integer' | 'decimal' | 'character' | 'long integer' | 'pin';
 ARRAY: 'array';
 RETURN: 'return';
 
