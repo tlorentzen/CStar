@@ -82,6 +82,9 @@ public class SemanticsVisitor implements INodeVisitor {
         else if ((leftType.equals("long integer") || leftType.equals("pin")) && rightType.equals("integer")){
             return leftType;
         }
+        else if ((leftType.equals("long integer") || leftType.equals("integer")) && rightType.equals("pin")){
+            return leftType;
+        }
         else{
             return "error";
         }
