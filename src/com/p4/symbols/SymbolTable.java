@@ -93,20 +93,6 @@ public class SymbolTable {
         return functionAttributes;
     }
 
-    public boolean declaredInAccessibleScope(String symbol){
-        if(declaredInCurrentScope(symbol)){
-            return true;
-        }
-
-        CStarScope scope = currentScope;
-
-        while((scope = scope.parent) != null){
-            if(scope.symbols.containsKey(symbol))
-                return true;
-        }
-        return false;
-    }
-
     public boolean declaredInCurrentScope(String symbol){
         return this.currentScope.symbols.containsKey(symbol);
     }

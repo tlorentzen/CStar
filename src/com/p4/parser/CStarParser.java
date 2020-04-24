@@ -26,15 +26,15 @@ public class CStarParser extends Parser {
 	public static final int
 		RULE_prog = 0, RULE_dcl = 1, RULE_assign = 2, RULE_expr = 3, RULE_logical_expr = 4, 
 		RULE_cond_expr = 5, RULE_arithm_expr = 6, RULE_term = 7, RULE_factor = 8, 
-		RULE_array_dcl = 9, RULE_array_expr = 10, RULE_array_assign = 11, RULE_array_access = 12, 
-		RULE_func = 13, RULE_return_type = 14, RULE_param = 15, RULE_blk = 16, 
-		RULE_return_exp = 17, RULE_func_call = 18, RULE_stmt = 19, RULE_iterative = 20, 
+		RULE_array_dcl = 9, RULE_array_expr = 10, RULE_array_assign = 11, RULE_array_access = 12,
+		RULE_func = 13, RULE_return_type = 14, RULE_param = 15, RULE_blk = 16,
+		RULE_return_exp = 17, RULE_func_call = 18, RULE_stmt = 19, RULE_iterative = 20,
 		RULE_selection = 21, RULE_val = 22;
 	private static String[] makeRuleNames() {
 		return new String[] {
 			"prog", "dcl", "assign", "expr", "logical_expr", "cond_expr", "arithm_expr", 
-			"term", "factor", "array_dcl", "array_expr", "array_assign", "array_access", 
-			"func", "return_type", "param", "blk", "return_exp", "func_call", "stmt", 
+			"term", "factor", "array_dcl", "array_expr", "array_assign", "array_access",
+			"func", "return_type", "param", "blk", "return_exp", "func_call", "stmt",
 			"iterative", "selection", "val"
 		};
 	}

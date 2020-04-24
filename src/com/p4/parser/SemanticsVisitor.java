@@ -25,11 +25,13 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //Explicit declaration scope rule
     public void visit(IdNode node){
-        if(!this.symbolTable.declaredInAccessibleScope(node.id)){
+        Attributes attributes = symbolTable.lookup(node.id);
+
+        if(attributes == null){
             errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope. The type of " + node.id + " will be null", node.lineNumber);
             //Todo: set the node.type to something to avoid null pointer exception
         } else {
-            node.type = symbolTable.lookup(node.id).variableType;
+            node.type = attributes.variableType;
         }
     }
 
@@ -145,14 +147,14 @@ public class SemanticsVisitor implements INodeVisitor {
             return false;
         }
         //Checks if the operator is IS or ISNOT
-        if(operator == 4 || operator == 5){
+        if(operator == CStarParser.IS || operator == CStarParser.ISNOT){
             if(leftType.equals(rightType)){
                 return true;
             }
             else return !leftType.equals("character") && !rightType.equals("character");
         }
-        //Checks if the operator is '>' or '<'
-        else if(operator == 2 || operator == 3) {
+        //Checks if the operator is '<' or '>'
+        else if(operator == CStarParser.LESS_THAN || operator == CStarParser.GREATER_THAN) {
             return !leftType.equals("character") && !rightType.equals("character");
         }
         else {
@@ -520,7 +522,8 @@ public class SemanticsVisitor implements INodeVisitor {
             return "error";
         }
         //First semantic rule
-        if(leftType.equals(rightType)){
+        if(leftType.equals(rightType) && (leftType.equals("integer") ||
+            leftType.equals("decimal") || leftType.equals("long integer"))) {
             return leftType;
         }
         //Second semantic rule
