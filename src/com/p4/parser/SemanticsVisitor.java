@@ -389,8 +389,8 @@ public class SemanticsVisitor implements INodeVisitor {
         attributes.kind = "function";
         attributes.variableType = node.returnType;
 
-        symbolTable.insert(node.id, attributes);
         symbolTable.addScope("FuncNode-" + node.id);
+        symbolTable.insert(node.id, attributes);
 
         this.visitChildren(node);
 
