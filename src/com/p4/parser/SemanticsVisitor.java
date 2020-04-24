@@ -69,7 +69,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = resultType;
         }
     }
-    //todo bedre navn, så den også dækker over FuncCall's parameter type checking
+    //todo bedre navn, så den også dækker over FuncCall's parameter type checking. Men er det ikke kinda en assign også?
     private String assignOperationResultType(String leftType, String rightType){
         //Checks if either type is null
         if (leftType == null || rightType == null){
@@ -139,7 +139,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private boolean compareOperationValid(int operator, String leftType, String rightType) {
-        //Todo: handle casting
+
         //forskellig for: (is isnot), (or, and), (greater, less)
 
         //Checks if either type is null
@@ -193,7 +193,11 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(ArrayExprNode node) {
         this.visitChildren(node);
-        node.type = node.children.get(0).type;
+
+    }
+
+    private void castArrayElements(ArrayExprNode node, String type){
+        node.type = type;
         boolean nodeTypeChecked = false;
         while(!nodeTypeChecked){
             nodeTypeChecked = true;
@@ -236,13 +240,17 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(ArrayDclNode<?> node) {
         this.visitChildren(node);
-        var ArrayNode = node.children.get(0);
-        var ArrayExprNode = node.children.get(1);
+        var arrayNode = node.children.get(0);
+        var arrayExprNode = node.children.get(1);
+        castArrayElements((ArrayExprNode) arrayExprNode, arrayNode.type);
 
-        if(!ArrayNode.type.equals(ArrayExprNode.type)){
+        if(!arrayNode.type.equals(arrayExprNode.type)){
             //Todo: float, char, and int should be decimal, character, and integer
-            //Todo: handle integer array being assigned to decimal array
-            errors.addEntry(ErrorType.TYPE_ERROR,  ArrayExprNode.type.substring(0, 1).toUpperCase() + ArrayExprNode.type.substring(1) + " array assigned to " + ArrayNode.type + " array", node.lineNumber);
+            //Todo: handle integer array being assigned to decimal array, integer til pin
+
+
+            errors.addEntry(ErrorType.TYPE_ERROR,  arrayExprNode.type.substring(0, 1).toUpperCase() + arrayExprNode.type.substring(1) + " array assigned to " + arrayNode.type + " array", node.lineNumber);
+
         }
 
         if(symbolTable.lookup(node.id) != null){
@@ -250,7 +258,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
             Attributes attr = new Attributes();
-            attr.variableType = ArrayNode.type;
+            attr.variableType = arrayNode.type;
             attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
@@ -381,8 +389,8 @@ public class SemanticsVisitor implements INodeVisitor {
         attributes.kind = "function";
         attributes.variableType = node.returnType;
 
-        symbolTable.insert(node.id, attributes);
         symbolTable.addScope("FuncNode-" + node.id);
+        symbolTable.insert(node.id, attributes);
 
         this.visitChildren(node);
 
@@ -551,7 +559,6 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private String dominantTypeOfArrayElements(String leftType, String rightType) {
-        //Todo: handling casting to dominant type
         if (leftType == null || rightType == null){
             return "error";
         }
