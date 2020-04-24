@@ -234,7 +234,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitArithm_expr(CStarParser.Arithm_exprContext ctx){
         //ArrayExprNode arrayExprNode = new ArrayExprNode();
         int childCount = ctx.getChildCount();
-        int termCount = 0;
 
         //If there are no operations with plus and minus
         if(childCount == 1){
@@ -346,6 +345,18 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             classes = child.getClass().toString();
             isNegative = true;
         }
+
+        /*if (classes.equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")){
+            if (child.getText().equals("(")) {
+                return visit(ctx.expr());
+            }
+            else {
+                return new IdNode(child.getText(), isNegative);
+            }
+        }
+        else {
+            visit(child);
+        }*/
 
         switch (classes){
             case "class com.p4.parser.CStarParser$ValContext": //if value
@@ -482,9 +493,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     }
 
     @Override public AstNode visitFunc(CStarParser.FuncContext ctx) {
-
-        System.out.println(ctx.ID().toString());
-
         FuncNode node = new FuncNode();
         node.lineNumber = ctx.start.getLine();
         node.id = ctx.ID().toString();
@@ -493,7 +501,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             node.children.add(visit(ctx.param()));
         }
         node.children.add(visit(ctx.blk()));
-        System.out.println(ctx.toString());
 
         return node;
     }
@@ -551,7 +558,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         for(CStarParser.BlkContext blk : ctx.blk()){
             node.children.add(visit(blk));
         }
-        System.out.println(node);
         return node;
     }
 
@@ -591,20 +597,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return arrayAccessNode;
     }
     @Override public AstNode visitStmt(CStarParser.StmtContext ctx) {
-
         ParseTree child = ctx.getChild(0);
-        String classes = child.getClass().toString();
-        switch (classes) {
-            case "class com.p4.parser.CStarParser$AssignContext":
-                return visit(ctx.assign());
-            case "class com.p4.parser.CStarParser$ExprContext":
-                return visit(ctx.expr());
-            case "class com.p4.parser.CStarParser$SelectionContext":
-                return visit(ctx.selection());
-            case "class com.p4.parser.CStarParser$IterativeContext":
-                return visit(ctx.iterative());
-            default:
-                return null;
-        }
+
+        return visit(child);
     }
 }

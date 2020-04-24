@@ -167,7 +167,6 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ArrayAccessNode node) {
-        System.out.println(node.type);
         String nodeType = node.children.get(1).getClass().getName();
 
         switch (nodeType) {
