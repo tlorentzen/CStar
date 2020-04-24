@@ -169,6 +169,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(ArrayAccessNode node) {
         System.out.println(node.type);
         String nodeType = node.children.get(1).getClass().getName();
+        Attributes arrayAttr = symbolTable.lookup(node.children.get(0).getClass().getName());
 
         switch (nodeType) {
             case "com.p4.parser.nodes.IntegerNode":
@@ -198,7 +199,7 @@ public class SemanticsVisitor implements INodeVisitor {
             nodeTypeChecked = true;
             for(AstNode child : node.children){
                 if(!child.type.equals(node.type)){
-                    String dominantType = this.dominantTypeConversion(child.type, node.type);
+                    String dominantType = this.dominantTypeOfArrayElements(child.type, node.type);
                     if(node.type.equals(dominantType)){
                         child.type = node.type;
                     } else{
@@ -549,18 +550,25 @@ public class SemanticsVisitor implements INodeVisitor {
         //Skal bruges, hvis vi implementerer negation som en node (lige som i bogen)
     }
 
-    private String dominantTypeConversion(String leftType, String rightType) {
+    private String dominantTypeOfArrayElements(String leftType, String rightType) {
         //Todo: handling casting to dominant type
         if (leftType == null || rightType == null){
             return "error";
         }
 
-        if(leftType.equals("decimal")){
+        if(leftType.equals("decimal") || rightType.equals("decimal")){
             return "decimal";
-        } else if(rightType.equals("decimal")){
-            return "decimal";
-        } else{
-            return "decimal";
+        } else if(leftType.equals("pin") || rightType.equals("pin")){
+            return "pin";
+        } else if(leftType.equals("long integer") || rightType.equals("long integer")){
+            return "long integer";
+        } else if(leftType.equals("integer") || rightType.equals("integer")){
+            return "integer";
+        } else if(leftType.equals("char") || rightType.equals("char")){
+            return "character";
+        } else {
+            //Should never occur
+            return "error";
         }
     }
 }

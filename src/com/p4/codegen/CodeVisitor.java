@@ -170,7 +170,6 @@ public class CodeVisitor implements INodeVisitor{
      */
     private void pinValueOnLeftSide(AstNode leftChild, AstNode rightChild) {
 
-
         //Handles assigning a value to a pin at declaration
         if(leftChild instanceof PinDclNode){
             PinDclNode pinDclNode = (PinDclNode) leftChild;
