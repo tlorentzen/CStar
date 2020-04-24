@@ -84,6 +84,9 @@ public class SemanticsVisitor implements INodeVisitor {
         else if ((leftType.equals("long integer") || leftType.equals("pin")) && rightType.equals("integer")){
             return leftType;
         }
+        else if ((leftType.equals("long integer") || leftType.equals("integer")) && rightType.equals("pin")){
+            return leftType;
+        }
         else{
             return "error";
         }
@@ -148,21 +151,11 @@ public class SemanticsVisitor implements INodeVisitor {
             if(leftType.equals(rightType)){
                 return true;
             }
-            else if(leftType.equals("character") || rightType.equals("character")){
-                return false;
-            }
-            else {
-                return true;
-            }
+            else return !leftType.equals("character") && !rightType.equals("character");
         }
         //Checks if the operator is '>' or '<'
         else if(operator == 2 || operator == 3) {
-            if(leftType.equals("character") || rightType.equals("character")){
-                return false;
-            }
-            else {
-                return true;
-            }
+            return !leftType.equals("character") && !rightType.equals("character");
         }
         else {
             return false;
@@ -174,23 +167,45 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ArrayAccessNode node) {
+        System.out.println(node.type);
+        String nodeType = node.children.get(1).getClass().getName();
 
-        //Todo: implement
+        switch (nodeType) {
+            case "com.p4.parser.nodes.IntegerNode":
+                node.type = "integer";
+                break;
+            case "com.p4.parser.nodes.FloatNode":
+                node.type = "decimal";
+                break;
+            case "com.p4.parser.nodes.PinNode":
+                node.type = "pin";
+                break;
+            case "com.p4.parser.nodes.CharNode":
+                node.type = "character";
+                break;
+            default:
+                node.type = "error";
+                break;
+
+        }
     }
 
     public void visit(ArrayExprNode node) {
         this.visitChildren(node);
         node.type = node.children.get(0).type;
         boolean nodeTypeChecked = false;
-        //Todo: reflect in report?
         while(!nodeTypeChecked){
             nodeTypeChecked = true;
             for(AstNode child : node.children){
                 if(!child.type.equals(node.type)){
-                    node.type = this.dominantTypeConversion(child.type, node.type);
-                    child.type = node.type;
-                    nodeTypeChecked = false;
-                    break;
+                    String dominantType = this.dominantTypeConversion(child.type, node.type);
+                    if(node.type.equals(dominantType)){
+                        child.type = node.type;
+                    } else{
+                        node.type = dominantType;
+                        nodeTypeChecked = false;
+                        break;
+                    }
                 }
             }
         }
@@ -471,12 +486,7 @@ public class SemanticsVisitor implements INodeVisitor {
         if (condType == null){
             return false;
         }
-        if (condType.equals("integer") || condType.equals("boolean")){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return condType.equals("integer") || condType.equals("boolean");
     }
 
     public void visit(StmtNode node) {

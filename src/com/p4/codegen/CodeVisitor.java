@@ -315,7 +315,7 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(ArrayNode node) {
-        stringBuilder.append(node.type);
+        stringBuilder.append(getTargetType(node.type));
         stringBuilder.append(" ");
         stringBuilder.append(node.getId());
         stringBuilder.append("[]");
@@ -455,7 +455,11 @@ public class CodeVisitor implements INodeVisitor{
         stringBuilder.append(node.returnType);
         stringBuilder.append(" ");
         stringBuilder.append(node.id);
+        if(node.children.size() == 1){
+            stringBuilder.append("()");
+        }
         this.visitChildren(node);
+
     }
 
     /**
@@ -512,13 +516,13 @@ public class CodeVisitor implements INodeVisitor{
      * Creates parameters for functions
      * All children are different parameters.
      * Format in Arduino C: void main(int i, long j){ }
-     * @param node
+     * @param node is the parameter node to be handled.
      */
     @Override
     public void visit(ParamNode node) {
         stringBuilder.append("(");
         for(AstNode child : node.children){
-            stringBuilder.append(child.type).append(" ");
+            stringBuilder.append(getTargetType(child.type)).append(" ");
             this.visitChild(child);
             stringBuilder.append(", ");
         }
@@ -531,7 +535,7 @@ public class CodeVisitor implements INodeVisitor{
     /**
      * Makes a pin declaration.
      * Format in Arduino C: int pinName;
-     * @param node
+     * @param node is the pin dcl node to be handled.
      */
     @Override
     public void visit(PinDclNode node) {
@@ -543,7 +547,7 @@ public class CodeVisitor implements INodeVisitor{
      * Creates a selection if else.
      * First child is a logical expr, second is a block, third is also a block
      * Format in Arduino C: if(10 < 20){ int i = 0; } else { int i = 1; }
-     * @param node
+     * @param node is the selection node to be handled.
      */
     @Override
     public void visit(SelectionNode node) {
@@ -560,7 +564,7 @@ public class CodeVisitor implements INodeVisitor{
     /**
      * Creates a statement
      * Visit its children, which can be assign, expr, selection, or iterative;
-     * @param node
+     * @param node is the statement node to be handled.
      */
     @Override
     public void visit(StmtNode node) {
@@ -572,7 +576,7 @@ public class CodeVisitor implements INodeVisitor{
      * Creates a subtraction operation
      * First child is left side, second is right side
      * Format in Arduino C: 10 - 20
-     * @param node
+     * @param node is the subtraction node to be handled.
      */
     @Override
     public void visit(SubNode node) {
@@ -587,12 +591,34 @@ public class CodeVisitor implements INodeVisitor{
     /**
      * Makes a general declaration for types.
      * Format in Ardunio C: int i
-     * @param node
+     * @param node is the dcl node to be handled.
      */
     public void visitDclNode(DclNode<?> node){
-        stringBuilder.append(node.type);
+        stringBuilder.append(getTargetType(node.type));
         stringBuilder.append(" ");
         stringBuilder.append(node.id);
+    }
+
+    /**
+     * Converts CStar types to Arduino C types
+     * @param type is the CStar type
+     * @return Arduino C type
+     */
+    private String getTargetType(String type){
+        switch (type){
+            case "integer":
+            case "pin":
+                return "int";
+            case "decimal":
+                return "float";
+            case "long integer":
+                return "long";
+            case "character":
+                return "char";
+            default:
+                return type;
+        }
+
     }
 }
 
