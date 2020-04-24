@@ -69,7 +69,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = resultType;
         }
     }
-    //todo bedre navn, så den også dækker over FuncCall's parameter type checking
+    //todo bedre navn, så den også dækker over FuncCall's parameter type checking. Men er det ikke kinda en assign også?
     private String assignOperationResultType(String leftType, String rightType){
         //Checks if either type is null
         if (leftType == null || rightType == null){
@@ -559,7 +559,6 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private String dominantTypeOfArrayElements(String leftType, String rightType) {
-        //Todo: handling casting to dominant type
         if (leftType == null || rightType == null){
             return "error";
         }
