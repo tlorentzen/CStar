@@ -7,3 +7,9 @@ if(io < 100000 AND 1.4 < 4.3){
 } else {
     hh = io + 1.5;
 }
+
+pin1 = 40;
+
+integer j = pin1;
+
+pin1 = 3423123;
