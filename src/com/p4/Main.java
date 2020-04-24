@@ -64,6 +64,9 @@ public class Main {
                             AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                             astTreeVisitor.visit(0, ast);
 
+                            SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable, errors);
+                            symbolTableVisitor.visit(ast);
+
                             SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
                             semanticsVisitor.visit(ast);
 

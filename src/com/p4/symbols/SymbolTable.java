@@ -34,8 +34,8 @@ public class SymbolTable {
         }
     }
     
-    public String getCurrentScope(){
-        return currentScope.scopeName;
+    public CStarScope getCurrentScope(){
+        return currentScope;
     }
 
     public CStarScope getParent(){
@@ -91,7 +91,7 @@ public class SymbolTable {
         for (int i = 0; i < numOfSymbols; i++){
             scope.symbols.forEach((id, attributes) -> {
                 if (attributes.kind.equals("param")) {
-                    functionAttributes.addParameter(id, attributes);
+                    functionAttributes.parameters.add(id);
                 }
             });
         }

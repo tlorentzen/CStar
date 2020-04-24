@@ -295,12 +295,10 @@ public class SemanticsVisitor implements INodeVisitor {
         else {
 
             int numOfChildren = node.getChildren().size();
-
-
             //Goes through all parameters and compare each formal and actual parameter
             for (int i = 1; i < numOfChildren; i++) {
                 actualParamType = findActualParamType(node.children.get(i));
-                formalParamType = attributes.parameters.get(i - 1).getAttributes().variableType;
+                formalParamType = attributes.parameters.get(i - 1);
 
                 if (actualParamType.equals("error")) {
                     errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
@@ -380,23 +378,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ParamNode node) {
-        for(AstNode child : node.getChildren()){
-            IdNode param = (IdNode)child;
 
-            Attributes attributes = new Attributes();
-            attributes.variableType = param.type;
-            attributes.kind = "param";
-            attributes.scope = symbolTable.getCurrentScope();
-
-            symbolTable.insert(param.id, attributes);
-
-            //finds the name of the function (the scope is called funcNode-NAME)
-            String[] scopeName = attributes.scope.split("-", 2);
-
-            FunctionAttributes functionAttributes = (FunctionAttributes)symbolTable.lookup(scopeName[1]);
-
-            functionAttributes.addParameter(param.id, attributes);
-        }
         this.visitChildren(node);
     }
 

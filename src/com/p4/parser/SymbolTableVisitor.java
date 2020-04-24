@@ -4,8 +4,11 @@ import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.Attributes;
+import com.p4.symbols.CStarScope;
 import com.p4.symbols.FunctionAttributes;
 import com.p4.symbols.SymbolTable;
+
+import java.util.ArrayList;
 
 public class SymbolTableVisitor implements INodeVisitor {
 
@@ -31,27 +34,27 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(IntegerNode node) {
-        this.visitChildren(node);
+        node.type = "integer";
     }
 
     @Override
     public void visit(FloatNode node) {
-        this.visitChildren(node);
+        node.type = "decimal";
     }
 
     @Override
     public void visit(PinNode node) {
-        this.visitChildren(node);
+        node.type = "pin";
     }
 
     @Override
     public void visit(LongNode node) {
-        this.visitChildren(node);
+        node.type = "long integer";
     }
 
     @Override
     public void visit(CharNode node) {
-        this.visitChildren(node);
+        node.type = "character";
     }
 
     @Override
@@ -97,13 +100,14 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(ArrayDclNode<?> node) {
         this.visitChildren(node);
-        var ArrayNode = node.children.get(0);
-        var ArrayExprNode = node.children.get(1);
+        var arrayNode = node.children.get(0);
+        var arrayExprNode = node.children.get(1);
+        castArrayElements((ArrayExprNode) arrayExprNode, arrayNode.type);
 
-        if(!ArrayNode.type.equals(ArrayExprNode.type)){
+        if(!arrayNode.type.equals(arrayExprNode.type)){
             //Todo: float, char, and int should be decimal, character, and integer
             //Todo: handle integer array being assigned to decimal array
-            errors.addEntry(ErrorType.TYPE_ERROR,  ArrayExprNode.type.substring(0, 1).toUpperCase() + ArrayExprNode.type.substring(1) + " array assigned to " + ArrayNode.type + " array", node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR,  arrayExprNode.type.substring(0, 1).toUpperCase() + arrayExprNode.type.substring(1) + " array assigned to " + arrayNode.type + " array", node.lineNumber);
         }
 
         if(symbolTable.lookup(node.id) != null){
@@ -111,10 +115,49 @@ public class SymbolTableVisitor implements INodeVisitor {
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
             Attributes attr = new Attributes();
-            attr.variableType = ArrayNode.type;
+            attr.variableType = arrayNode.type;
             attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
+        }
+    }
+    private void castArrayElements(ArrayExprNode node, String type){
+        node.type = type;
+        boolean nodeTypeChecked = false;
+        while(!nodeTypeChecked){
+            nodeTypeChecked = true;
+            for(AstNode child : node.children){
+                if(!child.type.equals(node.type)){
+                    String dominantType = this.dominantTypeOfArrayElements(child.type, node.type);
+                    if(node.type.equals(dominantType)){
+                        child.type = node.type;
+                    } else{
+                        node.type = dominantType;
+                        nodeTypeChecked = false;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    private String dominantTypeOfArrayElements(String leftType, String rightType) {
+        if (leftType == null || rightType == null){
+            return "error";
+        }
+
+        if(leftType.equals("decimal") || rightType.equals("decimal")){
+            return "decimal";
+        } else if(leftType.equals("pin") || rightType.equals("pin")){
+            return "pin";
+        } else if(leftType.equals("long integer") || rightType.equals("long integer")){
+            return "long integer";
+        } else if(leftType.equals("integer") || rightType.equals("integer")){
+            return "integer";
+        } else if(leftType.equals("char") || rightType.equals("char")){
+            return "character";
+        } else {
+            //Should never occur
+            return "error";
         }
     }
 
@@ -217,6 +260,26 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(ParamNode node) {
+        ArrayList<String> params = new ArrayList<>();
+        CStarScope currentScope = symbolTable.getCurrentScope();
+        //finds the name of the function (the scope is called funcNode-NAME)
+        String scopeName = currentScope.getScopeName().split("-", 2)[1];
+
+        for(AstNode child : node.getChildren()){
+            IdNode param = (IdNode)child;
+
+            Attributes attributes = new Attributes();
+            attributes.variableType = param.type;
+            attributes.kind = "param";
+            attributes.scope = currentScope.getScopeName();
+
+            symbolTable.insert(param.id, attributes);
+            params.add(param.type);
+        }
+
+        FunctionAttributes functionAttributes = (FunctionAttributes)symbolTable.lookup(scopeName);
+        functionAttributes.parameters = params;
+
         this.visitChildren(node);
     }
 

@@ -19,4 +19,12 @@ public class CStarScope{
         this.scopeName = scopeName;
         this.level = level;
     }
+
+    public String getScopeName() {
+        return scopeName;
+    }
+
+    public int getLevel() {
+        return level;
+    }
 }
