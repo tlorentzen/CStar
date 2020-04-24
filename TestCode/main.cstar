@@ -4,4 +4,5 @@ void setup(){
 
 void loop(){
     pin array pa = [10, A0];
+    pin pin1 = A9;
 }
