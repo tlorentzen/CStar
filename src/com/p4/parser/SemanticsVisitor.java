@@ -322,7 +322,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
 
         if(attributes == null){
-            
+            errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
         }
         else {
 

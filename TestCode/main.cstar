@@ -13,6 +13,8 @@ void loop(){
         hh = io + 1.5;
     }
 
+    console.write(1000);
+
     pin1 = 40;
 
     integer j = pin1;
