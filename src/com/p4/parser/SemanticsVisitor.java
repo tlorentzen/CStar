@@ -139,7 +139,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private boolean compareOperationValid(int operator, String leftType, String rightType) {
-        //Todo: handle casting
+
         //forskellig for: (is isnot), (or, and), (greater, less)
 
         //Checks if either type is null
@@ -193,7 +193,11 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(ArrayExprNode node) {
         this.visitChildren(node);
-        node.type = node.children.get(0).type;
+
+    }
+
+    private void castArrayElements(ArrayExprNode node, String type){
+        node.type = type;
         boolean nodeTypeChecked = false;
         while(!nodeTypeChecked){
             nodeTypeChecked = true;
