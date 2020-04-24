@@ -2,14 +2,22 @@ integer io = 4556;
 decimal hh = 3.4233;
 pin pin1 = A1;
 
-if(io < 100000 AND 1.4 < 4.3){
-    io = io + 10;
-} else {
-    hh = io + 1.5;
+void setup(){
+
 }
 
-pin1 = 40;
+void loop(){
+    if(io < 100000 AND 1.4 < 4.3){
+        io = io + 10;
+    } else {
+        hh = io + 1.5;
+    }
 
-integer j = pin1;
+    pin1 = 40;
 
-pin1 = 3423123;
+    integer j = pin1;
+
+    pin1 = 3423123;
+
+    decimal array da = [10, 0.5, 300, 5.6];
+}

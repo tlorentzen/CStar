@@ -145,14 +145,14 @@ public class SemanticsVisitor implements INodeVisitor {
             return false;
         }
         //Checks if the operator is IS or ISNOT
-        if(operator == 4 || operator == 5){
+        if(operator == CStarParser.IS || operator == CStarParser.ISNOT){
             if(leftType.equals(rightType)){
                 return true;
             }
             else return !leftType.equals("character") && !rightType.equals("character");
         }
-        //Checks if the operator is '>' or '<'
-        else if(operator == 2 || operator == 3) {
+        //Checks if the operator is '<' or '>'
+        else if(operator == CStarParser.LESS_THAN || operator == CStarParser.GREATER_THAN) {
             return !leftType.equals("character") && !rightType.equals("character");
         }
         else {
