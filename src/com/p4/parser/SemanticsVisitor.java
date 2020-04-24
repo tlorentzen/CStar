@@ -25,11 +25,13 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //Explicit declaration scope rule
     public void visit(IdNode node){
-        if(!this.symbolTable.declaredInAccessibleScope(node.id)){
+        Attributes attributes = symbolTable.lookup(node.id);
+
+        if(attributes == null){
             errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope. The type of " + node.id + " will be null", node.lineNumber);
             //Todo: set the node.type to something to avoid null pointer exception
         } else {
-            node.type = symbolTable.lookup(node.id).variableType;
+            node.type = attributes.variableType;
         }
     }
 
