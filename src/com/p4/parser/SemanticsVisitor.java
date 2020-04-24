@@ -236,25 +236,6 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(ArrayDclNode<?> node) {
         this.visitChildren(node);
-        var ArrayNode = node.children.get(0);
-        var ArrayExprNode = node.children.get(1);
-
-        if(!ArrayNode.type.equals(ArrayExprNode.type)){
-            //Todo: float, char, and int should be decimal, character, and integer
-            //Todo: handle integer array being assigned to decimal array
-            errors.addEntry(ErrorType.TYPE_ERROR,  ArrayExprNode.type.substring(0, 1).toUpperCase() + ArrayExprNode.type.substring(1) + " array assigned to " + ArrayNode.type + " array", node.lineNumber);
-        }
-
-        if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
-            node.type = symbolTable.lookup(node.id).variableType;
-        } else {
-            Attributes attr = new Attributes();
-            attr.variableType = ArrayNode.type;
-            attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
-            node.type = attr.variableType;
-        }
     }
 
     public void visit(BlkNode node) {
@@ -262,16 +243,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(CharDclNode node) {
-        if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
-            node.type = symbolTable.lookup(node.id).variableType;
-        } else {
-            Attributes attr = new Attributes();
-            attr.variableType = "character";
-            attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
-            node.type = attr.variableType;
-        }
+        this.visitChildren(node);
     }
 
     public void visit(DivNode node){
@@ -299,16 +271,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(FloatDclNode node) {
-        if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
-            node.type = symbolTable.lookup(node.id).variableType;
-        } else {
-            Attributes attr = new Attributes();
-            attr.variableType = "decimal";
-            attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
-            node.type = attr.variableType;
-        }
+        this.visitChildren(node);
     }
 
     //todo kan kun kalde en funktion hvis funktionen er erklæret før kaldet . Skal fixes i 2. iteration
@@ -377,38 +340,15 @@ public class SemanticsVisitor implements INodeVisitor {
     }
     
     public void visit(FuncNode node) {
-        FunctionAttributes attributes = new FunctionAttributes();
-        attributes.kind = "function";
-        attributes.variableType = node.returnType;
-
-        symbolTable.insert(node.id, attributes);
-        symbolTable.addScope("FuncNode-" + node.id);
-
         this.visitChildren(node);
-
-        //todo husk at slette?
-        symbolTable.outputAvailableSymbols();
-        symbolTable.leaveScope();
     }
 
     public void visit(IntegerDclNode node) {
-        if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
-            node.type = symbolTable.lookup(node.id).variableType;
-        } else {
-            Attributes attr = new Attributes();
-            attr.variableType = "integer";
-            attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
-            node.type = attr.variableType;
-        }
+        this.visitChildren(node);
     }
 
     public void visit(IterativeNode node) {
-        symbolTable.addScope("IterativeNode-"+System.currentTimeMillis());
         this.visitChildren(node);
-        symbolTable.outputAvailableSymbols();
-        symbolTable.leaveScope();
 
         String conditionType = node.children.get(0).type;
 
@@ -418,16 +358,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(LongDclNode node) {
-        if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
-            node.type = symbolTable.lookup(node.id).variableType;
-        } else {
-            Attributes attr = new Attributes();
-            attr.variableType = "long integer";
-            attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
-            node.type = attr.variableType;
-        }
+        this.visitChildren(node);
     }
 
     public void visit(MultNode node) {

@@ -28,13 +28,13 @@ public interface INodeVisitor {
     void visit(FuncCallNode node);
     void visit(FuncNode node);
     void visit(IntegerDclNode node);
-    void visit(IterativeNode iterativeNode);
-    void visit(LongDclNode longDclNode);
-    void visit(MultNode multNode);
-    void visit(ParamNode paramNode);
-    void visit(PinDclNode pinDclNode);
-    void visit(SelectionNode selectionNode);
-    void visit(StmtNode stmtNode);
-    void visit(SubNode subNode);
+    void visit(IterativeNode node);
+    void visit(LongDclNode node);
+    void visit(MultNode node);
+    void visit(ParamNode node);
+    void visit(PinDclNode node);
+    void visit(SelectionNode node);
+    void visit(StmtNode node);
+    void visit(SubNode node);
     void visit(LogicalNode node);
 }
