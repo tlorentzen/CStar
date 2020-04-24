@@ -1,15 +1,8 @@
-integer io = 4556;
-decimal hh = 3.4233;
-pin pin1 = A1;
+void setup(){
 
-if(io < 100000 AND 1.4 < 4.3){
-    io = io + 10;
-} else {
-    hh = io + 1.5;
 }
 
-pin1 = 40;
-
-integer j = pin1;
-
-pin1 = 3423123;
+void loop(){
+    pin array pa = [10, A0];
+    pin pin1 = A9;
+}

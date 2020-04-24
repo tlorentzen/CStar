@@ -69,7 +69,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = resultType;
         }
     }
-    //todo bedre navn, så den også dækker over FuncCall's parameter type checking
+    //todo bedre navn, så den også dækker over FuncCall's parameter type checking. Men er det ikke kinda en assign også?
     private String assignOperationResultType(String leftType, String rightType){
         //Checks if either type is null
         if (leftType == null || rightType == null){
@@ -139,7 +139,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private boolean compareOperationValid(int operator, String leftType, String rightType) {
-        //Todo: handle casting
+
         //forskellig for: (is isnot), (or, and), (greater, less)
 
         //Checks if either type is null
@@ -147,14 +147,14 @@ public class SemanticsVisitor implements INodeVisitor {
             return false;
         }
         //Checks if the operator is IS or ISNOT
-        if(operator == 4 || operator == 5){
+        if(operator == CStarParser.IS || operator == CStarParser.ISNOT){
             if(leftType.equals(rightType)){
                 return true;
             }
             else return !leftType.equals("character") && !rightType.equals("character");
         }
-        //Checks if the operator is '>' or '<'
-        else if(operator == 2 || operator == 3) {
+        //Checks if the operator is '<' or '>'
+        else if(operator == CStarParser.LESS_THAN || operator == CStarParser.GREATER_THAN) {
             return !leftType.equals("character") && !rightType.equals("character");
         }
         else {
@@ -168,6 +168,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(ArrayAccessNode node) {
         String nodeType = node.children.get(1).getClass().getName();
+        Attributes arrayAttr = symbolTable.lookup(node.children.get(0).getClass().getName());
 
         switch (nodeType) {
             case "com.p4.parser.nodes.IntegerNode":
@@ -191,13 +192,17 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(ArrayExprNode node) {
         this.visitChildren(node);
-        node.type = node.children.get(0).type;
+
+    }
+
+    private void castArrayElements(ArrayExprNode node, String type){
+        node.type = type;
         boolean nodeTypeChecked = false;
         while(!nodeTypeChecked){
             nodeTypeChecked = true;
             for(AstNode child : node.children){
                 if(!child.type.equals(node.type)){
-                    String dominantType = this.dominantTypeConversion(child.type, node.type);
+                    String dominantType = this.dominantTypeOfArrayElements(child.type, node.type);
                     if(node.type.equals(dominantType)){
                         child.type = node.type;
                     } else{
@@ -234,25 +239,6 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(ArrayDclNode<?> node) {
         this.visitChildren(node);
-        var ArrayNode = node.children.get(0);
-        var ArrayExprNode = node.children.get(1);
-
-        if(!ArrayNode.type.equals(ArrayExprNode.type)){
-            //Todo: float, char, and int should be decimal, character, and integer
-            //Todo: handle integer array being assigned to decimal array
-            errors.addEntry(ErrorType.TYPE_ERROR,  ArrayExprNode.type.substring(0, 1).toUpperCase() + ArrayExprNode.type.substring(1) + " array assigned to " + ArrayNode.type + " array", node.lineNumber);
-        }
-
-        if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
-            node.type = symbolTable.lookup(node.id).variableType;
-        } else {
-            Attributes attr = new Attributes();
-            attr.variableType = ArrayNode.type;
-            attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
-            node.type = attr.variableType;
-        }
     }
 
     public void visit(BlkNode node) {
@@ -260,16 +246,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(CharDclNode node) {
-        if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
-            node.type = symbolTable.lookup(node.id).variableType;
-        } else {
-            Attributes attr = new Attributes();
-            attr.variableType = "character";
-            attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
-            node.type = attr.variableType;
-        }
+        this.visitChildren(node);
     }
 
     public void visit(DivNode node){
@@ -297,16 +274,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(FloatDclNode node) {
-        if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
-            node.type = symbolTable.lookup(node.id).variableType;
-        } else {
-            Attributes attr = new Attributes();
-            attr.variableType = "decimal";
-            attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
-            node.type = attr.variableType;
-        }
+        this.visitChildren(node);
     }
 
     //todo kan kun kalde en funktion hvis funktionen er erklæret før kaldet . Skal fixes i 2. iteration
@@ -319,23 +287,31 @@ public class SemanticsVisitor implements INodeVisitor {
         String functionName = ((IdNode)node.children.get(0)).id;
         FunctionAttributes attributes = symbolTable.lookupParam("FuncNode-" + functionName, functionName);
 
-        int numOfChildren = node.getChildren().size();
 
-        //Goes through all parameters and compare each formal and actual parameter
-        for (int i = 1; i < numOfChildren; i++) {
-            actualParamType = findActualParamType(node.children.get(i));
-            formalParamType = attributes.parameters.get(i - 1).getAttributes().variableType;
+        if(attributes == null){
+            errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
+        }
+        else {
 
-            if (actualParamType.equals("error")){
-                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
-            }
-            // Checks if types are the same or if type widening is possible
-            else {
-                String resultType = assignOperationResultType(formalParamType, actualParamType);
+            int numOfChildren = node.getChildren().size();
 
-                if (resultType.equals("error")) {
-                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
+
+            //Goes through all parameters and compare each formal and actual parameter
+            for (int i = 1; i < numOfChildren; i++) {
+                actualParamType = findActualParamType(node.children.get(i));
+                formalParamType = attributes.parameters.get(i - 1).getAttributes().variableType;
+
+                if (actualParamType.equals("error")) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
+                }
+                // Checks if types are the same or if type widening is possible
+                else {
+                    String resultType = assignOperationResultType(formalParamType, actualParamType);
+
+                    if (resultType.equals("error")) {
+                        errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
                             + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
+                    }
                 }
             }
         }
@@ -367,38 +343,15 @@ public class SemanticsVisitor implements INodeVisitor {
     }
     
     public void visit(FuncNode node) {
-        FunctionAttributes attributes = new FunctionAttributes();
-        attributes.kind = "function";
-        attributes.variableType = node.returnType;
-
-        symbolTable.insert(node.id, attributes);
-        symbolTable.addScope("FuncNode-" + node.id);
-
         this.visitChildren(node);
-
-        //todo husk at slette?
-        symbolTable.outputAvailableSymbols();
-        symbolTable.leaveScope();
     }
 
     public void visit(IntegerDclNode node) {
-        if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
-            node.type = symbolTable.lookup(node.id).variableType;
-        } else {
-            Attributes attr = new Attributes();
-            attr.variableType = "integer";
-            attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
-            node.type = attr.variableType;
-        }
+        this.visitChildren(node);
     }
 
     public void visit(IterativeNode node) {
-        symbolTable.addScope("IterativeNode-"+System.currentTimeMillis());
         this.visitChildren(node);
-        symbolTable.outputAvailableSymbols();
-        symbolTable.leaveScope();
 
         String conditionType = node.children.get(0).type;
 
@@ -408,16 +361,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(LongDclNode node) {
-        if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
-            node.type = symbolTable.lookup(node.id).variableType;
-        } else {
-            Attributes attr = new Attributes();
-            attr.variableType = "long integer";
-            attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
-            node.type = attr.variableType;
-        }
+        this.visitChildren(node);
     }
 
     public void visit(MultNode node) {
@@ -540,18 +484,24 @@ public class SemanticsVisitor implements INodeVisitor {
         //Skal bruges, hvis vi implementerer negation som en node (lige som i bogen)
     }
 
-    private String dominantTypeConversion(String leftType, String rightType) {
-        //Todo: handling casting to dominant type
+    private String dominantTypeOfArrayElements(String leftType, String rightType) {
         if (leftType == null || rightType == null){
             return "error";
         }
 
-        if(leftType.equals("decimal")){
+        if(leftType.equals("decimal") || rightType.equals("decimal")){
             return "decimal";
-        } else if(rightType.equals("decimal")){
-            return "decimal";
-        } else{
-            return "decimal";
+        } else if(leftType.equals("pin") || rightType.equals("pin")){
+            return "pin";
+        } else if(leftType.equals("long integer") || rightType.equals("long integer")){
+            return "long integer";
+        } else if(leftType.equals("integer") || rightType.equals("integer")){
+            return "integer";
+        } else if(leftType.equals("char") || rightType.equals("char")){
+            return "character";
+        } else {
+            //Should never occur
+            return "error";
         }
     }
 }

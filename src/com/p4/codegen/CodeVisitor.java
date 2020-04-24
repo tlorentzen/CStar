@@ -114,7 +114,7 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(PinNode node) {
-        stringBuilder.append(node.value);
+        stringBuilder.append(convertIntToPinValue(node));
     }
 
     /**
@@ -170,19 +170,18 @@ public class CodeVisitor implements INodeVisitor{
      */
     private void pinValueOnLeftSide(AstNode leftChild, AstNode rightChild) {
 
-
         //Handles assigning a value to a pin at declaration
         if(leftChild instanceof PinDclNode){
             PinDclNode pinDclNode = (PinDclNode) leftChild;
 
             //Converts the value of the pin node to analog and digital pin numbers
-            String pinNum = (rightChild instanceof PinNode ? "A" + ((((PinNode) rightChild).value * -1) - 1) : ((IntegerNode) rightChild).value.toString());
+            String pinNum = convertIntToPinValue(rightChild);
 
             //Declares the pin number as an int
             stringBuilder.append("int ");
             stringBuilder.append(pinDclNode.id);
             stringBuilder.append(" = ");
-            stringBuilder.append(pinNum);
+            visitChild(rightChild);
             stringBuilder.append(";\n");
 
             //Sets the pin mode of the pin
@@ -213,6 +212,10 @@ public class CodeVisitor implements INodeVisitor{
             this.visitChild(rightChild);
             stringBuilder.append(");\n");
         }
+    }
+
+    private String convertIntToPinValue(AstNode node) {
+        return (node instanceof PinNode ? "A" + ((((PinNode) node).value * -1) - 1) : ((IntegerNode) node).value.toString());
     }
 
     /**

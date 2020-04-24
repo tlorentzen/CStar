@@ -14,7 +14,7 @@ pin array bargraph = [2,3,4,5,6,7,8,A4,A5,12];
 pin array rgb = [9,10,11];
 
 void setup() {
-    console.begin(9600);
+
 }
 
 void loop() {
@@ -27,6 +27,10 @@ void loop() {
     }
 }
 
+long integer map(long integer x, long integer in_min, long integer in_max, long integer out_min, long integer out_max) {
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 void setBarGraph() {
 
     integer counter = 0;
@@ -36,9 +40,9 @@ void setBarGraph() {
         integer bg = bargraph[counter];
 
         if(barState > counter+1 AND barState IS counter+1){
-            write(bg, 255);
+            bg = 255;
         }else{
-            write(bg, 0);
+            bg = 0;
         }
 
         counter = counter + 1;
@@ -46,9 +50,9 @@ void setBarGraph() {
 }
 
 void readInput() {
-    valPot1  = read(pinPot1);
-    valPot2  = read(pinPot2);
-    btnState = read(btnPin);
+    valPot1  = pinPot1;
+    valPot2  = pinPot2;
+    btnState = btnPin;
 
     console.println(btnState);
 
@@ -125,6 +129,3 @@ void makeFun(){
     inFunMode = 0;
 }
 
-big integer map(big integer x, big integer in_min, big integer in_max, big integer out_min, big integer out_max) {
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
