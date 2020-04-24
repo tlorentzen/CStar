@@ -318,23 +318,31 @@ public class SemanticsVisitor implements INodeVisitor {
         String functionName = ((IdNode)node.children.get(0)).id;
         FunctionAttributes attributes = symbolTable.lookupParam("FuncNode-" + functionName, functionName);
 
-        int numOfChildren = node.getChildren().size();
 
-        //Goes through all parameters and compare each formal and actual parameter
-        for (int i = 1; i < numOfChildren; i++) {
-            actualParamType = findActualParamType(node.children.get(i));
-            formalParamType = attributes.parameters.get(i - 1).getAttributes().variableType;
+        if(attributes == null){
+            
+        }
+        else {
 
-            if (actualParamType.equals("error")){
-                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
-            }
-            // Checks if types are the same or if type widening is possible
-            else {
-                String resultType = assignOperationResultType(formalParamType, actualParamType);
+            int numOfChildren = node.getChildren().size();
 
-                if (resultType.equals("error")) {
-                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
+
+            //Goes through all parameters and compare each formal and actual parameter
+            for (int i = 1; i < numOfChildren; i++) {
+                actualParamType = findActualParamType(node.children.get(i));
+                formalParamType = attributes.parameters.get(i - 1).getAttributes().variableType;
+
+                if (actualParamType.equals("error")) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
+                }
+                // Checks if types are the same or if type widening is possible
+                else {
+                    String resultType = assignOperationResultType(formalParamType, actualParamType);
+
+                    if (resultType.equals("error")) {
+                        errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
                             + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
+                    }
                 }
             }
         }

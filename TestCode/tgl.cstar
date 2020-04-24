@@ -36,9 +36,9 @@ void setBarGraph() {
         integer bg = bargraph[counter];
 
         if(barState > counter+1 AND barState IS counter+1){
-            write(bg, 255);
+            bg = 255;
         }else{
-            write(bg, 0);
+            bg = 0;
         }
 
         counter = counter + 1;
@@ -125,6 +125,6 @@ void makeFun(){
     inFunMode = 0;
 }
 
-big integer map(big integer x, big integer in_min, big integer in_max, big integer out_min, big integer out_max) {
+long integer map(long integer x, long integer in_min, long integer in_max, long integer out_min, long integer out_max) {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }

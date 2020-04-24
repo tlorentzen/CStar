@@ -66,7 +66,7 @@ public class SymbolTable {
             }
             scope = globalScope.children.get(index);
             index++;
-        } while (scope != null);
+        } while (scope != null && index < globalScope.children.size());
 
         return null;
     }
