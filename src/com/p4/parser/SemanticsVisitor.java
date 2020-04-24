@@ -514,7 +514,8 @@ public class SemanticsVisitor implements INodeVisitor {
             return "error";
         }
         //First semantic rule
-        if(leftType.equals(rightType)){
+        if(leftType.equals(rightType) && (leftType.equals("integer") ||
+            leftType.equals("decimal") || leftType.equals("long integer"))) {
             return leftType;
         }
         //Second semantic rule
