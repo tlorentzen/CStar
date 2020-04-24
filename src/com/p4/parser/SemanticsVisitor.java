@@ -169,6 +169,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(ArrayAccessNode node) {
         System.out.println(node.type);
         String nodeType = node.children.get(1).getClass().getName();
+        Attributes arrayAttr = symbolTable.lookup(node.children.get(0).getClass().getName());
 
         switch (nodeType) {
             case "com.p4.parser.nodes.IntegerNode":

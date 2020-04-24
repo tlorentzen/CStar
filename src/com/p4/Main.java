@@ -79,7 +79,6 @@ public class Main {
                             } else{
                                 //Todo: should we do something
                             }
-
                         }
                     }catch (IOException e){
                         System.out.println(e);
