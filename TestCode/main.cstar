@@ -1,7 +1,1 @@
-void setup(){
-
-}
-
-void loop(){
-    pin array pa = [10, A0];
-}
+pin array pins = [1,2,3];
