@@ -1,7 +1,5 @@
 package com.p4.symbols;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class SymbolTable {
@@ -56,23 +54,30 @@ public class SymbolTable {
        return null;
     }
 
-    public CStarScope lookupFuncScope(String scopeName){
-        int index = 0;
-        CStarScope scope = globalScope;
+    public CStarScope lookupScope(String scopeName){
+        return this.findScope(scopeName, globalScope);
+    }
 
-        do {
-            if (scope.scopeName.equals(scopeName)) {
-                return scope;
-            }
-            scope = globalScope.children.get(index);
-            index++;
-        } while (scope != null && index < globalScope.children.size());
+    private CStarScope findScope(String scopeName, CStarScope current_scope){
 
-        return null;
+        if(current_scope.scopeName.equals(scopeName)){
+            return current_scope;
+        }
+
+        CStarScope scope = null;
+
+        for (CStarScope childScope : current_scope.children) {
+            scope = this.findScope(scopeName, childScope);
+
+            if(scope != null)
+                break;
+        }
+
+        return scope;
     }
 
     public FunctionAttributes lookupParam(String scopeName, String funcName){
-        CStarScope scope = lookupFuncScope(scopeName);
+        CStarScope scope = lookupScope(scopeName);
 
         if (scope == null){
             return null;
