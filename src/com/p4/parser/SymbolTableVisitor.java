@@ -101,14 +101,6 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(ArrayDclNode<?> node) {
         this.visitChildren(node);
         var arrayNode = node.children.get(0);
-        var arrayExprNode = node.children.get(1);
-        castArrayElements((ArrayExprNode) arrayExprNode, arrayNode.type);
-
-        if(!arrayNode.type.equals(arrayExprNode.type)){
-            //Todo: float, char, and int should be decimal, character, and integer
-            //Todo: handle integer array being assigned to decimal array
-            errors.addEntry(ErrorType.TYPE_ERROR,  arrayExprNode.type.substring(0, 1).toUpperCase() + arrayExprNode.type.substring(1) + " array assigned to " + arrayNode.type + " array", node.lineNumber);
-        }
 
         if(symbolTable.lookup(node.id) != null){
             errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
@@ -119,45 +111,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
-        }
-    }
-    private void castArrayElements(ArrayExprNode node, String type){
-        node.type = type;
-        boolean nodeTypeChecked = false;
-        while(!nodeTypeChecked){
-            nodeTypeChecked = true;
-            for(AstNode child : node.children){
-                if(!child.type.equals(node.type)){
-                    String dominantType = this.dominantTypeOfArrayElements(child.type, node.type);
-                    if(node.type.equals(dominantType)){
-                        child.type = node.type;
-                    } else{
-                        node.type = dominantType;
-                        nodeTypeChecked = false;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    private String dominantTypeOfArrayElements(String leftType, String rightType) {
-        if (leftType == null || rightType == null){
-            return "error";
-        }
-
-        if(leftType.equals("decimal") || rightType.equals("decimal")){
-            return "decimal";
-        } else if(leftType.equals("pin") || rightType.equals("pin")){
-            return "pin";
-        } else if(leftType.equals("long integer") || rightType.equals("long integer")){
-            return "long integer";
-        } else if(leftType.equals("integer") || rightType.equals("integer")){
-            return "integer";
-        } else if(leftType.equals("char") || rightType.equals("char")){
-            return "character";
-        } else {
-            //Should never occur
-            return "error";
+            int i = 0;
         }
     }
 
