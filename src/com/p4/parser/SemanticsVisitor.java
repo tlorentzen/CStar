@@ -353,9 +353,9 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(IterativeNode node) {
-        //Todo: Fetch correct scope
+        this.symbolTable.enterScope(node.getNodeHash());
         this.visitChildren(node);
-        //Todo: Leave scope again
+        this.symbolTable.leaveScope();
 
         String conditionType = node.children.get(0).type;
 
@@ -390,9 +390,9 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(PinDclNode node) { this.visitChildren(node); }
 
     public void visit(SelectionNode node) {
-        //Todo: Fetch correct scope
+        this.symbolTable.enterScope(node.getNodeHash());
         this.visitChildren(node);
-        //Todo: Leave scope again
+        this.symbolTable.leaveScope();
 
         String conditionType = node.children.get(0).type;
         if(!(isCondOkType(conditionType))){
