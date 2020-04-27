@@ -341,7 +341,9 @@ public class SemanticsVisitor implements INodeVisitor {
     }
     
     public void visit(FuncNode node) {
+        //Todo: Fetch correct scope
         this.visitChildren(node);
+        //Todo: Leave scope again
     }
 
     public void visit(IntegerDclNode node) {
@@ -349,7 +351,9 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(IterativeNode node) {
+        //Todo: Fetch correct scope
         this.visitChildren(node);
+        //Todo: Leave scope again
 
         String conditionType = node.children.get(0).type;
 
@@ -384,10 +388,9 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(PinDclNode node) { this.visitChildren(node); }
 
     public void visit(SelectionNode node) {
-        symbolTable.addScope("SelectionNode-"+System.currentTimeMillis());
+        //Todo: Fetch correct scope
         this.visitChildren(node);
-        symbolTable.outputAvailableSymbols();
-        symbolTable.leaveScope();
+        //Todo: Leave scope again
 
         String conditionType = node.children.get(0).type;
         if(!(isCondOkType(conditionType))){

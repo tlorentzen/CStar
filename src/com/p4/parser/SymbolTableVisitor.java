@@ -252,7 +252,10 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(SelectionNode node) {
+        symbolTable.addScope("SelectionNode-" + System.currentTimeMillis());
         this.visitChildren(node);
+        symbolTable.outputAvailableSymbols();
+        symbolTable.leaveScope();
     }
 
     @Override
