@@ -277,7 +277,6 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
-    //todo kan kun kalde en funktion hvis funktionen er erklæret før kaldet . Skal fixes i 2. iteration
     //todo widening virker ikke helt endnu. fix det.
     //If no errors occur, then the function call will be seen as well typed
     public void visit(FuncCallNode node) {
@@ -292,7 +291,7 @@ public class SemanticsVisitor implements INodeVisitor {
             errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
         }
         else {
-
+            this.visitChildren(node);
             int numOfChildren = node.getChildren().size();
             //Goes through all parameters and compare each formal and actual parameter
             for (int i = 1; i < numOfChildren; i++) {
@@ -309,6 +308,10 @@ public class SemanticsVisitor implements INodeVisitor {
                     if (resultType.equals("error")) {
                         errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
                             + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
+                    } else if(resultType.equals(formalParamType)) {
+                        node.children.get(i).type = formalParamType; //Todo: might need fix
+                    } else{
+                        //Todo: handled casting not possible
                     }
                 }
             }

@@ -164,7 +164,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         attributes.variableType = node.returnType;
 
         symbolTable.insert(node.id, attributes);
-        symbolTable.addScope("FuncNode-" + node.id);
+        symbolTable.addScope(node.getNodeHash());
 
         this.visitChildren(node);
 
@@ -187,7 +187,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(IterativeNode node) {
-        symbolTable.addScope("IterativeNode-"+System.currentTimeMillis()); //Todo: handle different more unique way
+        symbolTable.addScope(node.getNodeHash());
         this.visitChildren(node);
         symbolTable.leaveScope();
     }
@@ -252,7 +252,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(SelectionNode node) {
-        symbolTable.addScope("SelectionNode-" + System.currentTimeMillis());
+        symbolTable.addScope(node.getNodeHash());
         this.visitChildren(node);
         symbolTable.outputAvailableSymbols();
         symbolTable.leaveScope();

@@ -17,4 +17,8 @@ public abstract class AstNode {
     }
     public abstract void accept(INodeVisitor visitor);
 
+    public String getNodeHash(){
+        return String.valueOf(this.hashCode());
+    }
+
 }

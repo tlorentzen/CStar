@@ -6,4 +6,9 @@ public class IterativeNode extends AstNode{
     public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }
+
+    @Override
+    public String getNodeHash() {
+        return "IterativeNode-" + super.getNodeHash();
+    }
 }

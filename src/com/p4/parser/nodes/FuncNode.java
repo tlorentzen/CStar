@@ -23,4 +23,9 @@ public class FuncNode extends AstNode{
     public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }
+
+    @Override
+    public String getNodeHash() {
+        return "FuncNode-" + super.getNodeHash();
+    }
 }
