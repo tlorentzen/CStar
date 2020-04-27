@@ -4,7 +4,6 @@ import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.Attributes;
-import com.p4.symbols.CStarScope;
 import com.p4.symbols.FunctionAttributes;
 import com.p4.symbols.SymbolTable;
 
@@ -214,9 +213,8 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(ParamNode node) {
         ArrayList<String> params = new ArrayList<>();
-        CStarScope currentScope = symbolTable.getCurrentScope();
-        //finds the name of the function (the scope is called funcNode-NAME)
-        String scopeName = currentScope.getScopeName().split("-", 2)[1];
+        String scopeName = symbolTable.getCurrentScope().getScopeName();
+        System.out.println(scopeName);
 
         for(AstNode child : node.getChildren()){
             IdNode param = (IdNode)child;
@@ -224,14 +222,15 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attributes = new Attributes();
             attributes.variableType = param.type;
             attributes.kind = "param";
-            attributes.scope = currentScope.getScopeName();
+            attributes.scope = scopeName;
 
             symbolTable.insert(param.id, attributes);
             params.add(param.type);
         }
 
-        FunctionAttributes functionAttributes = (FunctionAttributes)symbolTable.lookup(scopeName);
+        FunctionAttributes functionAttributes = new FunctionAttributes();
         functionAttributes.parameters = params;
+        symbolTable.insert(scopeName, functionAttributes);
 
         this.visitChildren(node);
     }
