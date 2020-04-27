@@ -230,7 +230,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         FunctionAttributes functionAttributes = new FunctionAttributes();
         functionAttributes.parameters = params;
-        symbolTable.insert(scopeName, functionAttributes);
+        symbolTable.insert("funcAttr", functionAttributes);
 
         this.visitChildren(node);
     }

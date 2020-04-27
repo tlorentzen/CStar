@@ -282,10 +282,13 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(FuncCallNode node) {
         String actualParamType;
         String formalParamType;
+        FunctionAttributes attributes = null;
+
         // Gets the function declaration
         String functionName = ((IdNode)node.children.get(0)).id;
-        FunctionAttributes attributes = symbolTable.lookupParam(node.getNodeHash(), functionName);
-
+        if(symbolTable.enterScope("FuncNode-" + functionName)){
+            attributes = symbolTable.lookupParam("FuncNode-" + functionName, functionName);
+        }
 
         if(attributes == null){
             errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);

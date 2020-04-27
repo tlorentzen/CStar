@@ -26,6 +26,6 @@ public class FuncNode extends AstNode{
 
     @Override
     public String getNodeHash() {
-        return "FuncNode-" + super.getNodeHash();
+        return "FuncNode-" + id;
     }
 }
