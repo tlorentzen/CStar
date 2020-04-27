@@ -111,7 +111,6 @@ public class SymbolTableVisitor implements INodeVisitor {
             attr.kind = "dcl";
             symbolTable.insert(node.id, attr);
             node.type = attr.variableType;
-            int i = 0;
         }
     }
 
