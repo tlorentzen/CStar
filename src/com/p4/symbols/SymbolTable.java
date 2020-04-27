@@ -58,6 +58,17 @@ public class SymbolTable {
         return this.findScope(scopeName, globalScope);
     }
 
+    public boolean enterScope(String scopeName){
+        CStarScope scope = this.findScope(scopeName, globalScope);
+
+        if(scope != null){
+            currentScope = scope;
+            return true;
+        }
+
+        return false;
+    }
+
     private CStarScope findScope(String scopeName, CStarScope current_scope){
 
         if(current_scope.scopeName.equals(scopeName)){
