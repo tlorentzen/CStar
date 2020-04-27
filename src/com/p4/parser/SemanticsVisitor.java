@@ -381,18 +381,7 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
-    public void visit(PinDclNode node) {
-        if(symbolTable.lookup(node.id) != null){
-            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
-            node.type = symbolTable.lookup(node.id).variableType;
-        } else {
-            Attributes attr = new Attributes();
-            attr.variableType = "pin";
-            attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
-            node.type = attr.variableType;
-        }
-    }
+    public void visit(PinDclNode node) { this.visitChildren(node); }
 
     public void visit(SelectionNode node) {
         symbolTable.addScope("SelectionNode-"+System.currentTimeMillis());

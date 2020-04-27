@@ -239,7 +239,16 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(PinDclNode node) {
-        this.visitChildren(node);
+        if(symbolTable.lookup(node.id) != null){
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
+            node.type = symbolTable.lookup(node.id).variableType;
+        } else {
+            Attributes attr = new Attributes();
+            attr.variableType = "pin";
+            attr.kind = "dcl";
+            symbolTable.insert(node.id, attr);
+            node.type = attr.variableType;
+        }
     }
 
     @Override
