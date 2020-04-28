@@ -162,7 +162,8 @@ public class SymbolTable {
             }
         } while((scope = scope.parent) != null);
     }
-    public void outputSymbolTable(CStarScope scope){
+    public void outputSymbolTable(){
+            CStarScope scope = globalScope;
             CStarScope oldScope = scope;
             do{
                 for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
