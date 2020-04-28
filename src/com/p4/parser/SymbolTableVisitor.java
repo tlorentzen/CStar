@@ -108,7 +108,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = arrayNode.type;
             attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
             node.type = attr.variableType;
         }
     }
@@ -127,7 +127,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = "character";
             attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
             node.type = attr.variableType;
         }
     }
@@ -146,7 +146,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = "decimal";
             attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
             node.type = attr.variableType;
         }
     }
@@ -164,7 +164,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         attributes.kind = "function";
         attributes.variableType = node.returnType;
 
-        symbolTable.insert(node.id, attributes);
+        symbolTable.insertSymbol(node.id, attributes);
         symbolTable.addScope(node.getNodeHash());
 
         this.visitChildren(node);
@@ -181,7 +181,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = "integer";
             attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
             node.type = attr.variableType;
         }
     }
@@ -202,7 +202,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = "long integer";
             attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
             node.type = attr.variableType;
         }
     }
@@ -226,13 +226,13 @@ public class SymbolTableVisitor implements INodeVisitor {
             attributes.kind = "param";
             attributes.scope = scopeName;
 
-            symbolTable.insert(param.id, attributes);
+            symbolTable.insertSymbol(param.id, attributes);
             params.add(param.type);
         }
 
         FunctionAttributes functionAttributes = new FunctionAttributes();
         functionAttributes.parameters = params;
-        symbolTable.insert("funcAttr", functionAttributes);
+        symbolTable.insertSymbol("funcAttr", functionAttributes);
 
         this.visitChildren(node);
     }
@@ -246,7 +246,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = "pin";
             attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
             node.type = attr.variableType;
         }
     }

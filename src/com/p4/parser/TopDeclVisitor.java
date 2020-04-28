@@ -20,7 +20,7 @@ public class TopDeclVisitor extends SemanticsVisitor {
             var attr = new Attributes();
             attr.variableType = node.type;
             attr.kind = node.getClass().getName();
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
         }
     }
 }
