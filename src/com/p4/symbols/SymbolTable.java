@@ -8,10 +8,9 @@ public class SymbolTable {
     private CStarScope currentScope;
     final private CStarScope globalScope;
     final private Stack<CStarScope> scopeStack = new Stack<>();
-    int level = 0;
 
     public SymbolTable(){
-        globalScope = new CStarScope("global", 0);
+        globalScope = new CStarScope("global");
         currentScope = globalScope;
     }
 
@@ -21,12 +20,11 @@ public class SymbolTable {
         if(lookupScope(scopeName) != null){
             //Todo: handle trying to add existing scope
         } else {
-            CStarScope scope = new CStarScope(scopeName, level + 1);
+            CStarScope scope = new CStarScope(scopeName);
             scope.parent = currentScope;
             currentScope.children.add(scope);
             scopeStack.push(currentScope);
             currentScope = scope;
-            level++;
         }
     }
 
@@ -44,7 +42,6 @@ public class SymbolTable {
             }
 
             currentScope = scopeStack.empty() ? globalScope : scopeStack.pop();
-            level--;
         }else{
             //Todo: handle already in global scope, hence leave is called to many times
         }
@@ -146,18 +143,21 @@ public class SymbolTable {
             }
         } while((scope = scope.parent) != null);
     }
-    public void outputSymbolTable(CStarScope scope){
-            CStarScope oldScope = scope;
-            for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
-                String key = entry.getKey();
-                Attributes value = entry.getValue();
 
-                System.out.printf("Current scope: " + scope.scopeName + " Symbol: %10s:%s \n", key, value.variableType);
-            }
-            scope = oldScope;
-            for (CStarScope child : scope.children) {
-                outputSymbolTable(child);
-            }
+    public void outputSymbolTable(CStarScope scope){
+        CStarScope oldScope = scope;
+
+        for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
+            String key = entry.getKey();
+            Attributes value = entry.getValue();
+
+            System.out.printf("Current scope: " + scope.scopeName + " Symbol: %10s:%s \n", key, value.variableType);
+        }
+        
+        scope = oldScope;
+        for (CStarScope child : scope.children) {
+            outputSymbolTable(child);
+        }
     }
 }
 

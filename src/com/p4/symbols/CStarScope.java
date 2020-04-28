@@ -13,18 +13,12 @@ public class CStarScope{
 
     //Nested scopes within the current scope
     List<CStarScope> children = new ArrayList<>();
-    int level;
 
-    public CStarScope(String scopeName, int level){
+    public CStarScope(String scopeName){
         this.scopeName = scopeName;
-        this.level = level;
     }
 
     public String getScopeName() {
         return scopeName;
-    }
-
-    public int getLevel() {
-        return level;
     }
 }
