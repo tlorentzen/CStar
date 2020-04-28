@@ -65,6 +65,7 @@ public class SymbolTable {
         CStarScope scope = this.findScope(scopeName, globalScope);
 
         if(scope != null){
+            scopeStack.push(currentScope);
             currentScope = scope;
             return true;
         }
@@ -119,8 +120,12 @@ public class SymbolTable {
         return this.currentScope.symbols.containsKey(symbol);
     }
 
-    public void insert(String symbol, Attributes attributes){
+    public void insertSymbol(String symbol, Attributes attributes){
         currentScope.symbols.put(symbol, attributes);
+    }
+
+    public void insertParam(String id, String type){
+        currentScope.params.put(id, type);
     }
 
     public void outputAvailableSymbols(){
