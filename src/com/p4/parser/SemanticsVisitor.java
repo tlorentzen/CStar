@@ -72,18 +72,22 @@ public class SemanticsVisitor implements INodeVisitor {
                 errors.addEntry(ErrorType.VOID_ASSIGN, "Cannot assign function '" + ((IdNode) funcCallNode.children.get(0)).id + "' to " + node.children.get(0).type + " because it returns void", node.lineNumber);
             }
             else{
-                rightType= ((IdNode)funcCallNode.children.get(0)).type;
+                rightType = ((IdNode)funcCallNode.children.get(0)).type;
             }
         }
         else{
             rightType= node.children.get(1).type;
-            String resultType = assignOperationResultType(leftType, rightType);
-            if (resultType.equals("error")){
-                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
-            }
-            else{
-                node.type = resultType;
-            }
+        }
+        String resultType = "";
+        if(!rightType.equals("")){
+             resultType = assignOperationResultType(leftType, rightType);
+
+        }
+        if (resultType.equals("error")){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
+        }
+        else{
+            node.type = resultType;
         }
     }
     //todo bedre navn, så den også dækker over FuncCall's parameter type checking. Men er det ikke kinda en assign også?
