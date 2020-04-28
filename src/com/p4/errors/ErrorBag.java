@@ -1,8 +1,6 @@
 package com.p4.errors;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ErrorBag {
@@ -28,10 +26,24 @@ public class ErrorBag {
     }
 
     public void addEntry(ErrorType type, String message, int lineNumber, int column, List<String> lines){
-        this.errors.add(new Item(type, message, lineNumber, column, lines));
+        boolean shouldBeAdded = true;
 
-        if(type.toString().startsWith("E")){
-            hasErrors = true;
+        if(type == ErrorType.UNDECLARED_FUNCTION_WARNING){
+            String calledFunction = message.split("'", 3)[1];
+
+            for (Item error: errors) {
+                if(error.type == ErrorType.UNDECLARED_FUNCTION_WARNING && calledFunction.equals(error.message.split("'", 3)[1])){
+                    shouldBeAdded = false;
+                    //Todo: possibly add additional line numbers
+                    break;
+                }
+            }
+        } if(shouldBeAdded){
+            this.errors.add(new Item(type, message, lineNumber, column, lines));
+
+            if(type.toString().startsWith("E")){
+                hasErrors = true;
+            }
         }
     }
 
