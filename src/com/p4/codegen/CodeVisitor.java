@@ -74,6 +74,26 @@ public class CodeVisitor implements INodeVisitor{
 
     //todo implement
     @Override
+    public void visit(NumberNode node){}
+
+    //todo implement
+    @Override
+    public void visit(BooleanNode node){}
+
+    //todo implement
+    @Override
+    public void visit(BooleanDclNode node){}
+
+    //todo implement
+    @Override
+    public void visit(SmallNode node){}
+
+    //todo implement
+    @Override
+    public void visit(SmallDclNode node){}
+
+    //todo implement
+    @Override
     public void visit(StringNode node){}
 
     @Override

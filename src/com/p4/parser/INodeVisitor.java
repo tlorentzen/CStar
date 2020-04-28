@@ -40,4 +40,9 @@ public interface INodeVisitor {
     void visit(PrintNode node);
     void visit(StringNode node);
     void visit(ModNode node);
+    void visit(BooleanNode node);
+    void visit(SmallNode node);
+    void visit(BooleanDclNode node);
+    void visit(SmallDclNode node);
+    void visit(NumberNode node);
 }

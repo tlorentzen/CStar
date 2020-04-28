@@ -107,35 +107,11 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBlk(CStarParser.BlkContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CStarParser#prog_func}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProg_func(CStarParser.Prog_funcContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link CStarParser#print}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitPrint(CStarParser.PrintContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CStarParser#pin_write}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPin_write(CStarParser.Pin_writeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CStarParser#pin_read}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPin_read(CStarParser.Pin_readContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CStarParser#sleep}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSleep(CStarParser.SleepContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CStarParser#func}.
 	 * @param ctx the parse tree
@@ -172,10 +148,4 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVal(CStarParser.ValContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CStarParser#number}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNumber(CStarParser.NumberContext ctx);
 }

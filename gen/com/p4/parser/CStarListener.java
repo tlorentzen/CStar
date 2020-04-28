@@ -168,16 +168,6 @@ public interface CStarListener extends ParseTreeListener {
 	 */
 	void exitBlk(CStarParser.BlkContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CStarParser#prog_func}.
-	 * @param ctx the parse tree
-	 */
-	void enterProg_func(CStarParser.Prog_funcContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CStarParser#prog_func}.
-	 * @param ctx the parse tree
-	 */
-	void exitProg_func(CStarParser.Prog_funcContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link CStarParser#print}.
 	 * @param ctx the parse tree
 	 */
@@ -187,36 +177,6 @@ public interface CStarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitPrint(CStarParser.PrintContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CStarParser#pin_write}.
-	 * @param ctx the parse tree
-	 */
-	void enterPin_write(CStarParser.Pin_writeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CStarParser#pin_write}.
-	 * @param ctx the parse tree
-	 */
-	void exitPin_write(CStarParser.Pin_writeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CStarParser#pin_read}.
-	 * @param ctx the parse tree
-	 */
-	void enterPin_read(CStarParser.Pin_readContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CStarParser#pin_read}.
-	 * @param ctx the parse tree
-	 */
-	void exitPin_read(CStarParser.Pin_readContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CStarParser#sleep}.
-	 * @param ctx the parse tree
-	 */
-	void enterSleep(CStarParser.SleepContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CStarParser#sleep}.
-	 * @param ctx the parse tree
-	 */
-	void exitSleep(CStarParser.SleepContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CStarParser#func}.
 	 * @param ctx the parse tree
@@ -277,14 +237,4 @@ public interface CStarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVal(CStarParser.ValContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CStarParser#number}.
-	 * @param ctx the parse tree
-	 */
-	void enterNumber(CStarParser.NumberContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CStarParser#number}.
-	 * @param ctx the parse tree
-	 */
-	void exitNumber(CStarParser.NumberContext ctx);
 }

@@ -57,6 +57,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 case "character":
                     node = new CharDclNode(ctx.ID().toString());
                     break;
+                case "boolean":
+                    node = new BooleanDclNode(ctx.ID().toString());
+                    break;
+                case "small integer":
+                    node = new SmallDclNode(ctx.ID().toString());
+                    break;
                 default:
                     return null;
             }
@@ -99,6 +105,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 case "character":
                     dclNode = new CharDclNode(id);
                     break;
+                case "boolean":
+                    dclNode = new BooleanDclNode(id);
+                    break;
+                case "small integer":
+                    dclNode = new SmallDclNode(id);
+                    break;
                 default:
                     return null;
             }
@@ -107,6 +119,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             dclNode.lineNumber = ctx.start.getLine();
             assignNode.children.add(dclNode);
             assignNode.children.add(exprNode);
+
             return assignNode;
         } else if (ctx.getChild(0).getClass().toString().equals("class com.p4.parser.CStarParser$Array_accessContext")) {
             assignNode.children.add(visit(ctx.array_access()));
@@ -144,30 +157,26 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 value = Integer.parseInt(ctx.CHAR_LITERAL().getText());
             }
             return new PinNode(value, isNegative);
-        } else if (ctx.CHAR_LITERAL() != null) {
+        }
+        else if (ctx.CHAR_LITERAL() != null) {
             String temp = ctx.CHAR_LITERAL().getText();
             return new CharNode(temp.charAt(0), isNegative);
-        } else if (ctx.number() != null) {
-            return visit(ctx.number());
-        } else {
-            return null;
         }
-    }
-
-    @Override
-    public AstNode visitNumber(CStarParser.NumberContext ctx) {
-        boolean isNegative = false;
-        ParseTree parent = ctx.getParent();
-
-        if (parent.getChild(0).getClass().toString().equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")) {
-            isNegative = true;
+        else if (ctx.BOOLEAN_LITERAL() != null){
+            String value = ctx.BOOLEAN_LITERAL().getText();
+            if(value.equals("true")){
+                return new BooleanNode(true, false);
+            }
+            else if (value.equals("false")){
+                return new BooleanNode(false, false);
+            }
+            else{
+                //error
+                return null;
+            }
         }
-        if (ctx.INT_LITERAL() != null) {
-            return new IntegerNode(Integer.parseInt(ctx.INT_LITERAL().getText()), isNegative);
-        } else if (ctx.FLOAT_LITERAL() != null) {
-            return new FloatNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()), isNegative);
-        } else if (ctx.LONG_LITERAL() != null) {
-            return new LongNode(Long.parseLong(ctx.LONG_LITERAL().getText()), isNegative);
+        else if (ctx.NUMBER() != null) {
+            return new NumberNode(Long.parseLong(ctx.getText()), isNegative);
         } else {
             return null;
         }
@@ -357,7 +366,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         String classes = child.getClass().toString();
         boolean isNegative = false;
 
-        //checks if negative factor
+        //Checks if negative factor
         if (child.getText().equals("-")) {
             child = ctx.getChild(1);
             classes = child.getClass().toString();
@@ -551,6 +560,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     break;
                 case "character":
                     paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "character"));
+                case "boolean":
+                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "boolean"));
+                    break;
+                case "small integer":
+                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "small integer"));
                     break;
                 default:
                     //todo error handling
@@ -628,13 +642,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitStmt(CStarParser.StmtContext ctx) {
-        ParseTree child = ctx.getChild(0);
-
-        return visit(child);
-    }
-
-    @Override
-    public AstNode visitProg_func(CStarParser.Prog_funcContext ctx) {
         ParseTree child = ctx.getChild(0);
 
         return visit(child);

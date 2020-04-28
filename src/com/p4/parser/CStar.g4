@@ -29,8 +29,7 @@ param: TYPE ID (COMMA TYPE ID)*;
 return_exp: RETURN expr SEMICOLON;
 func_call: (ID | FUNCID) LEFT_PAREN (expr (COMMA expr)*)? RIGHT_PAREN;
 
-val: CHAR_LITERAL | PIN_LITERAL | BOOLEAN_LITERAL | number;
-number: INT_LITERAL | LONG_LITERAL | FLOAT_LITERAL | SMALL_LITERAL;
+val: CHAR_LITERAL | PIN_LITERAL | BOOLEAN_LITERAL | NUMBER;
 
 //TOKEN SPECIFICATION
 COMP_OP: LESS_THAN | GREATER_THAN | IS | ISNOT | LESS_THAN_EQ | GREATER_THAN_EQ;
@@ -67,10 +66,7 @@ ARRAY: 'array';
 RETURN: 'return';
 PRINT: 'console.print';
 
-INT_LITERAL: ('0'..'9')+;
-LONG_LITERAL: ('0'..'9')+;
-SMALL_LITERAL: ('0'..'9')+;
-FLOAT_LITERAL: ('0'..'9')+ ('.' ('0'..'9')+ )?;
+NUMBER: ('0'..'9')+ ('.' ('0'..'9')+ )?;
 BOOLEAN_LITERAL: 'true' | 'false';
 PIN_LITERAL: ( 'a' | 'A' )?  ('0'..'9')+;
 CHAR_LITERAL: '\'' (.) '\'';

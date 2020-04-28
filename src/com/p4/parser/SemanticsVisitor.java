@@ -36,6 +36,15 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(PrintNode node) {/*todo implement*/};
+
+    public void visit(NumberNode node) {
+        node.type = "number";
+    };
+
+    public void visit(BooleanNode node) {/*todo implement*/};
+    public void visit(BooleanDclNode node) {/*todo implement*/};
+    public void visit(SmallNode node) {/*todo implement*/};
+    public void visit(SmallDclNode node) {/*todo implement*/};
     public void visit(ModNode node) {/*todo implement*/};
     public void visit(StringNode node) {/*todo implement*/};
 
@@ -196,7 +205,6 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(ArrayExprNode node) {
         this.visitChildren(node);
-
     }
 
     private void castArrayElements(ArrayExprNode node, String type){

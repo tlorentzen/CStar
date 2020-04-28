@@ -38,6 +38,31 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     //todo Implement
     @Override
+    public void visit(BooleanNode node) {
+    }
+
+    //todo Implement
+    @Override
+    public void visit(NumberNode node) {
+    }
+
+    //todo Implement
+    @Override
+    public void visit(BooleanDclNode node) {
+    }
+
+    //todo Implement
+    @Override
+    public void visit(SmallNode node) {
+    }
+
+    //todo Implement
+    @Override
+    public void visit(SmallDclNode node) {
+    }
+
+    //todo Implement
+    @Override
     public void visit(StringNode node) {
     }
 
