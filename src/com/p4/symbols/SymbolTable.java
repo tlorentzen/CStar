@@ -169,18 +169,21 @@ public class SymbolTable {
             }
         } while((scope = scope.parent) != null);
     }
-    public void outputSymbolTable(CStarScope scope){
-            CStarScope oldScope = scope;
-            for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
-                String key = entry.getKey();
-                Attributes value = entry.getValue();
 
-                System.out.printf("Current scope: " + scope.scopeName + " Symbol: %10s:%s \n", key, value.variableType);
-            }
-            scope = oldScope;
-            for (CStarScope child : scope.children) {
-                outputSymbolTable(child);
-            }
+    public void outputSymbolTable(CStarScope scope){
+        CStarScope oldScope = scope;
+
+        for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
+            String key = entry.getKey();
+            Attributes value = entry.getValue();
+
+            System.out.printf("Current scope: " + scope.scopeName + " Symbol: %10s:%s \n", key, value.variableType);
+        }
+        
+        scope = oldScope;
+        for (CStarScope child : scope.children) {
+            outputSymbolTable(child);
+        }
     }
 }
 
