@@ -85,9 +85,6 @@ public class SemanticsVisitor implements INodeVisitor {
                 node.type = resultType;
             }
         }
-
-
-
     }
     //todo bedre navn, så den også dækker over FuncCall's parameter type checking. Men er det ikke kinda en assign også?
     private String assignOperationResultType(String leftType, String rightType){
@@ -293,7 +290,8 @@ public class SemanticsVisitor implements INodeVisitor {
                 int currentChild = 1;
                 String actualParamType;
                 String formalParamType;
-                for (Map.Entry<String, Attributes> formalParam : this.symbolTable.getCurrentScope().params.entrySet()) {
+
+                for (Map.Entry<String, Attributes> formalParam : functionScope.params.entrySet()) {
                     actualParamType = findActualParamType(node.children.get(currentChild));
 
                     if (actualParamType.equals("error")) {
