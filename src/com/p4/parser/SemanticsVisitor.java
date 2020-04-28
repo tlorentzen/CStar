@@ -175,7 +175,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(ArrayExprNode node) {
         this.visitChildren(node);
-
+        castArrayElements(node, node.children.get(0).type);
     }
 
     private void castArrayElements(ArrayExprNode node, String type){
