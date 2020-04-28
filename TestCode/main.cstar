@@ -1,1 +1,1 @@
-console.print("hej med jer" + Lena + "og" + Zohra + 1);
+p1.write(100);

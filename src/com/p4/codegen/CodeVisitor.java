@@ -70,6 +70,10 @@ public class CodeVisitor implements INodeVisitor{
 
     //todo implement
     @Override
+    public void visit(ModNode node){}
+
+    //todo implement
+    @Override
     public void visit(StringNode node){}
 
     @Override

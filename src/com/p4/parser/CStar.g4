@@ -16,16 +16,12 @@ array_dcl: ARRAY ID ASSIGN_OP array_expr;
 array_expr: LEFT_BRACKET expr (COMMA expr)* RIGHT_BRACKET;
 array_access: ID LEFT_BRACKET expr RIGHT_BRACKET;
 
-stmt: assign SEMICOLON | expr SEMICOLON | prog_func SEMICOLON | selection | iterative;
+stmt: assign SEMICOLON | print SEMICOLON | expr SEMICOLON | selection | iterative;
 iterative: WHILE LEFT_PAREN logical_expr RIGHT_PAREN REPEAT blk;
 selection: IF LEFT_PAREN logical_expr RIGHT_PAREN blk ( ELSE blk )?;
 blk: LEFT_BRACE ( dcl | stmt | return_exp)* RIGHT_BRACE;
 
-prog_func: print | pin_write | pin_read | sleep;
 print: PRINT LEFT_PAREN (val | STRING_LITERAL | ID)? (PLUS (val | STRING_LITERAL | ID))* RIGHT_PAREN;
-pin_write: ID DOT WRITE LEFT_PAREN INT_LITERAL RIGHT_PAREN;
-pin_read: ID DOT READ LEFT_PAREN RIGHT_PAREN;
-sleep: SLEEP LEFT_PAREN number RIGHT_PAREN;
 
 func: return_type ID LEFT_PAREN param? RIGHT_PAREN blk;
 return_type: TYPE | VOID;
@@ -66,13 +62,10 @@ WHILE: 'while';
 REPEAT: 'repeat';
 COMMA: ',';
 VOID: 'void';
-TYPE: 'integer' | 'decimal' | 'character' | 'long integer' | 'pin' | 'boolean' | 'small';
+TYPE: 'integer' | 'decimal' | 'character' | 'long integer' | 'small integer' | 'pin' | 'boolean';
 ARRAY: 'array';
 RETURN: 'return';
 PRINT: 'console.print';
-READ: 'read';
-WRITE: 'write';
-SLEEP: 'sleep';
 
 INT_LITERAL: ('0'..'9')+;
 LONG_LITERAL: ('0'..'9')+;

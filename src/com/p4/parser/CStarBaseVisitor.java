@@ -1,4 +1,4 @@
-// Generated from C:/Users/Zohra/floobits/share/Jakob4dhx8/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
+// Generated from /Users/lenasaid/floobits/share/ichris18/src/com/p4/parser/CStar.g4 by ANTLR 4.8
 package com.p4.parser;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 

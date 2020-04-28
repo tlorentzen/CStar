@@ -321,6 +321,9 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             case "/":
                 node = new DivNode();
                 break;
+            case "%":
+                node = new ModNode();
+                break;
             default:
                 //todo error handling
                 return null;
@@ -354,7 +357,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         String classes = child.getClass().toString();
         boolean isNegative = false;
 
-        if (child.getText().equals("-")) { //checks if negative factor
+        //checks if negative factor
+        if (child.getText().equals("-")) {
             child = ctx.getChild(1);
             classes = child.getClass().toString();
             isNegative = true;
@@ -474,6 +478,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 break;
             case ">":
                 node.setOperator(3);
+                break;
+            case "<=":
+                node.setOperator(13);
+                break;
+            case ">=":
+                node.setOperator(14);
                 break;
             case "IS":
                 node.setOperator(4);
@@ -639,44 +649,23 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             ParseTree child = ctx.getChild(i);
             String classes = child.getClass().toString();
 
-            /*if (child.getText().equals("+")){
+            if (child.getText().equals("+")){
                 continue; //plus should not be included (not necessary information)
             }
             else if(child.getText().contains("\"")){
                 printNode.addToFormatString(new StringNode(child.getText()));
-                System.out.println( "string" );
             }
             else if(classes.equals("class com.p4.parser.CStarParser$ValContext")){
-                visitVal((CStarParser.ValContext) child);
-                System.out.println( "val" );
+                printNode.addToFormatString(visitVal((CStarParser.ValContext) child));
             }
             else if (classes.equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")){
                 printNode.addToFormatString(new IdNode(child.getText(), false));
-                System.out.println( "id" );
             }
             else{
                 //todo error handling
-                System.out.println( "error" );
-            }*/
-
-
-            //printNode.addToFormatString(visit(child));
+                return null;
+            }
         }
         return printNode;
     }
-
-   /* @Override
-    public AstNode visitPin_write(CStarParser.Pin_writeContext ctx) {
-        return null;
-    }
-
-    @Override
-    public AstNode visitPin_read(CStarParser.Pin_readContext ctx) {
-        return null;
-    }
-
-    @Override
-    public AstNode visitSleep(CStarParser.SleepContext ctx) {
-        return null;
-    }*/
 }

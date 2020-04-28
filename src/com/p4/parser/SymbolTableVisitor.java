@@ -33,6 +33,11 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     //todo Implement
     @Override
+    public void visit(ModNode node) {
+    }
+
+    //todo Implement
+    @Override
     public void visit(StringNode node) {
     }
 
