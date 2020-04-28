@@ -159,9 +159,5 @@ public class SymbolTable {
             outputSymbolTable(child);
         }
     }
-
-    public CStarScope peekScopeStack(int offset){
-        return scopeStack.get(offset);
-    }
 }
 

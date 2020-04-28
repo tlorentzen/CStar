@@ -321,7 +321,6 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private String findActualParamType(AstNode actualParam){
-        this.symbolTable.enterScope(this.symbolTable.peekScopeStack(1).getScopeName());
         String[] nodeType = actualParam.toString().split("@", 3);
 
         //Checks if either type is null
@@ -329,27 +328,22 @@ public class SemanticsVisitor implements INodeVisitor {
             return "error";
         }
 
-        String result = "error";
+
 
         switch (nodeType[0]){
             case "com.p4.parser.nodes.IdNode":
-                result = symbolTable.lookup(((IdNode)actualParam).id).variableType;
-                break;
+                return symbolTable.lookup(((IdNode)actualParam).id).variableType;
             case "com.p4.parser.nodes.IntegerNode":
-                result = "integer";
-                break;
+                return "integer";
             case "com.p4.parser.nodes.FloatNode":
-                result = "decimal";
-                break;
+                return "decimal";
             case "com.p4.parser.nodes.PinNode":
-                result = "pin";
-                break;
+                return "pin";
             case "com.p4.parser.nodes.CharNode":
-                result = "character";
-                break;
+                return "character";
+            default:
+                return "error";
         }
-        this.symbolTable.leaveScope();
-        return result;
     }
 
     public void visit(FuncNode node) {
