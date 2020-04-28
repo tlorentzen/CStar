@@ -6,6 +6,8 @@ import com.p4.parser.nodes.*;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.SymbolTable;
 
+import java.util.Map;
+
 public class SemanticsVisitor implements INodeVisitor {
 
     SymbolTable symbolTable;
@@ -279,39 +281,38 @@ public class SemanticsVisitor implements INodeVisitor {
     //todo widening virker ikke helt endnu. fix det.
     //If no errors occur, then the function call will be seen as well typed
     public void visit(FuncCallNode node) {
-        String actualParamType;
-        String formalParamType = "";
-        Attributes attributes = null;
-
         // Gets the function declaration
         String functionName = ((IdNode)node.children.get(0)).id;
         if(symbolTable.enterScope("FuncNode-" + functionName)){
-            attributes = symbolTable.lookupParam(functionName);
-
             this.visitChildren(node);
-            int numOfChildren = node.getChildren().size();
             //Goes through all parameters and compare each formal and actual parameter
+            System.out.println("Children: " + node.children.size() + ", params: " + this.symbolTable.getCurrentScope().params.size());
+            if(node.children.size()-1 != this.symbolTable.getCurrentScope().params.size()){
+                errors.addEntry(ErrorType.PARAMETER_ERROR, "The number of actual parameters does not correspond with the number of formal parameters in call to function '" + functionName + "'", node.lineNumber);
+            } else{
+                int currentChild = 1;
+                String actualParamType;
+                String formalParamType = "";
+                for (Map.Entry<String, Attributes> formalParam : this.symbolTable.getCurrentScope().params.entrySet()) {
+                    actualParamType = findActualParamType(node.children.get(currentChild));
 
-            for (String param : this.symbolTable.getCurrentScope().params) {
-                actualParamType = findActualParamType(node.children.get(i));
-
-                    formalParamType = this.symbolTable.getCurrentScope().params.get(i - 1);
-
-                if (actualParamType.equals("error")) {
-                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
-                }
-                // Checks if types are the same or if type widening is possible
-                else if(!formalParamType.equals("")){
-                    String resultType = assignOperationResultType(formalParamType, actualParamType);
-
-                    if (resultType.equals("error")) {
-                        errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
-                                + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
-                    } else if(resultType.equals(formalParamType)) {
-                        node.children.get(i).type = formalParamType; //Todo: might need fix
-                    } else{
-                        //Todo: handled casting not possible
+                    if (actualParamType.equals("error")) {
+                        errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
                     }
+                    // Checks if types are the same or if type widening is possible
+                    else if(!(formalParamType = formalParam.getValue().variableType).equals("")){
+                        String resultType = assignOperationResultType(formalParamType, actualParamType);
+
+                        if (resultType.equals("error")) {
+                            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
+                                    + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
+                        } else if(resultType.equals(formalParamType)) {
+                            node.children.get(currentChild).type = formalParamType; //Todo: might need fix
+                        } else{
+                            //Todo: handled casting not possible
+                        }
+                    }
+                    currentChild++;
                 }
             }
             symbolTable.leaveScope();
