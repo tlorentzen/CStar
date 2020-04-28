@@ -61,15 +61,33 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
 
         String leftType = node.children.get(0).type;
-        String rightType= node.children.get(1).type;
-        String resultType = assignOperationResultType(leftType, rightType);
+        String rightType = "";
 
-        if (resultType.equals("error")){
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
+        if(node.children.get(1).getClass().getName().equals("com.p4.parser.nodes.FuncCallNode")){
+            FuncCallNode funcCallNode = (FuncCallNode) node.children.get(1);
+            if(((IdNode)funcCallNode.children.get(0)).type == null){
+                rightType = leftType;
+            }
+            else if(((IdNode) funcCallNode.children.get(0)).type.equals("void")){
+                errors.addEntry(ErrorType.VOID_ASSIGN, "Cannot assign function '" + ((IdNode) funcCallNode.children.get(0)).id + "' to " + node.children.get(0).type + " because it returns void", node.lineNumber);
+            }
+            else{
+                rightType= ((IdNode)funcCallNode.children.get(0)).type;
+            }
         }
         else{
-            node.type = resultType;
+            rightType= node.children.get(1).type;
+            String resultType = assignOperationResultType(leftType, rightType);
+            if (resultType.equals("error")){
+                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
+            }
+            else{
+                node.type = resultType;
+            }
         }
+
+
+
     }
     //todo bedre navn, så den også dækker over FuncCall's parameter type checking. Men er det ikke kinda en assign også?
     private String assignOperationResultType(String leftType, String rightType){
