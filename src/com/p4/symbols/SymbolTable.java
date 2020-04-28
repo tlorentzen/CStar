@@ -17,13 +17,18 @@ public class SymbolTable {
 
     //todo skal også tjekke om scope navn allerede findes
     public void addScope(String scopeName){
-        CStarScope scope = new CStarScope(scopeName, level + 1);
-        scope.parent = currentScope;
-        currentScope.children.add(scope);
-        currentScope = scope;
-        scopeStack.push(currentScope);
-        level++;
-        System.out.println(">> New scope added: " + scopeName + " (" + level + ")");
+        //If the scope already exists, do not add it.
+        if(lookupScope(scopeName) != null){
+            System.out.println(">> Scope: '" + scopeName + "' already exists and will not be added (" + level + ")");
+        } else {
+            CStarScope scope = new CStarScope(scopeName, level + 1);
+            scope.parent = currentScope;
+            currentScope.children.add(scope);
+            currentScope = scope;
+            scopeStack.push(currentScope);
+            level++;
+            System.out.println(">> New scope added: " + scopeName + " (" + level + ")");
+        }
     }
 
     public void leaveScope(){
@@ -60,6 +65,11 @@ public class SymbolTable {
        return null;
     }
 
+    /**
+     *
+     * @param scopeName the name of the scope to find.
+     * @return the scope or null if not found.
+     */
     public CStarScope lookupScope(String scopeName){
         return this.findScope(scopeName, globalScope);
     }

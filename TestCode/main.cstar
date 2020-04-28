@@ -6,9 +6,20 @@ void loop(){
     pin array pa = [10, A0];
     pin pin1 = A9;
     function(4, 5);
+
+    while(true) repeat {
+        integer i = 2;
+    }
+
+    while(true) repeat {
+        integer i = 2;
+    }
 }
 
 function(9, 3);
 
 void function(integer i, decimal g){
+    while(true) repeat {
+        integer i = 2;
+    }
 }
