@@ -57,7 +57,7 @@ void readInput() {
     console.println(btnState);
 
     if(btnState > 500){
-        inFunMode = true;
+        inFunMode = 1;
     }
 }
 
