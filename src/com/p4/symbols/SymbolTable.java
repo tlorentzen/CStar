@@ -155,14 +155,22 @@ public class SymbolTable {
     public void outputSymbolTable(CStarScope scope){
         for (CStarScope childScope: scope.children) {
             do{
-                assert scope != null;
-                for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
+                assert childScope != null;
+                for (Map.Entry<String, Attributes> entry : childScope.symbols.entrySet()){
                     String key = entry.getKey();
                     Attributes value = entry.getValue();
 
                     System.out.printf("Symbol: %10s:%s \n", key, value.variableType);
                 }
-            } while((scope = scope.parent) != null);
+            } while((childScope = childScope.parent) != null);
+
+            for (CStarScope child : scope.children) {
+                outputSymbolTable(child);
+
+                if(scope != null)
+                    break;
+            }
+
         }
 
     }
