@@ -1,11 +1,13 @@
 package com.p4.symbols;
 
 import java.util.Map;
+import java.util.Stack;
 
 public class SymbolTable {
 
     private CStarScope currentScope;
-    private CStarScope globalScope;
+    final private CStarScope globalScope;
+    final private Stack<CStarScope> scopeStack = new Stack<>();
     int level = 0;
 
     public SymbolTable(){
@@ -19,6 +21,7 @@ public class SymbolTable {
         scope.parent = currentScope;
         currentScope.children.add(scope);
         currentScope = scope;
+        scopeStack.push(currentScope);
         level++;
         System.out.println(">> New scope added: " + scopeName + " (" + level + ")");
     }
@@ -26,7 +29,7 @@ public class SymbolTable {
     public void leaveScope(){
         if(currentScope.parent != null){
             String currentScopeName = currentScope.scopeName;
-            currentScope = currentScope.parent;
+            currentScope = scopeStack.empty() ? globalScope : scopeStack.pop();
             level--;
             System.out.println(">> Leaving scope: "+currentScopeName+" (" + (level + 1) + ") -> " + currentScope.scopeName + " (" + (level) + ")");
         }else{
@@ -87,7 +90,7 @@ public class SymbolTable {
         return scope;
     }
 
-    public FunctionAttributes lookupParam(String scopeName, String funcName){
+    public FunctionAttributes lookupParam(String symbol){
         CStarScope scope = lookupScope(scopeName);
 
         if (scope == null){
