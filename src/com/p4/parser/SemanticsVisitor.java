@@ -291,7 +291,7 @@ public class SemanticsVisitor implements INodeVisitor {
             } else{
                 int currentChild = 1;
                 String actualParamType;
-                String formalParamType = "";
+                String formalParamType;
                 for (Map.Entry<String, Attributes> formalParam : this.symbolTable.getCurrentScope().params.entrySet()) {
                     actualParamType = findActualParamType(node.children.get(currentChild));
 
@@ -321,6 +321,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private String findActualParamType(AstNode actualParam){
+        System.out.println(actualParam.toString());
         String[] nodeType = actualParam.toString().split("@", 3);
 
         //Checks if either type is null
