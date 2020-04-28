@@ -172,6 +172,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
             symbolTable.leaveScope();
         }
+
     }
 
     @Override
