@@ -229,7 +229,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
             symbolTable.insertParam(param.id, attributes);
         }
-
+        
         this.visitChildren(node);
     }
 
