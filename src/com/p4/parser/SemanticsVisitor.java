@@ -4,7 +4,6 @@ import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.Attributes;
-import com.p4.symbols.FunctionAttributes;
 import com.p4.symbols.SymbolTable;
 
 public class SemanticsVisitor implements INodeVisitor {
@@ -282,7 +281,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(FuncCallNode node) {
         String actualParamType;
         String formalParamType = "";
-        FunctionAttributes attributes = null;
+        Attributes attributes = null;
 
         // Gets the function declaration
         String functionName = ((IdNode)node.children.get(0)).id;
@@ -292,11 +291,11 @@ public class SemanticsVisitor implements INodeVisitor {
             this.visitChildren(node);
             int numOfChildren = node.getChildren().size();
             //Goes through all parameters and compare each formal and actual parameter
-            for (int i = 1; i < numOfChildren; i++) {
+
+            for (String param : this.symbolTable.getCurrentScope().params) {
                 actualParamType = findActualParamType(node.children.get(i));
-                if(attributes.parameters != null){
-                    formalParamType = attributes.parameters.get(i - 1);
-                }
+
+                    formalParamType = this.symbolTable.getCurrentScope().params.get(i - 1);
 
                 if (actualParamType.equals("error")) {
                     errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
