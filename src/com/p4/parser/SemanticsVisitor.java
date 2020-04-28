@@ -287,13 +287,8 @@ public class SemanticsVisitor implements INodeVisitor {
         // Gets the function declaration
         String functionName = ((IdNode)node.children.get(0)).id;
         if(symbolTable.enterScope("FuncNode-" + functionName)){
-            attributes = symbolTable.lookupParam("FuncNode-" + functionName, functionName);
-        }
+            attributes = symbolTable.lookupParam(functionName);
 
-        if(attributes == null){
-            errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
-        }
-        else {
             this.visitChildren(node);
             int numOfChildren = node.getChildren().size();
             //Goes through all parameters and compare each formal and actual parameter
@@ -318,7 +313,12 @@ public class SemanticsVisitor implements INodeVisitor {
                     }
                 }
             }
+            symbolTable.leaveScope();
+        }else{
+            errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
         }
+
+
     }
 
     private String findActualParamType(AstNode actualParam){
