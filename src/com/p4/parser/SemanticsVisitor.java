@@ -279,10 +279,11 @@ public class SemanticsVisitor implements INodeVisitor {
     //If no errors occur, then the function call will be seen as well typed
     public void visit(FuncCallNode node) {
         // Gets the function declaration
+        this.visitChildren(node);
+        node.type = ((IdNode) node.children.get(0)).type;
         String functionName = ((IdNode)node.children.get(0)).id;
         CStarScope functionScope;
         if((functionScope = this.symbolTable.lookupScope("FuncNode-" + functionName)) != null){
-            this.visitChildren(node);
             //Goes through all parameters and compare each formal and actual parameter
             if(node.children.size()-1 != functionScope.params.size()){
                 errors.addEntry(ErrorType.PARAMETER_ERROR, "The number of actual parameters does not correspond with the number of formal parameters in call to function '" + functionName + "'", node.lineNumber);
@@ -292,7 +293,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 String formalParamType;
 
                 for (Map.Entry<String, Attributes> formalParam : functionScope.params.entrySet()) {
-                    actualParamType = findActualParamType(node.children.get(currentChild));
+                    actualParamType = (node.children.get(currentChild).type != null ? node.children.get(currentChild).type : "error");
 
                     if (actualParamType.equals("error")) {
                         errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
