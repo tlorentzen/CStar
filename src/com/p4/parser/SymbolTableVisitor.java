@@ -152,9 +152,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncCallNode node) {
-        this.symbolTable.enterScope(((IdNode)node.children.get(0)).id);
         this.visitChildren(node);
-        this.symbolTable.leaveScope();
     }
 
     @Override
@@ -251,7 +249,6 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(SelectionNode node) {
         symbolTable.addScope(node.getNodeHash());
         this.visitChildren(node);
-        //symbolTable.outputAvailableSymbols();
         symbolTable.leaveScope(node.getNodeHash());
     }
 
