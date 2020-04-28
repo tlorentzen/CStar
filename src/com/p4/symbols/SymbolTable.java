@@ -49,7 +49,10 @@ public class SymbolTable {
         CStarScope scope = currentScope;
 
         do{
-            if(scope.symbols.containsKey(symbol)){
+            if(!scope.params.isEmpty() && scope.params.containsKey(symbol)){
+                return scope.params.get(symbol);
+            }
+            if(!scope.symbols.isEmpty() && scope.symbols.containsKey(symbol)){
                 return scope.symbols.get(symbol);
             }
         }while((scope = scope.parent) != null);
@@ -125,7 +128,9 @@ public class SymbolTable {
     }
 
     public void insertParam(String id, String type){
-        currentScope.params.put(id, type);
+        Attributes attr = new Attributes();
+        attr.variableType = type;
+        currentScope.params.put(id, attr);
     }
 
     public void outputAvailableSymbols(){
