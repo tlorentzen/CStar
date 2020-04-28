@@ -214,7 +214,6 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(ParamNode node) {
-        ArrayList<String> params = new ArrayList<>();
         String scopeName = symbolTable.getCurrentScope().getScopeName();
         System.out.println(scopeName);
 
@@ -223,16 +222,10 @@ public class SymbolTableVisitor implements INodeVisitor {
 
             Attributes attributes = new Attributes();
             attributes.variableType = param.type;
-            attributes.kind = "param";
             attributes.scope = scopeName;
 
-            symbolTable.insertSymbol(param.id, attributes);
-            params.add(param.type);
+            symbolTable.insertParam(param.id, attributes);
         }
-
-        FunctionAttributes functionAttributes = new FunctionAttributes();
-        functionAttributes.parameters = params;
-        symbolTable.insertSymbol("funcAttr", functionAttributes);
 
         this.visitChildren(node);
     }

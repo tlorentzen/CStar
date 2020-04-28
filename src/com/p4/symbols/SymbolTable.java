@@ -127,10 +127,8 @@ public class SymbolTable {
         currentScope.symbols.put(symbol, attributes);
     }
 
-    public void insertParam(String id, String type){
-        Attributes attr = new Attributes();
-        attr.variableType = type;
-        currentScope.params.put(id, attr);
+    public void insertParam(String id, Attributes attributes){
+        currentScope.params.put(id, attributes);
     }
 
     public void outputAvailableSymbols(){
