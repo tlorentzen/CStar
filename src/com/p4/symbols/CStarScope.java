@@ -10,7 +10,7 @@ public class CStarScope{
     CStarScope parent;
     //The symbols in the scope
     HashMap<String, Attributes> symbols = new HashMap<>();
-    Map<String, Attributes> params = new LinkedHashMap<>();
+    Map<String, Attributes> params = new LinkedHashMap<>(); 
 
     //Nested scopes within the current scope
     List<CStarScope> children = new ArrayList<>();
