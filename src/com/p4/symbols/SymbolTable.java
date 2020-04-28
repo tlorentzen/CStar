@@ -32,8 +32,18 @@ public class SymbolTable {
     }
 
     public void leaveScope(){
+        this.leaveScope(null);
+    }
+
+    public void leaveScope(String hash){
         if(currentScope.parent != null){
             String currentScopeName = currentScope.scopeName;
+
+            if(hash != null){
+                currentScope.scopeName = hash;
+                currentScopeName = hash;
+            }
+
             currentScope = scopeStack.empty() ? globalScope : scopeStack.pop();
             level--;
             System.out.println(">> Leaving scope: "+currentScopeName+" (" + (level + 1) + ") -> " + currentScope.scopeName + " (" + (level) + ")");
@@ -162,7 +172,8 @@ public class SymbolTable {
             }
         } while((scope = scope.parent) != null);
     }
-    public void outputSymbolTable(CStarScope scope){
+    public void outputSymbolTable(){
+            CStarScope scope = globalScope;
             CStarScope oldScope = scope;
             do{
                 for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
