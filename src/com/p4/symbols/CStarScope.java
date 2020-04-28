@@ -1,6 +1,5 @@
 package com.p4.symbols;
 
-import javax.management.Attribute;
 import java.util.*;
 
 public class CStarScope{
