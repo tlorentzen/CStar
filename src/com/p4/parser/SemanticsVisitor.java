@@ -281,13 +281,13 @@ public class SemanticsVisitor implements INodeVisitor {
     //If no errors occur, then the function call will be seen as well typed
     public void visit(FuncCallNode node) {
         String actualParamType;
-        String formalParamType;
+        String formalParamType = "";
         FunctionAttributes attributes = null;
 
         // Gets the function declaration
         String functionName = ((IdNode)node.children.get(0)).id;
         if(symbolTable.enterScope("FuncNode-" + functionName)){
-            attributes = symbolTable.lookupParam("FuncNode-" + functionName, functionName);
+            attributes = symbolTable.lookupParam(functionName);
         }
 
         if(attributes == null){
@@ -299,13 +299,15 @@ public class SemanticsVisitor implements INodeVisitor {
             //Goes through all parameters and compare each formal and actual parameter
             for (int i = 1; i < numOfChildren; i++) {
                 actualParamType = findActualParamType(node.children.get(i));
-                formalParamType = attributes.parameters.get(i - 1);
+                if(attributes.parameters != null){
+                    formalParamType = attributes.parameters.get(i - 1);
+                }
 
                 if (actualParamType.equals("error")) {
                     errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
                 }
                 // Checks if types are the same or if type widening is possible
-                else {
+                else if(!formalParamType.equals("")){
                     String resultType = assignOperationResultType(formalParamType, actualParamType);
 
                     if (resultType.equals("error")) {
