@@ -7,8 +7,6 @@ import com.p4.symbols.Attributes;
 import com.p4.symbols.FunctionAttributes;
 import com.p4.symbols.SymbolTable;
 
-import java.util.ArrayList;
-
 public class SymbolTableVisitor implements INodeVisitor {
 
     SymbolTable symbolTable;
@@ -160,14 +158,21 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncNode node) {
-        FunctionAttributes attributes = new FunctionAttributes();
-        attributes.kind = "function";
-        attributes.variableType = node.returnType;
+        if(symbolTable.lookup(node.id) != null){
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Function '" + node.getId() + "' already exists", node.lineNumber);
+        } else{
+            FunctionAttributes attributes = new FunctionAttributes();
+            attributes.kind = "function";
+            attributes.variableType = node.returnType;
 
-        symbolTable.insertSymbol(node.id, attributes);
-        symbolTable.addScope(node.getNodeHash());
-        this.visitChildren(node);
-        symbolTable.leaveScope();
+            symbolTable.insertSymbol(node.id, attributes);
+            symbolTable.addScope(node.getNodeHash());
+
+            this.visitChildren(node);
+
+            symbolTable.leaveScope();
+        }
+
     }
 
     @Override
