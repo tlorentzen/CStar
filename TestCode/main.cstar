@@ -8,5 +8,7 @@ void loop(){
     function(4, 5);
 }
 
+function(9, 3);
+
 void function(integer i, decimal g){
 }

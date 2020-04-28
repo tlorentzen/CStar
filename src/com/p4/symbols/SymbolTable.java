@@ -110,7 +110,16 @@ public class SymbolTable {
                 }
             });
         }
-        */
+        
+        if(functionAttributes != null){
+            if(functionAttributes.parameters != null){
+                System.out.println("size: " + functionAttributes.parameters.size());
+            } else {
+                System.out.println("Parameters are null");
+            }
+        } else {
+            System.out.println("FunctionAttributes are null");
+        }*/
 
         return functionAttributes;
     }
