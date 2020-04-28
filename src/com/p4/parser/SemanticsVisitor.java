@@ -332,7 +332,6 @@ public class SemanticsVisitor implements INodeVisitor {
 
         switch (nodeType[0]){
             case "com.p4.parser.nodes.IdNode":
-                System.out.println(((IdNode)actualParam).id);
                 return symbolTable.lookup(((IdNode)actualParam).id).variableType;
             case "com.p4.parser.nodes.IntegerNode":
                 return "integer";

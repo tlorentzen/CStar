@@ -217,7 +217,6 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(ParamNode node) {
         String scopeName = symbolTable.getCurrentScope().getScopeName();
-        System.out.println(scopeName);
 
         for(AstNode child : node.getChildren()){
             IdNode param = (IdNode)child;

@@ -19,7 +19,7 @@ public class SymbolTable {
     public void addScope(String scopeName){
         //If the scope already exists, do not add it.
         if(lookupScope(scopeName) != null){
-            System.out.println(">> Scope: '" + scopeName + "' already exists and will not be added (" + level + ")");
+            //Todo: handle trying to add existing scope
         } else {
             CStarScope scope = new CStarScope(scopeName, level + 1);
             scope.parent = currentScope;
@@ -27,7 +27,6 @@ public class SymbolTable {
             scopeStack.push(currentScope);
             currentScope = scope;
             level++;
-            System.out.println(">> New scope added: " + scopeName + " (" + level + ")");
         }
     }
 
@@ -46,9 +45,8 @@ public class SymbolTable {
 
             currentScope = scopeStack.empty() ? globalScope : scopeStack.pop();
             level--;
-            System.out.println(">> Leaving scope: " + currentScopeName + " (" + (level + 1) + ") -> " + currentScope.scopeName + " (" + (level) + ")");
         }else{
-            System.out.println(">> Leaving scope: Already in global scope! (" + level + ")");
+            //Todo: handle already in global scope, hence leave is called to many times
         }
     }
     
@@ -120,32 +118,8 @@ public class SymbolTable {
         if (scope == null){
             return null;
         }
-        
-        //int numOfSymbols = scope.symbols.size();
-        Attributes attr = lookup(symbol);
-        
-        // Goes through all symbols for a function scope
-        // Finds all with the kind "param" and adds these to the function
-        /*
-        for (int i = 0; i < numOfSymbols; i++){
-            scope.symbols.forEach((id, attributes) -> {
-                if (attributes.kind.equals("param")) {
-                    functionAttributes.parameters.add(id);
-                }
-            });
-        }
-        */
-        if(attr != null){
-            if(scope.params != null){
-                System.out.println("size: " + scope.params.size());
-            } else {
-                System.out.println("Parameters are null");
-            }
-        } else {
-            System.out.println("attr is null");
-        }
 
-        return attr;
+        return lookup(symbol);
     }
 
     public boolean declaredInCurrentScope(String symbol){
