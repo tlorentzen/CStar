@@ -24,8 +24,8 @@ public class SymbolTable {
             CStarScope scope = new CStarScope(scopeName, level + 1);
             scope.parent = currentScope;
             currentScope.children.add(scope);
-            currentScope = scope;
             scopeStack.push(currentScope);
+            currentScope = scope;
             level++;
             System.out.println(">> New scope added: " + scopeName + " (" + level + ")");
         }
