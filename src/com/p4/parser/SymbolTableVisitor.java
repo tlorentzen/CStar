@@ -67,6 +67,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(ProgNode node) {
         this.visitChildren(node);
+        symbolTable.outputSymbolTable(symbolTable.lookupScope("global"));
     }
 
     @Override
