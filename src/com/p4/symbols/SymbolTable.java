@@ -46,7 +46,7 @@ public class SymbolTable {
 
             currentScope = scopeStack.empty() ? globalScope : scopeStack.pop();
             level--;
-            System.out.println(">> Leaving scope: "+currentScopeName+" (" + (level + 1) + ") -> " + currentScope.scopeName + " (" + (level) + ")");
+            System.out.println(">> Leaving scope: " + currentScopeName + " (" + (level + 1) + ") -> " + currentScope.scopeName + " (" + (level) + ")");
         }else{
             System.out.println(">> Leaving scope: Already in global scope! (" + level + ")");
         }
