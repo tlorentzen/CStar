@@ -110,6 +110,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         else if (ctx.getChild(0).getClass().toString().equals("class com.p4.parser.CStarParser$Array_accessContext")) {
             assignNode.children.add(visit(ctx.array_access()));
             assignNode.children.add(visit(ctx.expr()));
+            assignNode.lineNumber = ctx.start.getLine();
             return assignNode;
         }
         else{
@@ -134,10 +135,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             isNegative = true;
         }
         if(ctx.INT_LITERAL() != null) {
-            return new IntegerNode(Integer.parseInt(ctx.INT_LITERAL().getText()), isNegative);
+            IntegerNode node = new IntegerNode(Integer.parseInt(ctx.INT_LITERAL().getText()), isNegative);
+            node.lineNumber = ctx.start.getLine();
+            return node;
         }
         else if(ctx.FLOAT_LITERAL() != null) {
-           return new FloatNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()), isNegative);
+            FloatNode node = new FloatNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()), isNegative);
+            node.lineNumber = ctx.start.getLine();
+            return node;
         }
         else if(ctx.PIN_LITERAL() != null) {
             String pinValue = ((TerminalNodeImpl)ctx.children.get(0)).symbol.getText();
@@ -148,14 +153,20 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             } else {
                 value = Integer.parseInt(ctx.CHAR_LITERAL().getText());
             }
-            return new PinNode(value, isNegative);
+            PinNode node = new PinNode(value, isNegative);
+            node.lineNumber = ctx.start.getLine();
+            return node;
         }
         else if(ctx.LONG_LITERAL() != null) {
-            return new LongNode(Long.parseLong(ctx.LONG_LITERAL().getText()), isNegative);
+            LongNode node = new LongNode(Long.parseLong(ctx.LONG_LITERAL().getText()), isNegative);
+            node.lineNumber = ctx.start.getLine();
+            return node;
         }
         else if(ctx.CHAR_LITERAL() != null) {
             String temp = ctx.CHAR_LITERAL().getText();
-            return new CharNode(temp.charAt(0), isNegative);
+            CharNode node = new CharNode(temp.charAt(0), isNegative);
+            node.lineNumber = ctx.start.getLine();
+            return node;
         }
         else {
             return null;
@@ -366,7 +377,9 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                     return visit(ctx.expr());
                 }
                 else {
-                    return new IdNode(child.getText(), isNegative);
+                    IdNode node = new IdNode(child.getText(), isNegative);
+                    node.lineNumber = ctx.start.getLine();
+                    return node;
                 }
             case "class com.p4.parser.CStarParser$Func_callContext": // if func call
                 return visit(ctx.func_call());
