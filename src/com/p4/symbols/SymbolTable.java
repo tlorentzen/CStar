@@ -94,15 +94,15 @@ public class SymbolTable {
         return scope;
     }
 
-    public FunctionAttributes lookupParam(String symbol){
+    public Attributes lookupParam(String symbol){
         CStarScope scope = currentScope;
 
         if (scope == null){
             return null;
         }
         
-        int numOfSymbols = scope.symbols.size();
-        FunctionAttributes functionAttributes = (FunctionAttributes)lookup(symbol);
+        //int numOfSymbols = scope.symbols.size();
+        Attributes attr = lookup(symbol);
         
         // Goes through all symbols for a function scope
         // Finds all with the kind "param" and adds these to the function
@@ -115,8 +115,17 @@ public class SymbolTable {
             });
         }
         */
+        if(attr != null){
+            if(scope.params != null){
+                System.out.println("size: " + scope.params.size());
+            } else {
+                System.out.println("Parameters are null");
+            }
+        } else {
+            System.out.println("attr is null");
+        }
 
-        return functionAttributes;
+        return attr;
     }
 
     public boolean declaredInCurrentScope(String symbol){
