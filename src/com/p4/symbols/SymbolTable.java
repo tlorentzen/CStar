@@ -162,5 +162,21 @@ public class SymbolTable {
             }
         } while((scope = scope.parent) != null);
     }
+    public void outputSymbolTable(CStarScope scope){
+            CStarScope oldScope = scope;
+            do{
+                for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
+                    String key = entry.getKey();
+                    Attributes value = entry.getValue();
+
+                    System.out.printf("Symbol: %10s:%s \n", key, value.variableType);
+                }
+            } while((scope = scope.parent) != null);
+            scope = oldScope;
+            for (CStarScope child : scope.children) {
+                outputSymbolTable(child);
+
+            }
+    }
 }
 

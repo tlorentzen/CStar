@@ -172,6 +172,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
             symbolTable.leaveScope();
         }
+
     }
 
     @Override
@@ -228,7 +229,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
             symbolTable.insertParam(param.id, attributes);
         }
-
+        
         this.visitChildren(node);
     }
 
