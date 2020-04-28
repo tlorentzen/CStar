@@ -110,6 +110,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         else if (ctx.getChild(0).getClass().toString().equals("class com.p4.parser.CStarParser$Array_accessContext")) {
             assignNode.children.add(visit(ctx.array_access()));
             assignNode.children.add(visit(ctx.expr()));
+            assignNode.lineNumber = ctx.start.getLine();
             return assignNode;
         }
         else{
