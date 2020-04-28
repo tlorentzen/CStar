@@ -4,6 +4,7 @@ import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.Attributes;
+import com.p4.symbols.CStarScope;
 import com.p4.symbols.SymbolTable;
 
 import java.util.Map;
@@ -283,10 +284,11 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(FuncCallNode node) {
         // Gets the function declaration
         String functionName = ((IdNode)node.children.get(0)).id;
-        if(symbolTable.enterScope("FuncNode-" + functionName)){
+        CStarScope functionScope;
+        if((functionScope = this.symbolTable.lookupScope("FuncNode-" + functionName)) != null){
             this.visitChildren(node);
             //Goes through all parameters and compare each formal and actual parameter
-            if(node.children.size()-1 != this.symbolTable.getCurrentScope().params.size()){
+            if(node.children.size()-1 != functionScope.params.size()){
                 errors.addEntry(ErrorType.PARAMETER_ERROR, "The number of actual parameters does not correspond with the number of formal parameters in call to function '" + functionName + "'", node.lineNumber);
             } else{
                 int currentChild = 1;
