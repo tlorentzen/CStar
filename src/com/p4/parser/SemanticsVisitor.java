@@ -86,6 +86,7 @@ public class SemanticsVisitor implements INodeVisitor {
         if (resultType.equals("error")){
             errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
         }
+        //TODO tjek om resultType er empty igen?
         else{
             node.type = resultType;
         }
