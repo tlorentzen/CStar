@@ -169,27 +169,8 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ArrayAccessNode node) {
-        String nodeType = node.children.get(1).getClass().getName();
-        Attributes arrayAttr = symbolTable.lookup(node.children.get(0).getClass().getName());
-
-        switch (nodeType) {
-            case "com.p4.parser.nodes.IntegerNode":
-                node.type = "integer";
-                break;
-            case "com.p4.parser.nodes.FloatNode":
-                node.type = "decimal";
-                break;
-            case "com.p4.parser.nodes.PinNode":
-                node.type = "pin";
-                break;
-            case "com.p4.parser.nodes.CharNode":
-                node.type = "character";
-                break;
-            default:
-                node.type = "error";
-                break;
-
-        }
+        this.visitChildren(node);
+        node.type = node.children.get(0).type;
     }
 
     public void visit(ArrayExprNode node) {
