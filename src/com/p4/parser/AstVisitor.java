@@ -7,14 +7,15 @@ import org.antlr.v4.runtime.tree.*;
 
 public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
-    @Override public AstNode visitProg(CStarParser.ProgContext ctx){
+    @Override
+    public AstNode visitProg(CStarParser.ProgContext ctx) {
         ProgNode node = new ProgNode();
 
         int numChildren = ctx.getChildCount();
 
-        for (int i = 0; i < numChildren; i++){
+        for (int i = 0; i < numChildren; i++) {
             ParseTree child = ctx.getChild(i);
-            if(child.getPayload() instanceof CommonToken)
+            if (child.getPayload() instanceof CommonToken)
                 continue;
             AstNode childResult = visit(child);
             node.children.add(childResult);
@@ -23,23 +24,24 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
-    @Override public AstNode visitDcl(CStarParser.DclContext ctx) {
+    @Override
+    public AstNode visitDcl(CStarParser.DclContext ctx) {
         // All nodes will be returned to the blkNode visitor, where the children will be saved
         // Test for type
         CStarParser.AssignContext assign = ctx.assign();
         CStarParser.Array_dclContext array_dcl = ctx.array_dcl();
 
-        if(assign != null){
+        if (assign != null) {
             //Make assign node
             return visit(assign);
-        } else if(array_dcl != null){
+        } else if (array_dcl != null) {
             //Visit array_dcl
             return visit(array_dcl);
-        } else{
+        } else {
             //Make normal dlcNode
             AstNode node;
 
-            switch (ctx.TYPE().toString()){
+            switch (ctx.TYPE().toString()) {
                 case "integer":
                     node = new IntegerDclNode(ctx.ID().toString());
                     break;
@@ -64,7 +66,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         }
     }
 
-    @Override public AstNode visitAssign(CStarParser.AssignContext ctx) {
+    @Override
+    public AstNode visitAssign(CStarParser.AssignContext ctx) {
 
         ParserRuleContext parent = ctx.getParent();
         String classes = parent.getClass().toString();
@@ -105,14 +108,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             assignNode.children.add(dclNode);
             assignNode.children.add(exprNode);
             return assignNode;
-        }
-
-        else if (ctx.getChild(0).getClass().toString().equals("class com.p4.parser.CStarParser$Array_accessContext")) {
+        } else if (ctx.getChild(0).getClass().toString().equals("class com.p4.parser.CStarParser$Array_accessContext")) {
             assignNode.children.add(visit(ctx.array_access()));
             assignNode.children.add(visit(ctx.expr()));
             return assignNode;
-        }
-        else{
+        } else {
             String id = ctx.ID().toString();
             CStarParser.ExprContext exprCtx = ctx.expr();
             AstNode exprNode = visit(exprCtx);
@@ -126,43 +126,55 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         }
     }
 
-    @Override public AstNode visitVal(CStarParser.ValContext ctx) {
+    @Override
+    public AstNode visitVal(CStarParser.ValContext ctx) {
         boolean isNegative = false;
         ParseTree parent = ctx.getParent();
 
-        if(parent.getChild(0).getClass().toString().equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")){
+        if (parent.getChild(0).getClass().toString().equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")) {
             isNegative = true;
         }
-        if(ctx.INT_LITERAL() != null) {
-            return new IntegerNode(Integer.parseInt(ctx.INT_LITERAL().getText()), isNegative);
-        }
-        else if(ctx.FLOAT_LITERAL() != null) {
-           return new FloatNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()), isNegative);
-        }
-        else if(ctx.PIN_LITERAL() != null) {
-            String pinValue = ((TerminalNodeImpl)ctx.children.get(0)).symbol.getText();
+        if (ctx.PIN_LITERAL() != null) {
+            String pinValue = ((TerminalNodeImpl) ctx.children.get(0)).symbol.getText();
             int value;
 
-            if(pinValue.startsWith("A") || pinValue.startsWith("a")){
+            if (pinValue.startsWith("A") || pinValue.startsWith("a")) {
                 value = -1 - Integer.parseInt(pinValue.substring(1));
             } else {
                 value = Integer.parseInt(ctx.CHAR_LITERAL().getText());
             }
             return new PinNode(value, isNegative);
-        }
-        else if(ctx.LONG_LITERAL() != null) {
-            return new LongNode(Long.parseLong(ctx.LONG_LITERAL().getText()), isNegative);
-        }
-        else if(ctx.CHAR_LITERAL() != null) {
+        } else if (ctx.CHAR_LITERAL() != null) {
             String temp = ctx.CHAR_LITERAL().getText();
             return new CharNode(temp.charAt(0), isNegative);
-        }
-        else {
+        } else if (ctx.number() != null) {
+            return visit(ctx.number());
+        } else {
             return null;
         }
     }
 
-    @Override public AstNode visitArray_dcl(CStarParser.Array_dclContext ctx) {
+    @Override
+    public AstNode visitNumber(CStarParser.NumberContext ctx) {
+        boolean isNegative = false;
+        ParseTree parent = ctx.getParent();
+
+        if (parent.getChild(0).getClass().toString().equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")) {
+            isNegative = true;
+        }
+        if (ctx.INT_LITERAL() != null) {
+            return new IntegerNode(Integer.parseInt(ctx.INT_LITERAL().getText()), isNegative);
+        } else if (ctx.FLOAT_LITERAL() != null) {
+            return new FloatNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()), isNegative);
+        } else if (ctx.LONG_LITERAL() != null) {
+            return new LongNode(Long.parseLong(ctx.LONG_LITERAL().getText()), isNegative);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public AstNode visitArray_dcl(CStarParser.Array_dclContext ctx) {
         //We get the ID from current node and the type from the parent (dclnode) by converting the child to a string
         String id = ctx.ID().toString();
         ParserRuleContext parent = ctx.getParent();
@@ -179,16 +191,17 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return arrayDclNode;
     }
 
-    @Override public AstNode visitArray_expr(CStarParser.Array_exprContext ctx) {
+    @Override
+    public AstNode visitArray_expr(CStarParser.Array_exprContext ctx) {
         ArrayExprNode arrayExprNode = new ArrayExprNode();
         arrayExprNode.lineNumber = ctx.start.getLine();
         int childCount = ctx.getChildCount();
 
-        for(int i = 0; i < childCount; i++){
+        for (int i = 0; i < childCount; i++) {
             var child = ctx.getChild(i);
             String classes = child.getClass().toString();
             //checks if child is a value node
-            if(classes.equals("class com.p4.parser.CStarParser$ExprContext")) {
+            if (classes.equals("class com.p4.parser.CStarParser$ExprContext")) {
                 AstNode literal = visit(child);
                 arrayExprNode.children.add(literal);
             }
@@ -196,11 +209,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return arrayExprNode;
     }
 
-    @Override public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
+    @Override
+    public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
         //index 0 is ID, Everything that follows is parameter values
         boolean isNegative = false;
         ParseTree parent = ctx.getParent();
-        if(parent.getChild(0).getClass().toString().equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")){
+        if (parent.getChild(0).getClass().toString().equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")) {
             isNegative = true;
         }
 
@@ -209,17 +223,16 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         int numChildren = ctx.getChildCount();
 
-        for (int childIndex = 0; childIndex < numChildren; childIndex++){
+        for (int childIndex = 0; childIndex < numChildren; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
             String classes = child.getClass().toString();
             String id = child.getText();
 
             //checks if child is a value node
             //TODO lave funktioner til classes.equals da det bliver brugt mange steder
-            if(classes.equals("class com.p4.parser.CStarParser$ExprContext")){
+            if (classes.equals("class com.p4.parser.CStarParser$ExprContext")) {
                 funcCallNode.children.add(visit(child));
-            }
-            else if(isID(id)){
+            } else if (isID(id)) {
                 IdNode idNode = new IdNode(id, false);
                 funcCallNode.children.add(idNode);
             }
@@ -227,25 +240,25 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return funcCallNode;
     }
 
-    private boolean isID(String id){
+    private boolean isID(String id) {
         return !id.equals("(") && !id.equals(")") && !id.equals(",");
     }
 
-    @Override public AstNode visitArithm_expr(CStarParser.Arithm_exprContext ctx){
+    @Override
+    public AstNode visitArithm_expr(CStarParser.Arithm_exprContext ctx) {
         //ArrayExprNode arrayExprNode = new ArrayExprNode();
         int childCount = ctx.getChildCount();
 
         //If there are no operations with plus and minus
-        if(childCount == 1){
+        if (childCount == 1) {
             return visit(ctx.term(0));
-        }
-        else {
+        } else {
             return visitArithm_exprChild(ctx.getChild(1), ctx, 1);
         }
     }
 
     //Todo evt lav den general ved at lave en generisk metode
-    public AstNode visitArithm_exprChild(ParseTree child, CStarParser.Arithm_exprContext parent, int operatorIndex){
+    public AstNode visitArithm_exprChild(ParseTree child, CStarParser.Arithm_exprContext parent, int operatorIndex) {
         int termIndex = (operatorIndex - 1) / 2;
         AstNode node;
 
@@ -264,7 +277,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         node.lineNumber = parent.start.getLine();
 
         //Enters if there are more operators in the tree
-        if(parent.getChild(operatorIndex + 2) != null) {
+        if (parent.getChild(operatorIndex + 2) != null) {
             operatorIndex += 2;
 
             //Add left child (term)
@@ -273,7 +286,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             node.children.add(visitArithm_exprChild(parent.getChild(operatorIndex), parent, operatorIndex));
         }
         //Enters if there is only a term child left
-        else{
+        else {
             // Add left and right child (terms)
             node.children.add(visitTerm(parent.term(termIndex)));
             node.children.add(visitTerm(parent.term(termIndex + 1)));
@@ -282,15 +295,15 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
-    @Override public AstNode visitTerm(CStarParser.TermContext ctx) {
+    @Override
+    public AstNode visitTerm(CStarParser.TermContext ctx) {
         int childCount = ctx.getChildCount();
 
         //If there are no operations with mult or div
-        if(childCount == 1){
+        if (childCount == 1) {
             //TODO Husk at visit skal return noget
             return visit(ctx.factor(0));
-        }
-        else {
+        } else {
             return visitTermChild(ctx.getChild(1), ctx, 1);
         }
     }
@@ -335,7 +348,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     }
 
 
-    @Override public AstNode visitFactor(CStarParser.FactorContext ctx) {
+    @Override
+    public AstNode visitFactor(CStarParser.FactorContext ctx) {
         var child = ctx.getChild(0);
         String classes = child.getClass().toString();
         boolean isNegative = false;
@@ -358,14 +372,13 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             visit(child);
         }*/
 
-        switch (classes){
+        switch (classes) {
             case "class com.p4.parser.CStarParser$ValContext": //if value
                 return visit(ctx.val());
             case "class org.antlr.v4.runtime.tree.TerminalNodeImpl": //if paren or id
                 if (child.getText().equals("(")) {
                     return visit(ctx.expr());
-                }
-                else {
+                } else {
                     return new IdNode(child.getText(), isNegative);
                 }
             case "class com.p4.parser.CStarParser$Func_callContext": // if func call
@@ -378,7 +391,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         }
     }
 
-    @Override public AstNode visitReturn_exp(CStarParser.Return_expContext ctx) {
+    @Override
+    public AstNode visitReturn_exp(CStarParser.Return_expContext ctx) {
         ReturnExpNode node = new ReturnExpNode();
         node.lineNumber = ctx.start.getLine();
         node.children.add(visit(ctx.expr()));
@@ -386,15 +400,15 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
-    @Override public AstNode visitLogical_expr(CStarParser.Logical_exprContext ctx) {
+    @Override
+    public AstNode visitLogical_expr(CStarParser.Logical_exprContext ctx) {
         int childCount = ctx.getChildCount();
 
         //If there are no operations with AND or OR
-        if(childCount == 1){
+        if (childCount == 1) {
             //TODO Husk at visit skal return noget
             return visit(ctx.cond_expr(0));
-        }
-        else {
+        } else {
             return visitLogicalChild(ctx.getChild(1), ctx, 1);
         }
     }
@@ -436,15 +450,15 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
-    @Override public AstNode visitCond_expr(CStarParser.Cond_exprContext ctx) {
+    @Override
+    public AstNode visitCond_expr(CStarParser.Cond_exprContext ctx) {
         int childCount = ctx.getChildCount();
 
         //If there is only an operator
-        if(childCount == 1){
+        if (childCount == 1) {
             //TODO Husk at visit skal return noget
             return visit(ctx.arithm_expr(0));
-        }
-        else {
+        } else {
             return visitCondChild(ctx.getChild(1), ctx, 1);
         }
     }
@@ -492,12 +506,13 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
-    @Override public AstNode visitFunc(CStarParser.FuncContext ctx) {
+    @Override
+    public AstNode visitFunc(CStarParser.FuncContext ctx) {
         FuncNode node = new FuncNode();
         node.lineNumber = ctx.start.getLine();
         node.id = ctx.ID().toString();
         node.returnType = (ctx.return_type().TYPE() != null ? ctx.return_type().TYPE().toString() : "void");
-        if(ctx.param() != null){
+        if (ctx.param() != null) {
             node.children.add(visit(ctx.param()));
         }
         node.children.add(visit(ctx.blk()));
@@ -505,12 +520,13 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
-    @Override public AstNode visitParam(CStarParser.ParamContext ctx) {
+    @Override
+    public AstNode visitParam(CStarParser.ParamContext ctx) {
         ParamNode paramNode = new ParamNode();
         paramNode.lineNumber = ctx.start.getLine();
         int numChild = ctx.getChildCount();
-        for(int childIndex = 0; childIndex < numChild; childIndex++){ //Skips comma and jumps to type
-            switch (ctx.getChild(childIndex).toString()){
+        for (int childIndex = 0; childIndex < numChild; childIndex++) { //Skips comma and jumps to type
+            switch (ctx.getChild(childIndex).toString()) {
                 case "integer":
                     paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "integer"));
                     break;
@@ -533,16 +549,17 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return paramNode;
     }
 
-    @Override public AstNode visitBlk(CStarParser.BlkContext ctx) {
+    @Override
+    public AstNode visitBlk(CStarParser.BlkContext ctx) {
 
         BlkNode node = new BlkNode();
         node.lineNumber = ctx.start.getLine();
         // linje 435 findes duplikatet
         int numChildren = ctx.getChildCount();
 
-        for (int i = 0; i < numChildren; i++){
+        for (int i = 0; i < numChildren; i++) {
             ParseTree child = ctx.getChild(i);
-            if(child.getPayload() instanceof CommonToken)
+            if (child.getPayload() instanceof CommonToken)
                 continue;
             AstNode childResult = visit(child);
             node.children.add(childResult);
@@ -550,12 +567,13 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
-    @Override public AstNode visitSelection(CStarParser.SelectionContext ctx) {
+    @Override
+    public AstNode visitSelection(CStarParser.SelectionContext ctx) {
         SelectionNode node = new SelectionNode();
         node.lineNumber = ctx.start.getLine();
         node.children.add(visit(ctx.logical_expr()));
 
-        for(CStarParser.BlkContext blk : ctx.blk()){
+        for (CStarParser.BlkContext blk : ctx.blk()) {
             node.children.add(visit(blk));
         }
         return node;
@@ -567,7 +585,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public AstNode visitIterative(CStarParser.IterativeContext ctx) {
+    @Override
+    public AstNode visitIterative(CStarParser.IterativeContext ctx) {
         IterativeNode node = new IterativeNode();
         node.lineNumber = ctx.start.getLine();
         node.children.add(visit(ctx.logical_expr()));
@@ -583,8 +602,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     //@Override public T visitArray_call(CStarParser.Array_callContext ctx) { return visitChildren(ctx); }
-
-    @Override public AstNode visitArray_access(CStarParser.Array_accessContext ctx) {
+    @Override
+    public AstNode visitArray_access(CStarParser.Array_accessContext ctx) {
         //Id is index 0, the Index is at index 1, and the assigned value is at 2
         ArrayAccessNode arrayAccessNode = new ArrayAccessNode();
         arrayAccessNode.lineNumber = ctx.start.getLine();
@@ -596,9 +615,68 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         return arrayAccessNode;
     }
-    @Override public AstNode visitStmt(CStarParser.StmtContext ctx) {
+
+    @Override
+    public AstNode visitStmt(CStarParser.StmtContext ctx) {
         ParseTree child = ctx.getChild(0);
 
         return visit(child);
     }
+
+    @Override
+    public AstNode visitProg_func(CStarParser.Prog_funcContext ctx) {
+        ParseTree child = ctx.getChild(0);
+
+        return visit(child);
+    }
+
+    @Override
+    public AstNode visitPrint(CStarParser.PrintContext ctx) {
+        PrintNode printNode = new PrintNode();
+
+        //Goes through all print's children and add them to formatstring (except plus)
+        for(int i = 2; i < ctx.children.size() - 1; i++){
+            ParseTree child = ctx.getChild(i);
+            String classes = child.getClass().toString();
+
+            /*if (child.getText().equals("+")){
+                continue; //plus should not be included (not necessary information)
+            }
+            else if(child.getText().contains("\"")){
+                printNode.addToFormatString(new StringNode(child.getText()));
+                System.out.println( "string" );
+            }
+            else if(classes.equals("class com.p4.parser.CStarParser$ValContext")){
+                visitVal((CStarParser.ValContext) child);
+                System.out.println( "val" );
+            }
+            else if (classes.equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")){
+                printNode.addToFormatString(new IdNode(child.getText(), false));
+                System.out.println( "id" );
+            }
+            else{
+                //todo error handling
+                System.out.println( "error" );
+            }*/
+
+
+            //printNode.addToFormatString(visit(child));
+        }
+        return printNode;
+    }
+
+   /* @Override
+    public AstNode visitPin_write(CStarParser.Pin_writeContext ctx) {
+        return null;
+    }
+
+    @Override
+    public AstNode visitPin_read(CStarParser.Pin_readContext ctx) {
+        return null;
+    }
+
+    @Override
+    public AstNode visitSleep(CStarParser.SleepContext ctx) {
+        return null;
+    }*/
 }

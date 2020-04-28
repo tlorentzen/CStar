@@ -2,9 +2,11 @@ package com.p4.parser.nodes;
 
 import com.p4.parser.INodeVisitor;
 
-public class IntegerNode extends LiteralNode<Integer>{
-    public IntegerNode(Integer value, Boolean isNegative) {
-        super(value, isNegative);
+public class StringNode extends AstNode {
+    String value;
+
+    public StringNode (String value) {
+       this.value = value;
     }
 
     public void accept(INodeVisitor visitor) {

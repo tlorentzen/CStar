@@ -1,12 +1,1 @@
-void setup(){
-
-}
-
-void loop(){
-    pin array pa = [10, A0];
-    pin pin1 = A9;
-    function(4, 5);
-}
-
-void function(integer i, decimal g){
-}
+console.print("hej med jer" + Lena + "og" + Zohra + 1);

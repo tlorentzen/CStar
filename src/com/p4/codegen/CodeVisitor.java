@@ -42,6 +42,7 @@ public class CodeVisitor implements INodeVisitor{
      * Visits the children of the given node.
      * @param node the node which children should be visited.
      */
+
     @Override
     public void visitChildren(AstNode node) {
         for(AstNode child : node.children){
@@ -62,6 +63,15 @@ public class CodeVisitor implements INodeVisitor{
      * Only handles AND and OR.
      * @param node is the logical node to be handled.
      */
+
+    //todo implement
+    @Override
+    public void visit(PrintNode node){}
+
+    //todo implement
+    @Override
+    public void visit(StringNode node){}
+
     @Override
     public void visit(LogicalNode node){
 

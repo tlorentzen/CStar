@@ -26,6 +26,16 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
     }
 
+    //todo Implement
+    @Override
+    public void visit(PrintNode node) {
+    }
+
+    //todo Implement
+    @Override
+    public void visit(StringNode node) {
+    }
+
     @Override
     public void visit(IdNode node) {
         this.visitChildren(node);

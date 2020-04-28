@@ -35,6 +35,9 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
+    public void visit(PrintNode node) {/*todo implement*/};
+    public void visit(StringNode node) {/*todo implement*/};
+
     public void visit(IntegerNode node){
         node.type = "integer";
     }
