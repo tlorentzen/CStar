@@ -91,17 +91,18 @@ public class SymbolTable {
     }
 
     public FunctionAttributes lookupParam(String symbol){
-        CStarScope scope = lookupScope(scopeName);
+        CStarScope scope = currentScope;
 
         if (scope == null){
             return null;
         }
         
         int numOfSymbols = scope.symbols.size();
-        FunctionAttributes functionAttributes = (FunctionAttributes)lookup(funcName);
+        FunctionAttributes functionAttributes = (FunctionAttributes)lookup(symbol);
         
         // Goes through all symbols for a function scope
         // Finds all with the kind "param" and adds these to the function
+        /*
         for (int i = 0; i < numOfSymbols; i++){
             scope.symbols.forEach((id, attributes) -> {
                 if (attributes.kind.equals("param")) {
@@ -109,6 +110,8 @@ public class SymbolTable {
                 }
             });
         }
+        */
+         
         return functionAttributes;
     }
 
