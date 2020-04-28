@@ -286,7 +286,6 @@ public class SemanticsVisitor implements INodeVisitor {
         if(symbolTable.enterScope("FuncNode-" + functionName)){
             this.visitChildren(node);
             //Goes through all parameters and compare each formal and actual parameter
-            System.out.println("Children: " + node.children.size() + ", params: " + this.symbolTable.getCurrentScope().params.size());
             if(node.children.size()-1 != this.symbolTable.getCurrentScope().params.size()){
                 errors.addEntry(ErrorType.PARAMETER_ERROR, "The number of actual parameters does not correspond with the number of formal parameters in call to function '" + functionName + "'", node.lineNumber);
             } else{
