@@ -61,7 +61,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String leftType = node.children.get(0).type;
         String rightType= node.children.get(1).type;
         String resultType = assignOperationResultType(leftType, rightType);
-        
+
         if (resultType.equals("error")){
             errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
         }
@@ -79,7 +79,7 @@ public class SemanticsVisitor implements INodeVisitor {
             return leftType;
         }
         else if (leftType.equals("decimal") && (rightType.equals("integer") || rightType.equals("long integer"))){
-            return leftType;             
+            return leftType;
         }
         else if ((leftType.equals("long integer") || leftType.equals("pin")) && rightType.equals("integer")){
             return leftType;
@@ -228,8 +228,8 @@ public class SemanticsVisitor implements INodeVisitor {
         String leftType = node.children.get(0).type;
         String rightType = node.children.get(1).type;
         String resultType = arithOperationResultType(leftType, rightType);
-        
-        if (resultType.equals("error")){ 
+
+        if (resultType.equals("error")){
             errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
         }
         else {
@@ -267,10 +267,10 @@ public class SemanticsVisitor implements INodeVisitor {
             }
         }
     }
-    
+
     private boolean isDivByZero(AstNode denominator){
         return (denominator.type.equals("integer") && ((IntegerNode)denominator).getValue() == 0) ||
-               (denominator.type.equals("long integer") && ((FloatNode)denominator).getValue() == 0);
+                (denominator.type.equals("long integer") && ((FloatNode)denominator).getValue() == 0);
     }
 
     public void visit(FloatDclNode node) {
@@ -282,16 +282,20 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(FuncCallNode node) {
         String actualParamType;
         String formalParamType;
-        // Gets the function declaration
-        FunctionAttributes attributes = symbolTable.lookup("funcAttr");
+        FunctionAttributes attributes = null;
 
-        if(!symbolTable.enterScope(node.getNodeHash())){
-            errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + ((IdNode)node.children.get(0)).id + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
+        // Gets the function declaration
+        String functionName = ((IdNode)node.children.get(0)).id;
+        if(symbolTable.enterScope("FuncNode-" + functionName)){
+            attributes = symbolTable.lookupParam("FuncNode-" + functionName, functionName);
+        }
+
+        if(attributes == null){
+            errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
         }
         else {
             this.visitChildren(node);
             int numOfChildren = node.getChildren().size();
-
             //Goes through all parameters and compare each formal and actual parameter
             for (int i = 1; i < numOfChildren; i++) {
                 actualParamType = findActualParamType(node.children.get(i));
@@ -306,7 +310,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
                     if (resultType.equals("error")) {
                         errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
-                            + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
+                                + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
                     } else if(resultType.equals(formalParamType)) {
                         node.children.get(i).type = formalParamType; //Todo: might need fix
                     } else{
@@ -340,7 +344,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "error";
         }
     }
-    
+
     public void visit(FuncNode node) {
         this.symbolTable.enterScope(node.getNodeHash());
         this.visitChildren(node);
@@ -433,7 +437,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
         //First semantic rule
         if(leftType.equals(rightType) && (leftType.equals("integer") ||
-            leftType.equals("decimal") || leftType.equals("long integer"))) {
+                leftType.equals("decimal") || leftType.equals("long integer"))) {
             return leftType;
         }
         //Second semantic rule
@@ -451,7 +455,7 @@ public class SemanticsVisitor implements INodeVisitor {
             return "error";
         }
     }
-    
+
 
     private String unaryOperationResultType(int operator, String type) {
         //Todo: handle casting
