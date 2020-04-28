@@ -8,10 +8,9 @@ public class SymbolTable {
     private CStarScope currentScope;
     final private CStarScope globalScope;
     final private Stack<CStarScope> scopeStack = new Stack<>();
-    int level = 0;
 
     public SymbolTable(){
-        globalScope = new CStarScope("global", 0);
+        globalScope = new CStarScope("global");
         currentScope = globalScope;
     }
 
@@ -19,15 +18,14 @@ public class SymbolTable {
     public void addScope(String scopeName){
         //If the scope already exists, do not add it.
         if(lookupScope(scopeName) != null){
-            System.out.println(">> Scope: '" + scopeName + "' already exists and will not be added (" + level + ")");
+            System.out.println(">> Scope: '" + scopeName + "' already exists and will not be added");
         } else {
-            CStarScope scope = new CStarScope(scopeName, level + 1);
+            CStarScope scope = new CStarScope(scopeName);
             scope.parent = currentScope;
             currentScope.children.add(scope);
             scopeStack.push(currentScope);
             currentScope = scope;
-            level++;
-            System.out.println(">> New scope added: " + scopeName + " (" + level + ")");
+            System.out.println(">> New scope added: " + scopeName);
         }
     }
 
@@ -45,10 +43,9 @@ public class SymbolTable {
             }
 
             currentScope = scopeStack.empty() ? globalScope : scopeStack.pop();
-            level--;
-            System.out.println(">> Leaving scope: " + currentScopeName + " (" + (level + 1) + ") -> " + currentScope.scopeName + " (" + (level) + ")");
+            System.out.println(">> Leaving scope: " + currentScopeName + " -> " + currentScope.scopeName);
         }else{
-            System.out.println(">> Leaving scope: Already in global scope! (" + level + ")");
+            System.out.println(">> Leaving scope: Already in global scope!");
         }
     }
     
