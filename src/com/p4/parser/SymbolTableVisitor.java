@@ -152,9 +152,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncCallNode node) {
-        this.symbolTable.enterScope(((IdNode)node.children.get(0)).id);
         this.visitChildren(node);
-        this.symbolTable.leaveScope();
     }
 
     @Override
