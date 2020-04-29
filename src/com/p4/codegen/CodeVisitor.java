@@ -193,11 +193,6 @@ public class CodeVisitor implements INodeVisitor{
             stringBuilder.append(" = ");
             visitChild(rightChild);
             stringBuilder.append(";\n");
-
-            //Sets the pin mode of the pin
-            stringBuilder.append("pinMode(");
-            stringBuilder.append(pinDclNode.id);
-            stringBuilder.append(", OUTPUT);\n");
         } else{
             //Sets the pin mode of the pin
             stringBuilder.append("pinMode(");
