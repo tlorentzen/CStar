@@ -394,6 +394,9 @@ public class CodeVisitor implements INodeVisitor{
         for(AstNode child : node.children){
             stringBuilder.append("    ");
             this.visitChild(child);
+            if(child.getClass().getName().equals("com.p4.parser.nodes.FuncCallNode")){
+                stringBuilder.append(";\n");
+            }
         }
 
         stringBuilder.append("\n}\n");
@@ -455,7 +458,8 @@ public class CodeVisitor implements INodeVisitor{
                 stringBuilder.append(", ");
             }
         }
-        stringBuilder.append(");\n");
+        stringBuilder.append(")");
+
     }
 
     /**
