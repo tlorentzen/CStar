@@ -1,13 +1,10 @@
 package com.p4.codegen;
-
 import com.p4.parser.nodes.*;
 import com.p4.parser.visitors.INodeVisitor;
 import com.p4.symbols.SymbolTable;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 
 public class CodeVisitor implements INodeVisitor{
     //FilePath is used to specify the location for the compiled Arduino file
