@@ -1,6 +1,6 @@
 package com.p4.parser.nodes;
 
-import com.p4.parser.INodeVisitor;
+import com.p4.parser.visitors.INodeVisitor;
 
 public class StmtNode extends AstNode{
     // stmt: ( assign SEMICOLON | expr SEMICOLON | func_call SEMICOLON | selection | iterative )+;

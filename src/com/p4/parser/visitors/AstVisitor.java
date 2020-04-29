@@ -1,5 +1,6 @@
-package com.p4.parser;
+package com.p4.parser.visitors;
 
+import com.p4.parser.CStarParser;
 import com.p4.parser.nodes.*;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -506,7 +507,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     }
 
     @Override public AstNode visitFunc(CStarParser.FuncContext ctx) {
-        FuncNode node = new FuncNode();
+        FuncDclNode node = new FuncDclNode();
         node.lineNumber = ctx.start.getLine();
         node.id = ctx.ID().toString();
         node.returnType = (ctx.return_type().TYPE() != null ? ctx.return_type().TYPE().toString() : "void");

@@ -27,10 +27,6 @@ void loop() {
     }
 }
 
-long integer map(long integer x, long integer in_min, long integer in_max, long integer out_min, long integer out_max) {
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
 void setBarGraph() {
 
     integer counter = 0;

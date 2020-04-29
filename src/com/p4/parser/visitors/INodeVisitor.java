@@ -1,4 +1,4 @@
-package com.p4.parser;
+package com.p4.parser.visitors;
 
 import com.p4.parser.nodes.*;
 
@@ -26,7 +26,7 @@ public interface INodeVisitor {
     void visit(DivNode node);
     void visit(FloatDclNode node);
     void visit(FuncCallNode node);
-    void visit(FuncNode node);
+    void visit(FuncDclNode node);
     void visit(IntegerDclNode node);
     void visit(IterativeNode node);
     void visit(LongDclNode node);

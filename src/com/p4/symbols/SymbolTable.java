@@ -1,5 +1,6 @@
 package com.p4.symbols;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Stack;
 
@@ -8,6 +9,8 @@ public class SymbolTable {
     private CStarScope currentScope;
     final private CStarScope globalScope;
     final private Stack<CStarScope> scopeStack = new Stack<>();
+    public ArrayList<String> declaredFunctions = new ArrayList<>();
+    public ArrayList<String> calledFunctions = new ArrayList<>();
 
     public SymbolTable(){
         globalScope = new CStarScope("global");

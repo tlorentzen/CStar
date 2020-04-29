@@ -1,7 +1,8 @@
-package com.p4.parser;
+package com.p4.parser.visitors;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
+import com.p4.parser.CStarParser;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.CStarScope;
@@ -27,13 +28,17 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //Explicit declaration scope rule
     public void visit(IdNode node){
-        Attributes attributes = symbolTable.lookup(node.id);
+        if(!symbolTable.calledFunctions.contains(node.id) && symbolTable.declaredFunctions.contains(node.id)){
+            Attributes attributes = symbolTable.lookup(node.id);
 
-        if(attributes == null){
-            errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope. The type of " + node.id + " will be null", node.lineNumber);
-            //Todo: set the node.type to something to avoid null pointer exception
+            if(attributes == null){
+                errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope. The type of " + node.id + " will be null", node.lineNumber);
+                //Todo: set the node.type to something to avoid null pointer exception
+            } else {
+                node.type = attributes.variableType;
+            }
         } else {
-            node.type = attributes.variableType;
+            node.type = "ArduinoC";
         }
     }
 
@@ -79,7 +84,9 @@ public class SemanticsVisitor implements INodeVisitor {
             rightType= node.children.get(1).type;
             String resultType = assignOperationResultType(leftType, rightType);
             if (resultType.equals("error")){
-                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
+                if(!leftType.equals("ArduinoC") && !rightType.equals("ArduinoC")) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
+                }
             }
             else{
                 node.type = resultType;
@@ -91,6 +98,12 @@ public class SemanticsVisitor implements INodeVisitor {
         //Checks if either type is null
         if (leftType == null || rightType == null){
             return "error";
+        }
+        if(leftType.equals("ArduinoC")){
+            return rightType;
+        }
+        if(rightType.equals("ArduinoC")){
+            return leftType;
         }
         if (leftType.equals(rightType)){
             return leftType;
@@ -283,39 +296,41 @@ public class SemanticsVisitor implements INodeVisitor {
         node.type = ((IdNode) node.children.get(0)).type;
         String functionName = ((IdNode)node.children.get(0)).id;
         CStarScope functionScope;
-        if((functionScope = this.symbolTable.lookupScope("FuncNode-" + functionName)) != null){
-            //Goes through all parameters and compare each formal and actual parameter
-            if(node.children.size()-1 != functionScope.params.size()){
-                errors.addEntry(ErrorType.PARAMETER_ERROR, "The number of actual parameters does not correspond with the number of formal parameters in call to function '" + functionName + "'", node.lineNumber);
-            } else{
-                int currentChild = 1;
-                String actualParamType;
-                String formalParamType;
+        if(symbolTable.declaredFunctions.contains(functionName)){
+            if((functionScope = this.symbolTable.lookupScope("FuncNode-" + functionName)) != null){
+                //Goes through all parameters and compare each formal and actual parameter
+                if(node.children.size()-1 != functionScope.params.size()){
+                    errors.addEntry(ErrorType.PARAMETER_ERROR, "The number of actual parameters does not correspond with the number of formal parameters in call to function '" + functionName + "'", node.lineNumber);
+                } else{
+                    int currentChild = 1;
+                    String actualParamType;
+                    String formalParamType;
 
-                for (Map.Entry<String, Attributes> formalParam : functionScope.params.entrySet()) {
-                    actualParamType = node.children.get(currentChild).type;
+                    for (Map.Entry<String, Attributes> formalParam : functionScope.params.entrySet()) {
+                        actualParamType = node.children.get(currentChild).type;
 
-                    if (actualParamType.equals("error")) {
-                        errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
-                    }
-                    // Checks if types are the same or if type widening is possible
-                    else if(!(formalParamType = formalParam.getValue().variableType).equals("")){
-                        String resultType = assignOperationResultType(formalParamType, actualParamType);
-
-                        if (resultType.equals("error")) {
-                            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
-                                    + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
-                        } else if(resultType.equals(formalParamType)) {
-                            node.children.get(currentChild).type = formalParamType; //Todo: might need fix
-                        } else{
-                            //Todo: handled casting not possible
+                        if (actualParamType.equals("error")) {
+                            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
                         }
+                        // Checks if types are the same or if type widening is possible
+                        else if(!(formalParamType = formalParam.getValue().variableType).equals("")){
+                            String resultType = assignOperationResultType(formalParamType, actualParamType);
+
+                            if (resultType.equals("error")) {
+                                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
+                                        + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
+                            } else if(resultType.equals(formalParamType)) {
+                                node.children.get(currentChild).type = formalParamType; //Todo: might need fix
+                            } else{
+                                //Todo: handled casting not possible
+                            }
+                        }
+                        currentChild++;
                     }
-                    currentChild++;
                 }
+                symbolTable.leaveScope();
             }
-            symbolTable.leaveScope();
-        }else{
+        } else{
             errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
         }
     }
@@ -346,7 +361,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    public void visit(FuncNode node) {
+    public void visit(FuncDclNode node) {
         this.symbolTable.enterScope(node.getNodeHash());
         this.visitChildren(node);
         this.symbolTable.leaveScope();
@@ -436,6 +451,14 @@ public class SemanticsVisitor implements INodeVisitor {
         if (leftType == null || rightType == null){
             return "error";
         }
+
+        if(leftType.equals("ArduinoC")){
+            return rightType;
+        }
+        if(rightType.equals("ArduinoC")){
+            return leftType;
+        }
+
         //First semantic rule
         if(leftType.equals(rightType) && (leftType.equals("integer") ||
                 leftType.equals("decimal") || leftType.equals("long integer"))) {

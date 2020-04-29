@@ -1,6 +1,6 @@
 package com.p4.codegen;
 
-import com.p4.parser.INodeVisitor;
+import com.p4.parser.visitors.INodeVisitor;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.SymbolTable;
 
@@ -453,7 +453,7 @@ public class CodeVisitor implements INodeVisitor{
      * @param node is the func node to be handled.
      */
     @Override
-    public void visit(FuncNode node) {
+    public void visit(FuncDclNode node) {
         //func: return_type ID LEFT_PAREN param? RIGHT_PAREN blk; //done
         stringBuilder.append(node.returnType);
         stringBuilder.append(" ");

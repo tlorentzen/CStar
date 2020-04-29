@@ -1,4 +1,4 @@
-package com.p4.parser;
+package com.p4.parser.visitors;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
@@ -156,7 +156,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(FuncNode node) {
+    public void visit(FuncDclNode node) {
         if(symbolTable.lookup(node.id) != null){
             errors.addEntry(ErrorType.DUPLICATE_VARS, "Function '" + node.getId() + "' already exists", node.lineNumber);
         } else{
