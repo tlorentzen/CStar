@@ -7,11 +7,7 @@ import com.p4.symbols.SymbolTable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-<<<<<<< HEAD
-import java.nio.file.Path;
-import java.util.ArrayList;
-=======
->>>>>>> d9e013108142635448177bcf20e96bac600779ee
+
 
 public class CodeVisitor implements INodeVisitor{
     //FilePath is used to specify the location for the compiled Arduino file
@@ -20,11 +16,9 @@ public class CodeVisitor implements INodeVisitor{
     //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
     SymbolTable symbolTable;
-    ArrayList<String> globalPinMode = new ArrayList<>();
-
+    
     public CodeVisitor(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
-        symbolTable.enterScope("global");
     }
 
     /**
