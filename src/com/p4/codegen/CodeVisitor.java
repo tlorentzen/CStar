@@ -88,7 +88,18 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(IdNode node) {
-        stringBuilder.append(node.id);
+
+        switch (node.id){
+            case "sleep":
+                stringBuilder.append("delay");
+                break;
+            case "console.println":
+                stringBuilder.append("Serial.println");
+                break;
+            default:
+                stringBuilder.append(node.id);
+                break;
+        }
     }
 
     /**

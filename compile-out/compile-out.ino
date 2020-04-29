@@ -51,7 +51,7 @@ void readInput(){
     valPot1 = pinPot1;
     valPot2 = pinPot2;
     btnState = btnPin;
-    console.println(btnState);
+    Serial.println(btnState);
     if(btnState > 500){
     inFunMode = 1;
 
