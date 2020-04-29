@@ -142,7 +142,7 @@ public class SymbolTable {
                 String key = entry.getKey();
                 Attributes value = entry.getValue();
 
-                System.out.printf("Symbol: %10s:%s \n", key, value.variableType);
+                //System.out.printf("Symbol: %10s:%s \n", key, value.variableType);
             }
         } while((scope = scope.parent) != null);
     }
@@ -154,7 +154,7 @@ public class SymbolTable {
             String key = entry.getKey();
             Attributes value = entry.getValue();
 
-            System.out.printf("Current scope: " + scope.scopeName + " Symbol: %10s:%s \n", key, value.variableType);
+            //System.out.printf("Current scope: " + scope.scopeName + " Symbol: %10s:%s \n", key, value.variableType);
         }
 
         scope = oldScope;

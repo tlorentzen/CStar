@@ -1,13 +1,10 @@
 package com.p4.codegen;
-
-import com.p4.parser.visitors.INodeVisitor;
 import com.p4.parser.nodes.*;
+import com.p4.parser.visitors.INodeVisitor;
 import com.p4.symbols.SymbolTable;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 
 public class CodeVisitor implements INodeVisitor{
     //FilePath is used to specify the location for the compiled Arduino file
@@ -15,7 +12,7 @@ public class CodeVisitor implements INodeVisitor{
 
     //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
-    SymbolTable symbolTable = new SymbolTable();
+    SymbolTable symbolTable;
 
     public CodeVisitor(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
@@ -36,7 +33,7 @@ public class CodeVisitor implements INodeVisitor{
         //Writes the string builder to the file, handling potential creation as well
         oS.write(stringBuilder.toString().getBytes());
         //Debug print Todo: delete
-        System.out.println(stringBuilder.toString());
+        //System.out.println(stringBuilder.toString());
     }
 
     /**
@@ -122,7 +119,18 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(IdNode node) {
-        stringBuilder.append(node.id);
+
+        switch (node.id){
+            case "sleep":
+                stringBuilder.append("delay");
+                break;
+            case "console.println":
+                stringBuilder.append("Serial.println");
+                break;
+            default:
+                stringBuilder.append(node.id);
+                break;
+        }
     }
 
     /**
@@ -156,7 +164,6 @@ public class CodeVisitor implements INodeVisitor{
         //If pin appears on the right side, either declaration or write should be performed
         if(leftChild.type.equals("pin")){
             pinValueOnLeftSide(leftChild, rightChild);
-
         //If pin appears on the left side, read should be performed
         } else if (rightChild.type.equals("pin")){
             pinValueOnRightSide(leftChild, rightChild);
@@ -191,12 +198,6 @@ public class CodeVisitor implements INodeVisitor{
             stringBuilder.append(" = ");
             visitChild(rightChild);
             stringBuilder.append(";\n");
-
-            //Sets the pin mode of the pin
-            stringBuilder.append("pinMode(");
-            System.out.println(leftChild.getClass().toString());
-            stringBuilder.append(pinDclNode.id);
-            stringBuilder.append(", OUTPUT);\n");
         } else{
             //Sets the pin mode of the pin
             stringBuilder.append("pinMode(");
@@ -204,14 +205,8 @@ public class CodeVisitor implements INodeVisitor{
             stringBuilder.append(", OUTPUT);\n");
 
             //Handles assigning a value to a pin after declaration, by using digital or analog write.
-            if(rightChild.getClass().getName().equals("com.p4.parser.nodes.IntegerNode")){
-
-                //If the operator is an integer node, analog write should be used, unless the value is 0 or 255.
-                if(((NumberNode) rightChild).value == 0 || ((NumberNode) rightChild).value == 255){
-                    stringBuilder.append("digitalWrite(");
-                } else{
-                    stringBuilder.append("analogWrite(");
-                }
+            if(rightChild.type.equals("integer")){
+                stringBuilder.append("analogWrite("); //Todo: maybe handle the value of rightChild to use digitalWrite. However, the value is not available for IdNode
             }
 
             //Ends the write statement with the pin and value
@@ -474,7 +469,6 @@ public class CodeVisitor implements INodeVisitor{
             stringBuilder.append("()");
         }
         this.visitChildren(node);
-
     }
 
     /**
@@ -636,4 +630,3 @@ public class CodeVisitor implements INodeVisitor{
 
     }
 }
-

@@ -28,7 +28,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //Explicit declaration scope rule
     public void visit(IdNode node){
-        if(!symbolTable.calledFunctions.contains(node.id) && symbolTable.declaredFunctions.contains(node.id)){
+        if(!symbolTable.calledFunctions.contains(node.id) && (symbolTable.declaredFunctions.contains(node.id) || !symbolTable.declaredFunctions.contains(node.id))){
             Attributes attributes = symbolTable.lookup(node.id);
 
             if(attributes == null){
@@ -118,14 +118,16 @@ public class SemanticsVisitor implements INodeVisitor {
         }
         else{
             rightType= node.children.get(1).type;
-            String resultType = assignOperationResultType(leftType, rightType);
-            if (resultType.equals("error")){
-                if(!leftType.equals("ArduinoC") && !rightType.equals("ArduinoC")) {
-                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
+            if(leftType == null || rightType == null || !(leftType.equals("pin") || rightType.equals("pin"))){
+                String resultType = assignOperationResultType(leftType, rightType);
+                if (resultType.equals("error")){
+                    if(!leftType.equals("ArduinoC") && !rightType.equals("ArduinoC")) {
+                        errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
+                    }
                 }
-            }
-            else{
-                node.type = resultType;
+                else{
+                    node.type = resultType;
+                }
             }
         }
     }
@@ -497,14 +499,6 @@ public class SemanticsVisitor implements INodeVisitor {
         if (leftType == null || rightType == null){
             return "error";
         }
-
-        if(leftType.equals("ArduinoC")){
-            return rightType;
-        }
-        if(rightType.equals("ArduinoC")){
-            return leftType;
-        }
-
         //First semantic rule
         if(leftType.equals(rightType) && (leftType.equals("integer") ||
            leftType.equals("decimal") || leftType.equals("long integer") ||
