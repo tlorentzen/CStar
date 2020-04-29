@@ -7,10 +7,11 @@ import com.p4.symbols.SymbolTable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class CodeVisitor implements INodeVisitor{
     //FilePath is used to specify the location for the compiled Arduino file
-    String filePath = System.getProperty("user.home") + "\\Desktop\\test.ino";
+    String filePath = System.getProperty("user.dir") + "/compile-out/test.ino";
 
     //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
