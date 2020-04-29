@@ -28,7 +28,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //Explicit declaration scope rule
     public void visit(IdNode node){
-        if(!symbolTable.calledFunctions.contains(node.id) && symbolTable.declaredFunctions.contains(node.id)){
+        if(!symbolTable.calledFunctions.contains(node.id) && (symbolTable.declaredFunctions.contains(node.id) || !symbolTable.declaredFunctions.contains(node.id))){
             Attributes attributes = symbolTable.lookup(node.id);
 
             if(attributes == null){

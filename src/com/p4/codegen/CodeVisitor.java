@@ -87,7 +87,18 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(IdNode node) {
-        stringBuilder.append(node.id);
+
+        switch (node.id){
+            case "sleep":
+                stringBuilder.append("delay");
+                break;
+            case "console.println":
+                stringBuilder.append("Serial.println");
+                break;
+            default:
+                stringBuilder.append(node.id);
+                break;
+        }
     }
 
     /**
@@ -382,6 +393,9 @@ public class CodeVisitor implements INodeVisitor{
         for(AstNode child : node.children){
             stringBuilder.append("    ");
             this.visitChild(child);
+            if(child.getClass().getName().equals("com.p4.parser.nodes.FuncCallNode")){
+                stringBuilder.append(";\n");
+            }
         }
 
         stringBuilder.append("\n}\n");
@@ -443,7 +457,8 @@ public class CodeVisitor implements INodeVisitor{
                 stringBuilder.append(", ");
             }
         }
-        stringBuilder.append(");\n");
+        stringBuilder.append(")");
+
     }
 
     /**
