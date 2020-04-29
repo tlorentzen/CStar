@@ -1,25 +1,5 @@
-void setup(){
+character array c = ['a', 'b', 'c'];
 
-}
+c[0] = 'a';
 
-void loop(){
-    pin array pa = [10, A0];
-    pin pin1 = A9;
-    function(4, 5);
-
-    while(1) repeat {
-        integer i = 2;
-    }
-
-    while(1) repeat {
-        integer i = 2;
-    }
-}
-
-function(9, 3);
-
-void function(integer i, decimal g){
-    while(1) repeat {
-
-    }
-}
+integer array i = [1.1, 1, 2, 3];

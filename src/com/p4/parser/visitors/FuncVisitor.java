@@ -27,9 +27,9 @@ public class FuncVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(IntegerNode node) {
-        this.visitChildren(node);
-    }
+    public void visit(NumberNode node) { this.visitChildren(node); }
+
+    @Override public void visit(BooleanNode node) { this.visitChildren(node); }
 
     @Override
     public void visit(FloatNode node) {
@@ -38,11 +38,6 @@ public class FuncVisitor implements INodeVisitor {
 
     @Override
     public void visit(PinNode node) {
-        this.visitChildren(node);
-    }
-
-    @Override
-    public void visit(LongNode node) {
         this.visitChildren(node);
     }
 
@@ -144,9 +139,20 @@ public class FuncVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(SmallDclNode node) {
+        this.visitChildren(node);
+    }
+
+    @Override
+    public void visit(BooleanDclNode node) { this.visitChildren(node); }
+
+    @Override
     public void visit(MultNode node) {
         this.visitChildren(node);
     }
+
+    @Override
+    public void visit(ModNode node) { this.visitChildren(node); }
 
     @Override
     public void visit(ParamNode node) {
@@ -177,4 +183,15 @@ public class FuncVisitor implements INodeVisitor {
     public void visit(LogicalNode node) {
         this.visitChildren(node);
     }
+
+    @Override
+    public void visit(PrintNode node) {
+        this.visitChildren(node);
+    }
+
+    @Override
+    public void visit(StringNode node) {
+        this.visitChildren(node);
+    }
+
 }

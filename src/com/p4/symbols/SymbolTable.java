@@ -156,7 +156,7 @@ public class SymbolTable {
 
             System.out.printf("Current scope: " + scope.scopeName + " Symbol: %10s:%s \n", key, value.variableType);
         }
-        
+
         scope = oldScope;
         for (CStarScope child : scope.children) {
             outputSymbolTable(child);

@@ -63,9 +63,12 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(BooleanNode node) {
         node.type = "boolean";
     };
-    public void visit(BooleanDclNode node) {/*todo implement*/};
-    public void visit(SmallDclNode node) {/*todo implement*/};
-    public void visit(ModNode node) {/*todo implement*/};
+    public void visit(BooleanDclNode node) {
+        this.visitChildren(node);
+    };
+    public void visit(SmallDclNode node) {
+        this.visitChildren(node);
+    };
     public void visit(StringNode node) {
         node.type = "string";
     };
@@ -271,20 +274,6 @@ public class SemanticsVisitor implements INodeVisitor {
         //Todo: implement - check if the node type is the same as return type of the function
     }
 
-    public void visit(AddNode node) {
-        this.visitChildren(node);
-        String leftType = node.children.get(0).type;
-        String rightType = node.children.get(1).type;
-        String resultType = arithOperationResultType(leftType, rightType);
-
-        if (resultType.equals("error")){
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
-        }
-        else {
-            node.type = resultType;
-        }
-    }
-
     public void visit(ArrayDclNode<?> node) {
         this.visitChildren(node);
     }
@@ -297,32 +286,7 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
-    public void visit(DivNode node){
-        this.visitChildren(node);
-        AstNode leftChild = node.children.get(0);
-        AstNode rightChild = node.children.get(1);
-        String resultType = arithOperationResultType(leftChild.type, rightChild.type);
 
-        if(resultType.equals("error")){
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftChild.type + " with " + rightChild.type, node.lineNumber);
-        }
-        else{
-            if(isDivByZero(rightChild)){
-                errors.addEntry(ErrorType.ZERO_DIVISION, "Cannot divide by zero", node.lineNumber);
-            }
-            else {
-                node.type = resultType;
-            }
-        }
-    }
-
-    private boolean isDivByZero(AstNode denominator){
-        boolean isZero = (((NumberNode)denominator).getValue() == 0);
-
-        return (denominator.type.equals("small integer") && isZero) ||
-               (denominator.type.equals("integer") && isZero) ||
-               (denominator.type.equals("long integer") && isZero);
-    }
 
     public void visit(FloatDclNode node) {
         this.visitChildren(node);
@@ -383,8 +347,6 @@ public class SemanticsVisitor implements INodeVisitor {
             return "error";
         }
 
-
-
         switch (nodeType[0]){
             case "com.p4.parser.nodes.IdNode":
                 return symbolTable.lookup(((IdNode)actualParam).id).variableType;
@@ -415,7 +377,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String conditionType = node.children.get(0).type;
 
         if (!isCondOkType(conditionType)){
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type: the condition must be of type boolean or integer, but was of type " + conditionType, node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type: the condition must be of type boolean, but was of type " + conditionType, node.lineNumber);
         }
     }
 
@@ -424,6 +386,14 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(MultNode node) {
+        visitFactorChildren(node);
+    }
+
+    public void visit(ModNode node) {
+        visitFactorChildren(node);
+    }
+
+    private void visitFactorChildren(AstNode node){
         this.visitChildren(node);
         String leftType = node.children.get(0).type;
         String rightType = node.children.get(1).type;
@@ -437,11 +407,40 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
+    public void visit(DivNode node){
+        this.visitChildren(node);
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+        String resultType = arithOperationResultType(leftChild.type, rightChild.type);
+
+        if(resultType.equals("error")){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftChild.type + " with " + rightChild.type, node.lineNumber);
+        }
+        else{
+            if(isDivByZero(rightChild)){
+                errors.addEntry(ErrorType.ZERO_DIVISION, "Cannot divide by zero", node.lineNumber);
+            }
+            else {
+                node.type = resultType;
+            }
+        }
+    }
+
+    private boolean isDivByZero(AstNode denominator){
+        boolean isZero = (((NumberNode)denominator).getValue() == 0);
+
+        return (denominator.type.equals("small integer") && isZero) ||
+                (denominator.type.equals("integer") && isZero) ||
+                (denominator.type.equals("long integer") && isZero);
+    }
+
     public void visit(ParamNode node) {
         this.visitChildren(node);
     }
 
-    public void visit(PinDclNode node) { this.visitChildren(node); }
+    public void visit(PinDclNode node) {
+        this.visitChildren(node);
+    }
 
     public void visit(SelectionNode node) {
         this.symbolTable.enterScope(node.getNodeHash());
@@ -462,11 +461,23 @@ public class SemanticsVisitor implements INodeVisitor {
         return condType.equals("boolean");
     }
 
-    public void visit(StmtNode node) {
-        //Todo: implement. Behøver den det?
-    }
+    public void visit(StmtNode node) { }
 
     public void visit(SubNode node) {
+        this.visitChildren(node);
+        String leftType = node.children.get(0).type;
+        String rightType = node.children.get(1).type;
+        String resultType = arithOperationResultType(leftType, rightType);
+
+        if (resultType.equals("error")){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
+        }
+        else {
+            node.type = resultType;
+        }
+    }
+
+    public void visit(AddNode node) {
         this.visitChildren(node);
         String leftType = node.children.get(0).type;
         String rightType = node.children.get(1).type;
@@ -521,17 +532,10 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    private String unaryOperationResultType(int operator, String type) {
-        //Todo: handle casting
-        return type;
-        //Skal bruges, hvis vi implementerer negation som en node (lige som i bogen)
-    }
-
     private String dominantTypeOfArrayElements(String leftType, String rightType) {
         if (leftType == null || rightType == null){
             return "error";
         }
-
         if(leftType.equals("decimal") || rightType.equals("decimal")){
             return "decimal";
         } else if(leftType.equals("pin") || rightType.equals("pin")){
@@ -540,6 +544,8 @@ public class SemanticsVisitor implements INodeVisitor {
             return "long integer";
         } else if(leftType.equals("integer") || rightType.equals("integer")){
             return "integer";
+        } else if(leftType.equals("small integer") || rightType.equals("small integer")){
+            return "small integer";
         } else if(leftType.equals("char") || rightType.equals("char")){
             return "character";
         } else {
