@@ -1,5 +1,7 @@
-package com.p4.parser;
 
+package com.p4.parser.visitors;
+
+import com.p4.parser.CStarParser;
 import com.p4.parser.nodes.*;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -124,6 +126,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         } else if (ctx.getChild(0).getClass().toString().equals("class com.p4.parser.CStarParser$Array_accessContext")) {
             assignNode.children.add(visit(ctx.array_access()));
             assignNode.children.add(visit(ctx.expr()));
+            assignNode.lineNumber = ctx.start.getLine();
             return assignNode;
         } else {
             String id = ctx.ID().toString();
@@ -156,11 +159,15 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             } else {
                 value = Integer.parseInt(ctx.CHAR_LITERAL().getText());
             }
-            return new PinNode(value, isNegative);
+            PinNode node = new PinNode(value, isNegative);
+            node.lineNumber = ctx.start.getLine();
+            return node;
         }
         else if (ctx.CHAR_LITERAL() != null) {
             String temp = ctx.CHAR_LITERAL().getText();
-            return new CharNode(temp.charAt(0), isNegative);
+            CharNode node = new CharNode(temp.charAt(0), isNegative);
+            node.lineNumber = ctx.start.getLine();
+            return node;
         }
         else if (ctx.BOOLEAN_LITERAL() != null){
             String value = ctx.BOOLEAN_LITERAL().getText();
@@ -397,8 +404,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             case "class org.antlr.v4.runtime.tree.TerminalNodeImpl": //if paren or id
                 if (child.getText().equals("(")) {
                     return visit(ctx.expr());
-                } else {
-                    return new IdNode(child.getText(), isNegative);
+                }
+                else {
+                    IdNode node = new IdNode(child.getText(), isNegative);
+                    node.lineNumber = ctx.start.getLine();
+                    return node;
                 }
             case "class com.p4.parser.CStarParser$Func_callContext": // if func call
                 return visit(ctx.func_call());
@@ -531,9 +541,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
-    @Override
-    public AstNode visitFunc(CStarParser.FuncContext ctx) {
-        FuncNode node = new FuncNode();
+    @Override public AstNode visitFunc(CStarParser.FuncContext ctx) {
+        FuncDclNode node = new FuncDclNode();
         node.lineNumber = ctx.start.getLine();
         node.id = ctx.ID().toString();
         node.returnType = (ctx.return_type().TYPE() != null ? ctx.return_type().TYPE().toString() : "void");

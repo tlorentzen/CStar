@@ -5,6 +5,7 @@ import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
 import com.p4.parser.*;
 import com.p4.parser.nodes.ProgNode;
+import com.p4.parser.visitors.*;
 import com.p4.symbols.SymbolTable;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -64,6 +65,9 @@ public class Main {
                             AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                             astTreeVisitor.visit(0, ast);
 
+                            FuncVisitor funcVisitor = new FuncVisitor(symbolTable, errors);
+                            funcVisitor.visit(ast);
+
                             SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable, errors);
                             symbolTableVisitor.visit(ast);
 
@@ -79,6 +83,7 @@ public class Main {
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
+
                             } else{
                                 //Todo: should we do something
                             }

@@ -1,6 +1,6 @@
 package com.p4.parser.nodes;
 
-import com.p4.parser.INodeVisitor;
+import com.p4.parser.visitors.INodeVisitor;
 
 public class LogicalNode extends AstNode{
     private int operator = -1;

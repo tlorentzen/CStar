@@ -27,10 +27,6 @@ void loop() {
     }
 }
 
-long integer map(long integer x, long integer in_min, long integer in_max, long integer out_min, long integer out_max) {
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
 void setBarGraph() {
 
     integer counter = 0;
@@ -57,7 +53,7 @@ void readInput() {
     console.println(btnState);
 
     if(btnState > 500){
-        inFunMode = true;
+        inFunMode = 1;
     }
 }
 
@@ -83,9 +79,9 @@ void setRGB() {
 }
 
 void writeRGBState(integer r, integer g, integer b){
-    write(rgb[0], r);
-    write(rgb[1], g);
-    write(rgb[2], b);
+    rgb[0] = r;
+    rgb[1] = g;
+    rgb[2] = b;
 }
 
 void makeFun(){
@@ -95,7 +91,7 @@ void makeFun(){
     integer cycles = 4;
 
     while(counter < numOfGraphLeds) repeat {
-        write(bargraph[counter], 0);
+        bargraph[counter] = 0;
         counter = counter + 1;
     }
 
@@ -104,23 +100,23 @@ void makeFun(){
 
         while(counter < numOfGraphLeds) repeat {
             if(counter < numOfGraphLeds){
-                write(bargraph[counter], 1);
+                bargraph[counter] = 1;
             }else{
-                write(bargraph[counter], 0);
+                bargraph[counter] = 0;
             }
 
             counter = counter + 1;
-            sleep(50);
+            delay(50);
         }
 
         while(counter > 0) repeat {
             if(counter-1 > numOfGraphLeds){
-                write(bargraph[counter], 1);
+                bargraph[counter] = 1;
             }else{
-                write(bargraph[counter], 0);
+                bargraph[counter] = 0;
             }
             counter = counter - 1;
-            sleep(50);
+            delay(50);
         }
 
         cycle = cycle + 1;

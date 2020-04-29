@@ -1,11 +1,14 @@
-package com.p4.parser;
+package com.p4.parser.visitors;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
+import com.p4.parser.CStarParser;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.Attributes;
-import com.p4.symbols.FunctionAttributes;
+import com.p4.symbols.CStarScope;
 import com.p4.symbols.SymbolTable;
+
+import java.util.Map;
 
 public class SemanticsVisitor implements INodeVisitor {
 
@@ -25,13 +28,17 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //Explicit declaration scope rule
     public void visit(IdNode node){
-        Attributes attributes = symbolTable.lookup(node.id);
+        if(!symbolTable.calledFunctions.contains(node.id) && symbolTable.declaredFunctions.contains(node.id)){
+            Attributes attributes = symbolTable.lookup(node.id);
 
-        if(attributes == null){
-            errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope. The type of " + node.id + " will be null", node.lineNumber);
-            //Todo: set the node.type to something to avoid null pointer exception
+            if(attributes == null){
+                errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope. The type of " + node.id + " will be null", node.lineNumber);
+                //Todo: set the node.type to something to avoid null pointer exception
+            } else {
+                node.type = attributes.variableType;
+            }
         } else {
-            node.type = attributes.variableType;
+            node.type = "ArduinoC";
         }
     }
 
@@ -92,14 +99,31 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
 
         String leftType = node.children.get(0).type;
-        String rightType= node.children.get(1).type;
-        String resultType = assignOperationResultType(leftType, rightType);
-        
-        if (resultType.equals("error")){
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
+        String rightType = "";
+
+        if(node.children.get(1).getClass().getName().equals("com.p4.parser.nodes.FuncCallNode")){
+            FuncCallNode funcCallNode = (FuncCallNode) node.children.get(1);
+            if(((IdNode)funcCallNode.children.get(0)).type == null){
+                rightType = leftType;
+            }
+            else if(((IdNode) funcCallNode.children.get(0)).type.equals("void")){
+                errors.addEntry(ErrorType.VOID_ASSIGN, "Cannot assign function '" + ((IdNode) funcCallNode.children.get(0)).id + "' to " + node.children.get(0).type + " because it returns void", node.lineNumber);
+            }
+            else{
+                rightType= ((IdNode)funcCallNode.children.get(0)).type;
+            }
         }
         else{
-            node.type = resultType;
+            rightType= node.children.get(1).type;
+            String resultType = assignOperationResultType(leftType, rightType);
+            if (resultType.equals("error")){
+                if(!leftType.equals("ArduinoC") && !rightType.equals("ArduinoC")) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
+                }
+            }
+            else{
+                node.type = resultType;
+            }
         }
     }
     //todo bedre navn, så den også dækker over FuncCall's parameter type checking. Men er det ikke kinda en assign også?
@@ -108,12 +132,18 @@ public class SemanticsVisitor implements INodeVisitor {
         if (leftType == null || rightType == null){
             return "error";
         }
+        if(leftType.equals("ArduinoC")){
+            return rightType;
+        }
+        if(rightType.equals("ArduinoC")){
+            return leftType;
+        }
         if (leftType.equals(rightType)){
             return leftType;
         }
-        else if (leftType.equals("decimal") && (rightType.equals("integer") || 
+        else if (leftType.equals("decimal") && (rightType.equals("integer") ||
                  rightType.equals("long integer") || rightType.equals("small integer"))){
-            return leftType;             
+            return leftType;
         }
         else if (leftType.equals("long integer") && (rightType.equals("integer") || rightType.equals("small integer"))){
             return leftType;
@@ -204,30 +234,13 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //todo fix med det nye semantik
     public void visit(ArrayAccessNode node) {
-        String nodeType = node.children.get(1).getClass().getName();
-        Attributes arrayAttr = symbolTable.lookup(node.children.get(0).getClass().getName());
-
-        switch (nodeType) {
-            case "com.p4.parser.nodes.IntegerNode":
-                node.type = "integer";
-                break;
-            case "com.p4.parser.nodes.FloatNode":
-                node.type = "decimal";
-                break;
-            case "com.p4.parser.nodes.PinNode":
-                node.type = "pin";
-                break;
-            case "com.p4.parser.nodes.CharNode":
-                node.type = "character";
-                break;
-            default:
-                node.type = "error";
-                break;
-        }
+        this.visitChildren(node);
+        node.type = node.children.get(0).type;
     }
 
     public void visit(ArrayExprNode node) {
         this.visitChildren(node);
+        castArrayElements(node, node.children.get(0).type);
     }
 
     private void castArrayElements(ArrayExprNode node, String type){
@@ -247,7 +260,7 @@ public class SemanticsVisitor implements INodeVisitor {
                     }
                 }
             }
-        }  
+        }
     }
 
     public void visit(ArrayNode node) {
@@ -263,8 +276,8 @@ public class SemanticsVisitor implements INodeVisitor {
         String leftType = node.children.get(0).type;
         String rightType = node.children.get(1).type;
         String resultType = arithOperationResultType(leftType, rightType);
-        
-        if (resultType.equals("error")){ 
+
+        if (resultType.equals("error")){
             errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
         }
         else {
@@ -302,7 +315,7 @@ public class SemanticsVisitor implements INodeVisitor {
             }
         }
     }
-    
+
     private boolean isDivByZero(AstNode denominator){
         boolean isZero = (((NumberNode)denominator).getValue() == 0);
 
@@ -318,44 +331,47 @@ public class SemanticsVisitor implements INodeVisitor {
     //todo widening virker ikke helt endnu. fix det.
     //If no errors occur, then the function call will be seen as well typed
     public void visit(FuncCallNode node) {
-        String actualParamType;
-        String formalParamType;
-        FunctionAttributes attributes = null;
-
         // Gets the function declaration
+        this.visitChildren(node);
+        node.type = ((IdNode) node.children.get(0)).type;
         String functionName = ((IdNode)node.children.get(0)).id;
-        if(symbolTable.enterScope("FuncNode-" + functionName)){
-            attributes = symbolTable.lookupParam("FuncNode-" + functionName, functionName);
-        }
+        CStarScope functionScope;
+        if(symbolTable.declaredFunctions.contains(functionName)){
+            if((functionScope = this.symbolTable.lookupScope("FuncNode-" + functionName)) != null){
+                //Goes through all parameters and compare each formal and actual parameter
+                if(node.children.size()-1 != functionScope.params.size()){
+                    errors.addEntry(ErrorType.PARAMETER_ERROR, "The number of actual parameters does not correspond with the number of formal parameters in call to function '" + functionName + "'", node.lineNumber);
+                } else{
+                    int currentChild = 1;
+                    String actualParamType;
+                    String formalParamType;
 
-        if(attributes == null){
-            errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
-        }
-        else {
-            this.visitChildren(node);
-            int numOfChildren = node.getChildren().size();
-            //Goes through all parameters and compare each formal and actual parameter
-            for (int i = 1; i < numOfChildren; i++) {
-                actualParamType = findActualParamType(node.children.get(i));
-                formalParamType = attributes.parameters.get(i - 1);
+                    for (Map.Entry<String, Attributes> formalParam : functionScope.params.entrySet()) {
+                        actualParamType = node.children.get(currentChild).type;
 
-                if (actualParamType.equals("error")) {
-                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
-                }
-                // Checks if types are the same or if type widening is possible
-                else {
-                    String resultType = assignOperationResultType(formalParamType, actualParamType);
+                        if (actualParamType.equals("error")) {
+                            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
+                        }
+                        // Checks if types are the same or if type widening is possible
+                        else if(!(formalParamType = formalParam.getValue().variableType).equals("")){
+                            String resultType = assignOperationResultType(formalParamType, actualParamType);
 
-                    if (resultType.equals("error")) {
-                        errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
-                            + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
-                    } else if(resultType.equals(formalParamType)) {
-                        node.children.get(i).type = formalParamType; //Todo: might need fix
-                    } else{
-                        //Todo: handled casting not possible
+                            if (resultType.equals("error")) {
+                                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
+                                        + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
+                            } else if(resultType.equals(formalParamType)) {
+                                node.children.get(currentChild).type = formalParamType; //Todo: might need fix
+                            } else{
+                                //Todo: handled casting not possible
+                            }
+                        }
+                        currentChild++;
                     }
                 }
+                symbolTable.leaveScope();
             }
+        } else{
+            errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
         }
     }
 
@@ -366,6 +382,8 @@ public class SemanticsVisitor implements INodeVisitor {
         if (nodeType[0] == null){
             return "error";
         }
+
+
 
         switch (nodeType[0]){
             case "com.p4.parser.nodes.IdNode":
@@ -378,8 +396,8 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "error";
         }
     }
-    
-    public void visit(FuncNode node) {
+
+    public void visit(FuncDclNode node) {
         this.symbolTable.enterScope(node.getNodeHash());
         this.visitChildren(node);
         this.symbolTable.leaveScope();
@@ -468,6 +486,14 @@ public class SemanticsVisitor implements INodeVisitor {
         if (leftType == null || rightType == null){
             return "error";
         }
+
+        if(leftType.equals("ArduinoC")){
+            return rightType;
+        }
+        if(rightType.equals("ArduinoC")){
+            return leftType;
+        }
+
         //First semantic rule
         if(leftType.equals(rightType) && (leftType.equals("integer") ||
            leftType.equals("decimal") || leftType.equals("long integer") ||

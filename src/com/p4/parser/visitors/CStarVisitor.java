@@ -1,5 +1,6 @@
-// Generated from /Users/lenasaid/floobits/share/ichris18/src/com/p4/parser/CStar.g4 by ANTLR 4.8
 package com.p4.parser;
+package com.p4.parser.visitors;
+import com.p4.parser.CStarParser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**

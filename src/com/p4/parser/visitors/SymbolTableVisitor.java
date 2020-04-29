@@ -1,4 +1,4 @@
-package com.p4.parser;
+package com.p4.parser.visitors;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
@@ -6,8 +6,6 @@ import com.p4.parser.nodes.*;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.FunctionAttributes;
 import com.p4.symbols.SymbolTable;
-
-import java.util.ArrayList;
 
 public class SymbolTableVisitor implements INodeVisitor {
 
@@ -94,6 +92,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(ProgNode node) {
         this.visitChildren(node);
+        symbolTable.outputSymbolTable(symbolTable.lookupScope("global"));
     }
 
     @Override
@@ -133,7 +132,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = arrayNode.type;
             attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
             node.type = attr.variableType;
         }
     }
@@ -152,7 +151,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = "character";
             attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
             node.type = attr.variableType;
         }
     }
@@ -171,7 +170,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = "decimal";
             attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
             node.type = attr.variableType;
         }
     }
@@ -184,17 +183,22 @@ public class SymbolTableVisitor implements INodeVisitor {
 
 
     @Override
-    public void visit(FuncNode node) {
-        FunctionAttributes attributes = new FunctionAttributes();
-        attributes.kind = "function";
-        attributes.variableType = node.returnType;
+    public void visit(FuncDclNode node) {
+        if(symbolTable.lookup(node.id) != null){
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Function '" + node.getId() + "' already exists", node.lineNumber);
+        } else{
+            FunctionAttributes attributes = new FunctionAttributes();
+            attributes.kind = "function";
+            attributes.variableType = node.returnType;
 
-        symbolTable.insert(node.id, attributes);
-        symbolTable.addScope(node.getNodeHash());
+            symbolTable.insertSymbol(node.id, attributes);
+            symbolTable.addScope(node.getNodeHash());
 
-        this.visitChildren(node);
+            this.visitChildren(node);
 
-        symbolTable.leaveScope();
+            symbolTable.leaveScope();
+        }
+
     }
 
     @Override
@@ -206,7 +210,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = "integer";
             attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
             node.type = attr.variableType;
         }
     }
@@ -215,7 +219,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(IterativeNode node) {
         symbolTable.addScope(node.getNodeHash());
         this.visitChildren(node);
-        symbolTable.leaveScope();
+        symbolTable.leaveScope(node.getNodeHash());
     }
 
     @Override
@@ -227,7 +231,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = "long integer";
             attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
             node.type = attr.variableType;
         }
     }
@@ -239,26 +243,17 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(ParamNode node) {
-        ArrayList<String> params = new ArrayList<>();
         String scopeName = symbolTable.getCurrentScope().getScopeName();
-        System.out.println(scopeName);
 
         for(AstNode child : node.getChildren()){
             IdNode param = (IdNode)child;
 
             Attributes attributes = new Attributes();
             attributes.variableType = param.type;
-            attributes.kind = "param";
             attributes.scope = scopeName;
 
-            symbolTable.insert(param.id, attributes);
-            params.add(param.type);
+            symbolTable.insertParam(param.id, attributes);
         }
-
-        FunctionAttributes functionAttributes = new FunctionAttributes();
-        functionAttributes.parameters = params;
-        symbolTable.insert("funcAttr", functionAttributes);
-
         this.visitChildren(node);
     }
 
@@ -271,7 +266,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             Attributes attr = new Attributes();
             attr.variableType = "pin";
             attr.kind = "dcl";
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
             node.type = attr.variableType;
         }
     }
@@ -280,8 +275,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(SelectionNode node) {
         symbolTable.addScope(node.getNodeHash());
         this.visitChildren(node);
-        symbolTable.outputAvailableSymbols();
-        symbolTable.leaveScope();
+        symbolTable.leaveScope(node.getNodeHash());
     }
 
     @Override

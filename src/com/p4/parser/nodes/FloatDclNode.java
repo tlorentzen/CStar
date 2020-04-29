@@ -1,6 +1,6 @@
 package com.p4.parser.nodes;
 
-import com.p4.parser.INodeVisitor;
+import com.p4.parser.visitors.INodeVisitor;
 
 public class FloatDclNode extends DclNode<Float>{
     public FloatDclNode(String id){

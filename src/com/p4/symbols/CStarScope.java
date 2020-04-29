@@ -1,8 +1,6 @@
 package com.p4.symbols;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class CStarScope{
     //Name of the scope
@@ -11,20 +9,16 @@ public class CStarScope{
     CStarScope parent;
     //The symbols in the scope
     HashMap<String, Attributes> symbols = new HashMap<>();
+    public Map<String, Attributes> params = new LinkedHashMap<>();
+
     //Nested scopes within the current scope
     List<CStarScope> children = new ArrayList<>();
-    int level;
 
-    public CStarScope(String scopeName, int level){
+    public CStarScope(String scopeName){
         this.scopeName = scopeName;
-        this.level = level;
     }
 
     public String getScopeName() {
         return scopeName;
-    }
-
-    public int getLevel() {
-        return level;
     }
 }

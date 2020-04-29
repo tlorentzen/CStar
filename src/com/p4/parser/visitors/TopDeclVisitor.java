@@ -1,4 +1,4 @@
-package com.p4.parser;
+package com.p4.parser.visitors;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
@@ -20,7 +20,7 @@ public class TopDeclVisitor extends SemanticsVisitor {
             var attr = new Attributes();
             attr.variableType = node.type;
             attr.kind = node.getClass().getName();
-            symbolTable.insert(node.id, attr);
+            symbolTable.insertSymbol(node.id, attr);
         }
     }
 }

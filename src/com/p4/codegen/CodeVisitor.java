@@ -1,16 +1,17 @@
 package com.p4.codegen;
 
-import com.p4.parser.INodeVisitor;
+import com.p4.parser.visitors.INodeVisitor;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.SymbolTable;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class CodeVisitor implements INodeVisitor{
     //FilePath is used to specify the location for the compiled Arduino file
-    String filePath = System.getProperty("user.home") + "\\Desktop\\test.ino";
+    String filePath = System.getProperty("user.dir") + "/compile-out/compile-out.ino";
 
     //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
@@ -389,6 +390,9 @@ public class CodeVisitor implements INodeVisitor{
         for(AstNode child : node.children){
             stringBuilder.append("    ");
             this.visitChild(child);
+            if(child.getClass().getName().equals("com.p4.parser.nodes.FuncCallNode")){
+                stringBuilder.append(";\n");
+            }
         }
 
         stringBuilder.append("\n}\n");
@@ -450,7 +454,8 @@ public class CodeVisitor implements INodeVisitor{
                 stringBuilder.append(", ");
             }
         }
-        stringBuilder.append(");\n");
+        stringBuilder.append(")");
+
     }
 
     /**
@@ -460,7 +465,7 @@ public class CodeVisitor implements INodeVisitor{
      * @param node is the func node to be handled.
      */
     @Override
-    public void visit(FuncNode node) {
+    public void visit(FuncDclNode node) {
         //func: return_type ID LEFT_PAREN param? RIGHT_PAREN blk; //done
         stringBuilder.append(node.returnType);
         stringBuilder.append(" ");

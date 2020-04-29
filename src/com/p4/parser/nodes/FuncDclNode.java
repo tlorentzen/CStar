@@ -1,8 +1,8 @@
 package com.p4.parser.nodes;
 
-import com.p4.parser.INodeVisitor;
+import com.p4.parser.visitors.INodeVisitor;
 
-public class FuncNode extends AstNode{
+public class FuncDclNode extends AstNode{
     public String id;
     public String returnType;
 
@@ -24,6 +24,10 @@ public class FuncNode extends AstNode{
         visitor.visit(this);
     }
 
+    /**
+     * Overrides the getNodeHash method in AstNode, so that the hash can be used to find the scope
+     * @return the hash of the FuncNode
+     */
     @Override
     public String getNodeHash() {
         return "FuncNode-" + id;

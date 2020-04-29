@@ -1,4 +1,4 @@
-package com.p4.parser;
+package com.p4.parser.visitors;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
