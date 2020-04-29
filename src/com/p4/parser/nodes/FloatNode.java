@@ -3,8 +3,7 @@ package com.p4.parser.nodes;
 import com.p4.parser.INodeVisitor;
 
 public class FloatNode extends LiteralNode<Float>{
-
-    public FloatNode(Float value, Boolean isNegative) {
+    public FloatNode(float value, Boolean isNegative) {
         super(value, isNegative);
     }
 

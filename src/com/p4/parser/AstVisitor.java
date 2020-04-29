@@ -175,8 +175,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 return null;
             }
         }
+        //Check if the value is a float (not a whole number)
         else if (ctx.NUMBER() != null) {
-            return new NumberNode(Long.parseLong(ctx.getText()), isNegative);
+            if(ctx.NUMBER().getText().contains(".")){
+                return new FloatNode(Float.parseFloat(ctx.getText()), isNegative);
+            }
+            else{
+                return new NumberNode(Long.parseLong(ctx.getText()), isNegative);
+            }
         } else {
             return null;
         }

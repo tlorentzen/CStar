@@ -38,35 +38,55 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(PrintNode node) {/*todo implement*/};
 
     public void visit(NumberNode node) {
-        node.type = "number";
+        String type = checkNumberSize(node);
+
+        if(type.equals("error")){
+            String check = node.value > Long.MAX_VALUE ? "overflow" : "underflow";
+            errors.addEntry(ErrorType.TYPE_ERROR, "Type " + check + ": The value was too " + (check == "overflow" ? "big" : "small"), node.lineNumber);
+        }
+        else{
+            node.type = type;
+        }
+    }
+
+    public void visit(FloatNode node) {
+        node.type = "decimal";
     };
 
-    public void visit(BooleanNode node) {/*todo implement*/};
+    public void visit(BooleanNode node) {
+        node.type = "boolean";
+    };
     public void visit(BooleanDclNode node) {/*todo implement*/};
-    public void visit(SmallNode node) {/*todo implement*/};
     public void visit(SmallDclNode node) {/*todo implement*/};
     public void visit(ModNode node) {/*todo implement*/};
-    public void visit(StringNode node) {/*todo implement*/};
-
-    public void visit(IntegerNode node){
-        node.type = "integer";
-    }
-
-    public void visit(FloatNode node){
-        node.type = "decimal";
-    }
+    public void visit(StringNode node) {
+        node.type = "string";
+    };
 
     public void visit(PinNode node){
         node.type = "pin";
     }
 
-    public void visit(LongNode node){
-        node.type = "long integer";
-    }
-
     public void visit(CharNode node){
         node.type = "character";
     }
+
+    public String checkNumberSize(NumberNode node){
+        //Finds the smallest number type that can fit the number
+        if(node.value < Byte.MAX_VALUE && node.value > Byte.MIN_VALUE){
+            return "small integer";
+        }
+        else if(node.value < Integer.MAX_VALUE && node.value > Integer.MIN_VALUE) {
+            return "integer";
+        }
+        else if (node.value < Long.MAX_VALUE && node.value > Long.MIN_VALUE){
+            return "long integer";
+        }
+        else {
+            return "error";
+        }
+    }
+
 
     public void visit(AssignNode node){
         this.visitChildren(node);
@@ -91,13 +111,14 @@ public class SemanticsVisitor implements INodeVisitor {
         if (leftType.equals(rightType)){
             return leftType;
         }
-        else if (leftType.equals("decimal") && (rightType.equals("integer") || rightType.equals("long integer"))){
+        else if (leftType.equals("decimal") && (rightType.equals("integer") || 
+                 rightType.equals("long integer") || rightType.equals("small integer"))){
             return leftType;             
         }
-        else if ((leftType.equals("long integer") || leftType.equals("pin")) && rightType.equals("integer")){
+        else if (leftType.equals("long integer") && (rightType.equals("integer") || rightType.equals("small integer"))){
             return leftType;
         }
-        else if ((leftType.equals("long integer") || leftType.equals("integer")) && rightType.equals("pin")){
+        else if (leftType.equals("integer") && rightType.equals("small integer")){
             return leftType;
         }
         else{
@@ -128,7 +149,7 @@ public class SemanticsVisitor implements INodeVisitor {
             return false;
         }
 
-        return leftType.equals("integer") && rightType.equals("integer");
+        return leftType.equals("boolean") && rightType.equals("boolean");
     }
 
     public void visit(CondNode node){
@@ -152,8 +173,9 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private boolean compareOperationValid(int operator, String leftType, String rightType) {
-
-        //forskellig for: (is isnot), (or, and), (greater, less)
+        //Checks if either type is a character or pin (not valid in these operations)
+        boolean isValid = ((!leftType.equals("character") && !rightType.equals("character")) ||
+                (!leftType.equals("pin") && !rightType.equals("pin")));
 
         //Checks if either type is null
         if (leftType == null || rightType == null){
@@ -164,11 +186,12 @@ public class SemanticsVisitor implements INodeVisitor {
             if(leftType.equals(rightType)){
                 return true;
             }
-            else return !leftType.equals("character") && !rightType.equals("character");
+            else return isValid;
         }
-        //Checks if the operator is '<' or '>'
-        else if(operator == CStarParser.LESS_THAN || operator == CStarParser.GREATER_THAN) {
-            return !leftType.equals("character") && !rightType.equals("character");
+        //Checks if the operator is '<' or '>' and '<=' and '>='
+        else if(operator == CStarParser.LESS_THAN || operator == CStarParser.GREATER_THAN ||
+                operator == CStarParser.LESS_THAN_EQ || operator == CStarParser.GREATER_THAN_EQ) {
+            return isValid && !leftType.equals("boolean") && !rightType.equals("boolean");
         }
         else {
             return false;
@@ -179,6 +202,7 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
+    //todo fix med det nye semantik
     public void visit(ArrayAccessNode node) {
         String nodeType = node.children.get(1).getClass().getName();
         Attributes arrayAttr = symbolTable.lookup(node.children.get(0).getClass().getName());
@@ -199,7 +223,6 @@ public class SemanticsVisitor implements INodeVisitor {
             default:
                 node.type = "error";
                 break;
-
         }
     }
 
@@ -224,7 +247,7 @@ public class SemanticsVisitor implements INodeVisitor {
                     }
                 }
             }
-        }
+        }  
     }
 
     public void visit(ArrayNode node) {
@@ -232,7 +255,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ReturnExpNode node) {
-        //Todo: implement
+        //Todo: implement - check if the node type is the same as return type of the function
     }
 
     public void visit(AddNode node) {
@@ -281,8 +304,11 @@ public class SemanticsVisitor implements INodeVisitor {
     }
     
     private boolean isDivByZero(AstNode denominator){
-        return (denominator.type.equals("integer") && ((IntegerNode)denominator).getValue() == 0) ||
-               (denominator.type.equals("long integer") && ((FloatNode)denominator).getValue() == 0);
+        boolean isZero = (((NumberNode)denominator).getValue() == 0);
+
+        return (denominator.type.equals("small integer") && isZero) ||
+               (denominator.type.equals("integer") && isZero) ||
+               (denominator.type.equals("long integer") && isZero);
     }
 
     public void visit(FloatDclNode node) {
@@ -344,10 +370,6 @@ public class SemanticsVisitor implements INodeVisitor {
         switch (nodeType[0]){
             case "com.p4.parser.nodes.IdNode":
                 return symbolTable.lookup(((IdNode)actualParam).id).variableType;
-            case "com.p4.parser.nodes.IntegerNode":
-                return "integer";
-            case "com.p4.parser.nodes.FloatNode":
-                return "decimal";
             case "com.p4.parser.nodes.PinNode":
                 return "pin";
             case "com.p4.parser.nodes.CharNode":
@@ -398,7 +420,6 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ParamNode node) {
-
         this.visitChildren(node);
     }
 
@@ -420,7 +441,7 @@ public class SemanticsVisitor implements INodeVisitor {
         if (condType == null){
             return false;
         }
-        return condType.equals("integer") || condType.equals("boolean");
+        return condType.equals("boolean");
     }
 
     public void visit(StmtNode node) {
@@ -449,25 +470,30 @@ public class SemanticsVisitor implements INodeVisitor {
         }
         //First semantic rule
         if(leftType.equals(rightType) && (leftType.equals("integer") ||
-            leftType.equals("decimal") || leftType.equals("long integer"))) {
+           leftType.equals("decimal") || leftType.equals("long integer") ||
+           leftType.equals("small integer"))) {
             return leftType;
         }
         //Second semantic rule
-        else if((leftType.equals("integer") || leftType.equals("long integer")) && rightType.equals("decimal") ||
-                leftType.equals("decimal") && (rightType.equals("long integer") || rightType.equals("integer"))) {
+        else if(((leftType.equals("integer") || leftType.equals("small integer")) && rightType.equals("decimal")) ||
+                ((leftType.equals("decimal") && (rightType.equals("integer") || rightType.equals("small integer"))))) {
             return "decimal";
         }
         //Third semantic rule
-        else if((leftType.equals("integer") && rightType.equals("long integer")) ||
-                (leftType.equals("long integer") && rightType.equals("integer"))) {
+        else if(((leftType.equals("integer") || leftType.equals("small integer")) && rightType.equals("long integer")) ||
+                ((rightType.equals("integer") || rightType.equals("small integer")) && leftType.equals("long integer"))) {
             return "long integer";
+        }
+        //Fourth semantic rule
+        else if ((leftType.equals("integer") && rightType.equals("small integer")) ||
+                 (leftType.equals("small integer") && rightType.equals("integer"))){
+            return "integer";
         }
         //Wrong semantic!
         else{
             return "error";
         }
     }
-    
 
     private String unaryOperationResultType(int operator, String type) {
         //Todo: handle casting

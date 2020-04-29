@@ -7,10 +7,7 @@ public interface INodeVisitor {
     void visitChildren(AstNode node);
 
     void visit(IdNode node);
-    void visit(IntegerNode node);
-    void visit(FloatNode node);
     void visit(PinNode node);
-    void visit(LongNode node);
     void visit(CharNode node);
     void visit(AssignNode node);
     void visit(CondNode node);
@@ -41,8 +38,8 @@ public interface INodeVisitor {
     void visit(StringNode node);
     void visit(ModNode node);
     void visit(BooleanNode node);
-    void visit(SmallNode node);
     void visit(BooleanDclNode node);
     void visit(SmallDclNode node);
     void visit(NumberNode node);
+    void visit(FloatNode node);
 }

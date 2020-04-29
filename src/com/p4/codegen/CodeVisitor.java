@@ -70,6 +70,10 @@ public class CodeVisitor implements INodeVisitor{
 
     //todo implement
     @Override
+    public void visit(FloatNode node){}
+
+    //todo implement
+    @Override
     public void visit(ModNode node){}
 
     //todo implement
@@ -83,10 +87,6 @@ public class CodeVisitor implements INodeVisitor{
     //todo implement
     @Override
     public void visit(BooleanDclNode node){}
-
-    //todo implement
-    @Override
-    public void visit(SmallNode node){}
 
     //todo implement
     @Override
@@ -126,38 +126,11 @@ public class CodeVisitor implements INodeVisitor{
 
     /**
      * Adds the value of the node to the string builder.
-     * @param node is the integer node to be handled.
-     */
-    @Override
-    public void visit(IntegerNode node) {
-        stringBuilder.append(node.value);
-    }
-
-    /**
-     * Adds the value of the node to the string builder.
-     * @param node is the float node to be handled.
-     */
-    @Override
-    public void visit(FloatNode node) {
-        stringBuilder.append(node.value);
-    }
-
-    /**
-     * Adds the value of the node to the string builder.
      * @param node is the pin node to be handled.
      */
     @Override
     public void visit(PinNode node) {
         stringBuilder.append(convertIntToPinValue(node));
-    }
-
-    /**
-     * Adds the value of the node to the string builder.
-     * @param node is the long node to be handled.
-     */
-    @Override
-    public void visit(LongNode node) {
-        stringBuilder.append(node.value);
     }
 
     /**
@@ -233,7 +206,7 @@ public class CodeVisitor implements INodeVisitor{
             if(rightChild.getClass().getName().equals("com.p4.parser.nodes.IntegerNode")){
 
                 //If the operator is an integer node, analog write should be used, unless the value is 0 or 255.
-                if(((IntegerNode) rightChild).value == 0 || ((IntegerNode) rightChild).value == 255){
+                if(((NumberNode) rightChild).value == 0 || ((NumberNode) rightChild).value == 255){
                     stringBuilder.append("digitalWrite(");
                 } else{
                     stringBuilder.append("analogWrite(");
@@ -249,7 +222,7 @@ public class CodeVisitor implements INodeVisitor{
     }
 
     private String convertIntToPinValue(AstNode node) {
-        return (node instanceof PinNode ? "A" + ((((PinNode) node).value * -1) - 1) : ((IntegerNode) node).value.toString());
+        return (node instanceof PinNode ? "A" + ((((PinNode) node).value * -1) - 1) : ((NumberNode) node).value.toString());
     }
 
     /**

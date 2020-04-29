@@ -66,7 +66,7 @@ ARRAY: 'array';
 RETURN: 'return';
 PRINT: 'console.print';
 
-NUMBER: ('0'..'9')+ ('.' ('0'..'9')+ )?;
+NUMBER: ('0'..'9') + ('.' ('0'..'9')+ )?;
 BOOLEAN_LITERAL: 'true' | 'false';
 PIN_LITERAL: ( 'a' | 'A' )?  ('0'..'9')+;
 CHAR_LITERAL: '\'' (.) '\'';

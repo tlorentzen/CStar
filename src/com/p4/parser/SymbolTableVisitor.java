@@ -38,6 +38,11 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     //todo Implement
     @Override
+    public void visit(FloatNode node) {
+    }
+
+    //todo Implement
+    @Override
     public void visit(BooleanNode node) {
     }
 
@@ -49,11 +54,6 @@ public class SymbolTableVisitor implements INodeVisitor {
     //todo Implement
     @Override
     public void visit(BooleanDclNode node) {
-    }
-
-    //todo Implement
-    @Override
-    public void visit(SmallNode node) {
     }
 
     //todo Implement
@@ -72,23 +72,8 @@ public class SymbolTableVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(IntegerNode node) {
-        node.type = "integer";
-    }
-
-    @Override
-    public void visit(FloatNode node) {
-        node.type = "decimal";
-    }
-
-    @Override
     public void visit(PinNode node) {
         node.type = "pin";
-    }
-
-    @Override
-    public void visit(LongNode node) {
-        node.type = "long integer";
     }
 
     @Override
@@ -195,6 +180,8 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(FuncCallNode node) {
         this.visitChildren(node);
     }
+
+
 
     @Override
     public void visit(FuncNode node) {
