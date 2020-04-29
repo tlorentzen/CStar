@@ -11,7 +11,7 @@ import java.nio.file.Path;
 
 public class CodeVisitor implements INodeVisitor{
     //FilePath is used to specify the location for the compiled Arduino file
-    String filePath = System.getProperty("user.dir") + "/compile-out/test.ino";
+    String filePath = System.getProperty("user.dir") + "/compile-out/compile-out.ino";
 
     //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
