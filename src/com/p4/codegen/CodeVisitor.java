@@ -156,8 +156,6 @@ public class CodeVisitor implements INodeVisitor{
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
 
-
-        System.out.println("Left: " + leftChild.type + " right: " + rightChild.type);
         //If pin appears on the right side, either declaration or write should be performed
         if(leftChild.type.equals("pin")){
             pinValueOnLeftSide(leftChild, rightChild);
@@ -207,14 +205,8 @@ public class CodeVisitor implements INodeVisitor{
             stringBuilder.append(", OUTPUT);\n");
 
             //Handles assigning a value to a pin after declaration, by using digital or analog write.
-            if(rightChild.getClass().getName().equals("com.p4.parser.nodes.IntegerNode")){
-
-                //If the operator is an integer node, analog write should be used, unless the value is 0 or 255.
-                if(((IntegerNode) rightChild).value == 0 || ((IntegerNode) rightChild).value == 255){
-                    stringBuilder.append("digitalWrite(");
-                } else{
-                    stringBuilder.append("analogWrite(");
-                }
+            if(rightChild.type.equals("integer")){
+                stringBuilder.append("analogWrite("); //Todo: maybe handle the value of rightChild to use digitalWrite. However, the value is not available for IdNode
             }
 
             //Ends the write statement with the pin and value
