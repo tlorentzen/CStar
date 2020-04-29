@@ -8,14 +8,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+
 public class CodeVisitor implements INodeVisitor{
     //FilePath is used to specify the location for the compiled Arduino file
     String filePath = System.getProperty("user.dir") + "/compile-out/compile-out.ino";
 
     //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
-    SymbolTable symbolTable = new SymbolTable();
-
+    SymbolTable symbolTable;
+    
     public CodeVisitor(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
     }
@@ -464,7 +465,6 @@ public class CodeVisitor implements INodeVisitor{
             stringBuilder.append("()");
         }
         this.visitChildren(node);
-
     }
 
     /**
