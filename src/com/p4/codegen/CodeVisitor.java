@@ -65,12 +65,19 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(PrintNode node){
-        for(AstNode element : node.formatString){
+        if(node.formatString.size() > 1){
+            for(AstNode element : node.formatString){
+                stringBuilder.append("Serial.print(");
+                this.visitChild(element);
+                stringBuilder.append(")\n");
+            }
+            stringBuilder.append("Serial.println()");
+        } else {
             stringBuilder.append("Serial.print(");
-            this.visitChild(element);
+            this.visitChild(node.formatString.get(0));
             stringBuilder.append(")\n");
         }
-        stringBuilder.append("Serial.println()");
+
     }
 
     @Override
@@ -78,9 +85,15 @@ public class CodeVisitor implements INodeVisitor{
         stringBuilder.append(node.value);
     }
 
-    //todo implement
     @Override
-    public void visit(ModNode node){}
+    public void visit(ModNode node){
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+
+        this.visitChild(leftChild);
+        stringBuilder.append(" % ");
+        this.visitChild(rightChild);
+    }
 
     @Override
     public void visit(NumberNode node){
@@ -101,9 +114,10 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(SmallDclNode node){}
 
-    //todo implement
     @Override
-    public void visit(StringNode node){}
+    public void visit(StringNode node){
+        stringBuilder.append(node.value);
+    }
 
     @Override
     public void visit(LogicalNode node){
