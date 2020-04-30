@@ -31,7 +31,6 @@ public interface INodeVisitor {
     void visit(ParamNode node);
     void visit(PinDclNode node);
     void visit(SelectionNode node);
-    void visit(StmtNode node);
     void visit(SubNode node);
     void visit(LogicalNode node);
     void visit(PrintNode node);

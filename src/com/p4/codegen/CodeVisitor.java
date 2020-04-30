@@ -607,17 +607,6 @@ public class CodeVisitor implements INodeVisitor{
     }
 
     /**
-     * Creates a statement
-     * Visit its children, which can be assign, expr, selection, or iterative;
-     * @param node is the statement node to be handled.
-     */
-    @Override
-    public void visit(StmtNode node) {
-        visitChildren(node);
-        stringBuilder.append(";\n");
-    }
-
-    /**
      * Creates a subtraction operation
      * First child is left side, second is right side
      * Format in Arduino C: 10 - 20
