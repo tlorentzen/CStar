@@ -149,9 +149,6 @@ public class CodeVisitor implements INodeVisitor{
             case "sleep":
                 stringBuilder.append("delay");
                 break;
-            case "console.println":
-                stringBuilder.append("Serial.println");
-                break;
             default:
                 stringBuilder.append(node.id);
                 break;
