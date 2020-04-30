@@ -355,7 +355,7 @@ public class SemanticsVisitor implements INodeVisitor {
                                         + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
                             } else if(resultType.equals(formalParamType)) {
                                 node.children.get(currentChild).type = formalParamType; //Todo: might need fix
-                            } else{
+                            } else {
                                 //Todo: handled casting not possible
                             }
                         }

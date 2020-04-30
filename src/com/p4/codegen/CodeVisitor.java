@@ -437,23 +437,34 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(FuncCallNode node) {
 
-        System.out.println(node.type);
-
         AstNode id = node.children.get(0);
-        this.visitChild(id);
-        stringBuilder.append("(");
+        String[] funcIDSplit = ((IdNode)id).id.split("\\.");
 
-        int counter = node.children.subList( 1, node.children.size()).size();
-
-        for(AstNode child : node.children.subList( 1, node.children.size())){
-            this.visitChild(child);
-            counter--;
-            if(counter > 0){
-                stringBuilder.append(", ");
+        if(funcIDSplit.length > 1){
+            if(funcIDSplit[1].equals("read")){
+                stringBuilder.append("digitalRead(");
+                stringBuilder.append(funcIDSplit[0]);
+                stringBuilder.append(")");
+            }else if(funcIDSplit[1].equals("write")){
+                stringBuilder.append("digitalRead(");
+                stringBuilder.append(funcIDSplit[0]);
+                stringBuilder.append(")");
             }
-        }
-        stringBuilder.append(")");
+        }else{
+            this.visitChild(id);
+            stringBuilder.append("(");
 
+            int counter = node.children.subList( 1, node.children.size()).size();
+
+            for(AstNode child : node.children.subList( 1, node.children.size())){
+                this.visitChild(child);
+                counter--;
+                if(counter > 0){
+                    stringBuilder.append(", ");
+                }
+            }
+            stringBuilder.append(")");
+        }
     }
 
     /**
