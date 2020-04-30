@@ -484,18 +484,15 @@ public class CodeVisitor implements INodeVisitor{
                         stringBuilder.append(funcIDSplit[0]);
                         stringBuilder.append(",");
                         visitChild(node.children.get(1));
-                    } else if (firstParam.type.equals("")) //Todo: finish
+                    } else if (firstParam.type.equals("")) { //Todo: finish
                         stringBuilder.append("digitalWrite(");
                         stringBuilder.append(funcIDSplit[0]);
                         stringBuilder.append(",");
                     }
                 }
-            //If the ID is an array access then add semicolon TODO: its ugly
-            if(((IdNode)id).id.contains("[")){
-                stringBuilder.append(");\n");
-            }else{
-                stringBuilder.append(")");
             }
+            stringBuilder.append(")");
+
         }else{
             this.visitChild(id);
             stringBuilder.append("(");
