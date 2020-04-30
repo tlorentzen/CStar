@@ -490,7 +490,11 @@ public class CodeVisitor implements INodeVisitor{
                         stringBuilder.append(",");
                     }
                 }
+            if(((IdNode)id).id.contains("[")){
+                stringBuilder.append(");\n");
+            }else{
                 stringBuilder.append(")");
+            }
         }else{
             this.visitChild(id);
             stringBuilder.append("(");
@@ -516,7 +520,6 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(FuncDclNode node) {
-        //func: return_type ID LEFT_PAREN param? RIGHT_PAREN blk; //done
         stringBuilder.append(node.returnType);
         stringBuilder.append(" ");
         stringBuilder.append(node.id);
