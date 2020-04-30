@@ -77,9 +77,9 @@ void setRGB() {
 }
 
 void writeRGBState(integer r, integer g, integer b){
-    rgb[0] = r;
-    rgb[1] = g;
-    rgb[2] = b;
+    rgb[0].write(r);
+    rgb[1].write(g);
+    rgb[2].write(b);
 }
 
 void makeFun(){
