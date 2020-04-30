@@ -26,21 +26,27 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
+    public void visit(ProgNode node) {
+        this.visitChildren(node);
+    }
+
     //Explicit declaration scope rule
     public void visit(IdNode node){
-        if(!symbolTable.calledFunctions.contains(node.id) && (symbolTable.declaredFunctions.contains(node.id) ||
-           !symbolTable.declaredFunctions.contains(node.id))){
+        //Checks if the IdNode can be an Arduino C function
+        if(symbolTable.calledFunctions.contains(node.id) && !symbolTable.declaredFunctions.contains(node.id)){
+            node.type = "ArduinoC";
+        }
+        else {
             Attributes attributes = symbolTable.lookup(node.id);
 
+            //Adds error if id was not found in an accessible scope
             if(attributes == null){
-                errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope. " +
-                                                                "The type of " + node.id + " will be null", node.lineNumber);
+                errors.addEntry(ErrorType.TYPE_ERROR, "'" + node.id + "' has not been declared in any accessible scope. " +
+                                                                "The type of '" + node.id + "' will be null", node.lineNumber);
                 //Todo: set the node.type to something to avoid null pointer exception
             } else {
                 node.type = attributes.variableType;
             }
-        } else {
-            node.type = "ArduinoC";
         }
     }
 
@@ -156,7 +162,7 @@ public class SemanticsVisitor implements INodeVisitor {
             String resultType = assignOperationResultType(leftType, rightType);
             
             if (resultType.equals("error")){
-                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
+                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
             }
             return resultType;
         }
@@ -262,54 +268,86 @@ public class SemanticsVisitor implements INodeVisitor {
                 type.equals("integer") || type.equals("small integer"));
     }
 
-    public void visit(ProgNode node) {
-        this.visitChildren(node);
-    }
-
-    //todo fix med det nye semantik
     public void visit(ArrayAccessNode node) {
         this.visitChildren(node);
-        node.type = node.children.get(0).type;
+
+        String idType = node.children.get(0).type;
+        String indexType = node.children.get(1).type;
+
+        //Checks if the index is an integer type
+        if(isNumber(indexType) && !indexType.equals("decimal")){
+            node.type = idType;
+        }
+        else{
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal indexing type: the index can not be of type " + indexType, node.lineNumber);
+        }
     }
 
     public void visit(ArrayExprNode node) {
         this.visitChildren(node);
-        castArrayElements(node, node.children.get(0).type);
-    }
-
-    private void castArrayElements(ArrayExprNode node, String type){
-        node.type = type;
-        boolean nodeTypeChecked = false;
-        while(!nodeTypeChecked){
-            nodeTypeChecked = true;
-            for(AstNode child : node.children){
-                if(!child.type.equals(node.type)){
-                    String dominantType = this.dominantTypeOfArrayElements(child.type, node.type);
-                    if(node.type.equals(dominantType)){
-                        child.type = node.type;
-                    } else{
-                        node.type = dominantType;
-                        nodeTypeChecked = false;
-                        break;
-                    }
-                }
-            }
-        }
     }
 
     public void visit(ArrayNode node) {
         this.visitChildren(node);
     }
 
-    public void visit(ReturnExpNode node) {
-        //Todo: implement - check if the node type is the same as return type of the function
-    }
-
     public void visit(ArrayDclNode<?> node) {
         this.visitChildren(node);
+
+        String leftType = node.children.get(0).type;
+        boolean errorOccured = false;
+
+        for(AstNode exprChild : node.children.get(1).children) {
+            String elementType = exprChild.type;
+            if (!isLegalType(leftType, elementType)) {
+                errorOccured = true;
+                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot convert " + elementType + " to " + leftType, node.lineNumber);
+            }
+        }
+        if(!errorOccured){
+            node.type = leftType;
+        }
+    }
+    
+    private boolean isLegalType(String firstType, String secondType){
+        //Enters if first rule
+        if(secondType.equals(firstType)){
+            return true;
+        }
+        //Enters if second or third rule
+        else if((firstType.equals("decimal") || firstType.equals("long integer")) &&
+                (secondType.equals("integer") || secondType.equals("small integer"))){
+            return true;
+        }
+        //Enters if fourth or fifth rule
+        else if((firstType.equals("integer") || firstType.equals("pin")) &&
+                secondType.equals("small integer")){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public void visit(ReturnExpNode node) {
+        this.visitChildren(node);
+
+        node.type = node.children.get(0).type;
     }
 
     public void visit(BlkNode node) {
+        this.visitChildren(node);
+    }
+
+    public void visit(ParamNode node) {
+        this.visitChildren(node);
+    }
+
+    public void visit(PinDclNode node) {
+        this.visitChildren(node);
+    }
+
+    public void visit(IntegerDclNode node) {
         this.visitChildren(node);
     }
 
@@ -317,101 +355,9 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
-
-
     public void visit(FloatDclNode node) {
         this.visitChildren(node);
     }
-
-    //todo widening virker ikke helt endnu. fix det.
-    //If no errors occur, then the function call will be seen as well typed
-    public void visit(FuncCallNode node) {
-        // Gets the function declaration
-        this.visitChildren(node);
-        node.type = ((IdNode) node.children.get(0)).type;
-        String functionName = ((IdNode)node.children.get(0)).id;
-        CStarScope functionScope;
-        if(symbolTable.declaredFunctions.contains(functionName)){
-            if((functionScope = this.symbolTable.lookupScope("FuncNode-" + functionName)) != null){
-                //Goes through all parameters and compare each formal and actual parameter
-                if(node.children.size()-1 != functionScope.params.size()){
-                    errors.addEntry(ErrorType.PARAMETER_ERROR, "The number of actual parameters does not correspond with the number of formal parameters in call to function '" + functionName + "'", node.lineNumber);
-                } else{
-                    int currentChild = 1;
-                    String actualParamType;
-                    String formalParamType;
-
-                    for (Map.Entry<String, Attributes> formalParam : functionScope.params.entrySet()) {
-                        actualParamType = node.children.get(currentChild).type;
-
-                        if (actualParamType.equals("error")) {
-                            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter is not a legal type", node.lineNumber);
-                        }
-                        // Checks if types are the same or if type widening is possible
-                        else if(!(formalParamType = formalParam.getValue().variableType).equals("")){
-                            String resultType = assignOperationResultType(formalParamType, actualParamType);
-
-                            if (resultType.equals("error")) {
-                                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
-                                        + formalParamType + ", but is of type " + actualParamType, node.lineNumber);
-                            } else if(resultType.equals(formalParamType)) {
-                                node.children.get(currentChild).type = formalParamType; //Todo: might need fix
-                            } else{
-                                //Todo: handled casting not possible
-                            }
-                        }
-                        currentChild++;
-                    }
-                }
-                symbolTable.leaveScope();
-            }
-        } else{
-            errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
-        }
-    }
-
-    private String findActualParamType(AstNode actualParam){
-        String[] nodeType = actualParam.toString().split("@", 3);
-
-        //Checks if either type is null
-        if (nodeType[0] == null){
-            return "error";
-        }
-
-        switch (nodeType[0]){
-            case "com.p4.parser.nodes.IdNode":
-                return symbolTable.lookup(((IdNode)actualParam).id).variableType;
-            case "com.p4.parser.nodes.PinNode":
-                return "pin";
-            case "com.p4.parser.nodes.CharNode":
-                return "character";
-            default:
-                return "error";
-        }
-    }
-
-    public void visit(FuncDclNode node) {
-        this.symbolTable.enterScope(node.getNodeHash());
-        this.visitChildren(node);
-        this.symbolTable.leaveScope();
-    }
-
-    public void visit(IntegerDclNode node) {
-        this.visitChildren(node);
-    }
-
-    public void visit(IterativeNode node) {
-        this.symbolTable.enterScope(node.getNodeHash());
-        this.visitChildren(node);
-        this.symbolTable.leaveScope();
-
-        String conditionType = node.children.get(0).type;
-
-        if (!isCondOkType(conditionType)){
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type: the condition must be of type boolean, but was of type " + conditionType, node.lineNumber);
-        }
-    }
-
     public void visit(LongDclNode node) {
         this.visitChildren(node);
     }
@@ -438,39 +384,84 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    public void visit(DivNode node){
+    //todo widening virker ikke helt endnu. fix det.
+    //If no errors occur, then the function call will be seen as well typed
+    public void visit(FuncCallNode node) {
         this.visitChildren(node);
-        AstNode leftChild = node.children.get(0);
-        AstNode rightChild = node.children.get(1);
-        String resultType = arithOperationResultType(leftChild.type, rightChild.type);
 
-        if(resultType.equals("error")){
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftChild.type + " with " + rightChild.type, node.lineNumber);
-        }
-        else{
-            if(isDivByZero(rightChild)){
-                errors.addEntry(ErrorType.ZERO_DIVISION, "Cannot divide by zero", node.lineNumber);
+        node.type = ((IdNode) node.children.get(0)).type;
+        String functionName = ((IdNode)node.children.get(0)).id;
+        CStarScope functionScope;
+
+        //Enters if the function is declared
+        if(symbolTable.declaredFunctions.contains(functionName)){
+            functionScope = this.symbolTable.lookupScope("FuncNode-" + functionName);
+
+            //Enters if the function scope was found in the symbol table
+            if(functionScope != null){
+                //Checks if there is the correct number of parameters
+                if(node.children.size() - 1 != functionScope.params.size()){
+                    errors.addEntry(ErrorType.PARAMETER_ERROR, "The number of actual parameters does not correspond with the number of formal parameters in call to function '" + functionName + "'", node.lineNumber);
+                }
+                else {
+                    checkParameterTypes(node, functionScope);
+                }
+                symbolTable.leaveScope();
             }
-            else {
-                node.type = resultType;
+        } else{
+            errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName
+                    + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
+        }
+    }
+    
+    private void checkParameterTypes(FuncCallNode node, CStarScope functionScope){
+        String actualParamType;
+        String formalParamType;
+        int currentChild = 1;
+
+        //Goes through all parameters and compares each formal and actual parameter
+        for (Map.Entry<String, Attributes> formalParam : functionScope.params.entrySet()) {
+            actualParamType = node.children.get(currentChild).type;
+            formalParamType = formalParam.getValue().variableType;
+
+            if (actualParamType == null || actualParamType.equals("error")) {
+                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter '"+ actualParamType +"' is not a legal type", node.lineNumber);
             }
+            //Enters if the formal parameter has a type
+            else if(formalParamType != null){
+                //Checks if types are the same or if type widening is possible
+                String resultType = assignOperationResultType(formalParamType, actualParamType);
+
+                //Enters if an error has occurred and either parameter is not of the arduino type
+                if (resultType.equals("error") && !actualParamType.equals("ArduinoC") && !formalParamType.equals("ArduinoC")) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal parameter type: The actual parameter should be of type "
+                            + formalParamType + " but is type " + actualParamType, node.lineNumber);
+                }
+            }
+            currentChild++;
         }
     }
 
-    private boolean isDivByZero(AstNode denominator){
-        boolean isZero = (((NumberNode)denominator).getValue() == 0);
-
-        return (denominator.type.equals("small integer") && isZero) ||
-                (denominator.type.equals("integer") && isZero) ||
-                (denominator.type.equals("long integer") && isZero);
-    }
-
-    public void visit(ParamNode node) {
+    public void visit(FuncDclNode node) {
+        this.symbolTable.enterScope(node.getNodeHash());
         this.visitChildren(node);
-    }
 
-    public void visit(PinDclNode node) {
-        this.visitChildren(node);
+        String dclReturnType = symbolTable.lookup(node.id).variableType;
+
+        //Checks all children of the function's block
+        for(AstNode blockChild : node.children.get(1).children){
+            String blockClass = blockChild.getClass().toString();
+            
+            //Enters if a return expression is found
+            if(blockClass.equals("com.p4.parser.nodes.ReturnExpNode")){
+                //Enters if return type is different and widening cannot be performed
+                if (!isLegalType(dclReturnType, blockChild.type)) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal return type: cannot return " + blockChild.type +
+                                                          " since the function is " + dclReturnType, node.lineNumber);
+                }
+            }
+        }
+        this.symbolTable.leaveScope();
     }
 
     public void visit(SelectionNode node) {
@@ -492,7 +483,47 @@ public class SemanticsVisitor implements INodeVisitor {
         return condType.equals("boolean");
     }
 
-    public void visit(StmtNode node) { }
+    public void visit(IterativeNode node) {
+        this.symbolTable.enterScope(node.getNodeHash());
+        this.visitChildren(node);
+        this.symbolTable.leaveScope();
+
+        String conditionType = node.children.get(0).type;
+
+        if (!isCondOkType(conditionType)){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type: the condition must be of type boolean, but was of type " + conditionType, node.lineNumber);
+        }
+    }
+    
+    public void visit(DivNode node){
+        this.visitChildren(node);
+
+        AstNode rightChild = node.children.get(1);
+        String leftType = node.children.get(0).type;
+        String rightType = rightChild.type;
+        String resultType = arithOperationResultType(leftType, rightType);
+
+        if(resultType.equals("error")){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
+        }
+        else{
+            //Checks if the denominator is zero
+            if(isDivByZero(rightChild)){
+                errors.addEntry(ErrorType.ZERO_DIVISION, "Cannot divide by zero", node.lineNumber);
+            }
+            else {
+                node.type = resultType;
+            }
+        }
+    }
+
+    private boolean isDivByZero(AstNode denominator){
+        boolean isZero = (((NumberNode)denominator).getValue() == 0);
+
+        return (denominator.type.equals("small integer") && isZero) ||
+                (denominator.type.equals("integer") && isZero) ||
+                (denominator.type.equals("long integer") && isZero);
+    }
 
     public void visit(SubNode node) {
         this.visitChildren(node);
@@ -529,9 +560,7 @@ public class SemanticsVisitor implements INodeVisitor {
             return "error";
         }
         //First semantic rule
-        if(leftType.equals(rightType) && (leftType.equals("integer") ||
-           leftType.equals("decimal") || leftType.equals("long integer") ||
-           leftType.equals("small integer"))) {
+        if(leftType.equals(rightType) && isNumber(leftType)) {
             return leftType;
         }
         //Second semantic rule
@@ -555,28 +584,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    private String dominantTypeOfArrayElements(String leftType, String rightType) {
-        if (leftType == null || rightType == null){
-            return "error";
-        }
-        if(leftType.equals("decimal") || rightType.equals("decimal")){
-            return "decimal";
-        } else if(leftType.equals("pin") || rightType.equals("pin")){
-            return "pin";
-        } else if(leftType.equals("long integer") || rightType.equals("long integer")){
-            return "long integer";
-        } else if(leftType.equals("integer") || rightType.equals("integer")){
-            return "integer";
-        } else if(leftType.equals("small integer") || rightType.equals("small integer")){
-            return "small integer";
-        } else if(leftType.equals("char") || rightType.equals("char")){
-            return "character";
-        } else {
-            //Should never occur
-            return "error";
-        }
-    }
-    public void visit(PrintNode node) { };
+    public void visit(PrintNode node) { }
 }
 
 
