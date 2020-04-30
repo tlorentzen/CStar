@@ -92,7 +92,6 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(ProgNode node) {
         this.visitChildren(node);
-        symbolTable.outputSymbolTable(symbolTable.lookupScope("global"));
     }
 
     @Override
@@ -120,6 +119,10 @@ public class SymbolTableVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
+    /**
+     * Adds the declared array to the symbol table for future referencing
+     * @param node the ArrayDclNode to add to the symbolTable
+     */
     @Override
     public void visit(ArrayDclNode<?> node) {
         this.visitChildren(node);
@@ -142,6 +145,10 @@ public class SymbolTableVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
+    /**
+     * Adds the declared character to the symbol table for future referencing
+     * @param node the CharDclNode to add to the symbolTable
+     */
     @Override
     public void visit(CharDclNode node) {
         if(symbolTable.lookup(node.id) != null){
@@ -161,6 +168,10 @@ public class SymbolTableVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
+    /**
+     * Adds the declared decimal/float to the symbol table for future referencing
+     * @param node the FloatDclNode to add to the symbolTable
+     */
     @Override
     public void visit(FloatDclNode node) {
         if(symbolTable.lookup(node.id) != null){
@@ -175,6 +186,10 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
     }
 
+    /**
+     * Adds the called function to the symbol table only if it is a pin read or write. This is to avoid getting errors about undeclared function of this type
+     * @param node the FuncCallNode to add to the symbolTable
+     */
     @Override
     public void visit(FuncCallNode node) {
         String[] funcIDSplit = ((IdNode)node.children.get(0)).id.split("\\.");
@@ -189,8 +204,10 @@ public class SymbolTableVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
-
-
+    /**
+     * Adds the declared function to the symbol table for future referencing
+     * @param node the FuncDclNode to add to the symbolTable
+     */
     @Override
     public void visit(FuncDclNode node) {
         if(symbolTable.lookup(node.id) != null){
@@ -210,6 +227,10 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     }
 
+    /**
+     * Adds the declared integer to the symbol table for future referencing
+     * @param node the IntDclNode to add to the symbolTable
+     */
     @Override
     public void visit(IntegerDclNode node) {
         if(symbolTable.lookup(node.id) != null){
@@ -224,6 +245,10 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
     }
 
+    /**
+     * Adds the scope of the iteration, visit the children of the node, hence adding them to this scope, and then leaves it again. character to the symbol table for future referencing
+     * @param node the IterativeNode that demands the new scope
+     */
     @Override
     public void visit(IterativeNode node) {
         symbolTable.addScope(node.getNodeHash());
@@ -231,6 +256,10 @@ public class SymbolTableVisitor implements INodeVisitor {
         symbolTable.leaveScope(node.getNodeHash());
     }
 
+    /**
+     * Adds the declared long integer to the symbol table for future referencing
+     * @param node the LongDclNode to add to the symbolTable
+     */
     @Override
     public void visit(LongDclNode node) {
         if(symbolTable.lookup(node.id) != null){
@@ -250,6 +279,10 @@ public class SymbolTableVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
+    /**
+     * Adds the ids of the parameter to the symbol table for future referencing
+     * @param node the ParamNode containing the ids to add to the symbolTable
+     */
     @Override
     public void visit(ParamNode node) {
         String scopeName = symbolTable.getCurrentScope().getScopeName();
@@ -266,6 +299,10 @@ public class SymbolTableVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
+    /**
+     * Adds the declared pin to the symbol table for future referencing
+     * @param node the PinDclNode to add to the symbolTable
+     */
     @Override
     public void visit(PinDclNode node) {
         if(symbolTable.lookup(node.id) != null){
@@ -280,6 +317,10 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
     }
 
+    /**
+     * Adds the scope of the selection, visit the children of the node, hence adding them to this scope, and then leaves it again. character to the symbol table for future referencing
+     * @param node the IterativeNode that demands the new scope
+     */
     @Override
     public void visit(SelectionNode node) {
         symbolTable.addScope(node.getNodeHash());
