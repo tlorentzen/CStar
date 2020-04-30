@@ -120,7 +120,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
         else{
             String rightType = node.children.get(1).type;
-            
+
             if(leftType != null || rightType != null){
                 resultType = assignOperationResultType(leftType, rightType);
 
@@ -160,7 +160,7 @@ public class SemanticsVisitor implements INodeVisitor {
         //Returns the result type found in assignOperationResultType
         else {
             String resultType = assignOperationResultType(leftType, rightType);
-            
+
             if (resultType.equals("error")){
                 errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
             }
@@ -308,7 +308,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = leftType;
         }
     }
-    
+
     private boolean isLegalType(String firstType, String secondType){
         //Enters if first rule
         if(secondType.equals(firstType)){
@@ -413,7 +413,7 @@ public class SemanticsVisitor implements INodeVisitor {
                     + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.", node.lineNumber);
         }
     }
-    
+
     private void checkParameterTypes(FuncCallNode node, CStarScope functionScope){
         String actualParamType;
         String formalParamType;
@@ -451,7 +451,7 @@ public class SemanticsVisitor implements INodeVisitor {
         //Checks all children of the function's block
         for(AstNode blockChild : node.children.get(1).children){
             String blockClass = blockChild.getClass().toString();
-            
+
             //Enters if a return expression is found
             if(blockClass.equals("com.p4.parser.nodes.ReturnExpNode")){
                 //Enters if return type is different and widening cannot be performed
@@ -494,7 +494,7 @@ public class SemanticsVisitor implements INodeVisitor {
             errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type: the condition must be of type boolean, but was of type " + conditionType, node.lineNumber);
         }
     }
-    
+
     public void visit(DivNode node){
         this.visitChildren(node);
 
@@ -586,5 +586,3 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(PrintNode node) { }
 }
-
-
