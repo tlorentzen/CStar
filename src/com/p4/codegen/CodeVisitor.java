@@ -485,13 +485,13 @@ public class CodeVisitor implements INodeVisitor{
                     stringBuilder.append("analogWrite(");
                     stringBuilder.append(funcIDSplit[0]);
                     stringBuilder.append(",");
-                    stringBuilder.append(node.children.get(1));
+                    visitChild(node.children.get(1));
                 } else if(node.children.get(1) instanceof IdNode){
                     if (firstParam.type.equals("integer") || firstParam.type.equals("long integer") || firstParam.type.equals("small integer") || firstParam.type.equals("character")) {
                         stringBuilder.append("analogWrite(");
                         stringBuilder.append(funcIDSplit[0]);
                         stringBuilder.append(",");
-                        stringBuilder.append(node.children.get(1));
+                        visitChild(node.children.get(1));
                     } else if (firstParam.type.equals("")) //Todo: finish
                         stringBuilder.append("digitalWrite(");
                         stringBuilder.append(funcIDSplit[0]);
