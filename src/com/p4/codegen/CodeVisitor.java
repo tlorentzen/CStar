@@ -490,6 +490,7 @@ public class CodeVisitor implements INodeVisitor{
                         stringBuilder.append(",");
                     }
                 }
+            //If the ID is an array access then add semicolon TODO: its ugly
             if(((IdNode)id).id.contains("[")){
                 stringBuilder.append(");\n");
             }else{
