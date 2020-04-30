@@ -114,6 +114,12 @@ public class FuncVisitor implements INodeVisitor {
     @Override
     public void visit(FuncCallNode node) {
         symbolTable.calledFunctions.add(((IdNode)node.children.get(0)).id);
+
+        String[] funcIDSplit = ((IdNode)node.children.get(0)).id.split("\\.");
+
+        if(funcIDSplit.length > 1 && (funcIDSplit[1].equals("read") || funcIDSplit[1].equals("write"))){
+            symbolTable.declaredFunctions.add(((IdNode)node.children.get(0)).id);
+        }
         this.visitChildren(node);
     }
 

@@ -1,4 +1,4 @@
-// Generated from /Users/lenasaid/floobits/share/ichris18/src/com/p4/parser/CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
 package com.p4.parser;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -275,6 +275,18 @@ public class CStarBaseListener implements CStarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFunc_call(CStarParser.Func_callContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterArray_func(CStarParser.Array_funcContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArray_func(CStarParser.Array_funcContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

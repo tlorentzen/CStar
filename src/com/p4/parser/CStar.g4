@@ -27,7 +27,9 @@ func: return_type ID LEFT_PAREN param? RIGHT_PAREN blk;
 return_type: TYPE | VOID;
 param: TYPE ID (COMMA TYPE ID)*;
 return_exp: RETURN expr SEMICOLON;
-func_call: (ID | FUNCID) LEFT_PAREN (expr (COMMA expr)*)? RIGHT_PAREN;
+func_call: (ID | FUNCID | array_func) LEFT_PAREN (expr (COMMA expr)*)? RIGHT_PAREN;
+array_func: array_access DOT ID;
+
 
 val: CHAR_LITERAL | PIN_LITERAL | BOOLEAN_LITERAL | NUMBER;
 

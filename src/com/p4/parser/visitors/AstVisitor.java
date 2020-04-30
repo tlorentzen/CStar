@@ -1,6 +1,7 @@
 
 package com.p4.parser.visitors;
 
+import com.p4.parser.CStarBaseVisitor;
 import com.p4.parser.CStarParser;
 import com.p4.parser.nodes.*;
 import org.antlr.v4.runtime.CommonToken;

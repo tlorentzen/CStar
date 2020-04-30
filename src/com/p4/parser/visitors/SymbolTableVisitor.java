@@ -177,6 +177,15 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncCallNode node) {
+        String[] funcIDSplit = ((IdNode)node.children.get(0)).id.split("\\.");
+
+        if(funcIDSplit.length > 1 && (funcIDSplit[1].equals("read") || funcIDSplit[1].equals("write"))){
+            Attributes attr = new Attributes();
+            attr.variableType = "integer";
+            attr.kind = "function";
+            symbolTable.insertSymbol(((IdNode)node.children.get(0)).id, attr);
+            node.type = attr.variableType;
+        }
         this.visitChildren(node);
     }
 

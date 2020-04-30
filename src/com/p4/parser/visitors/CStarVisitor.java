@@ -1,6 +1,5 @@
-//package com.p4.parser;
-package com.p4.parser.visitors;
-import com.p4.parser.CStarParser;
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
+package com.p4.parser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -143,6 +142,12 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFunc_call(CStarParser.Func_callContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CStarParser#array_func}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArray_func(CStarParser.Array_funcContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CStarParser#val}.
 	 * @param ctx the parse tree

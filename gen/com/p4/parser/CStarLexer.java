@@ -1,4 +1,4 @@
-// Generated from /Users/lenasaid/floobits/share/ichris18/src/com/p4/parser/CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
 package com.p4.parser;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -22,7 +22,7 @@ public class CStarLexer extends Lexer {
 		MODULO=15, LEFT_PAREN=16, RIGHT_PAREN=17, LEFT_BRACKET=18, RIGHT_BRACKET=19, 
 		LEFT_BRACE=20, RIGHT_BRACE=21, SEMICOLON=22, DOT=23, IF=24, ELSE=25, WHILE=26, 
 		REPEAT=27, COMMA=28, VOID=29, TYPE=30, ARRAY=31, RETURN=32, PRINT=33, 
-		NUMBER=34, BOOLEAN_LITERAL=35, PIN_LITERAL=36, CHAR_LITERAL=37, STRING_LITERAL=38,
+		NUMBER=34, BOOLEAN_LITERAL=35, PIN_LITERAL=36, CHAR_LITERAL=37, STRING_LITERAL=38, 
 		ID=39, FUNCID=40, WHITESPACE=41, Newline=42, LINE_COMMENT=43;
 	public static String[] channelNames = {
 		"DEFAULT_TOKEN_CHANNEL", "HIDDEN"
@@ -38,8 +38,8 @@ public class CStarLexer extends Lexer {
 			"PLUS", "MINUS", "MULT", "DIVISION", "LESS_THAN_EQ", "GREATER_THAN_EQ", 
 			"MODULO", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACKET", "RIGHT_BRACKET", 
 			"LEFT_BRACE", "RIGHT_BRACE", "SEMICOLON", "DOT", "IF", "ELSE", "WHILE", 
-			"REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", "PRINT", "NUMBER",
-			"BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL", "ID",
+			"REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", "PRINT", "NUMBER", 
+			"BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL", "ID", 
 			"FUNCID", "WHITESPACE", "Newline", "LINE_COMMENT"
 		};
 	}
@@ -60,8 +60,8 @@ public class CStarLexer extends Lexer {
 			"ASSIGN_OP", "PLUS", "MINUS", "MULT", "DIVISION", "LESS_THAN_EQ", "GREATER_THAN_EQ", 
 			"MODULO", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACKET", "RIGHT_BRACKET", 
 			"LEFT_BRACE", "RIGHT_BRACE", "SEMICOLON", "DOT", "IF", "ELSE", "WHILE", 
-			"REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", "PRINT", "NUMBER",
-			"BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL", "ID",
+			"REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", "PRINT", "NUMBER", 
+			"BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL", "ID", 
 			"FUNCID", "WHITESPACE", "Newline", "LINE_COMMENT"
 		};
 	}

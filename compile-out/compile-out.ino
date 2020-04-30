@@ -1,0 +1,1 @@
+bargraph[counter].write()
