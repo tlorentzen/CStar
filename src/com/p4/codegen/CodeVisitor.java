@@ -73,7 +73,7 @@ public class CodeVisitor implements INodeVisitor{
             }
             stringBuilder.append("Serial.println()");
         } else {
-            stringBuilder.append("Serial.print(");
+            stringBuilder.append("Serial.println(");
             this.visitChild(node.formatString.get(0));
             stringBuilder.append(")\n");
         }
