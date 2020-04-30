@@ -48,7 +48,7 @@ void readInput() {
     valPot2  = pinPot2.read();
     btnState = btnPin.read();
 
-    console.println(btnState);
+    console.print(btnState);
 
     if(btnState > 500){
         inFunMode = 1;
