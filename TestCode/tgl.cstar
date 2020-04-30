@@ -33,12 +33,10 @@ void setBarGraph() {
     integer barState = map(constrain(valPot1, 0, 1023), 0, 1023, 0, 10);
 
     while(counter < numOfGraphLeds) repeat{
-        integer bg = bargraph[counter];
-
         if(barState > counter+1 AND barState IS counter+1){
-            bg = 255;
+            bargraph[counter].write(255);
         }else{
-            bg = 0;
+            bargraph[counter].write(0);
         }
 
         counter = counter + 1;
@@ -46,9 +44,9 @@ void setBarGraph() {
 }
 
 void readInput() {
-    valPot1  = pinPot1;
-    valPot2  = pinPot2;
-    btnState = btnPin;
+    valPot1  = pinPot1.read();
+    valPot2  = pinPot2.read();
+    btnState = btnPin.read();
 
     console.println(btnState);
 
@@ -91,7 +89,7 @@ void makeFun(){
     integer cycles = 4;
 
     while(counter < numOfGraphLeds) repeat {
-        bargraph[counter] = 0;
+        bargraph[counter].write(0);
         counter = counter + 1;
     }
 
@@ -100,20 +98,20 @@ void makeFun(){
 
         while(counter < numOfGraphLeds) repeat {
             if(counter < numOfGraphLeds){
-                bargraph[counter] = 1;
+                bargraph[counter].write(255);
             }else{
-                bargraph[counter] = 0;
+                bargraph[counter].write(0);
             }
 
             counter = counter + 1;
-            delay(50);
+            sleep(50);
         }
 
         while(counter > 0) repeat {
             if(counter-1 > numOfGraphLeds){
-                bargraph[counter] = 1;
+                bargraph[counter].write(255);
             }else{
-                bargraph[counter] = 0;
+                bargraph[counter].write(0);
             }
             counter = counter - 1;
             delay(50);
