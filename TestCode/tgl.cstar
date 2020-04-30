@@ -48,7 +48,7 @@ void readInput() {
     valPot2  = pinPot2.read();
     btnState = btnPin.read();
 
-    console.println(btnState);
+    console.print(btnState);
 
     if(btnState > 500){
         inFunMode = 1;
@@ -77,9 +77,9 @@ void setRGB() {
 }
 
 void writeRGBState(integer r, integer g, integer b){
-    rgb[0] = r;
-    rgb[1] = g;
-    rgb[2] = b;
+    rgb[0].write(r);
+    rgb[1].write(g);
+    rgb[2].write(b);
 }
 
 void makeFun(){
@@ -114,7 +114,7 @@ void makeFun(){
                 bargraph[counter].write(0);
             }
             counter = counter - 1;
-            delay(50);
+            sleep(50);
         }
 
         cycle = cycle + 1;

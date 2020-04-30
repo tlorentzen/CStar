@@ -11,6 +11,7 @@ public class FuncVisitor implements INodeVisitor {
 
     public FuncVisitor(SymbolTable symbolTable, ErrorBag errors){
         this.symbolTable = symbolTable;
+        symbolTable.declaredFunctions.add("sleep");
         this.errors = errors;
     }
 
