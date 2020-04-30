@@ -28,11 +28,13 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //Explicit declaration scope rule
     public void visit(IdNode node){
-        if(!symbolTable.calledFunctions.contains(node.id) && (symbolTable.declaredFunctions.contains(node.id) || !symbolTable.declaredFunctions.contains(node.id))){
+        if(!symbolTable.calledFunctions.contains(node.id) && (symbolTable.declaredFunctions.contains(node.id) ||
+           !symbolTable.declaredFunctions.contains(node.id))){
             Attributes attributes = symbolTable.lookup(node.id);
 
             if(attributes == null){
-                errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope. The type of " + node.id + " will be null", node.lineNumber);
+                errors.addEntry(ErrorType.TYPE_ERROR, node.id + " has not been declared in any accessible scope. " +
+                                                                "The type of " + node.id + " will be null", node.lineNumber);
                 //Todo: set the node.type to something to avoid null pointer exception
             } else {
                 node.type = attributes.variableType;
@@ -42,43 +44,15 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    public void visit(PrintNode node) {/*todo implement*/};
-
     public void visit(NumberNode node) {
         String type = checkNumberSize(node);
 
         if(type.equals("error")){
-            String check = node.value > Long.MAX_VALUE ? "overflow" : "underflow";
-            errors.addEntry(ErrorType.TYPE_ERROR, "Type " + check + ": The value was too " + (check == "overflow" ? "big" : "small"), node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, "Invalid type: Could not find a compatible type", node.lineNumber);
         }
         else{
             node.type = type;
         }
-    }
-
-    public void visit(FloatNode node) {
-        node.type = "decimal";
-    };
-
-    public void visit(BooleanNode node) {
-        node.type = "boolean";
-    };
-    public void visit(BooleanDclNode node) {
-        this.visitChildren(node);
-    };
-    public void visit(SmallDclNode node) {
-        this.visitChildren(node);
-    };
-    public void visit(StringNode node) {
-        node.type = "string";
-    };
-
-    public void visit(PinNode node){
-        node.type = "pin";
-    }
-
-    public void visit(CharNode node){
-        node.type = "character";
     }
 
     public String checkNumberSize(NumberNode node){
@@ -97,63 +71,110 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
+    public void visit(FloatNode node) {
+        node.type = "decimal";
+    }
+
+    public void visit(BooleanNode node) {
+        node.type = "boolean";
+    }
+
+    public void visit(BooleanDclNode node) {
+        this.visitChildren(node);
+    }
+
+    public void visit(SmallDclNode node) {
+        this.visitChildren(node);
+    }
+
+    public void visit(StringNode node) {
+        node.type = "string";
+    }
+
+    public void visit(PinNode node){
+        node.type = "pin";
+    }
+
+    public void visit(CharNode node){
+        node.type = "character";
+    }
 
     public void visit(AssignNode node){
         this.visitChildren(node);
 
         String leftType = node.children.get(0).type;
-        String rightType = "";
+        String resultType;
 
         if(node.children.get(1).getClass().getName().equals("com.p4.parser.nodes.FuncCallNode")){
-            FuncCallNode funcCallNode = (FuncCallNode) node.children.get(1);
-            if(((IdNode)funcCallNode.children.get(0)).type == null){
-                rightType = leftType;
-            }
-            else if(((IdNode) funcCallNode.children.get(0)).type.equals("void")){
-                errors.addEntry(ErrorType.VOID_ASSIGN, "Cannot assign function '" + ((IdNode) funcCallNode.children.get(0)).id + "' to " + node.children.get(0).type + " because it returns void", node.lineNumber);
-            }
-            else{
-                rightType= ((IdNode)funcCallNode.children.get(0)).type;
+            resultType = assignFuncCall(node, leftType);
+
+            if (!resultType.equals("error")) {
+                node.type = resultType;
             }
         }
         else{
-            rightType= node.children.get(1).type;
-            if(leftType == null || rightType == null || !(leftType.equals("pin") || rightType.equals("pin"))){
-                String resultType = assignOperationResultType(leftType, rightType);
+            String rightType = node.children.get(1).type;
+            
+            if(leftType != null || rightType != null){
+                resultType = assignOperationResultType(leftType, rightType);
+
                 if (resultType.equals("error")){
-                    if(!leftType.equals("ArduinoC") && !rightType.equals("ArduinoC")) {
-                        errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
-                    }
+                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot assign " + rightType + " to " + leftType, node.lineNumber);
                 }
                 else{
                     node.type = resultType;
                 }
             }
+            else{
+                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type: One or both of the operands are null", node.lineNumber);
+            }
         }
     }
-    //todo bedre navn, så den også dækker over FuncCall's parameter type checking. Men er det ikke kinda en assign også?
-    private String assignOperationResultType(String leftType, String rightType){
-        //Checks if either type is null
-        if (leftType == null || rightType == null){
+
+    private String assignFuncCall(AssignNode node, String leftType){
+        FuncCallNode funcCallNode = (FuncCallNode) node.children.get(1);
+        String rightType;
+        rightType = ((IdNode)funcCallNode.children.get(0)).type;
+
+        //Returns error if any of the types are null
+        if(leftType  == null || rightType == null){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Operand(s) not declared: One or both of the operands are null", node.lineNumber);
             return "error";
         }
-        if(leftType.equals("ArduinoC")){
-            return rightType;
+        //Returns error if the function id of the void type
+        else if(((IdNode) funcCallNode.children.get(0)).type.equals("void")){
+            errors.addEntry(ErrorType.VOID_ASSIGN, "Cannot assign function '" + ((IdNode) funcCallNode.children.get(0)).id + "' to "
+                                                                   + node.children.get(0).type + " because it returns void", node.lineNumber);
+            return "error";
         }
-        if(rightType.equals("ArduinoC")){
+        //Returns the leftType if the function has type "ArduinoC"
+        else if (rightType.equals("ArduinoC")) {
             return leftType;
         }
+        //Returns the result type found in assignOperationResultType
+        else {
+            String resultType = assignOperationResultType(leftType, rightType);
+            
+            if (resultType.equals("error")){
+                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
+            }
+            return resultType;
+        }
+    }
+
+    private String assignOperationResultType(String leftType, String rightType){
+        //First Semantic rule
         if (leftType.equals(rightType)){
             return leftType;
         }
-        else if (leftType.equals("decimal") && (rightType.equals("integer") ||
-                 rightType.equals("long integer") || rightType.equals("small integer"))){
+        //Second rule
+        else if ((leftType.equals("decimal") || leftType.equals("long integer")) &&
+                (rightType.equals("integer") || rightType.equals("long integer") ||
+                 rightType.equals("small integer"))){
             return leftType;
         }
-        else if (leftType.equals("long integer") && (rightType.equals("integer") || rightType.equals("small integer"))){
-            return leftType;
-        }
-        else if (leftType.equals("integer") && rightType.equals("small integer")){
+        //Third rule
+        else if ((leftType.equals("integer") || leftType.equals("pin")) && rightType.equals("small integer")) {
             return leftType;
         }
         else{
@@ -175,7 +196,7 @@ public class SemanticsVisitor implements INodeVisitor {
             errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
         }
         else{
-            node.type = "integer";
+            node.type = "boolean";
         }
     }
 
@@ -183,7 +204,6 @@ public class SemanticsVisitor implements INodeVisitor {
         if(leftType == null || rightType == null){
             return false;
         }
-
         return leftType.equals("boolean") && rightType.equals("boolean");
     }
 
@@ -199,38 +219,47 @@ public class SemanticsVisitor implements INodeVisitor {
         isValidType = compareOperationValid(node.getOperator(), leftType, rightType);
 
         if (!isValidType) {
-            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot compare " + leftType + " with " + rightType, node.lineNumber);
         }
         else{
             //the result type will always be boolean
-            node.type = "integer";
+            node.type = "boolean";
         }
     }
 
     private boolean compareOperationValid(int operator, String leftType, String rightType) {
-        //Checks if either type is a character or pin (not valid in these operations)
-        boolean isValid = ((!leftType.equals("character") && !rightType.equals("character")) ||
-                (!leftType.equals("pin") && !rightType.equals("pin")));
-
         //Checks if either type is null
         if (leftType == null || rightType == null){
             return false;
         }
+
         //Checks if the operator is IS or ISNOT
         if(operator == CStarParser.IS || operator == CStarParser.ISNOT){
             if(leftType.equals(rightType)){
                 return true;
             }
-            else return isValid;
+            else if(isNumber(leftType) && isNumber(rightType)) {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
         //Checks if the operator is '<' or '>' and '<=' and '>='
         else if(operator == CStarParser.LESS_THAN || operator == CStarParser.GREATER_THAN ||
                 operator == CStarParser.LESS_THAN_EQ || operator == CStarParser.GREATER_THAN_EQ) {
-            return isValid && !leftType.equals("boolean") && !rightType.equals("boolean");
+            return (isNumber(leftType) && isNumber(rightType)) ||
+                   (leftType.equals(rightType) && !leftType.equals("boolean"));
         }
         else {
             return false;
         }
+    }
+
+    //Checks if the type is of the number types
+    private boolean isNumber(String type){
+        return (type.equals("decimal") || type.equals("long integer") ||
+                type.equals("integer") || type.equals("small integer"));
     }
 
     public void visit(ProgNode node) {
@@ -547,4 +576,7 @@ public class SemanticsVisitor implements INodeVisitor {
             return "error";
         }
     }
+    public void visit(PrintNode node) { };
 }
+
+
