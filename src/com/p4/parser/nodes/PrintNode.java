@@ -1,12 +1,11 @@
 package com.p4.parser.nodes;
 
 import com.p4.parser.visitors.INodeVisitor;
-import org.antlr.v4.runtime.CommonToken;
 
 import java.util.ArrayList;
 
 public class PrintNode extends AstNode {
-    ArrayList<AstNode> formatString = new ArrayList<>();
+    public ArrayList<AstNode> formatString = new ArrayList<>();
 
     public void addToFormatString(AstNode node){
         formatString.add(node);

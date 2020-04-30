@@ -25,6 +25,8 @@ void loop() {
     }else{
         makeFun();
     }
+
+    console.print("Hey");
 }
 
 void setBarGraph() {

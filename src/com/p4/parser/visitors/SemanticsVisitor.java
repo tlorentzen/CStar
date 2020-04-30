@@ -43,7 +43,7 @@ public class SemanticsVisitor implements INodeVisitor {
             if(attributes == null){
                 errors.addEntry(ErrorType.TYPE_ERROR, "'" + node.id + "' has not been declared in any accessible scope. " +
                                                                 "The type of '" + node.id + "' will be null", node.lineNumber);
-                //Todo: set the node.type to something to avoid null pointer exception
+                node.type = "Not declared";
             } else {
                 node.type = attributes.variableType;
             }
@@ -449,15 +449,17 @@ public class SemanticsVisitor implements INodeVisitor {
         String dclReturnType = symbolTable.lookup(node.id).variableType;
 
         //Checks all children of the function's block
-        for(AstNode blockChild : node.children.get(1).children){
-            String blockClass = blockChild.getClass().toString();
+        if(node.children.size() > 1){
+            for(AstNode blockChild : node.children.get(1).children){
+                String blockClass = blockChild.getClass().toString();
 
-            //Enters if a return expression is found
-            if(blockClass.equals("com.p4.parser.nodes.ReturnExpNode")){
-                //Enters if return type is different and widening cannot be performed
-                if (!isLegalType(dclReturnType, blockChild.type)) {
-                    errors.addEntry(ErrorType.TYPE_ERROR, "Illegal return type: cannot return " + blockChild.type +
-                                                          " since the function is " + dclReturnType, node.lineNumber);
+                //Enters if a return expression is found
+                if(blockClass.equals("com.p4.parser.nodes.ReturnExpNode")){
+                    //Enters if return type is different and widening cannot be performed
+                    if (!isLegalType(dclReturnType, blockChild.type)) {
+                        errors.addEntry(ErrorType.TYPE_ERROR, "Illegal return type: cannot return " + blockChild.type +
+                                " since the function is " + dclReturnType, node.lineNumber);
+                    }
                 }
             }
         }

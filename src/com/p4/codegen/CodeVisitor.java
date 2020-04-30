@@ -63,29 +63,39 @@ public class CodeVisitor implements INodeVisitor{
      * @param node is the logical node to be handled.
      */
 
-    //todo implement
     @Override
-    public void visit(PrintNode node){}
+    public void visit(PrintNode node){
+        for(AstNode element : node.formatString){
+            stringBuilder.append("Serial.print(");
+            this.visitChild(element);
+            stringBuilder.append(")\n");
+        }
+        stringBuilder.append("Serial.println()");
+    }
 
-    //todo implement
     @Override
-    public void visit(FloatNode node){}
+    public void visit(FloatNode node){
+        stringBuilder.append(node.value);
+    }
 
     //todo implement
     @Override
     public void visit(ModNode node){}
 
-    //todo implement
     @Override
-    public void visit(NumberNode node){}
+    public void visit(NumberNode node){
+        stringBuilder.append(node.value);
+    }
 
-    //todo implement
     @Override
-    public void visit(BooleanNode node){}
+    public void visit(BooleanNode node){
+        stringBuilder.append(node.value);
+    }
 
-    //todo implement
     @Override
-    public void visit(BooleanDclNode node){}
+    public void visit(BooleanDclNode node){
+        visitDclNode(node);
+    }
 
     //todo implement
     @Override
@@ -439,10 +449,13 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(FuncCallNode node) {
 
         AstNode id = node.children.get(0);
-        AstNode firstParam = node.children.get(1);
+        AstNode firstParam = null;
+        if(node.children.size() > 1){
+            firstParam = node.children.get(1);
+        }
         String[] funcIDSplit = ((IdNode)id).id.split("\\.");
 
-        if(funcIDSplit.length > 1){
+        if(firstParam != null && funcIDSplit.length > 1){
             if(funcIDSplit[1].equals("read")){
                 if(((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).analog){
                     stringBuilder.append("analogRead(");
