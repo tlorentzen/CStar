@@ -24,44 +24,60 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
     }
 
-    //todo Implement
     @Override
-    public void visit(PrintNode node) {
-    }
+    public void visit(PrintNode node) { this.visitChildren(node); }
 
-    //todo Implement
     @Override
-    public void visit(ModNode node) {
-    }
+    public void visit(ModNode node) { this.visitChildren(node); }
 
-    //todo Implement
     @Override
-    public void visit(FloatNode node) {
-    }
+    public void visit(FloatNode node) { node.type = "decimal"; }
 
-    //todo Implement
     @Override
-    public void visit(BooleanNode node) {
-    }
+    public void visit(BooleanNode node) { node.type = "boolean"; }
 
-    //todo Implement
     @Override
-    public void visit(NumberNode node) {
-    }
+    public void visit(NumberNode node) { this.visitChildren(node); }
 
-    //todo Implement
+    /**
+     * Adds the declared boolean to the symbol table for future referencing
+     * @param node the BooleanDclNode to add to the symbolTable
+     */
     @Override
     public void visit(BooleanDclNode node) {
+        if(symbolTable.lookup(node.id) != null){
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
+            node.type = symbolTable.lookup(node.id).variableType;
+        }else {
+            Attributes attr = new Attributes();
+            attr.variableType = "boolean";
+            attr.kind = "dcl";
+            symbolTable.insertSymbol(node.id, attr);
+            node.type = attr.variableType;
+        }
     }
 
-    //todo Implement
+    /**
+     * Adds the declared small integer to the symbol table for future referencing
+     * @param node the SmallDclNode to add to the symbolTable
+     */
     @Override
     public void visit(SmallDclNode node) {
+        if(symbolTable.lookup(node.id) != null){
+            errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
+            node.type = symbolTable.lookup(node.id).variableType;
+        }else {
+            Attributes attr = new Attributes();
+            attr.variableType = "small integer";
+            attr.kind = "dcl";
+            symbolTable.insertSymbol(node.id, attr);
+            node.type = attr.variableType;
+        }
     }
 
-    //todo Implement
     @Override
     public void visit(StringNode node) {
+        node.type = "string";
     }
 
     @Override

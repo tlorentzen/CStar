@@ -112,6 +112,10 @@ public class FuncVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
+    /**
+     * Adds the called function to the list of called functions on the symbolTable. If the function is a pin read or write, it is also added to the list of declared functions
+     * @param node the funcCallNode to add to the called functions list
+     */
     @Override
     public void visit(FuncCallNode node) {
         symbolTable.calledFunctions.add(((IdNode)node.children.get(0)).id);
@@ -124,6 +128,10 @@ public class FuncVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
+    /**
+     * Adds the declared function to the list of declared functions on the symbolTable
+     * @param node the FuncDclNode to add to the list
+     */
     @Override
     public void visit(FuncDclNode node) {
         symbolTable.declaredFunctions.add(node.id);
