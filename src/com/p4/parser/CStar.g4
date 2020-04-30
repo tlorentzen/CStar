@@ -30,8 +30,7 @@ return_exp: RETURN expr SEMICOLON;
 func_call: (ID | FUNCID | array_func) LEFT_PAREN (expr (COMMA expr)*)? RIGHT_PAREN;
 array_func: array_access DOT ID;
 
-
-val: CHAR_LITERAL | PIN_LITERAL | BOOLEAN_LITERAL | NUMBER;
+val: CHAR_LITERAL | PIN_LITERAL | BOOLEAN_LITERAL | NUMBER | HIGH | LOW;
 
 //TOKEN SPECIFICATION
 COMP_OP: LESS_THAN | GREATER_THAN | IS | ISNOT | LESS_THAN_EQ | GREATER_THAN_EQ;
@@ -67,6 +66,8 @@ TYPE: 'integer' | 'decimal' | 'character' | 'long integer' | 'small integer' | '
 ARRAY: 'array';
 RETURN: 'return';
 PRINT: 'console.print';
+HIGH: 'HIGH';
+LOW: 'LOW';
 
 NUMBER: ('0'..'9') + ('.' ('0'..'9')+ )?;
 BOOLEAN_LITERAL: 'true' | 'false';
