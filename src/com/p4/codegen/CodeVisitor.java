@@ -436,6 +436,9 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(FuncCallNode node) {
+
+        System.out.println(node.type);
+
         AstNode id = node.children.get(0);
         this.visitChild(id);
         stringBuilder.append("(");

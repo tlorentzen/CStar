@@ -4,6 +4,7 @@ import com.p4.codegen.CodeVisitor;
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
 import com.p4.parser.*;
+import com.p4.parser.CStarBaseVisitor;
 import com.p4.parser.nodes.ProgNode;
 import com.p4.parser.visitors.*;
 import com.p4.symbols.SymbolTable;
@@ -62,10 +63,8 @@ public class Main {
                             CStarBaseVisitor<?> visitor = new AstVisitor<>();
                             ProgNode ast = (ProgNode) visitor.visit(tree);
 
-
                             AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                             astTreeVisitor.visit(0, ast);
-
 
                             FuncVisitor funcVisitor = new FuncVisitor(symbolTable, errors);
                             funcVisitor.visit(ast);
