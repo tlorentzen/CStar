@@ -69,13 +69,13 @@ public class CodeVisitor implements INodeVisitor{
             for(AstNode element : node.formatString){
                 stringBuilder.append("Serial.print(");
                 this.visitChild(element);
-                stringBuilder.append(")\n");
+                stringBuilder.append(");\n");
             }
             stringBuilder.append("Serial.println()");
         } else {
             stringBuilder.append("Serial.println(");
             this.visitChild(node.formatString.get(0));
-            stringBuilder.append(")\n");
+            stringBuilder.append(");\n");
         }
 
     }
