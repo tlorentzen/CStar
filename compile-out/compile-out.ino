@@ -45,8 +45,7 @@ void readInput(){
     valPot1 = pinPot1.read();
     valPot2 = pinPot2.read();
     btnState = btnPin.read();
-    Serial.println(btnState);
-    if(btnState > ){
+        if(btnState > ){
     inFunMode = ;
 
 }

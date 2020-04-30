@@ -114,7 +114,7 @@ void makeFun(){
                 bargraph[counter].write(0);
             }
             counter = counter - 1;
-            delay(50);
+            sleep(50);
         }
 
         cycle = cycle + 1;
