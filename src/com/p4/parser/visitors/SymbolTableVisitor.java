@@ -5,6 +5,7 @@ import com.p4.errors.ErrorType;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.FunctionAttributes;
+import com.p4.symbols.PinAttributes;
 import com.p4.symbols.SymbolTable;
 
 public class SymbolTableVisitor implements INodeVisitor {
@@ -95,9 +96,20 @@ public class SymbolTableVisitor implements INodeVisitor {
         node.type = "character";
     }
 
+    /**
+     * If the assignment is to a pin, whether the pin is analog or digital is set
+     * @param node the assignNode to handle
+     */
     @Override
     public void visit(AssignNode node) {
         this.visitChildren(node);
+        AstNode firstChild = node.children.get(0);
+        AstNode secondChild = node.children.get(1);
+        if(firstChild instanceof PinDclNode){
+            ((PinAttributes)symbolTable.lookup(((PinDclNode) firstChild).id)).analog = secondChild instanceof PinNode;
+        } else if(firstChild instanceof IdNode && firstChild.type.equals("pin")){
+            ((PinAttributes)symbolTable.lookup(((IdNode) firstChild).id)).analog = secondChild instanceof PinNode;
+        }
     }
 
     @Override
@@ -332,7 +344,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
-            Attributes attr = new Attributes();
+            PinAttributes attr = new PinAttributes();
             attr.variableType = "pin";
             attr.kind = "dcl";
             symbolTable.insertSymbol(node.id, attr);

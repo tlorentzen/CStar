@@ -1,6 +1,7 @@
 package com.p4.codegen;
 import com.p4.parser.nodes.*;
 import com.p4.parser.visitors.INodeVisitor;
+import com.p4.symbols.PinAttributes;
 import com.p4.symbols.SymbolTable;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -438,18 +439,39 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(FuncCallNode node) {
 
         AstNode id = node.children.get(0);
+        AstNode firstParam = node.children.get(1);
         String[] funcIDSplit = ((IdNode)id).id.split("\\.");
 
         if(funcIDSplit.length > 1){
             if(funcIDSplit[1].equals("read")){
-                stringBuilder.append("digitalRead(");
-                stringBuilder.append(funcIDSplit[0]);
-                stringBuilder.append(")");
+                if(((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).analog){
+                    stringBuilder.append("analogRead(");
+                    stringBuilder.append(funcIDSplit[0]);
+                    stringBuilder.append(")");
+                } else{
+                    stringBuilder.append("digitalRead(");
+                    stringBuilder.append(funcIDSplit[0]);
+                    stringBuilder.append(")");
+                }
             }else if(funcIDSplit[1].equals("write")){
-                stringBuilder.append("digitalRead(");
-                stringBuilder.append(funcIDSplit[0]);
+                if(node.children.get(1) instanceof NumberNode){
+                    stringBuilder.append("analogWrite(");
+                    stringBuilder.append(funcIDSplit[0]);
+                    stringBuilder.append(",");
+                    stringBuilder.append(node.children.get(1));
+                } else if(node.children.get(1) instanceof IdNode){
+                    if (firstParam.type.equals("integer") || firstParam.type.equals("long integer") || firstParam.type.equals("small integer") || firstParam.type.equals("character")) {
+                        stringBuilder.append("analogWrite(");
+                        stringBuilder.append(funcIDSplit[0]);
+                        stringBuilder.append(",");
+                        stringBuilder.append(node.children.get(1));
+                    } else if (firstParam.type.equals("")) //Todo: finish
+                        stringBuilder.append("digitalWrite(");
+                        stringBuilder.append(funcIDSplit[0]);
+                        stringBuilder.append(",");
+                    }
+                }
                 stringBuilder.append(")");
-            }
         }else{
             this.visitChild(id);
             stringBuilder.append("(");
