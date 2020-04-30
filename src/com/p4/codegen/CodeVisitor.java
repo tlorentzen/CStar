@@ -186,20 +186,13 @@ public class CodeVisitor implements INodeVisitor{
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
 
-        //If pin appears on the right side, either declaration or write should be performed
-        if(leftChild.type.equals("pin")){
-            pinValueOnLeftSide(leftChild, rightChild);
-        //If pin appears on the left side, read should be performed
-        } else if (rightChild.type.equals("pin")){
-            pinValueOnRightSide(leftChild, rightChild);
 
-        //If no pin is involved, generate normal assign of left child to right child
-        } else{
+
             this.visitChild(leftChild);
             stringBuilder.append(" = ");
             this.visitChild(rightChild);
             stringBuilder.append(";\n");
-        }
+
     }
 
     /**
@@ -467,20 +460,19 @@ public class CodeVisitor implements INodeVisitor{
         if(node.children.size() > 1){
             firstParam = node.children.get(1);
         }
+
         String[] funcIDSplit = ((IdNode)id).id.split("\\.");
 
-        if(firstParam != null && funcIDSplit.length > 1){
+        if(funcIDSplit.length > 1){
             if(funcIDSplit[1].equals("read")){
                 if(((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).analog){
                     stringBuilder.append("analogRead(");
                     stringBuilder.append(funcIDSplit[0]);
-                    stringBuilder.append(")");
                 } else{
                     stringBuilder.append("digitalRead(");
                     stringBuilder.append(funcIDSplit[0]);
-                    stringBuilder.append(")");
                 }
-            }else if(funcIDSplit[1].equals("write")){
+            }else if(firstParam != null && funcIDSplit[1].equals("write")){
                 if(node.children.get(1) instanceof NumberNode){
                     stringBuilder.append("analogWrite(");
                     stringBuilder.append(funcIDSplit[0]);
