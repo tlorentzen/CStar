@@ -1,7 +1,2 @@
-integer i = 0;
-integer hej = met(i, 3);
-
-decimal met (integer i, integer c){
-
-}
+integer i = 0.5;
 

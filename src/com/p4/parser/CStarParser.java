@@ -20,7 +20,7 @@ public class CStarParser extends Parser {
 		MODULO=15, LEFT_PAREN=16, RIGHT_PAREN=17, LEFT_BRACKET=18, RIGHT_BRACKET=19, 
 		LEFT_BRACE=20, RIGHT_BRACE=21, SEMICOLON=22, DOT=23, IF=24, ELSE=25, WHILE=26, 
 		REPEAT=27, COMMA=28, VOID=29, TYPE=30, ARRAY=31, RETURN=32, PRINT=33, 
-		HIGH=34, LOW=35, NUMBER=36, BOOLEAN_LITERAL=37, PIN_LITERAL=38, CHAR_LITERAL=39, 
+		HIGH=34, LOW=35, NUMBER=36, BOOLEAN_LITERAL=37, PIN_LITERAL=38, CHAR_LITERAL=39,
 		STRING_LITERAL=40, ID=41, FUNCID=42, WHITESPACE=43, Newline=44, LINE_COMMENT=45;
 	public static final int
 		RULE_prog = 0, RULE_dcl = 1, RULE_assign = 2, RULE_expr = 3, RULE_logical_expr = 4, 
@@ -44,7 +44,7 @@ public class CStarParser extends Parser {
 			null, null, "'<'", "'>'", "'IS'", "'ISNOT'", "'OR'", "'AND'", "'='", 
 			"'+'", "'-'", "'*'", "'/'", "'<='", "'>='", "'%'", "'('", "')'", "'['", 
 			"']'", "'{'", "'}'", "';'", "'.'", "'if'", "'else'", "'while'", "'repeat'", 
-			"','", "'void'", null, "'array'", "'return'", "'console.print'", "'HIGH'", 
+			"','", "'void'", null, "'array'", "'return'", "'console.print'", "'HIGH'",
 			"'LOW'"
 		};
 	}
@@ -55,8 +55,8 @@ public class CStarParser extends Parser {
 			"ASSIGN_OP", "PLUS", "MINUS", "MULT", "DIVISION", "LESS_THAN_EQ", "GREATER_THAN_EQ", 
 			"MODULO", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACKET", "RIGHT_BRACKET", 
 			"LEFT_BRACE", "RIGHT_BRACE", "SEMICOLON", "DOT", "IF", "ELSE", "WHILE", 
-			"REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", "PRINT", "HIGH", 
-			"LOW", "NUMBER", "BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL", 
+			"REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", "PRINT", "HIGH",
+			"LOW", "NUMBER", "BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL",
 			"ID", "FUNCID", "WHITESPACE", "Newline", "LINE_COMMENT"
 		};
 	}

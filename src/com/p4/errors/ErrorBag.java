@@ -106,10 +106,6 @@ class Item{
     int column = 0;
     List<String> lines;
 
-    public Item(ErrorType type, String message, int lineNumber, List<String> lines){
-        this(type, message, lineNumber, 0, lines);
-    }
-
     public Item(ErrorType type, String message, int lineNumber, int column, List<String> lines){
         this.type = type;
         this.message = message;
