@@ -34,8 +34,6 @@ public class CodeVisitor implements INodeVisitor{
 
         //Writes the string builder to the file, handling potential creation as well
         oS.write(stringBuilder.toString().getBytes());
-        //Debug print Todo: delete
-        //System.out.println(stringBuilder.toString());
     }
 
     /**
@@ -63,7 +61,6 @@ public class CodeVisitor implements INodeVisitor{
      * Only handles AND and OR.
      * @param node is the logical node to be handled.
      */
-
     @Override
     public void visit(PrintNode node){
         if(node.formatString.size() > 1){
@@ -116,9 +113,10 @@ public class CodeVisitor implements INodeVisitor{
         visitDclNode(node);
     }
 
-    //todo implement
     @Override
-    public void visit(SmallDclNode node){}
+    public void visit(SmallDclNode node){
+        visitDclNode(node);
+    }
 
     @Override
     public void visit(StringNode node){
@@ -154,9 +152,6 @@ public class CodeVisitor implements INodeVisitor{
         switch (node.id){
             case "sleep":
                 stringBuilder.append("delay");
-                break;
-            case "console.println":
-                stringBuilder.append("Serial.println");
                 break;
             default:
                 stringBuilder.append(node.id);
@@ -197,67 +192,8 @@ public class CodeVisitor implements INodeVisitor{
             stringBuilder.append(";\n");
     }
 
-    /**
-     * Handles the assignment of a pin, conversion between the value and the actual Arduino pin number,
-     * and write type.
-     * @param leftChild lhs of the assignment.
-     * @param rightChild rhs of the assignment.
-     */
-    private void pinValueOnLeftSide(AstNode leftChild, AstNode rightChild) {
-
-        //Handles assigning a value to a pin at declaration
-        if(leftChild instanceof PinDclNode){
-            PinDclNode pinDclNode = (PinDclNode) leftChild;
-
-            //Converts the value of the pin node to analog and digital pin numbers
-            String pinNum = convertIntToPinValue(rightChild);
-
-            //Declares the pin number as an int
-            stringBuilder.append("int ");
-            stringBuilder.append(pinDclNode.id);
-            stringBuilder.append(" = ");
-            visitChild(rightChild);
-            stringBuilder.append(";\n");
-        } else{
-            //Sets the pin mode of the pin
-            stringBuilder.append("pinMode(");
-            visitChild(leftChild);
-            stringBuilder.append(", OUTPUT);\n");
-
-            //Handles assigning a value to a pin after declaration, by using digital or analog write.
-            if(rightChild.type.equals("integer")){
-                stringBuilder.append("analogWrite(");
-            } else {
-                stringBuilder.append("digitalWrite(");
-            }
-
-            //Ends the write statement with the pin and value
-            this.visitChild(leftChild);
-            stringBuilder.append(", ");
-            this.visitChild(rightChild);
-            stringBuilder.append(");\n");
-        }
-    }
-
     private String convertIntToPinValue(AstNode node) {
         return (node instanceof PinNode ? "A" + ((((PinNode) node).value * -1) - 1) : ((NumberNode) node).value.toString());
-    }
-
-    /**
-     * Handles the assignment to a variable with a pin on the right side of the assignment.
-     * PinMode and the correct read function is handled within this function.
-     * @param leftChild lhs of the assignment.
-     * @param rightChild rhs of the assignment.
-     */
-    private void pinValueOnRightSide(AstNode leftChild, AstNode rightChild) {
-        stringBuilder.append("pinMode(");
-        this.visitChild(rightChild);
-        stringBuilder.append(", INPUT);\n");
-        this.visitChild(leftChild);
-        stringBuilder.append(" = ");
-        stringBuilder.append("digitalRead("); //Todo: update
-        this.visitChild(rightChild);
-        stringBuilder.append(");\n");
     }
 
     /**
@@ -326,7 +262,6 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(ArrayExprNode node) {
-
         for(AstNode child : node.children){
             visitChild(child);
             stringBuilder.append(", ");
@@ -693,6 +628,8 @@ public class CodeVisitor implements INodeVisitor{
                 return "long";
             case "character":
                 return "char";
+            case "small integer":
+                return "byte";
             default:
                 return type;
         }

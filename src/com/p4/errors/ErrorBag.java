@@ -34,7 +34,6 @@ public class ErrorBag {
             for (Item error: errors) {
                 if(error.type == ErrorType.UNDECLARED_FUNCTION_WARNING && calledFunction.equals(error.message.split("'", 3)[1])){
                     shouldBeAdded = false;
-                    //Todo: possibly add additional line numbers
                     break;
                 }
             }

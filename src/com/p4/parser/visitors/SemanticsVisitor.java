@@ -386,7 +386,6 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    //todo widening virker ikke helt endnu. fix det.
     //If no errors occur, then the function call will be seen as well typed
     public void visit(FuncCallNode node) {
         this.visitChildren(node);
@@ -557,7 +556,6 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private String arithOperationResultType(String leftType, String rightType) {
-        //Todo: handle casting
         //Checks if either type is null
         if (leftType == null || rightType == null){
             return "error";

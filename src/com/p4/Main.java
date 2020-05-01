@@ -85,8 +85,6 @@ public class Main {
                                         e.printStackTrace();
                                     }
 
-                                } else{
-                                    //Todo: should we do something
                                 }
                             }else{
                                 errors.addEntry(ErrorType.MISSING_ARDUINO_FUNCTION, "Both the functions 'void setup()' and 'void loop()' are required by Arduino");

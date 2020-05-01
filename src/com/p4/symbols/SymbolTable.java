@@ -17,11 +17,11 @@ public class SymbolTable {
         currentScope = globalScope;
     }
 
-    //todo skal også tjekke om scope navn allerede findes
-    public void addScope(String scopeName){
+    public void addScope(String scopeName)/* throws Exception */{
         //If the scope already exists, do not add it.
         if(lookupScope(scopeName) != null){
-            //Todo: handle trying to add existing scope
+            //throw new Exception("Scope " + scopeName + " has already added");
+            //Todo: implement above maybe
         } else {
             CStarScope scope = new CStarScope(scopeName);
             scope.parent = currentScope;
