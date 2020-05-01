@@ -656,9 +656,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitStmt(CStarParser.StmtContext ctx) {
-        ParseTree child = ctx.getChild(0);
-
-        return visit(child);
+        return visit(ctx.getChild(0));
     }
 
     @Override
