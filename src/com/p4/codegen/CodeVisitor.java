@@ -3,6 +3,7 @@ import com.p4.parser.nodes.*;
 import com.p4.parser.visitors.INodeVisitor;
 import com.p4.symbols.PinAttributes;
 import com.p4.symbols.SymbolTable;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -460,64 +461,26 @@ public class CodeVisitor implements INodeVisitor{
 
         AstNode id = node.children.get(0);
         AstNode firstParam = null;
+
+        //Checks if the node has more than 1 child and sets the second child it as the first parameter,
+        //as the first child is the ID of the node
         if(node.children.size() > 1){
             firstParam = node.children.get(1);
         }
 
+        //Splits the function ID on '.' to check for read and write functions
         String[] funcIDSplit = ((IdNode)id).id.split("\\.");
 
+        //Checks if the string contained a '.'
         if(funcIDSplit.length > 1){
-            if(funcIDSplit[1].equals("read")){
-                if(((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).analog){
-                    stringBuilder.append("analogRead(");
-                    stringBuilder.append(funcIDSplit[0]);
-                } else{
-                    stringBuilder.append("digitalRead(");
-                    stringBuilder.append(funcIDSplit[0]);
-                }
-            }else if(firstParam != null && funcIDSplit[1].equals("write")){
-                if(node.children.get(1) instanceof NumberNode){
-                    stringBuilder.append("analogWrite(");
-                    stringBuilder.append(funcIDSplit[0]);
-                    stringBuilder.append(",");
-                    visitChild(node.children.get(1));
-                } else if(node.children.get(1) instanceof IdNode
-                        && (firstParam.type.equals("integer")
-                        || firstParam.type.equals("long integer")
-                        || firstParam.type.equals("small integer")
-                        || firstParam.type.equals("character"))){
-
-                    stringBuilder.append("analogWrite(");
-                    stringBuilder.append(funcIDSplit[0]);
-                    stringBuilder.append(",");
-                    visitChild(node.children.get(1));
-                    /* Old solution
-                    if (firstParam.type.equals("integer") || firstParam.type.equals("long integer") || firstParam.type.equals("small integer") || firstParam.type.equals("character")) {
-                        stringBuilder.append("analogWrite(");
-                        stringBuilder.append(funcIDSplit[0]);
-                        stringBuilder.append(",");
-                        visitChild(node.children.get(1));
-                    } else if (firstParam.type.equals("")) { //Todo: finish
-                        stringBuilder.append("digitalWrite(");
-                        stringBuilder.append(funcIDSplit[0]);
-                        stringBuilder.append(",");
-                    }
-                    */
-                } else {
-                    stringBuilder.append("digitalWrite(");
-                    stringBuilder.append(funcIDSplit[0]);
-                    stringBuilder.append(",");
-                    visitChild(node.children.get(1));
-                }
-            }
-            stringBuilder.append(")");
-
+            this.handlePinReadAndWrite(firstParam, funcIDSplit);
         }else{
+            //Handle functions that are not pin read or write
             this.visitChild(id);
             stringBuilder.append("(");
 
-            int counter = node.children.subList( 1, node.children.size()).size();
-
+            //Adds the parameters of the function to the call
+            int counter = node.children.size() - 1;
             for(AstNode child : node.children.subList( 1, node.children.size())){
                 this.visitChild(child);
                 counter--;
@@ -527,6 +490,48 @@ public class CodeVisitor implements INodeVisitor{
             }
             stringBuilder.append(")");
         }
+    }
+
+    /**
+     * Handles code generation for the pin.read and pin.write functions
+     * @param firstParam the first parameter of the function call
+     * @param funcIDSplit the ID of the function split on '.' into an array
+     */
+    private void handlePinReadAndWrite(AstNode firstParam, String[] funcIDSplit) {
+        if(funcIDSplit[1].equals("read")){
+            //The call is assumed to be a pin read
+            if(((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).analog){
+                //The pin is instantiated as an analog pin
+                stringBuilder.append("analogRead(");
+                stringBuilder.append(funcIDSplit[0]);
+            } else{
+                //The pin is instantiated as a digital pin
+                stringBuilder.append("digitalRead(");
+                stringBuilder.append(funcIDSplit[0]);
+            }
+        }else if(firstParam != null && funcIDSplit[1].equals("write")){
+            //The call is assumed to be a pin write
+            if(firstParam instanceof NumberNode
+                    || (firstParam instanceof IdNode
+                    && (firstParam.type.equals("integer")
+                    || firstParam.type.equals("long integer")
+                    || firstParam.type.equals("small integer")
+                    || firstParam.type.equals("character")
+                    || firstParam.type.equals("Arduino C")))) {
+                //The value to be written to the pin could be any number
+                stringBuilder.append("analogWrite(");
+                stringBuilder.append(funcIDSplit[0]);
+                stringBuilder.append(",");
+                visitChild(firstParam);
+            } else if (firstParam.type.equals("constant")){
+                //The value to be written to the pin is either HIGH or LOW
+                stringBuilder.append("digitalWrite(");
+                stringBuilder.append(funcIDSplit[0]);
+                stringBuilder.append(",");
+                visitChild(firstParam);
+            }
+        }
+        stringBuilder.append(")");
     }
 
     /**

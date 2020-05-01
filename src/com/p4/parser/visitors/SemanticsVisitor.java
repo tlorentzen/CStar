@@ -81,7 +81,7 @@ public class SemanticsVisitor implements INodeVisitor {
         node.type = "decimal";
     }
 
-    public void visit(ConstantNode node) { node.type = "Arduino C"; }
+    public void visit(ConstantNode node) { node.type = "constant"; }
 
     public void visit(BooleanNode node) {
         node.type = "boolean";
@@ -408,7 +408,6 @@ public class SemanticsVisitor implements INodeVisitor {
                 else {
                     checkParameterTypes(node, functionScope);
                 }
-                symbolTable.leaveScope();
             }
         } else{
             errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName
