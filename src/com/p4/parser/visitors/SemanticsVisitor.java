@@ -81,7 +81,7 @@ public class SemanticsVisitor implements INodeVisitor {
         node.type = "decimal";
     }
 
-    public void visit(ConstantNode node) { node.type = "Arduino C"; }
+    public void visit(ConstantNode node) { node.type = "constant"; }
 
     public void visit(BooleanNode node) {
         node.type = "boolean";
