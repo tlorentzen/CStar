@@ -4,7 +4,8 @@ import com.p4.parser.CStarParser;
 import com.p4.parser.nodes.*;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
@@ -77,10 +78,10 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     public AstNode visitAssign(CStarParser.AssignContext ctx) {
 
         ParserRuleContext parent = ctx.getParent();
-        String classes = parent.getClass().toString();
         AssignNode assignNode = new AssignNode();
 
-        if (classes.equals("class com.p4.parser.CStarParser$DclContext")) {
+        //Todo: test if instanceof works
+        if (parent instanceof CStarParser.DclContext) {
             String id = ctx.ID().toString();
             CStarParser.ExprContext exprCtx = ctx.expr();
             AstNode exprNode = visit(exprCtx);
@@ -122,7 +123,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             assignNode.children.add(exprNode);
 
             return assignNode;
-        } else if (ctx.getChild(0).getClass().toString().equals("class com.p4.parser.CStarParser$Array_accessContext")) {
+            //Todo: test if instanceof works
+        } else if (ctx.getChild(0) instanceof CStarParser.Array_accessContext) {
             assignNode.children.add(visit(ctx.array_access()));
             assignNode.children.add(visit(ctx.expr()));
             assignNode.lineNumber = ctx.start.getLine();
@@ -146,7 +148,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         boolean isNegative = false;
         ParseTree parent = ctx.getParent();
 
-        if (parent.getChild(0).getClass().toString().equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")) {
+        //Todo: test if instanceof works
+        if (parent.getChild(0) instanceof TerminalNodeImpl) {
             isNegative = true;
         }
         if (ctx.PIN_LITERAL() != null) {
@@ -205,8 +208,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         String type = child.toString();
         ArrayNode arrayNode = new ArrayNode(id, type);
         arrayNode.lineNumber = ctx.start.getLine();
-        AstNode arrayExprNode = (ArrayExprNode) visit(ctx.array_expr());
-        var arrayDclNode = new ArrayDclNode(id);
+        AstNode arrayExprNode = visit(ctx.array_expr());
+        var arrayDclNode = new ArrayDclNode<>(id);
         arrayDclNode.lineNumber = ctx.start.getLine();
         arrayDclNode.children.add(arrayNode);
         arrayDclNode.children.add(arrayExprNode);
@@ -222,9 +225,9 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         for (int i = 0; i < childCount; i++) {
             var child = ctx.getChild(i);
-            String classes = child.getClass().toString();
             //checks if child is a value node
-            if (classes.equals("class com.p4.parser.CStarParser$ExprContext")) {
+            //Todo: test if instanceof works
+            if (child instanceof CStarParser.ExprContext) {
                 AstNode literal = visit(child);
                 arrayExprNode.children.add(literal);
             }
@@ -237,7 +240,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         //index 0 is ID, Everything that follows is parameter values
         boolean isNegative = false;
         ParseTree parent = ctx.getParent();
-        if (parent.getChild(0).getClass().toString().equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")) {
+        //Todo: test if instanceof works
+        if (parent.getChild(0) instanceof TerminalNodeImpl) {
             isNegative = true;
         }
 
@@ -248,12 +252,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         for (int childIndex = 0; childIndex < numChildren; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
-            String classes = child.getClass().toString();
             String id = child.getText();
 
             //checks if child is a value node
-            //TODO lave funktioner til classes.equals da det bliver brugt mange steder
-            if (classes.equals("class com.p4.parser.CStarParser$ExprContext")) {
+            //Todo: test if instanceof works
+            if (child instanceof CStarParser.ExprContext) {
                 funcCallNode.children.add(visit(child));
             } else if (isID(id)) {
                 IdNode idNode = new IdNode(id, false);
@@ -328,7 +331,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         }
     }
 
-    //Todo evt lav den general ved at lave en generisk metode
     public AstNode visitTermChild(ParseTree child, CStarParser.TermContext parent, int operatorIndex) {
         int factorIndex = (operatorIndex - 1) / 2;
         AstNode node;
@@ -372,48 +374,34 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override
     public AstNode visitFactor(CStarParser.FactorContext ctx) {
         var child = ctx.getChild(0);
-        String classes = child.getClass().toString();
         boolean isNegative = false;
 
         //Checks if negative factor
         if (child.getText().equals("-")) {
             child = ctx.getChild(1);
-            classes = child.getClass().toString();
             isNegative = true;
         }
 
-        /*if (classes.equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")){
+        //Todo: test if instanceof works
+        if (child instanceof  CStarParser.ValContext) { //if value
+            return visit(ctx.val());
+            //Todo: test if instanceof works
+        } else if (child instanceof  TerminalNodeImpl) { //if paren or id
             if (child.getText().equals("(")) {
                 return visit(ctx.expr());
+            } else {
+                IdNode node = new IdNode(child.getText(), isNegative);
+                node.lineNumber = ctx.start.getLine();
+                return node;
             }
-            else {
-                return new IdNode(child.getText(), isNegative);
-            }
+            //Todo: test if instanceof works
+        } else if (child instanceof  CStarParser.Func_callContext) { // if func call
+            return visit(ctx.func_call());
+            //Todo: test if instanceof works
+        } else if (child instanceof  CStarParser.Array_accessContext) {
+            return visit(ctx.array_access());
         }
-        else {
-            visit(child);
-        }*/
-
-        switch (classes) {
-            case "class com.p4.parser.CStarParser$ValContext": //if value
-                return visit(ctx.val());
-            case "class org.antlr.v4.runtime.tree.TerminalNodeImpl": //if paren or id
-                if (child.getText().equals("(")) {
-                    return visit(ctx.expr());
-                }
-                else {
-                    IdNode node = new IdNode(child.getText(), isNegative);
-                    node.lineNumber = ctx.start.getLine();
-                    return node;
-                }
-            case "class com.p4.parser.CStarParser$Func_callContext": // if func call
-                return visit(ctx.func_call());
-            case "class com.p4.parser.CStarParser$Array_accessContext":
-                return visit(ctx.array_access());
-            default:
-                //todo error handling
-                return null;
-        }
+        return null;
     }
 
     @Override
@@ -431,7 +419,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         //If there are no operations with AND or OR
         if (childCount == 1) {
-            //TODO Husk at visit skal return noget
             return visit(ctx.cond_expr(0));
         } else {
             return visitLogicalChild(ctx.getChild(1), ctx, 1);
@@ -451,7 +438,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 node.setOperator(7);
                 break;
             default:
-                //todo error handling
                 return null;
         }
 
@@ -481,7 +467,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         //If there is only an operator
         if (childCount == 1) {
-            //TODO Husk at visit skal return noget
             return visit(ctx.arithm_expr(0));
         } else {
             return visitCondChild(ctx.getChild(1), ctx, 1);
@@ -514,7 +499,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 node.setOperator(5);
                 break;
             default:
-                //todo error handling
                 return null;
         }
 
@@ -579,8 +563,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 case "small integer":
                     node = new IdNode(ctx.getChild(++childIndex).toString(), "small integer");
                     break;
-                default:
-                    // TODO: Nothing
             }
 
             if(node != null){
@@ -670,7 +652,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         //Goes through all print's children and add them to formatstring (except plus)
         for(int i = 2; i < ctx.children.size() - 1; i++){
             ParseTree child = ctx.getChild(i);
-            String classes = child.getClass().toString();
 
             if (child.getText().equals("+")){
                 continue; //plus should not be included (not necessary information)
@@ -678,14 +659,15 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             else if(child.getText().contains("\"")){
                 printNode.addToFormatString(new StringNode(child.getText()));
             }
-            else if(classes.equals("class com.p4.parser.CStarParser$ValContext")){
+            //Todo: test if instanceof works
+            else if(child instanceof CStarParser.ValContext){
                 printNode.addToFormatString(visitVal((CStarParser.ValContext) child));
             }
-            else if (classes.equals("class org.antlr.v4.runtime.tree.TerminalNodeImpl")){
+            //Todo: test if instanceof works
+            else if (child instanceof TerminalNodeImpl){
                 printNode.addToFormatString(new IdNode(child.getText(), false));
             }
             else{
-                //todo error handling
                 return null;
             }
         }
