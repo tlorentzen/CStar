@@ -280,7 +280,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         }
     }
 
-    //Todo evt lav den general ved at lave en generisk metode
     public AstNode visitArithm_exprChild(ParseTree child, CStarParser.Arithm_exprContext parent, int operatorIndex) {
         int termIndex = (operatorIndex - 1) / 2;
         AstNode node;
@@ -293,7 +292,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 node = new SubNode();
                 break;
             default:
-                //todo error handling
                 return null;
         }
 
@@ -324,7 +322,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         //If there are no operations with mult or div
         if (childCount == 1) {
-            //TODO Husk at visit skal return noget
             return visit(ctx.factor(0));
         } else {
             return visitTermChild(ctx.getChild(1), ctx, 1);
@@ -348,7 +345,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 node = new ModNode();
                 break;
             default:
-                //todo error handling
                 return null;
         }
 

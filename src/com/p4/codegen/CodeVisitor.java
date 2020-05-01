@@ -220,6 +220,12 @@ public class CodeVisitor implements INodeVisitor{
             case 5:
                 stringBuilder.append(" != ");
                 break;
+            case 13:
+                stringBuilder.append(" <= ");
+                break;
+            case 14:
+                stringBuilder.append(" >= ");
+                break;
         }
         //Right operand
         this.visitChild(node.children.get(1));
