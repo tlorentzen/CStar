@@ -408,7 +408,6 @@ public class SemanticsVisitor implements INodeVisitor {
                 else {
                     checkParameterTypes(node, functionScope);
                 }
-                symbolTable.leaveScope();
             }
         } else{
             errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, "'" + functionName

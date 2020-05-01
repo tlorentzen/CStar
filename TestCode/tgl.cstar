@@ -27,6 +27,7 @@ void loop() {
     }
 
     console.print("Hey");
+    integer hej = btnPin.read();
 }
 
 void setBarGraph() {
