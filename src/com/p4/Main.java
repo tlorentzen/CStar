@@ -89,7 +89,7 @@ public class Main {
                                     //Todo: should we do something
                                 }
                             }else{
-                                errors.addEntry(ErrorType.MISSING_FUNCTION, "Both the functions 'setup()' and 'loop()' are required");
+                                errors.addEntry(ErrorType.MISSING_FUNCTION, "Both the functions 'void setup()' and 'void loop()' are required");
                             }
                         }
                     }catch (IOException e){
