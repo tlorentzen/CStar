@@ -188,10 +188,10 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(AssignNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
-            this.visitChild(leftChild);
-            stringBuilder.append(" = ");
-            this.visitChild(rightChild);
-            stringBuilder.append(";\n");
+        this.visitChild(leftChild);
+        stringBuilder.append(" = ");
+        this.visitChild(rightChild);
+        stringBuilder.append(";\n");
     }
 
     private String convertIntToPinValue(AstNode node) {
