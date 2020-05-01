@@ -20,7 +20,6 @@ public class SymbolTable {
     //todo skal også tjekke om scope navn allerede findes
     public void addScope(String scopeName){
         //If the scope already exists, do not add it.
-        System.out.println("Added: " + scopeName);
         if(lookupScope(scopeName) != null){
             //Todo: handle trying to add existing scope
         } else {
@@ -37,7 +36,6 @@ public class SymbolTable {
     }
 
     public void leaveScope(String hash){
-        System.out.println("Leaving: " + currentScope.scopeName);
         if(currentScope.parent != null){
             String currentScopeName = currentScope.scopeName;
 
@@ -47,9 +45,6 @@ public class SymbolTable {
             }
 
             currentScope = scopeStack.empty() ? globalScope : scopeStack.pop();
-        }else{
-            //Todo: handle already in global scope, hence leave is called to many times
-            System.out.println("Already in global");
         }
     }
     
