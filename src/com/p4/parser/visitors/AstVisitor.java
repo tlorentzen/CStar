@@ -369,7 +369,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
-
     @Override
     public AstNode visitFactor(CStarParser.FactorContext ctx) {
         var child = ctx.getChild(0);
@@ -492,6 +491,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     public AstNode visitCondChild(ParseTree child, CStarParser.Cond_exprContext parent, int operatorIndex) {
         int arithIndex = (operatorIndex - 1) / 2;
         CondNode node = new CondNode();
+        node.lineNumber = parent.start.getLine();
 
         //Enters if there are more operators in the tree
         switch (child.getText()) {
@@ -517,8 +517,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 //todo error handling
                 return null;
         }
-
-        node.lineNumber = parent.start.getLine();
 
         //Enters if there are more operators in the tree
         if (parent.getChild(operatorIndex + 2) != null) {
@@ -557,29 +555,37 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         paramNode.lineNumber = ctx.start.getLine();
         int numChild = ctx.getChildCount();
         for (int childIndex = 0; childIndex < numChild; childIndex++) { //Skips comma and jumps to type
+            IdNode node = null;
+
             switch (ctx.getChild(childIndex).toString()) {
                 case "integer":
-                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "integer"));
+                    node = new IdNode(ctx.getChild(++childIndex).toString(), "integer");
                     break;
                 case "decimal":
-                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "decimal"));
+                    node = new IdNode(ctx.getChild(++childIndex).toString(), "decimal");
                     break;
                 case "pin":
-                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "pin"));
+                    node = new IdNode(ctx.getChild(++childIndex).toString(), "pin");
                     break;
                 case "long integer":
-                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "long integer"));
+                    node = new IdNode(ctx.getChild(++childIndex).toString(), "long integer");
                     break;
                 case "character":
-                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "character"));
+                    node = new IdNode(ctx.getChild(++childIndex).toString(), "character");
+                    break;
                 case "boolean":
-                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "boolean"));
+                    node = new IdNode(ctx.getChild(++childIndex).toString(), "boolean");
                     break;
                 case "small integer":
-                    paramNode.children.add(new IdNode(ctx.getChild(++childIndex).toString(), "small integer"));
+                    node = new IdNode(ctx.getChild(++childIndex).toString(), "small integer");
                     break;
                 default:
-                    //todo error handling
+                    // TODO: Nothing
+            }
+
+            if(node != null){
+                node.lineNumber = ctx.start.getLine();
+                paramNode.children.add(node);
             }
         }
         return paramNode;
