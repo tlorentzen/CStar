@@ -369,7 +369,6 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(DivNode node) {
         AstNode leftChild = node.children.get(0);
-        stringBuilder.append(" ");
         AstNode rightChild = node.children.get(1);
         this.visitChild(leftChild);
         stringBuilder.append(" / ");
@@ -530,7 +529,6 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(MultNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
-        stringBuilder.append(" ");
         this.visitChild(leftChild);
         stringBuilder.append(" * ");
         this.visitChild(rightChild);
@@ -594,7 +592,6 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(SubNode node) {
         AstNode leftChild = node.children.get(0);
-        stringBuilder.append(" ");
         AstNode rightChild = node.children.get(1);
         this.visitChild(leftChild);
         stringBuilder.append(" - ");

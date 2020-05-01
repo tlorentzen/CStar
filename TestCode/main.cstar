@@ -8,9 +8,12 @@ small integer ill = 22;
 void setup(){
 
     i = hello(ill, j);
-
+    i = 5*(10+5);
+    i = 10 - 5;
+    i = 10/5;
+    i = j * i;
 }
-
+// hej
 void loop(){
 
 }
