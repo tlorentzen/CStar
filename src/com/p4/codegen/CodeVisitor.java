@@ -481,7 +481,17 @@ public class CodeVisitor implements INodeVisitor{
                     stringBuilder.append(funcIDSplit[0]);
                     stringBuilder.append(",");
                     visitChild(node.children.get(1));
-                } else if(node.children.get(1) instanceof IdNode){
+                } else if(node.children.get(1) instanceof IdNode
+                        && (firstParam.type.equals("integer")
+                        || firstParam.type.equals("long integer")
+                        || firstParam.type.equals("small integer")
+                        || firstParam.type.equals("character"))){
+
+                    stringBuilder.append("analogWrite(");
+                    stringBuilder.append(funcIDSplit[0]);
+                    stringBuilder.append(",");
+                    visitChild(node.children.get(1));
+                    /* Old solution
                     if (firstParam.type.equals("integer") || firstParam.type.equals("long integer") || firstParam.type.equals("small integer") || firstParam.type.equals("character")) {
                         stringBuilder.append("analogWrite(");
                         stringBuilder.append(funcIDSplit[0]);
@@ -492,6 +502,7 @@ public class CodeVisitor implements INodeVisitor{
                         stringBuilder.append(funcIDSplit[0]);
                         stringBuilder.append(",");
                     }
+                    */
                 } else {
                     stringBuilder.append("digitalWrite(");
                     stringBuilder.append(funcIDSplit[0]);
