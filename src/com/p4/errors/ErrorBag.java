@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ErrorBag {
-    private static String OS = System.getProperty("os.name").toLowerCase();
-    private List<Item> errors = new ArrayList<>();
+    final private static String OS = System.getProperty("os.name").toLowerCase();
+    final private List<Item> errors = new ArrayList<>();
     private boolean hasErrors = false;
 
     public void addEntry(ErrorType type, String message){

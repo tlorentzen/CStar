@@ -13,7 +13,7 @@ public enum ErrorType {
     UNDECLARED_FUNCTION_WARNING("W2"),
     INFORMATION("I1"),
     VOID_ASSIGN("E201"),
-    MISSING_FUNCTION("E300");
+    MISSING_ARDUINO_FUNCTION("W300");
 
     private final String code;
 
