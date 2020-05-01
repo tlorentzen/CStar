@@ -557,7 +557,6 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private String arithOperationResultType(String leftType, String rightType) {
-        //Todo: handle casting
         //Checks if either type is null
         if (leftType == null || rightType == null){
             return "error";
