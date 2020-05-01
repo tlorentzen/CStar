@@ -386,7 +386,6 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    //todo widening virker ikke helt endnu. fix det.
     //If no errors occur, then the function call will be seen as well typed
     public void visit(FuncCallNode node) {
         this.visitChildren(node);
