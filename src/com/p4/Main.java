@@ -68,24 +68,28 @@ public class Main {
                             FuncVisitor funcVisitor = new FuncVisitor(symbolTable, errors);
                             funcVisitor.visit(ast);
 
-                            SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable, errors);
-                            symbolTableVisitor.visit(ast);
+                            if(symbolTable.isSetupAndLoopDefined()){
+                                SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable, errors);
+                                symbolTableVisitor.visit(ast);
 
-                            SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
-                            semanticsVisitor.visit(ast);
+                                SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+                                semanticsVisitor.visit(ast);
 
-                            if(!errors.containsErrors()){
-                                CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
-                                codeVisitor.visit(ast);
+                                if(!errors.containsErrors()){
+                                    CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
+                                    codeVisitor.visit(ast);
 
-                                try {
-                                    codeVisitor.print();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                                    try {
+                                        codeVisitor.print();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                } else{
+                                    //Todo: should we do something
                                 }
-
-                            } else{
-                                //Todo: should we do something
+                            }else{
+                                errors.addEntry(ErrorType.MISSING_FUNCTION, "Both the functions 'setup()' and 'loop()' are required");
                             }
                         }
                     }catch (IOException e){

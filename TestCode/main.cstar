@@ -1,7 +1,13 @@
 integer i = 0;
-integer hej = met(i, 3);
+integer j = 100000000;
+integer g = 1000000000;
+decimal o = 5.0;
+integer p = 200 * g;
 
-decimal met (integer i, integer c){
+void setup(){
 
 }
 
+void loop(){
+
+}

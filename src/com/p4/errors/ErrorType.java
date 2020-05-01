@@ -12,7 +12,8 @@ public enum ErrorType {
     GENERAL_WARNING("W1"),
     UNDECLARED_FUNCTION_WARNING("W2"),
     INFORMATION("I1"),
-    VOID_ASSIGN("E201");
+    VOID_ASSIGN("E201"),
+    MISSING_FUNCTION("E300");
 
     private final String code;
 

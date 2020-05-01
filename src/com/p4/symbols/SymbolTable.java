@@ -162,5 +162,10 @@ public class SymbolTable {
             outputSymbolTable(child);
         }
     }
+
+    public boolean isSetupAndLoopDefined(){
+        return (this.declaredFunctions.contains("setup")
+                && this.declaredFunctions.contains("loop"));
+    }
 }
 
