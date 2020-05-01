@@ -116,9 +116,10 @@ public class CodeVisitor implements INodeVisitor{
         visitDclNode(node);
     }
 
-    //todo implement
     @Override
-    public void visit(SmallDclNode node){}
+    public void visit(SmallDclNode node){
+        visitDclNode(node);
+    }
 
     @Override
     public void visit(StringNode node){
@@ -154,9 +155,6 @@ public class CodeVisitor implements INodeVisitor{
         switch (node.id){
             case "sleep":
                 stringBuilder.append("delay");
-                break;
-            case "console.println":
-                stringBuilder.append("Serial.println");
                 break;
             default:
                 stringBuilder.append(node.id);
@@ -693,6 +691,8 @@ public class CodeVisitor implements INodeVisitor{
                 return "long";
             case "character":
                 return "char";
+            case "small integer":
+                return "byte";
             default:
                 return type;
         }
