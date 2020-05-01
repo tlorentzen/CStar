@@ -220,6 +220,12 @@ public class CodeVisitor implements INodeVisitor{
             case 5:
                 stringBuilder.append(" != ");
                 break;
+            case 13:
+                stringBuilder.append(" <= ");
+                break;
+            case 14:
+                stringBuilder.append(" >= ");
+                break;
         }
         //Right operand
         this.visitChild(node.children.get(1));
@@ -573,12 +579,12 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(SelectionNode node) {
-        stringBuilder.append("if(");
+        stringBuilder.append("if (");
         this.visitChild(node.children.get(0));
         stringBuilder.append(")");
         visitChild(node.children.get(1));
         if(node.children.size() > 2){
-            stringBuilder.append("else");
+            stringBuilder.append("else ");
             visitChild(node.children.get(2));
         }
     }

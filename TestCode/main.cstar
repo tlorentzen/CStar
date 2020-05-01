@@ -20,5 +20,12 @@ void loop(){
 }
 
 integer hello (decimal d, long integer l){
-    return d + 4;
+    d = d * 4 % 4;
+    boolean b = (d <= 5 AND (d >= 5));
+    //Hey
+    if(d IS 1){
+
+    } else {
+
+    }
 }
