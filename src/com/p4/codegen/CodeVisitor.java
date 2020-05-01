@@ -581,12 +581,12 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(SelectionNode node) {
-        stringBuilder.append("if(");
+        stringBuilder.append("if (");
         this.visitChild(node.children.get(0));
         stringBuilder.append(")");
         visitChild(node.children.get(1));
         if(node.children.size() > 2){
-            stringBuilder.append("else");
+            stringBuilder.append("else ");
             visitChild(node.children.get(2));
         }
     }
