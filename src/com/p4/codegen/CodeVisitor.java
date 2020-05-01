@@ -86,6 +86,11 @@ public class CodeVisitor implements INodeVisitor{
     }
 
     @Override
+    public void visit(ConstantNode node) {
+        stringBuilder.append(node.value);
+    }
+
+    @Override
     public void visit(ModNode node){
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
@@ -185,14 +190,10 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(AssignNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
-
-
-
             this.visitChild(leftChild);
             stringBuilder.append(" = ");
             this.visitChild(rightChild);
             stringBuilder.append(";\n");
-
     }
 
     /**
@@ -224,7 +225,9 @@ public class CodeVisitor implements INodeVisitor{
 
             //Handles assigning a value to a pin after declaration, by using digital or analog write.
             if(rightChild.type.equals("integer")){
-                stringBuilder.append("analogWrite("); //Todo: maybe handle the value of rightChild to use digitalWrite. However, the value is not available for IdNode
+                stringBuilder.append("analogWrite(");
+            } else {
+                stringBuilder.append("digitalWrite(");
             }
 
             //Ends the write statement with the pin and value
@@ -489,6 +492,11 @@ public class CodeVisitor implements INodeVisitor{
                         stringBuilder.append(funcIDSplit[0]);
                         stringBuilder.append(",");
                     }
+                } else {
+                    stringBuilder.append("digitalWrite(");
+                    stringBuilder.append(funcIDSplit[0]);
+                    stringBuilder.append(",");
+                    visitChild(node.children.get(1));
                 }
             }
             stringBuilder.append(")");

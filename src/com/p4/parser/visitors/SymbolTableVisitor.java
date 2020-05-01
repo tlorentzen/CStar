@@ -32,10 +32,13 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(ModNode node) { this.visitChildren(node); }
 
     @Override
-    public void visit(FloatNode node) { node.type = "decimal"; }
+    public void visit(FloatNode node) { this.visitChildren(node); }
 
     @Override
-    public void visit(BooleanNode node) { node.type = "boolean"; }
+    public void visit(ConstantNode node) { this.visitChildren(node); }
+
+    @Override
+    public void visit(BooleanNode node) { this.visitChildren(node); }
 
     @Override
     public void visit(NumberNode node) { this.visitChildren(node); }
@@ -78,7 +81,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(StringNode node) {
-        node.type = "string";
+        this.visitChildren(node);
     }
 
     @Override
@@ -88,12 +91,12 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(PinNode node) {
-        node.type = "pin";
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(CharNode node) {
-        node.type = "character";
+        this.visitChildren(node);
     }
 
     /**

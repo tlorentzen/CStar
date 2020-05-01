@@ -189,6 +189,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             else{
                 return new NumberNode(Long.parseLong(ctx.getText()), isNegative);
             }
+        } else if(ctx.HIGH() != null || ctx.LOW() != null){
+                return new ConstantNode(ctx.HIGH() != null ? "HIGH" : "LOW", false);
         } else {
             return null;
         }

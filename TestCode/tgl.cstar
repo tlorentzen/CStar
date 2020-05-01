@@ -39,6 +39,7 @@ void setBarGraph() {
             bargraph[counter].write(255);
         }else{
             bargraph[counter].write(0);
+            bargraph[counter].write(LOW);
         }
 
         counter = counter + 1;
