@@ -80,6 +80,7 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(FloatNode node){
+        stringBuilder.append(node.isNegative ? "-" : "");
         stringBuilder.append(node.value);
     }
 
@@ -100,6 +101,7 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(NumberNode node){
+        stringBuilder.append(node.isNegative ? "-" : "");
         stringBuilder.append(node.value);
     }
 
