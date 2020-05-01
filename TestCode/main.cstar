@@ -12,6 +12,7 @@ void setup(){
     i = 10 - 5;
     i = 10/5;
     i = j * i;
+    i = -5;
 }
 // hej
 void loop(){
