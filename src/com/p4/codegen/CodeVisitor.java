@@ -91,7 +91,7 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(CommentNode node) {
-
+        stringBuilder.append(node.getComment());
     }
 
     @Override

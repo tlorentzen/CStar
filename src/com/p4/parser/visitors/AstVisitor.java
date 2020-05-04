@@ -203,7 +203,10 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitComment(CStarParser.CommentContext ctx) {
-        return new CommentNode(ctx.getText());
+        CommentNode node = new CommentNode(ctx.getText());
+        node.lineNumber = ctx.start.getLine();
+        node.type = "comment";
+        return node;
     }
 
     @Override
