@@ -4,6 +4,7 @@ import com.p4.parser.visitors.INodeVisitor;
 import org.antlr.v4.runtime.CommonToken;
 
 public class SubNode extends AstNode{
+    public boolean parentheses = false;
     CommonToken token = new CommonToken(10);
 
     public void accept(INodeVisitor visitor) {

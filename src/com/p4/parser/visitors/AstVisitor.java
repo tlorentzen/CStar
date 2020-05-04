@@ -272,7 +272,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitArithm_expr(CStarParser.Arithm_exprContext ctx) {
-        //ArrayExprNode arrayExprNode = new ArrayExprNode();
         int childCount = ctx.getChildCount();
 
         //If there are no operations with plus and minus
@@ -383,27 +382,48 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         }
 
         //Todo: test if instanceof works
-        if (child instanceof  CStarParser.ValContext) { //if value
+        if (child instanceof CStarParser.ValContext) { //if value
             return visit(ctx.val());
             //Todo: test if instanceof works
-        } else if (child instanceof  TerminalNodeImpl) { //if paren or id
+        } else if (child instanceof TerminalNodeImpl) { //if paren or id
             if (child.getText().equals("(")) {
-                return visit(ctx.expr());
+                AstNode node = visit(ctx.expr());
+                switch (node.getClass().getName()){
+                    case "com.p4.parser.nodes.AddNode":
+                        AddNode addNode = (AddNode) node;
+                        addNode.parentheses = true;
+                        return addNode;
+                    case "com.p4.parser.nodes.DivNode":
+                        DivNode divNode = (DivNode) node;
+                        divNode.parentheses = true;
+                        return divNode;
+                    case "com.p4.parser.nodes.ModNode":
+                        ModNode modNode = (ModNode) node;
+                        modNode.parentheses = true;
+                        return modNode;
+                    case "com.p4.parser.nodes.MultNode":
+                        MultNode multNode = (MultNode) node;
+                        multNode.parentheses = true;
+                        return multNode;
+                    case "com.p4.parser.nodes.SubNode":
+                        SubNode subNode = (SubNode) node;
+                        subNode.parentheses = true;
+                        return subNode;
+                }
             } else {
                 IdNode node = new IdNode(child.getText(), isNegative);
                 node.lineNumber = ctx.start.getLine();
                 return node;
             }
             //Todo: test if instanceof works
-        } else if (child instanceof  CStarParser.Func_callContext) { // if func call
+        } else if (child instanceof CStarParser.Func_callContext) { // if func call
             return visit(ctx.func_call());
             //Todo: test if instanceof works
-        } else if (child instanceof  CStarParser.Array_accessContext) {
+        } else if (child instanceof CStarParser.Array_accessContext) {
             return visit(ctx.array_access());
         }
         return null;
     }
-
     @Override
     public AstNode visitReturn_exp(CStarParser.Return_expContext ctx) {
         ReturnExpNode node = new ReturnExpNode();
