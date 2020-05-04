@@ -1,6 +1,6 @@
 package com.p4.codegen;
-import com.p4.parser.nodes.*;
-import com.p4.parser.visitors.INodeVisitor;
+import com.p4.syntaxSemantic.nodes.*;
+import com.p4.syntaxSemantic.visitors.INodeVisitor;
 import com.p4.symbols.PinAttributes;
 import com.p4.symbols.SymbolTable;
 
@@ -63,8 +63,8 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(PrintNode node){
-        if(node.formatString.size() > 1){
-            for(AstNode element : node.formatString){
+        if(node.getFormatString().size() > 1){
+            for(AstNode element : node.getFormatString()){
                 stringBuilder.append("Serial.print(");
                 this.visitChild(element);
                 stringBuilder.append(");\n");
@@ -72,7 +72,7 @@ public class CodeVisitor implements INodeVisitor{
             stringBuilder.append("Serial.println()");
         } else {
             stringBuilder.append("Serial.println(");
-            this.visitChild(node.formatString.get(0));
+            this.visitChild(node.getFormatString().get(0));
             stringBuilder.append(");\n");
         }
 
@@ -80,13 +80,13 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(FloatNode node){
-        stringBuilder.append(node.isNegative ? "-" : "");
-        stringBuilder.append(node.value);
+        stringBuilder.append(node.getIsNegative() ? "-" : "");
+        stringBuilder.append(node.getValue());
     }
 
     @Override
     public void visit(ConstantNode node) {
-        stringBuilder.append(node.value);
+        stringBuilder.append(node.getValue());
     }
 
     @Override
@@ -101,13 +101,13 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(NumberNode node){
-        stringBuilder.append(node.isNegative ? "-" : "");
-        stringBuilder.append(node.value);
+        stringBuilder.append(node.getIsNegative() ? "-" : "");
+        stringBuilder.append(node.getValue());
     }
 
     @Override
     public void visit(BooleanNode node){
-        stringBuilder.append(node.value);
+        stringBuilder.append(node.getValue());
     }
 
     @Override
@@ -122,7 +122,7 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(StringNode node){
-        stringBuilder.append(node.value);
+        stringBuilder.append(node.getValue());
     }
 
     @Override
@@ -132,7 +132,7 @@ public class CodeVisitor implements INodeVisitor{
         this.visitChild(node.children.get(0));
 
         //Operator
-        switch (node.getOperator()){
+        switch (node.getToken()){
             case 6:
                 stringBuilder.append(" || ");
                 break;
@@ -151,12 +151,12 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(IdNode node) {
 
-        switch (node.id){
+        switch (node.getId()){
             case "sleep":
                 stringBuilder.append("delay");
                 break;
             default:
-                stringBuilder.append(node.id);
+                stringBuilder.append(node.getId());
                 break;
         }
     }
@@ -176,7 +176,7 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(CharNode node) {
-        stringBuilder.append(node.value);
+        stringBuilder.append(node.getValue());
     }
 
     /**
@@ -194,8 +194,9 @@ public class CodeVisitor implements INodeVisitor{
         stringBuilder.append(";\n");
     }
 
+    //todo check if correct convertion
     private String convertIntToPinValue(AstNode node) {
-        return (node instanceof PinNode ? "A" + ((((PinNode) node).value * -1) - 1) : ((NumberNode) node).value.toString());
+        return (node instanceof PinNode ? "A" + (((PinNode) node).getValue() * (-1)) : ((NumberNode) node).getValue().toString());
     }
 
     /**
@@ -209,7 +210,7 @@ public class CodeVisitor implements INodeVisitor{
         this.visitChild(node.children.get(0));
 
         //Operator
-        switch (node.getOperator()){
+        switch (node.getToken()){
             case 2:
                 stringBuilder.append(" < ");
                 break;
@@ -411,7 +412,7 @@ public class CodeVisitor implements INodeVisitor{
         }
 
         //Splits the function ID on '.' to check for read and write functions
-        String[] funcIDSplit = ((IdNode)id).id.split("\\.");
+        String[] funcIDSplit = ((IdNode)id).getId().split("\\.");
 
         //Checks if the string contained a '.'
         if(funcIDSplit.length > 1){
@@ -442,16 +443,15 @@ public class CodeVisitor implements INodeVisitor{
     private void handlePinReadAndWrite(AstNode firstParam, String[] funcIDSplit) {
         if(funcIDSplit[1].equals("read")){
             //The call is assumed to be a pin read
-            if(((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).analog){
+            if (((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).analog){
                 //The pin is instantiated as an analog pin
                 stringBuilder.append("analogRead(");
-                stringBuilder.append(funcIDSplit[0]);
             } else{
                 //The pin is instantiated as a digital pin
                 stringBuilder.append("digitalRead(");
-                stringBuilder.append(funcIDSplit[0]);
             }
-        }else if(firstParam != null && funcIDSplit[1].equals("write")){
+            stringBuilder.append(funcIDSplit[0]);
+        } else if(firstParam != null && funcIDSplit[1].equals("write")){
             //The call is assumed to be a pin write
             if(firstParam instanceof NumberNode
                     || (firstParam instanceof IdNode
@@ -484,9 +484,9 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(FuncDclNode node) {
-        stringBuilder.append(node.returnType);
+        stringBuilder.append(node.getReturnType());
         stringBuilder.append(" ");
-        stringBuilder.append(node.id);
+        stringBuilder.append(node.getId());
         if(node.children.size() == 1){
             stringBuilder.append("()");
         }
@@ -570,7 +570,7 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(PinDclNode node) {
         stringBuilder.append("int ");
-        stringBuilder.append(node.id);
+        stringBuilder.append(node.getId());
     }
 
     /**
@@ -614,7 +614,7 @@ public class CodeVisitor implements INodeVisitor{
     public void visitDclNode(DclNode<?> node){
         stringBuilder.append(getTargetType(node.type));
         stringBuilder.append(" ");
-        stringBuilder.append(node.id);
+        stringBuilder.append(node.getId());
     }
 
     /**
@@ -638,6 +638,5 @@ public class CodeVisitor implements INodeVisitor{
             default:
                 return type;
         }
-
     }
 }
