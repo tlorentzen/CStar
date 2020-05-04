@@ -7,6 +7,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
+import javax.xml.stream.events.Comment;
+
 public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     @Override
@@ -197,6 +199,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public AstNode visitComment(CStarParser.CommentContext ctx) {
+        CommentNode node = new CommentNode("Hej");
+        return node;
     }
 
     @Override
