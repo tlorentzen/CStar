@@ -4,9 +4,9 @@ integer g = 1000000000;
 decimal o = 5.0;
 integer p = 200 * g;
 small integer ill = 22;
+integer array ko = [1,2,3,4];
 
 void setup(){
-
     i = hello(ill, j);
     i = 5*(10+5);
     i = 10 - 5;
@@ -14,10 +14,15 @@ void setup(){
     i = j * i;
     i = -5;
     o = -5.0;
+
+    integer k = -i;
+    integer q = -hello(5.0, 1000);
+    integer e = -map();
+    integer f = -ko[1];
+    small integer pudel = -10;
 }
-// hej
+
 void loop(){
-integer i = 0.5;
 
 }
 

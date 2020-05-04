@@ -628,8 +628,17 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     //@Override public T visitArray_call(CStarParser.Array_callContext ctx) { return visitChildren(ctx); }
     @Override
     public AstNode visitArray_access(CStarParser.Array_accessContext ctx) {
+
+        boolean isNegative = false;
+
+        ParseTree parent = ctx.getParent();
+        //Todo: test if instanceof works
+        if (parent.getChild(0) instanceof TerminalNodeImpl) {
+            isNegative = true;
+        }
+
         //Id is index 0, the Index is at index 1, and the assigned value is at 2
-        ArrayAccessNode arrayAccessNode = new ArrayAccessNode();
+        ArrayAccessNode arrayAccessNode = new ArrayAccessNode(isNegative);
         arrayAccessNode.lineNumber = ctx.start.getLine();
 
         //First add ID at index 0
