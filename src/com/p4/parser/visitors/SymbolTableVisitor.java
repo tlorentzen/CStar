@@ -291,7 +291,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(IterativeNode node) {
         symbolTable.addScope(node.getNodeHash());
         this.visitChildren(node);
-        symbolTable.leaveScope(node.getNodeHash());
+        symbolTable.leaveScope();
     }
 
     /**
@@ -363,7 +363,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(SelectionNode node) {
         symbolTable.addScope(node.getNodeHash());
         this.visitChildren(node);
-        symbolTable.leaveScope(node.getNodeHash());
+        symbolTable.leaveScope();
     }
 
     @Override

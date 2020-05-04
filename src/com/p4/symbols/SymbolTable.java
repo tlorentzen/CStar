@@ -32,18 +32,7 @@ public class SymbolTable {
     }
 
     public void leaveScope(){
-        this.leaveScope(null);
-    }
-
-    public void leaveScope(String hash){
         if(currentScope.parent != null){
-            String currentScopeName = currentScope.scopeName;
-
-            if(hash != null){
-                currentScope.scopeName = hash;
-                currentScopeName = hash;
-            }
-
             currentScope = scopeStack.empty() ? globalScope : scopeStack.pop();
         }
     }
