@@ -17,6 +17,7 @@ void setup(){
 }
 // hej
 void loop(){
+integer i = 0.5;
 
 }
 

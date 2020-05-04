@@ -566,7 +566,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
         //Second semantic rule
         else if(((leftType.equals("integer") || leftType.equals("small integer")) && rightType.equals("decimal")) ||
-                ((leftType.equals("decimal") && (rightType.equals("integer") || rightType.equals("small integer"))))) {
+                (leftType.equals("decimal") && (rightType.equals("integer") || rightType.equals("small integer")))) {
             return "decimal";
         }
         //Third semantic rule
