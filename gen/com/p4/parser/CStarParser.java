@@ -8,7 +8,6 @@ import org.antlr.v4.runtime.tree.*;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
-import com.p4.parser.visitors.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class CStarParser extends Parser {

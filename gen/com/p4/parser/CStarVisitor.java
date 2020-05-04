@@ -1,7 +1,6 @@
 // Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
-package com.p4.parser.visitors;
+package com.p4.parser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import com.p4.parser.*;
 
 /**
  * This interface defines a complete generic visitor for a parse tree produced
