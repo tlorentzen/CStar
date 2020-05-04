@@ -39,7 +39,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(CommentNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override

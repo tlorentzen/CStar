@@ -6,7 +6,7 @@ integer p = 200 * g;
 small integer ill = 22;
 integer array ko = [1,2,3,4];
 
-// Hest
+
 
 void setup(){
     i = hello(ill, j);
@@ -31,7 +31,7 @@ void loop(){
 integer hello (decimal d, long integer l){
     d = d * (-4) % 4 * 4;
     boolean b = (d <= 5 AND (d >= 5));
-    //Hey
+
     if(d IS 1){
 
     } else {
