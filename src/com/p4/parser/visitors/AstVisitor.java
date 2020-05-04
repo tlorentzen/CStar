@@ -418,6 +418,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                         subNode.parentheses = true;
                         return subNode;
                 }
+                return node;
             } else {
                 IdNode node = new IdNode(child.getText(), isNegative);
                 node.lineNumber = ctx.start.getLine();

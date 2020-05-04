@@ -178,7 +178,9 @@ public class FuncVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(ModNode node) { this.visitChildren(node); }
+    public void visit(ModNode node) {
+        this.visitChildren(node);
+    }
 
     @Override
     public void visit(ParamNode node) {
