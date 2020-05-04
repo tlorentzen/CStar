@@ -38,6 +38,11 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(ConstantNode node) { this.visitChildren(node); }
 
     @Override
+    public void visit(CommentNode node) {
+
+    }
+
+    @Override
     public void visit(BooleanNode node) { this.visitChildren(node); }
 
     @Override

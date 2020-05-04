@@ -83,6 +83,10 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(ConstantNode node) { node.type = "constant"; }
 
+    public void visit(CommentNode node) {
+
+    }
+
     public void visit(BooleanNode node) {
         node.type = "boolean";
     }

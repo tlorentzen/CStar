@@ -43,6 +43,11 @@ public class FuncVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(CommentNode node) {
+        System.out.println("Calling comment");
+    }
+
+    @Override
     public void visit(PinNode node) {
         this.visitChildren(node);
     }

@@ -42,4 +42,5 @@ public interface INodeVisitor {
     void visit(NumberNode node);
     void visit(FloatNode node);
     void visit(ConstantNode constantNode);
+    void visit(CommentNode node);
 }

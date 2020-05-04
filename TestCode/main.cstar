@@ -6,6 +6,8 @@ integer p = 200 * g;
 small integer ill = 22;
 integer array ko = [1,2,3,4];
 
+// Hest
+
 void setup(){
     i = hello(ill, j);
     i = 5*(10+5);
@@ -16,7 +18,7 @@ void setup(){
     o = -5.0;
 
     integer k = -i;
-    integer q = -hello(5.0, 1000);
+    integer q = -hello(5.0, -i);
     integer e = -map();
     integer f = -ko[1];
     small integer pudel = -10;
