@@ -112,8 +112,14 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(NumberNode node){
+        if(node.parentheses){
+            stringBuilder.append("(");
+        }
         stringBuilder.append(node.isNegative ? "-" : "");
         stringBuilder.append(node.value);
+        if(node.parentheses){
+            stringBuilder.append(")");
+        }
     }
 
     @Override
@@ -516,7 +522,7 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(FuncDclNode node) {
-        stringBuilder.append(node.returnType);
+        stringBuilder.append(getTargetType(node.returnType));
         stringBuilder.append(" ");
         stringBuilder.append(node.id);
         if(node.children.size() == 1){
