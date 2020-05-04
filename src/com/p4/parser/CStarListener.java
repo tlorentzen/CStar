@@ -247,4 +247,14 @@ public interface CStarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVal(CStarParser.ValContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CStarParser#comment}.
+	 * @param ctx the parse tree
+	 */
+	void enterComment(CStarParser.CommentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CStarParser#comment}.
+	 * @param ctx the parse tree
+	 */
+	void exitComment(CStarParser.CommentContext ctx);
 }

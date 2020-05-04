@@ -1,7 +1,7 @@
 // Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
 package com.p4.parser.visitors;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import com.p4.parser.*;
+import com.p4.parser.CStarParser;
 
 /**
  * This interface defines a complete generic visitor for a parse tree produced
@@ -155,4 +155,10 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVal(CStarParser.ValContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CStarParser#comment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComment(CStarParser.CommentContext ctx);
 }

@@ -299,6 +299,18 @@ public class CStarBaseListener implements CStarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitVal(CStarParser.ValContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterComment(CStarParser.CommentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitComment(CStarParser.CommentContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
