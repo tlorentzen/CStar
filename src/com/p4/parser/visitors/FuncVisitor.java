@@ -30,7 +30,8 @@ public class FuncVisitor implements INodeVisitor {
     @Override
     public void visit(NumberNode node) { this.visitChildren(node); }
 
-    @Override public void visit(BooleanNode node) { this.visitChildren(node); }
+    @Override
+    public void visit(BooleanNode node) { this.visitChildren(node); }
 
     @Override
     public void visit(FloatNode node) {
