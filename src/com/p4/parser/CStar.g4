@@ -16,7 +16,7 @@ array_dcl: ARRAY ID ASSIGN_OP array_expr;
 array_expr: LEFT_BRACKET expr (COMMA expr)* RIGHT_BRACKET;
 array_access: ID LEFT_BRACKET expr RIGHT_BRACKET;
 
-stmt: assign SEMICOLON | print SEMICOLON | expr SEMICOLON | selection | iterative;
+stmt: assign SEMICOLON | print SEMICOLON | expr SEMICOLON | selection | iterative | LINE_COMMENT;
 iterative: WHILE LEFT_PAREN logical_expr RIGHT_PAREN REPEAT blk;
 selection: IF LEFT_PAREN logical_expr RIGHT_PAREN blk ( ELSE blk )?;
 blk: LEFT_BRACE ( dcl | stmt | return_exp)* RIGHT_BRACE;
@@ -80,4 +80,4 @@ FUNCID: ( ('a'..'z' | 'A'..'Z' | '0'..'9' | '_') + ('.')? )+;
 
 WHITESPACE: [ \t]+ -> skip;
 Newline: ('\r' '\n'? | '\n' ) -> skip;
-LINE_COMMENT: '//' ~[\r\n]* -> skip;
+LINE_COMMENT: '//' ~[\r\n]*;

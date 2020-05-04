@@ -94,9 +94,15 @@ public class CodeVisitor implements INodeVisitor{
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
 
+        if(node.parentheses){
+            stringBuilder.append("(");
+        }
         this.visitChild(leftChild);
         stringBuilder.append(" % ");
         this.visitChild(rightChild);
+        if(node.parentheses){
+            stringBuilder.append("(");
+        }
     }
 
     @Override
@@ -336,9 +342,15 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(AddNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
+        if(node.parentheses){
+            stringBuilder.append("(");
+        }
         this.visitChild(leftChild);
         stringBuilder.append(" + ");
         this.visitChild(rightChild);
+        if(node.parentheses){
+            stringBuilder.append(")");
+        }
     }
 
     /**
@@ -384,9 +396,15 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(DivNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
+        if(node.parentheses){
+            stringBuilder.append("(");
+        }
         this.visitChild(leftChild);
         stringBuilder.append(" / ");
         this.visitChild(rightChild);
+        if(node.parentheses){
+            stringBuilder.append(")");
+        }
     }
 
     /**
