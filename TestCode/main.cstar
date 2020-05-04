@@ -6,7 +6,8 @@ integer p = 200 * g;
 small integer ill = 22;
 integer array ko = [1,2,3,4];
 
-
+// Hej
+//comment 2
 
 void setup(){
     i = hello(ill, j);
@@ -16,6 +17,8 @@ void setup(){
     i = j * i;
     i = -5;
     o = -5.0;
+
+    // comment dfgdsfgfgsgdfgsd
 
     integer k = -i;
     integer q = -hello(5.0, -i);
