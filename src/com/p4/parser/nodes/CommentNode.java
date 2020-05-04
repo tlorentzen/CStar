@@ -15,6 +15,6 @@ public class CommentNode extends AstNode{
     }
 
     public String getComment(){
-        return this.comment;
+        return this.comment + "\n";
     }
 }
