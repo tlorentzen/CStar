@@ -156,6 +156,9 @@ public class CodeVisitor implements INodeVisitor{
                 stringBuilder.append("delay");
                 break;
             default:
+                if(node.IsNegative) {
+                    stringBuilder.append("-");
+                }
                 stringBuilder.append(node.id);
                 break;
         }
@@ -250,6 +253,10 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(ArrayAccessNode node) {
+
+        if(node.isNegative)
+            stringBuilder.append("-");
+
         //Id is index 0, the Index is at index 1, and the assigned value is at 2
         visitChild(node.children.get(0));
         stringBuilder.append("[");
@@ -258,7 +265,6 @@ public class CodeVisitor implements INodeVisitor{
         int length = stringBuilder.length();
         if(stringBuilder.charAt( length - 2) == ';'){
             stringBuilder.delete(length -2, length);
-
         }
         stringBuilder.append("]");
     }
@@ -412,6 +418,9 @@ public class CodeVisitor implements INodeVisitor{
 
         //Splits the function ID on '.' to check for read and write functions
         String[] funcIDSplit = ((IdNode)id).id.split("\\.");
+
+        if(node.isNegative)
+            stringBuilder.append("-");
 
         //Checks if the string contained a '.'
         if(funcIDSplit.length > 1){

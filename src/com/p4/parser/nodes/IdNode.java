@@ -5,7 +5,7 @@ import com.p4.parser.Parameters;
 
 public class IdNode extends AstNode implements Parameters {
     public String id;
-    boolean IsNegative;
+    public boolean IsNegative;
     public Boolean analog;
 
     public IdNode(String id, Boolean isNegative){
