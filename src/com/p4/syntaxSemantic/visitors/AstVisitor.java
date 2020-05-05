@@ -10,19 +10,21 @@ import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override
     public AstNode visitProg(CStarParser.ProgContext ctx) {
-        ProgNode node = new ProgNode();
-        int numChildren = ctx.getChildCount();
+        ProgNode progNode = new ProgNode();
 
-        //Iterates through all prog's children
-        for (int i = 0; i < numChildren; i++) {
-            ParseTree child = ctx.getChild(i);
+        return childVisitor(progNode, ctx.children.toArray(ParseTree[]::new));
+    }
 
+    private AstNode childVisitor(AstNode node, ParseTree[] children) {
+        //Iterates through all the node's children
+        for (ParseTree child : children) {
             //Skips leaves (terminal nodes), since they have no children
             if (child.getPayload() instanceof CommonToken) {
                 continue;
             }
             node.children.add(visit(child));
         }
+
         return node;
     }
 
@@ -34,12 +36,10 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         if (assign != null) {
             //Visits assign node
             return visit(assign);
-        }
-        else if (array_dcl != null) {
+        } else if (array_dcl != null) {
             //Visits array_dcl node
             return visit(array_dcl);
-        }
-        else {
+        } else {
             //Creates normal dclNode
             AstNode dclNode;
 
@@ -157,161 +157,128 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     }
 
     @Override
-    public AstNode visitVal(CStarParser.ValContext ctx) {
-        boolean isNegative = false;
-        ParseTree parent = ctx.getParent();
-
-        //Enters if first child is a terminal node (will contain '-' symbol)
-        if (parent.getChild(0) instanceof TerminalNodeImpl) {
-            isNegative = true;
-        }
-        //Enters if value is a pin
-        if (ctx.PIN_LITERAL() != null) {
-            //Gets the value of the pin
-            String pinValue = ((TerminalNodeImpl) ctx.getChild(0)).symbol.getText();
-            int intValue;
-
-            //Enters if value starts with 'a'
-            if (pinValue.startsWith("A") || pinValue.startsWith("a")) {
-                //Makes the number negative if analog
-                intValue = (-1) * Integer.parseInt(pinValue.substring(1));
-            }
-            //Enters if the pin value does not start with 'a'
-            else {
-                intValue = Integer.parseInt(ctx.CHAR_LITERAL().getText());
-            }
-
-            PinNode pinNode = new PinNode(intValue, isNegative);
-            pinNode.lineNumber = ctx.start.getLine();
-
-            return pinNode;
-        }
-        //Enters if value is a character
-        else if (ctx.CHAR_LITERAL() != null) {
-            String charValue = ctx.CHAR_LITERAL().getText();
-            CharNode charNode = new CharNode(charValue.charAt(0), isNegative);
-            charNode.lineNumber = ctx.start.getLine();
-            
-            return charNode;
-        }
-        //Enters if value is a boolean
-        else if (ctx.BOOLEAN_LITERAL() != null) {
-            String booleanValue = ctx.BOOLEAN_LITERAL().getText();
-            
-            if (booleanValue.equals("true")) {
-                return new BooleanNode(true, false);
-            }
-            else if (booleanValue.equals("false")) {
-                return new BooleanNode(false, false);
-            }
-            else {
-                return null;
-            }
-        }
-        //Enters if value is a number
-        else if (ctx.NUMBER() != null) {
-            //Checks if the value is a float
-            if (ctx.NUMBER().getText().contains(".")) {
-                return new FloatNode(Float.parseFloat(ctx.getText()), isNegative);
-            }
-            else {
-                return new NumberNode(Long.parseLong(ctx.getText()), isNegative);
-            }
-        }
-        //Enters if value is either the constant HIGH or the constant LOW
-        else if (ctx.HIGH() != null || ctx.LOW() != null) {
-            String constantValue = ctx.HIGH() != null ? "HIGH" : "LOW";
-            return new ConstantNode(constantValue, false);
-        }
-        else {
-            return null;
-        }
-    }
-
-    @Override
-    public AstNode visitArray_dcl(CStarParser.Array_dclContext ctx) {
-        //Gets the ID from current node
-        String id = ctx.ID().toString();
-
-        //Gets the type from the parent (dclNode)
-        ParserRuleContext parent = ctx.getParent();
-        ParseTree child = parent.getChild(0);
-        String type = child.toString();
-
-        //Creates the left side of the declaration
-        ArrayNode arrayNode = new ArrayNode(id, type);
-        //Creates the right side of the declaration
-        AstNode arrayExprNode = visit(ctx.array_expr());
-        //Creates the array declaration by adding the left and right side as children
-        AstNode arrayDclNode = new ArrayDclNode<>(id);
-        arrayDclNode.children.add(arrayNode);
-        arrayDclNode.children.add(arrayExprNode);
-
-        arrayDclNode.lineNumber = ctx.start.getLine();
-        arrayNode.lineNumber = ctx.start.getLine();
-
-        return arrayDclNode;
-    }
-
-    @Override
-    public AstNode visitArray_expr(CStarParser.Array_exprContext ctx) {
-        ArrayExprNode arrayExprNode = new ArrayExprNode();
+    public AstNode visitLogical_expr(CStarParser.Logical_exprContext ctx) {
         int childCount = ctx.getChildCount();
 
-        //Iterates through all children of the node
-        for (int childIndex = 0; childIndex < childCount; childIndex++) {
-            ParseTree child = ctx.getChild(childIndex);
-
-            //Checks if child is an expression
-            //Nothing should be done if element is ',' or brackets
-            if (child instanceof CStarParser.ExprContext) {
-                AstNode literal = visit(child);
-                arrayExprNode.children.add(literal);
-            }
+        //Enters if there are no operations with AND or OR
+        if (childCount == 1) {
+            return visit(ctx.cond_expr(0));
         }
-        arrayExprNode.lineNumber = ctx.start.getLine();
+        //Enters if there are operations with AND OR OR
+        else {
+            return visitLogicalChild(ctx.getChild(1), ctx, 1);
+        }
+    }
 
-        return arrayExprNode;
+    //Creates all factor children and their operators
+    //Adds these to the AST in levels
+    public AstNode visitLogicalChild(ParseTree child, CStarParser.Logical_exprContext parent, int operatorIndex) {
+        LogicalNode node = new LogicalNode();
+
+        //Finds the index of the first operand
+        int condIndex = (operatorIndex - 1) / 2;
+        //Finds the next operator index
+        int nextOperator = operatorIndex + 2;
+
+        //Creates a node depending on the operator
+        switch (child.getText()) {
+            case "OR":
+                node.setToken(6);
+                break;
+            case "AND":
+                node.setToken(7);
+                break;
+            default:
+                return null;
+        }
+
+        //Enters if there are more operators in the tree
+        if (parent.getChild(nextOperator) != null) {
+
+            //Adds left child (cond_expr)
+            node.children.add(visit(parent.cond_expr(condIndex)));
+            //Adds right child (operator) by calling the method recursively
+            node.children.add(visitLogicalChild(parent.getChild(nextOperator), parent, nextOperator));
+        }
+        //Enters if there is only a cond_expr child left
+        else {
+            // Adds left and right child (cond_expr)
+            node.children.add(visit(parent.cond_expr(condIndex)));
+            node.children.add(visit(parent.cond_expr(condIndex + 1)));
+        }
+
+        node.lineNumber = parent.start.getLine();
+
+        return node;
     }
 
     @Override
-    public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
-        ParseTree parent = ctx.getParent();
-        ParseTree child;
-        String symbol;
-        int numChildren = ctx.getChildCount();
-        boolean isNegative = false;
+    public AstNode visitCond_expr(CStarParser.Cond_exprContext ctx) {
+        int childCount = ctx.getChildCount();
 
-        //Enters if first child is a terminal node (will contain '-' symbol)
-        if (parent.getChild(0) instanceof TerminalNodeImpl) {
-            isNegative = true;
+        //If there is only an operator
+        if (childCount == 1) {
+            return visit(ctx.arithm_expr(0));
         }
-
-        FuncCallNode funcCallNode = new FuncCallNode(isNegative);
-
-        for (int childIndex = 0; childIndex < numChildren; childIndex++) {
-            child = ctx.getChild(childIndex);
-            symbol = child.getText();
-
-            //Checks if child is an actual parameter
-            if (child instanceof CStarParser.ExprContext) {
-                funcCallNode.children.add(visit(child));
-            }
-            //Enters if child is the ID for the function
-            else if (isID(symbol)) {
-                IdNode idNode = new IdNode(symbol, false);
-                funcCallNode.children.add(idNode);
-            }
+        //Enters if there are operations with conditional operator
+        else {
+            return visitCondChild(ctx.getChild(1), ctx, 1);
         }
-
-        funcCallNode.lineNumber = ctx.start.getLine();
-
-        return funcCallNode;
     }
 
-    //Returns true if the symbol is the ID of the function
-    private boolean isID(String symbol) {
-        return !symbol.equals("(") && !symbol.equals(")") && !symbol.equals(",");
+    //Creates all factor children and their operators
+    //Adds these to the AST in levels
+    public AstNode visitCondChild(ParseTree child, CStarParser.Cond_exprContext parent, int operatorIndex) {
+        CondNode node = new CondNode();
+
+        //Finds the index of the first operand
+        int arithIndex = (operatorIndex - 1) / 2;
+        //Finds the next operator index
+        int nextOperator = operatorIndex + 2;
+
+        //Creates a node depending on the operator
+        switch (child.getText()) {
+            case "<":
+                node.setToken(2);
+                break;
+            case ">":
+                node.setToken(3);
+                break;
+            case "<=":
+                node.setToken(13);
+                break;
+            case ">=":
+                node.setToken(14);
+                break;
+            case "IS":
+                node.setToken(4);
+                break;
+            case "ISNOT":
+                node.setToken(5);
+                break;
+            default:
+                return null;
+        }
+
+        //Enters if there are more operators in the tree
+        if (parent.getChild(operatorIndex + 2) != null) {
+            operatorIndex += 2;
+
+            //Adds left child (arith_expr)
+            node.children.add(visit(parent.arithm_expr(arithIndex)));
+            //Adds right child (operator)
+            node.children.add(visitCondChild(parent.getChild(operatorIndex), parent, operatorIndex));
+        }
+        //Enters if there is only a arith_expr child left
+        else {
+            //Adds left and right child (arith_expr)
+            node.children.add(visit(parent.arithm_expr(arithIndex)));
+            node.children.add(visit(parent.arithm_expr(arithIndex + 1)));
+        }
+
+        node.lineNumber = parent.start.getLine();
+
+        return node;
     }
 
     @Override
@@ -333,7 +300,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     //Adds these to the AST in levels
     private AstNode visitArithm_exprChild(ParseTree child, CStarParser.Arithm_exprContext parent, int operatorIndex) {
         AstNode node;
-        //Finds the index of the first term 
+        //Finds the index of the first term
         int termIndex = (operatorIndex - 1) / 2;
         //Finds the index of the next operator in the tree
         int nextOperator = operatorIndex + 2;
@@ -392,7 +359,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         int factorIndex = (operatorIndex - 1) / 2;
         //Finds the index of the next operator
         int nextOperator = operatorIndex + 2;
-       
+
         //Creates a node depending on the operator
         switch (child.getText()) {
             case "*":
@@ -407,7 +374,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             default:
                 return null;
         }
-        
+
         //Enters if there are more operators in the tree
         if (parent.getChild(nextOperator) != null) {
             //Adds left child (factor)
@@ -437,17 +404,17 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             child = ctx.getChild(1);
             isNegative = true;
         }
-        
+
         //Checks if the child is a value
         if (child instanceof CStarParser.ValContext) {
             return visit(ctx.val());
-        } 
+        }
         //Checks if the child is a terminal node
         else if (child instanceof TerminalNodeImpl) {
             //Checks if the child is a parentheses
             if (child.getText().equals("(")) {
                 return visit(ctx.expr());
-            } 
+            }
             //Enters if the child is a variable
             else {
                 IdNode idNode = new IdNode(child.getText(), isNegative);
@@ -467,274 +434,340 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return null;
     }
 
-    // todo nåede hertil (ida og lena)
     @Override
-    public AstNode visitReturn_exp(CStarParser.Return_expContext ctx) {
-        ReturnExpNode node = new ReturnExpNode();
-        node.lineNumber = ctx.start.getLine();
-        node.children.add(visit(ctx.expr()));
+    public AstNode visitArray_dcl(CStarParser.Array_dclContext ctx) {
+        //Gets the ID from current node
+        String id = ctx.ID().toString();
 
-        return node;
+        //Gets the type from the parent (dclNode)
+        ParserRuleContext parent = ctx.getParent();
+        ParseTree child = parent.getChild(0);
+        String type = child.toString();
+
+        //Creates the left side of the declaration
+        ArrayNode arrayNode = new ArrayNode(id, type);
+        //Creates the right side of the declaration
+        AstNode arrayExprNode = visit(ctx.array_expr());
+        //Creates the array declaration by adding the left and right side as children
+        AstNode arrayDclNode = new ArrayDclNode<>(id);
+        arrayDclNode.children.add(arrayNode);
+        arrayDclNode.children.add(arrayExprNode);
+
+        arrayDclNode.lineNumber = ctx.start.getLine();
+        arrayNode.lineNumber = ctx.start.getLine();
+
+        return arrayDclNode;
     }
 
     @Override
-    public AstNode visitLogical_expr(CStarParser.Logical_exprContext ctx) {
+    public AstNode visitArray_expr(CStarParser.Array_exprContext ctx) {
+        ArrayExprNode arrayExprNode = new ArrayExprNode();
         int childCount = ctx.getChildCount();
 
-        //If there are no operations with AND or OR
-        if (childCount == 1) {
-            return visit(ctx.cond_expr(0));
-        } else {
-            return visitLogicalChild(ctx.getChild(1), ctx, 1);
-        }
-    }
+        //Iterates through all children of the node
+        for (int childIndex = 0; childIndex < childCount; childIndex++) {
+            ParseTree child = ctx.getChild(childIndex);
 
-    public AstNode visitLogicalChild(ParseTree child, CStarParser.Logical_exprContext parent, int operatorIndex) {
-        int condIndex = (operatorIndex - 1) / 2;
-        LogicalNode node = new LogicalNode();
-
-        //Enters if there are more operators in the tree
-        switch (child.getText()) {
-            case "OR":
-                node.setToken(6);
-                break;
-            case "AND":
-                node.setToken(7);
-                break;
-            default:
-                return null;
-        }
-
-        node.lineNumber = parent.start.getLine();
-
-        //Enters if there are more operators in the tree
-        if (parent.getChild(operatorIndex + 2) != null) {
-            operatorIndex += 2;
-
-            //Add left child (cond_expr)
-            node.children.add(visit(parent.cond_expr(condIndex)));
-            //Add right child (operator)
-            node.children.add(visitLogicalChild(parent.getChild(operatorIndex), parent, operatorIndex));
-        }
-        //Enters if there is only a cond_expr child left
-        else {
-            // Add left and right child (cond_expr)
-            node.children.add(visit(parent.cond_expr(condIndex)));
-            node.children.add(visit(parent.cond_expr(condIndex + 1)));
-        }
-        return node;
-    }
-
-    @Override
-    public AstNode visitCond_expr(CStarParser.Cond_exprContext ctx) {
-        int childCount = ctx.getChildCount();
-
-        //If there is only an operator
-        if (childCount == 1) {
-            return visit(ctx.arithm_expr(0));
-        } else {
-            return visitCondChild(ctx.getChild(1), ctx, 1);
-        }
-    }
-
-    public AstNode visitCondChild(ParseTree child, CStarParser.Cond_exprContext parent, int operatorIndex) {
-        int arithIndex = (operatorIndex - 1) / 2;
-        CondNode node = new CondNode();
-        node.lineNumber = parent.start.getLine();
-
-        //Enters if there are more operators in the tree
-        switch (child.getText()) {
-            case "<":
-                node.setToken(2);
-                break;
-            case ">":
-                node.setToken(3);
-                break;
-            case "<=":
-                node.setToken(13);
-                break;
-            case ">=":
-                node.setToken(14);
-                break;
-            case "IS":
-                node.setToken(4);
-                break;
-            case "ISNOT":
-                node.setToken(5);
-                break;
-            default:
-                return null;
-        }
-
-        //Enters if there are more operators in the tree
-        if (parent.getChild(operatorIndex + 2) != null) {
-            operatorIndex += 2;
-
-            //Add left child (arith_expr)
-            node.children.add(visit(parent.arithm_expr(arithIndex)));
-            //Add right child (operator)
-            node.children.add(visitCondChild(parent.getChild(operatorIndex), parent, operatorIndex));
-        }
-        //Enters if there is only a arith_expr child left
-        else {
-            // Add left and right child (arith_expr)
-            node.children.add(visit(parent.arithm_expr(arithIndex)));
-            node.children.add(visit(parent.arithm_expr(arithIndex + 1)));
-        }
-        return node;
-    }
-
-    @Override public AstNode visitFunc(CStarParser.FuncContext ctx) {
-        FuncDclNode node = new FuncDclNode();
-        node.lineNumber = ctx.start.getLine();
-        node.setId(ctx.ID().toString());
-        node.setReturnType((ctx.return_type().TYPE() != null ? ctx.return_type().TYPE().toString() : "void"));
-        if (ctx.param() != null) {
-            node.children.add(visit(ctx.param()));
-        }
-        node.children.add(visit(ctx.blk()));
-
-        return node;
-    }
-
-    @Override
-    public AstNode visitParam(CStarParser.ParamContext ctx) {
-        ParamNode paramNode = new ParamNode();
-        paramNode.lineNumber = ctx.start.getLine();
-        int numChild = ctx.getChildCount();
-        for (int childIndex = 0; childIndex < numChild; childIndex++) { //Skips comma and jumps to type
-            IdNode node = null;
-
-            switch (ctx.getChild(childIndex).toString()) {
-                case "integer":
-                    node = new IdNode(ctx.getChild(++childIndex).toString(), "integer");
-                    break;
-                case "decimal":
-                    node = new IdNode(ctx.getChild(++childIndex).toString(), "decimal");
-                    break;
-                case "pin":
-                    node = new IdNode(ctx.getChild(++childIndex).toString(), "pin");
-                    break;
-                case "long integer":
-                    node = new IdNode(ctx.getChild(++childIndex).toString(), "long integer");
-                    break;
-                case "character":
-                    node = new IdNode(ctx.getChild(++childIndex).toString(), "character");
-                    break;
-                case "boolean":
-                    node = new IdNode(ctx.getChild(++childIndex).toString(), "boolean");
-                    break;
-                case "small integer":
-                    node = new IdNode(ctx.getChild(++childIndex).toString(), "small integer");
-                    break;
-            }
-
-            if(node != null){
-                node.lineNumber = ctx.start.getLine();
-                paramNode.children.add(node);
+            //Checks if child is an expression
+            //Nothing should be done if element is ',' or brackets
+            if (child instanceof CStarParser.ExprContext) {
+                AstNode literal = visit(child);
+                arrayExprNode.children.add(literal);
             }
         }
-        return paramNode;
+        arrayExprNode.lineNumber = ctx.start.getLine();
+
+        return arrayExprNode;
     }
 
-    @Override
-    public AstNode visitBlk(CStarParser.BlkContext ctx) {
-
-        BlkNode node = new BlkNode();
-        node.lineNumber = ctx.start.getLine();
-        // linje 435 findes duplikatet
-        int numChildren = ctx.getChildCount();
-
-        for (int i = 0; i < numChildren; i++) {
-            ParseTree child = ctx.getChild(i);
-            if (child.getPayload() instanceof CommonToken)
-                continue;
-            AstNode childResult = visit(child);
-            node.children.add(childResult);
-        }
-        return node;
-    }
-
-    @Override
-    public AstNode visitSelection(CStarParser.SelectionContext ctx) {
-        SelectionNode node = new SelectionNode();
-        node.lineNumber = ctx.start.getLine();
-        node.children.add(visit(ctx.logical_expr()));
-
-        for (CStarParser.BlkContext blk : ctx.blk()) {
-            node.children.add(visit(blk));
-        }
-        return node;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    @Override
-    public AstNode visitIterative(CStarParser.IterativeContext ctx) {
-        IterativeNode node = new IterativeNode();
-        node.lineNumber = ctx.start.getLine();
-        node.children.add(visit(ctx.logical_expr()));
-        node.children.add(visit(ctx.blk()));
-
-        return node;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    //@Override public T visitArray_call(CStarParser.Array_callContext ctx) { return visitChildren(ctx); }
     @Override
     public AstNode visitArray_access(CStarParser.Array_accessContext ctx) {
-        //Id is index 0, the Index is at index 1, and the assigned value is at 2
         ArrayAccessNode arrayAccessNode = new ArrayAccessNode();
-        arrayAccessNode.lineNumber = ctx.start.getLine();
 
-        //First add ID at index 0
+        //Adds ID (found in index 0)
         IdNode id = new IdNode(ctx.getChild(0).getText(), false);
         arrayAccessNode.children.add(id);
+        //Adds the index (found in index 2)
         arrayAccessNode.children.add(visit(ctx.children.get(2)));
+
+        arrayAccessNode.lineNumber = ctx.start.getLine();
 
         return arrayAccessNode;
     }
 
     @Override
     public AstNode visitStmt(CStarParser.StmtContext ctx) {
+        //Statement has only one child and should not be created
         return visit(ctx.getChild(0));
     }
+
+    @Override
+    public AstNode visitIterative(CStarParser.IterativeContext ctx) {
+        IterativeNode iterativeNode = new IterativeNode();
+
+        //Visits the condition and block
+        iterativeNode.children.add(visit(ctx.logical_expr()));
+        iterativeNode.children.add(visit(ctx.blk()));
+
+        iterativeNode.lineNumber = ctx.start.getLine();
+
+        return iterativeNode;
+    }
+
+    @Override
+    public AstNode visitSelection(CStarParser.SelectionContext ctx) {
+        SelectionNode selectionNode = new SelectionNode();
+
+        //Visits the condition
+        selectionNode.children.add(visit(ctx.logical_expr()));
+
+        //Visits the blocks (two blocks if there is an else block)
+        for (CStarParser.BlkContext blk : ctx.blk()) {
+            selectionNode.children.add(visit(blk));
+        }
+
+        selectionNode.lineNumber = ctx.start.getLine();
+
+        return selectionNode;
+    }
+
+    @Override
+    public AstNode visitBlk(CStarParser.BlkContext ctx) {
+        BlkNode blkNode = new BlkNode();
+        blkNode.lineNumber = ctx.start.getLine();
+
+        return childVisitor(blkNode, ctx.children.toArray(ParseTree[]::new));
+    }
+
 
     @Override
     public AstNode visitPrint(CStarParser.PrintContext ctx) {
         PrintNode printNode = new PrintNode();
 
-        //Goes through all print's children and add them to formatstring (except plus)
-        for(int i = 2; i < ctx.children.size() - 1; i++){
+        //Goes through all print's children and adds them to the format string (except plus)
+        for (int i = 2; i < ctx.children.size() - 1; i++) {
             ParseTree child = ctx.getChild(i);
 
-            if (child.getText().equals("+")){
-                continue; //plus should not be included (not necessary information)
+            //Plus should not be included
+            if (child.getText().equals("+")) {
+                continue;
             }
-            else if(child.getText().contains("\"")){
+            //Enters if the child is a string
+            else if (child.getText().contains("\"")) {
                 printNode.addToFormatString(new StringNode(child.getText()));
             }
-            //Todo: test if instanceof works
-            else if(child instanceof CStarParser.ValContext){
+            //Enters if the child is a value
+            else if (child instanceof CStarParser.ValContext) {
                 printNode.addToFormatString(visitVal((CStarParser.ValContext) child));
             }
-            //Todo: test if instanceof works
-            else if (child instanceof TerminalNodeImpl){
+            //Enters if the child is a variable
+            else if (child instanceof TerminalNodeImpl) {
                 printNode.addToFormatString(new IdNode(child.getText(), false));
-            }
-            else{
+            } else {
                 return null;
             }
         }
+
+        printNode.lineNumber = ctx.start.getLine();
+
         return printNode;
+    }
+
+    @Override
+    public AstNode visitFunc(CStarParser.FuncContext ctx) {
+        FuncDclNode funcNode = new FuncDclNode();
+        String returnType = ctx.return_type().TYPE() != null ? ctx.return_type().TYPE().toString() : "void";
+
+        //Sets the id and the return type
+        funcNode.setReturnType(returnType);
+        funcNode.setId(ctx.ID().toString());
+
+        //Adds the functional parameters as children if there are any
+        if (ctx.param() != null) {
+            funcNode.children.add(visit(ctx.param()));
+        }
+
+        funcNode.children.add(visit(ctx.blk()));
+        funcNode.lineNumber = ctx.start.getLine();
+
+        return funcNode;
+    }
+
+    @Override
+    public AstNode visitParam(CStarParser.ParamContext ctx) {
+        ParamNode paramNode = new ParamNode();
+        int numChild = ctx.getChildCount();
+
+        //Skips comma and jumps to type
+        for (int childIndex = 0; childIndex < numChild; childIndex++) {
+            IdNode idNode;
+            String type = ctx.getChild(childIndex).toString();
+
+            //Creates a new variable depending on the type of parameter
+            //childIndex is incremented to get the ID of the parameter
+            switch (type) {
+                case "integer":
+                    idNode = new IdNode(ctx.getChild(++childIndex).toString(), "integer");
+                    break;
+                case "decimal":
+                    idNode = new IdNode(ctx.getChild(++childIndex).toString(), "decimal");
+                    break;
+                case "pin":
+                    idNode = new IdNode(ctx.getChild(++childIndex).toString(), "pin");
+                    break;
+                case "long integer":
+                    idNode = new IdNode(ctx.getChild(++childIndex).toString(), "long integer");
+                    break;
+                case "character":
+                    idNode = new IdNode(ctx.getChild(++childIndex).toString(), "character");
+                    break;
+                case "boolean":
+                    idNode = new IdNode(ctx.getChild(++childIndex).toString(), "boolean");
+                    break;
+                case "small integer":
+                    idNode = new IdNode(ctx.getChild(++childIndex).toString(), "small integer");
+                    break;
+                default:
+                    idNode = null;
+            }
+
+            if (idNode != null) {
+                paramNode.children.add(idNode);
+                idNode.lineNumber = ctx.start.getLine();
+            }
+        }
+
+        paramNode.lineNumber = ctx.start.getLine();
+
+        return paramNode;
+    }
+
+    @Override
+    public AstNode visitReturn_exp(CStarParser.Return_expContext ctx) {
+        ReturnExpNode returnNode = new ReturnExpNode();
+        returnNode.children.add(visit(ctx.expr()));
+        returnNode.lineNumber = ctx.start.getLine();
+
+        return returnNode;
+    }
+
+    @Override
+    public AstNode visitFunc_call(CStarParser.Func_callContext ctx) {
+        ParseTree parent = ctx.getParent();
+        ParseTree child;
+        String symbol;
+        int numChildren = ctx.getChildCount();
+        boolean isNegative = false;
+
+        //Enters if first child is a terminal node (will contain '-' symbol)
+        if (parent.getChild(0) instanceof TerminalNodeImpl) {
+            isNegative = true;
+        }
+
+        FuncCallNode funcCallNode = new FuncCallNode(isNegative);
+
+        for (int childIndex = 0; childIndex < numChildren; childIndex++) {
+            child = ctx.getChild(childIndex);
+            symbol = child.getText();
+
+            //Checks if child is an actual parameter
+            if (child instanceof CStarParser.ExprContext) {
+                funcCallNode.children.add(visit(child));
+            }
+            //Enters if child is the ID for the function
+            else if (isID(symbol)) {
+                IdNode idNode = new IdNode(symbol, false);
+                funcCallNode.children.add(idNode);
+            }
+        }
+
+        funcCallNode.lineNumber = ctx.start.getLine();
+
+        return funcCallNode;
+    }
+
+    //Returns true if the symbol is the ID of the function
+    private boolean isID(String symbol) {
+        return !symbol.equals("(") && !symbol.equals(")") && !symbol.equals(",");
+    }
+
+    @Override
+    public AstNode visitVal(CStarParser.ValContext ctx) {
+        boolean isNegative = false;
+        ParseTree parent = ctx.getParent();
+
+        //Enters if first child is a terminal node (will contain '-' symbol)
+        if (parent.getChild(0) instanceof TerminalNodeImpl) {
+            isNegative = true;
+        }
+        //Enters if value is a pin
+        if (ctx.PIN_LITERAL() != null) {
+            return visitPin(ctx, isNegative);
+        }
+        //Enters if value is a character
+        else if (ctx.CHAR_LITERAL() != null) {
+            String charValue = ctx.CHAR_LITERAL().getText();
+            CharNode charNode = new CharNode(charValue.charAt(0), isNegative);
+            charNode.lineNumber = ctx.start.getLine();
+
+            return charNode;
+        }
+        //Enters if value is a boolean
+        else if (ctx.BOOLEAN_LITERAL() != null) {
+            return visitBoolean(ctx);
+        }
+        //Enters if value is a number
+        else if (ctx.NUMBER() != null) {
+            //Checks if the value is a float
+            if (ctx.NUMBER().getText().contains(".")) {
+                return new FloatNode(Float.parseFloat(ctx.getText()), isNegative);
+            }
+            else {
+                return new NumberNode(Long.parseLong(ctx.getText()), isNegative);
+            }
+        }
+        //Enters if value is either the constant HIGH or the constant LOW
+        else if (ctx.HIGH() != null || ctx.LOW() != null) {
+            String constantValue = ctx.HIGH() != null ? "HIGH" : "LOW";
+            return new ConstantNode(constantValue, false);
+        }
+        else {
+            return null;
+        }
+    }
+
+    private AstNode visitPin(CStarParser.ValContext ctx, boolean isNegative) {
+        //Gets the value of the pin
+        String pinValue = ((TerminalNodeImpl) ctx.getChild(0)).symbol.getText();
+        int intValue;
+
+        //Enters if value starts with 'a'
+        if (pinValue.startsWith("A") || pinValue.startsWith("a")) {
+            //Makes the number negative if analog
+            intValue = (-1) * Integer.parseInt(pinValue.substring(1));
+        }
+        //Enters if the pin value does not start with 'a'
+        else {
+            intValue = Integer.parseInt(ctx.CHAR_LITERAL().getText());
+        }
+
+        PinNode pinNode = new PinNode(intValue, isNegative);
+        pinNode.lineNumber = ctx.start.getLine();
+
+        return pinNode;
+    }
+
+    private AstNode visitBoolean(CStarParser.ValContext ctx) {
+        String booleanValue = ctx.BOOLEAN_LITERAL().getText();
+
+        if (booleanValue.equals("true")) {
+            return new BooleanNode(true, false);
+        }
+        else if (booleanValue.equals("false")) {
+            return new BooleanNode(false, false);
+        }
+        else {
+            return null;
+        }
     }
 }
