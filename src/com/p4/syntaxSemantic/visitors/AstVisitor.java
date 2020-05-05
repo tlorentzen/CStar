@@ -414,7 +414,9 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         else if (child instanceof TerminalNodeImpl) {
             //Checks if the child is a parentheses
             if (child.getText().equals("(")) {
-                return visit(ctx.expr());
+                AstNode node = visit(ctx.expr());
+
+                return addParentheses(node);
             }
             //Enters if the child is a variable
             else {
@@ -433,6 +435,49 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             return visit(ctx.array_access());
         }
         return null;
+    }
+
+    //Sets parentheses to true for the related operator
+    private AstNode addParentheses(AstNode node) {
+         String nodeClass = node.getClass().getName();
+         String[] splitClass = nodeClass.split("\\.");
+
+        switch (splitClass[splitClass.length - 1]) {
+            case "AddNode":
+                AddNode addNode = (AddNode) node;
+                addNode.setParentheses(true);
+                return addNode;
+            case "DivNode":
+                DivNode divNode = (DivNode) node;
+                divNode.setParentheses(true);
+                return divNode;
+            case "ModNode":
+                ModNode modNode = (ModNode) node;
+                modNode.setParentheses(true);
+                return modNode;
+            case "MultNode":
+                MultNode multNode = (MultNode) node;
+                multNode.setParentheses(true);
+                return multNode;
+            case "SubNode":
+                SubNode subNode = (SubNode) node;
+                subNode.setParentheses(true);
+                return subNode;
+            case "NumberNode":
+                NumberNode numberNode = (NumberNode) node;
+                numberNode.setParentheses(true);
+                return numberNode;
+            case "CondNode":
+                CondNode condNode = (CondNode) node;
+                condNode.setParentheses(true);
+                return condNode;
+            case "LogicalNode":
+                LogicalNode logicalNode = (LogicalNode) node;
+                logicalNode.setParentheses(true);
+                return logicalNode;
+            default:
+                return node;
+        }
     }
 
     @Override
