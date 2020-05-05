@@ -7,13 +7,17 @@ import com.p4.symbols.SymbolTable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Stack;
 
 public class CodeVisitor implements INodeVisitor{
+
     //FilePath is used to specify the location for the compiled Arduino file
     String filePath = System.getProperty("user.dir") + "/compile-out/compile-out.ino";
 
     //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
+    ArrayList<String> output = new ArrayList<>();
     SymbolTable symbolTable;
 
     public CodeVisitor(SymbolTable symbolTable) {
@@ -25,6 +29,10 @@ public class CodeVisitor implements INodeVisitor{
      * @throws IOException thrown if anything doing the write fails.
      */
     public void print() throws IOException {
+
+        for (String line : output) {
+            stringBuilder.append(line);
+        }
 
         //Instantiates new File object
         File f = new File(filePath);
@@ -70,12 +78,13 @@ public class CodeVisitor implements INodeVisitor{
                 stringBuilder.append(");\n");
             }
             stringBuilder.append("Serial.println()");
+            output.add(getLine());
         } else {
             stringBuilder.append("Serial.println(");
             this.visitChild(node.formatString.get(0));
             stringBuilder.append(");\n");
+            output.add(getLine());
         }
-
     }
 
     @Override
@@ -92,6 +101,7 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(CommentNode node) {
         stringBuilder.append(node.getComment());
+        output.add(getLine());
     }
 
     @Override
@@ -206,6 +216,7 @@ public class CodeVisitor implements INodeVisitor{
         stringBuilder.append(" = ");
         this.visitChild(rightChild);
         stringBuilder.append(";\n");
+        output.add(getLine());
     }
 
     private String convertIntToPinValue(AstNode node) {
@@ -323,6 +334,7 @@ public class CodeVisitor implements INodeVisitor{
         visitChild(node.children.get(1));
         stringBuilder.append("}");
         stringBuilder.append(";\n");
+        output.add(getLine());
     }
 
     /**
@@ -335,6 +347,7 @@ public class CodeVisitor implements INodeVisitor{
         stringBuilder.append("return ");
         this.visitChild(node.children.get(0));
         stringBuilder.append(";\n");
+        output.add(getLine());
     }
 
     /**
@@ -368,8 +381,9 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(BlkNode node) {
-
         stringBuilder.append("{\n");
+        output.add(getLine());
+
         for(AstNode child : node.children){
             stringBuilder.append("    ");
             this.visitChild(child);
@@ -379,6 +393,7 @@ public class CodeVisitor implements INodeVisitor{
         }
 
         stringBuilder.append("\n}\n");
+        output.add(getLine());
     }
 
     /**
@@ -682,6 +697,11 @@ public class CodeVisitor implements INodeVisitor{
             default:
                 return type;
         }
+    }
 
+    private String getLine(){
+        String line = stringBuilder.toString();
+        stringBuilder.delete(0, stringBuilder.length());
+        return line;
     }
 }

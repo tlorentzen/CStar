@@ -6,9 +6,11 @@ integer p = 200 * g;
 small integer ill = 22;
 integer array ko = [1,2,3,4];
 
+
+
+
 // Hej
 //comment 2
-
 void setup(){
     i = hello(ill, j);
     i = 5*(10+5);
