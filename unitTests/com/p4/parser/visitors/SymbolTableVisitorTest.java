@@ -231,6 +231,13 @@ class SymbolTableVisitorTest {
         assertTrue(result);
     }
 
+    @Test
+    void visitFuncCall(){
+        //Arrange
+
+
+    }
+
     @AfterEach
     void tearDown(){
         visitor = new SymbolTableVisitor(new SymbolTable(), new ErrorBag());
