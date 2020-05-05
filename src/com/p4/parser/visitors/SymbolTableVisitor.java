@@ -246,8 +246,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             attr.kind = "function";
             symbolTable.insertSymbol(((IdNode)node.children.get(0)).id, attr);
             node.type = attr.variableType;
-        }
-        if(((IdNode)node.children.get(0)).id.equals("sleep")){
+        } else if(((IdNode)node.children.get(0)).id.equals("sleep")){
             Attributes attr = new Attributes();
             attr.variableType = "void";
             attr.kind = "function";
