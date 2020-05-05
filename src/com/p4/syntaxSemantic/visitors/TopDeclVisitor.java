@@ -15,11 +15,9 @@ public class TopDeclVisitor extends SemanticsVisitor {
     public void visit(DclNode<?> node){
         if(symbolTable.lookup(node.getId()) != null){
             errors.addEntry(ErrorType.TYPE_ERROR,"Already declared", node.lineNumber);
-            symbolTable.lookup(node.getId()).variableType = "Already declared error";
+            symbolTable.lookup(node.getId()).setVariableType("Already declared error");
         } else {
-            var attr = new Attributes();
-            attr.variableType = node.type;
-            attr.kind = node.getClass().getName();
+            Attributes attr = new Attributes(node.getClass().getName(), node.type);
             symbolTable.insertSymbol(node.getId(), attr);
         }
     }

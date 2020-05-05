@@ -73,7 +73,9 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
-    public void visit(PrintNode node) { }
+    public void visit(PrintNode node) {
+
+    }
 
     public void visit(AssignNode node) {
         this.visitChildren(node);
@@ -451,7 +453,7 @@ public class SemanticsVisitor implements INodeVisitor {
         this.symbolTable.enterScope(node.getNodeHash());
         this.visitChildren(node);
 
-        String dclReturnType = symbolTable.lookup(node.getId()).variableType;
+        String dclReturnType = symbolTable.lookup(node.getId()).getVariableType();
 
         if (node.children.size() > 1) {
             //Checks if all children of the function's block are well typed
@@ -516,7 +518,7 @@ public class SemanticsVisitor implements INodeVisitor {
         //Goes through all parameters and compares each formal and actual parameter
         for (Map.Entry<String, Attributes> formalParam : functionScope.params.entrySet()) {
             actualParamType = node.children.get(currentChild).type;
-            formalParamType = formalParam.getValue().variableType;
+            formalParamType = formalParam.getValue().getVariableType();
 
             //Enters if actual param type has no type or has an illegal type
             if (actualParamType == null || actualParamType.equals("error")) {
@@ -551,7 +553,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 node.type = "Not declared";
             }
             else {
-                node.type = attributes.variableType;
+                node.type = attributes.getVariableType();
             }
         }
     }

@@ -37,10 +37,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         if (assign != null) {
             //Visits assign node
             return visit(assign);
-        } else if (array_dcl != null) {
+        }
+        else if (array_dcl != null) {
             //Visits array_dcl node
             return visit(array_dcl);
-        } else {
+        }
+        else {
             //Creates normal dclNode
             AstNode dclNode;
 
@@ -262,13 +264,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         }
 
         //Enters if there are more operators in the tree
-        if (parent.getChild(operatorIndex + 2) != null) {
-            operatorIndex += 2;
+        if (parent.getChild(nextOperator) != null) {
 
             //Adds left child (arith_expr)
             node.children.add(visit(parent.arithm_expr(arithIndex)));
             //Adds right child (operator)
-            node.children.add(visitCondChild(parent.getChild(operatorIndex), parent, operatorIndex));
+            node.children.add(visitCondChild(parent.getChild(nextOperator), parent, nextOperator));
         }
         //Enters if there is only a arith_expr child left
         else {

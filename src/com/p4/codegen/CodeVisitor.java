@@ -516,7 +516,7 @@ public class CodeVisitor implements INodeVisitor{
     private void handlePinReadAndWrite(AstNode firstParam, String[] funcIDSplit) {
         if(funcIDSplit[1].equals("read")){
             //The call is assumed to be a pin read
-            if (((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).analog){
+            if (((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).getAnalog()){
                 //The pin is instantiated as an analog pin
                 stringBuilder.append("analogRead(");
             } else{
