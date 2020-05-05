@@ -753,7 +753,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         //Enters if value is a character
         else if (ctx.CHAR_LITERAL() != null) {
             String charValue = ctx.CHAR_LITERAL().getText();
-            CharNode charNode = new CharNode(charValue.charAt(0), isNegative);
+            CharNode charNode = new CharNode(charValue.charAt(1), isNegative);
             charNode.lineNumber = ctx.start.getLine();
 
             return charNode;
