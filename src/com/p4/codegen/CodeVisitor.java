@@ -482,10 +482,12 @@ public class CodeVisitor implements INodeVisitor{
             //The call is assumed to be a pin read
             if(((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).analog){
                 //The pin is instantiated as an analog pin
+                printPinMode(funcIDSplit[0], false);
                 stringBuilder.append("analogRead(");
                 stringBuilder.append(funcIDSplit[0]);
             } else{
                 //The pin is instantiated as a digital pin
+                printPinMode(funcIDSplit[0], false);
                 stringBuilder.append("digitalRead(");
                 stringBuilder.append(funcIDSplit[0]);
             }
@@ -498,12 +500,15 @@ public class CodeVisitor implements INodeVisitor{
                     || firstParam.type.equals("small integer")
                     || firstParam.type.equals("character")
                     || firstParam.type.equals("Arduino C")))) {
+                printPinMode(funcIDSplit[0], true);
                 //The value to be written to the pin could be any number
                 stringBuilder.append("analogWrite(");
                 stringBuilder.append(funcIDSplit[0]);
                 stringBuilder.append(",");
                 visitChild(firstParam);
             } else if (firstParam.type.equals("constant")){
+                printPinMode(funcIDSplit[0], true);
+
                 //The value to be written to the pin is either HIGH or LOW
                 stringBuilder.append("digitalWrite(");
                 stringBuilder.append(funcIDSplit[0]);
@@ -689,5 +694,17 @@ public class CodeVisitor implements INodeVisitor{
                 return type;
         }
 
+    }
+    private void printPinMode(String pin, boolean isOutput){
+        stringBuilder.append("pinMode(");
+        stringBuilder.append(pin);
+        stringBuilder.append(", ");
+        if(isOutput){
+            stringBuilder.append("OUTPUT");
+        }
+        else{
+            stringBuilder.append("INPUT");
+        }
+        stringBuilder.append(");\n");
     }
 }
