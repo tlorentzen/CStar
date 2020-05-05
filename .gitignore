@@ -2,3 +2,5 @@ out
 .idea
 .DS_Store
 compile-out/compile-out.ino
+output/
+output/output.ino

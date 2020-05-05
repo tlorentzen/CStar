@@ -13,7 +13,9 @@ import java.util.Stack;
 public class CodeVisitor implements INodeVisitor{
 
     //FilePath is used to specify the location for the compiled Arduino file
-    String filePath = System.getProperty("user.dir") + "/compile-out/compile-out.ino";
+    String filePath = System.getProperty("user.dir") + "/output/output.ino";
+    //FilePath is used to specify the directory for the compiled Arduino file
+    String dirPath = System.getProperty("user.dir") + "/output";
 
     //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
@@ -34,6 +36,10 @@ public class CodeVisitor implements INodeVisitor{
             stringBuilder.append(line);
         }
 
+        File directory = new File(dirPath);
+        if (! directory.exists()){
+            directory.mkdirs();
+        }
         //Instantiates new File object
         File f = new File(filePath);
 
