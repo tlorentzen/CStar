@@ -116,6 +116,7 @@ class SymbolTableTest {
         symbolTable.addScope(firstScopeName);
         Attributes attr = new Attributes();
         attr.kind = "SymbolKind";
+        attr.variableType = "someType";
         symbolTable.insertSymbol("symbol", attr);
 
         //Act
@@ -134,6 +135,7 @@ class SymbolTableTest {
         symbolTable.addScope(firstScopeName);
         Attributes attr = new Attributes();
         attr.kind = "SymbolKind";
+        attr.variableType = "someType";
         symbolTable.insertSymbol("symbol", attr);
         symbolTable.addScope(secondScopeName);
         symbolTable.addScope(thirdScopeName);
@@ -154,6 +156,7 @@ class SymbolTableTest {
         symbolTable.addScope(secondScopeName);
         Attributes attr = new Attributes();
         attr.kind = "SymbolKind";
+        attr.variableType = "type";
         symbolTable.insertSymbol("symbol", attr);
         symbolTable.leaveScope();
 

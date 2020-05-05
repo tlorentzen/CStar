@@ -41,9 +41,8 @@ public class SemanticsVisitor implements INodeVisitor {
 
             //Adds error if id was not found in an accessible scope
             if(attributes == null){
-                errors.addEntry(ErrorType.TYPE_ERROR, "'"
-                        + node.id + "' has not been declared in any accessible scope. "
-                        + "The type of '" + node.id + "' will be null", node.lineNumber);
+                errors.addEntry(ErrorType.TYPE_ERROR, "'" + node.id + "' has not been declared in any accessible scope. " +
+                                                                "The type of '" + node.id + "' will be null", node.lineNumber);
                 node.type = "Not declared";
             } else {
                 node.type = attributes.variableType;
@@ -62,7 +61,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    private String checkNumberSize(NumberNode node){
+    public String checkNumberSize(NumberNode node){
         //Finds the smallest number type that can fit the number
         if(node.value < Byte.MAX_VALUE && node.value > Byte.MIN_VALUE){
             return "small integer";
