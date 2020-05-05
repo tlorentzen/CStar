@@ -115,8 +115,11 @@ public class SymbolTableVisitor implements INodeVisitor {
         AstNode secondChild = node.children.get(1);
         if(firstChild instanceof PinDclNode){
             ((PinAttributes)symbolTable.lookup(((PinDclNode) firstChild).id)).analog = secondChild instanceof PinNode;
-        } else if(firstChild instanceof IdNode && firstChild.type != null && firstChild.type.equals("pin")){
-            ((PinAttributes)symbolTable.lookup(((IdNode) firstChild).id)).analog = secondChild instanceof PinNode;
+        } else if(firstChild instanceof IdNode){
+            Attributes firstChildAttr = symbolTable.lookup(((IdNode) firstChild).id);
+            if(firstChildAttr != null && firstChildAttr.variableType.equals("pin")){
+                ((PinAttributes)firstChildAttr).analog = secondChild instanceof PinNode;
+            }
         }
     }
 
