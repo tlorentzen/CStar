@@ -174,18 +174,22 @@ class SymbolTableVisitorTest {
     }
 
     @Test
-    void visitIntegerDclNode_ReceivesAlreadyAddedIntegerDcl_GeneratesError(){
+    void visitIntegerDclNode_ReceivesNodeWithPinDclAsLeftChildAndPinNodeAsRightChild_SymbolForLeftChildHasAnalog1(){
         //Arrange
         String id = "Id";
-        IntegerDclNode Dcl = new IntegerDclNode(id);
-        visitor.visit(Dcl);
+        var leftChild = new PinDclNode(id);
+        var rightChild = new PinNode(1, false);
+        AssignNode assign = new AssignNode();
+        assign.children.add(leftChild);
+        assign.children.add(rightChild);
+        visitor.visit(assign);
 
         //Act
-        visitor.visit(Dcl);
-        var result = visitor.errors.isEmpty();
+        visitor.visit(assign);
+        var result = ((PinAttributes)visitor.symbolTable.lookup(((PinDclNode) leftChild).id)).analog;
 
         //Assert
-        assertFalse(result);
+        assertTrue(result);
     }
 
     @Test
@@ -193,12 +197,38 @@ class SymbolTableVisitorTest {
         //Arrange
         String id = "Id";
         var leftChild = new PinDclNode(id);
-        IntegerDclNode Dcl = new IntegerDclNode(id);
-        visitor.visit(Dcl);
+        var rightChild = new NumberNode((long) 2, false);
+        AssignNode assign = new AssignNode();
+        assign.children.add(leftChild);
+        assign.children.add(rightChild);
+        visitor.visit(assign);
 
         //Act
-        visitor.visit(Dcl);
+        visitor.visit(assign);
         var result = ((PinAttributes)visitor.symbolTable.lookup(((PinDclNode) leftChild).id)).analog;
+
+        //Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void visitAssign_ReceivesNodeWithIdNodeAsLeftChildAndPinNodeAsRightChild_SymbolForLeftChildHasAnalog0(){
+        //Arrange
+        String id = "Id";
+        PinDclNode dcl = new PinDclNode(id);
+        var leftChild = new IdNode(id, false);
+        var rightChild = new PinNode(1, false);
+        AssignNode assign = new AssignNode();
+        assign.children.add(leftChild);
+        assign.children.add(rightChild);
+        visitor.visit(dcl);
+
+        //Act
+        visitor.visit(assign);
+        var result = ((PinAttributes)visitor.symbolTable.lookup((leftChild).id)).analog;
+
+        //Assert
+        assertTrue(result);
     }
 
     @AfterEach
