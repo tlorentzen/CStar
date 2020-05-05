@@ -733,6 +733,7 @@ public class CodeVisitor implements INodeVisitor{
         } else{
             pinMode += "INPUT";
         }
+
         pinMode += ");\n";
         return pinMode;
     }

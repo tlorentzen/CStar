@@ -168,11 +168,19 @@ public class SymbolTableVisitor implements INodeVisitor {
             errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
             node.type = symbolTable.lookup(node.id).variableType;
         } else {
-            Attributes attr = new Attributes();
-            attr.variableType = arrayNode.type;
-            attr.kind = "dcl";
-            symbolTable.insertSymbol(node.id, attr);
-            node.type = attr.variableType;
+            if(arrayNode.type.equals("pin")){
+                PinAttributes attr = new PinAttributes();
+                attr.variableType = arrayNode.type;
+                attr.kind = "dcl";
+                symbolTable.insertSymbol(node.id, attr);
+                node.type = attr.variableType;
+            }else{
+                Attributes attr = new Attributes();
+                attr.variableType = arrayNode.type;
+                attr.kind = "dcl";
+                symbolTable.insertSymbol(node.id, attr);
+                node.type = attr.variableType;
+            }
         }
     }
 
