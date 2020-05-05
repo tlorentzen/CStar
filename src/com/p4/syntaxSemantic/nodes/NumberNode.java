@@ -5,7 +5,7 @@ import com.p4.syntaxSemantic.visitors.INodeVisitor;
 public class NumberNode extends LiteralNode<Long> {
     private boolean parentheses = false;
 
-    public NumberNode(Long value, Boolean isNegative) {
+    public NumberNode(Long value, boolean isNegative) {
         super(value, isNegative);
     }
 

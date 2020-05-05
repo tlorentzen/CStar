@@ -2,7 +2,6 @@
 package com.p4.syntaxSemantic.visitors;
 import com.p4.syntaxSemantic.CStarParser;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
-import com.p4.parser.CStarParser;
 
 /**
  * This class provides an empty implementation of {@link CStarVisitor},

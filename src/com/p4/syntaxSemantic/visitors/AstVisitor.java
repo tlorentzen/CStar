@@ -528,7 +528,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitArray_access(CStarParser.Array_accessContext ctx) {
-        ArrayAccessNode arrayAccessNode = new ArrayAccessNode();
+        ArrayAccessNode arrayAccessNode = new ArrayAccessNode(false);
 
         //Adds ID (found in index 0)
         IdNode id = new IdNode(ctx.getChild(0).getText(), false);

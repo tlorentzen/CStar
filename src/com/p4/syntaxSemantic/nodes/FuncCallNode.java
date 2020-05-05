@@ -3,14 +3,14 @@ package com.p4.syntaxSemantic.nodes;
 import com.p4.syntaxSemantic.visitors.INodeVisitor;
 
 public class FuncCallNode extends AstNode {
-    private Boolean isNegative;
+    private boolean isNegative;
 
     //index 0 is ID, Everything that follows is parameter values
-    public FuncCallNode(Boolean isNegative) {
+    public FuncCallNode(boolean isNegative) {
         this.isNegative = isNegative;
     }
 
-    public Boolean getIsNegative() {
+    public boolean getIsNegative() {
         return isNegative;
     }
 

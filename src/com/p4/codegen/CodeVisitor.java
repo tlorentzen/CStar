@@ -109,25 +109,25 @@ public class CodeVisitor implements INodeVisitor{
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
 
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append("(");
         }
         this.visitChild(leftChild);
         stringBuilder.append(" % ");
         this.visitChild(rightChild);
-        if(node.parentheses){
+        if (node.getParentheses()){
             stringBuilder.append("(");
         }
     }
 
     @Override
     public void visit(NumberNode node){
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append("(");
         }
-        stringBuilder.append(node.isNegative ? "-" : "");
-        stringBuilder.append(node.value);
-        if(node.parentheses){
+        stringBuilder.append(node.getIsNegative() ? "-" : "");
+        stringBuilder.append(node.getValue());
+        if(node.getParentheses()){
             stringBuilder.append(")");
         }
     }
@@ -154,7 +154,7 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(LogicalNode node){
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append("(");
         }
         //Left operand
@@ -171,7 +171,7 @@ public class CodeVisitor implements INodeVisitor{
         }
         //Right operand
         this.visitChild(node.children.get(1));
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append(")");
         }
     }
@@ -188,10 +188,10 @@ public class CodeVisitor implements INodeVisitor{
                 stringBuilder.append("delay");
                 break;
             default:
-                if(node.IsNegative) {
+                if(node.getIsNegative()) {
                     stringBuilder.append("-");
                 }
-                stringBuilder.append(node.id);
+                stringBuilder.append(node.getId());
                 break;
         }
     }
@@ -230,11 +230,11 @@ public class CodeVisitor implements INodeVisitor{
         output.add(getLine());
         String test = output.get(output.size()-1);
         if(test.contains("analogRead") || test.contains("digitalRead")){
-            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).id.split("\\.");
+            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
             insert(printPinMode(funcIDSplit[0],false),1);
         }
         else if(test.contains("analogWrite") || test.contains("digitalWrite")){
-            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).id.split("\\.");
+            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
             insert(printPinMode(funcIDSplit[0],true),1);
         }
     }
@@ -251,7 +251,7 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(CondNode node) {
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append("(");
         }
         //Left operand
@@ -280,7 +280,7 @@ public class CodeVisitor implements INodeVisitor{
         }
         //Right operand
         this.visitChild(node.children.get(1));
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append(")");
         }
     }
@@ -303,7 +303,7 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(ArrayAccessNode node) {
 
-        if(node.isNegative)
+        if(node.getIsNegative())
             stringBuilder.append("-");
 
         //Id is index 0, the Index is at index 1, and the assigned value is at 2
@@ -387,13 +387,13 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(AddNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append("(");
         }
         this.visitChild(leftChild);
         stringBuilder.append(" + ");
         this.visitChild(rightChild);
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append(")");
         }
     }
@@ -443,13 +443,13 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(DivNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append("(");
         }
         this.visitChild(leftChild);
         stringBuilder.append(" / ");
         this.visitChild(rightChild);
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append(")");
         }
     }
@@ -484,7 +484,7 @@ public class CodeVisitor implements INodeVisitor{
         //Splits the function ID on '.' to check for read and write functions
         String[] funcIDSplit = ((IdNode)id).getId().split("\\.");
 
-        if(node.isNegative)
+        if(node.getIsNegative())
             stringBuilder.append("-");
 
         //Checks if the string contained a '.'
@@ -557,7 +557,7 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(FuncDclNode node) {
-        stringBuilder.append(getTargetType(node.returnType));
+        stringBuilder.append(getTargetType(node.getReturnType()));
         stringBuilder.append(" ");
         stringBuilder.append(node.getId());
         if(node.children.size() == 1){
@@ -610,13 +610,13 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(MultNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append("(");
         }
         this.visitChild(leftChild);
         stringBuilder.append(" * ");
         this.visitChild(rightChild);
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append(")");
         }
     }
@@ -680,13 +680,13 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(SubNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append("(");
         }
         this.visitChild(leftChild);
         stringBuilder.append(" - ");
         this.visitChild(rightChild);
-        if(node.parentheses){
+        if(node.getParentheses()){
             stringBuilder.append(")");
         }
     }

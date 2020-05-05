@@ -308,7 +308,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String rightType = node.children.get(1).type;
 
         //Checks if either type is decimal (illegal for mod operator)
-        if (!leftType.equals("decimal") && !rightType.equals("decimal")){
+        if (!leftType.equals("decimal") || !rightType.equals("decimal")){
             node.type = null;
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("non-decimal"), node.lineNumber);
         }
@@ -605,6 +605,11 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(StringNode node) {
         node.type = "string";
+    }
+
+    @Override
+    public void visit(CommentNode node) {
+
     }
 
     //Finds and returns the correct error message

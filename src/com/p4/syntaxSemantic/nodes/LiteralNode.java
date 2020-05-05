@@ -2,9 +2,9 @@ package com.p4.syntaxSemantic.nodes;
 
 abstract class LiteralNode<T> extends AstNode {
     private T value;
-    private Boolean isNegative;
+    private boolean isNegative;
 
-    public LiteralNode(T value, Boolean isNegative) {
+    public LiteralNode(T value, boolean isNegative) {
         this.value = value;
         this.isNegative = isNegative;
     }
@@ -17,7 +17,7 @@ abstract class LiteralNode<T> extends AstNode {
         this.value = value;
     }
 
-    public Boolean getIsNegative() {
+    public boolean getIsNegative() {
         return isNegative;
     }
 

@@ -2,7 +2,6 @@
 package com.p4.syntaxSemantic.visitors;
 import com.p4.syntaxSemantic.CStarParser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import com.p4.parser.CStarParser;
 
 /**
  * This interface defines a complete generic visitor for a parse tree produced

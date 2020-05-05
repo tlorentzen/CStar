@@ -3,7 +3,7 @@ package com.p4.syntaxSemantic.nodes;
 import com.p4.syntaxSemantic.visitors.INodeVisitor;
 
 public class CharNode extends LiteralNode<Character> {
-    public CharNode(Character value, Boolean isNegative) {
+    public CharNode(Character value, boolean isNegative) {
         super(value, isNegative);
     }
 

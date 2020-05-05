@@ -1,6 +1,6 @@
-package com.p4.parser.nodes;
+package com.p4.syntaxSemantic.nodes;
 
-import com.p4.parser.visitors.INodeVisitor;
+import com.p4.syntaxSemantic.visitors.INodeVisitor;
 
 public class CommentNode extends AstNode{
     private String comment = "";
