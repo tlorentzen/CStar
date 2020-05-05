@@ -3,11 +3,9 @@ package com.p4.syntaxSemantic.visitors;
 import com.p4.syntaxSemantic.nodes.*;
 
 public interface INodeVisitor {
-
+    void visit(ProgNode node);
     void visitChildren(AstNode node);
 
-    void visit(ProgNode node);
-    
     void visit(IntegerDclNode node);
     void visit(LongDclNode node);
     void visit(SmallDclNode node);

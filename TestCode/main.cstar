@@ -1,15 +1,8 @@
 void setup(){
-   if (1 IS 2){
-
-   }
-   else {
-
-   }
+5 % 3.3;
 }
 
 void loop(integer i){
-    if(1 IS 2){
 
-    }
 }
 
