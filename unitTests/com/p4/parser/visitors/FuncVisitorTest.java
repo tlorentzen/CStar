@@ -5,6 +5,7 @@ import com.p4.parser.nodes.FuncCallNode;
 import com.p4.parser.nodes.FuncDclNode;
 import com.p4.parser.nodes.IdNode;
 import com.p4.symbols.SymbolTable;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 
 class FuncVisitorTest {
 
-    private final FuncVisitor visitor = new FuncVisitor(new SymbolTable(), new ErrorBag());
+    private FuncVisitor visitor = new FuncVisitor(new SymbolTable(), new ErrorBag());
 
     @BeforeAll
     static void beforeAll() {
@@ -35,7 +36,7 @@ class FuncVisitorTest {
 
         //Act
         visitor.visit(funcCall);
-        var result = visitor.symbolTable.calledFunctions.contains(idNode.id) && !visitor.symbolTable.declaredFunctions.contains(idNode.id);
+        var result = visitor.symbolTable.calledFunctions.contains(id) && !visitor.symbolTable.declaredFunctions.contains(id);
 
         //Assert
         assert (result);
@@ -52,7 +53,7 @@ class FuncVisitorTest {
 
         //Act
         visitor.visit(funcCall);
-        var result = visitor.symbolTable.calledFunctions.contains(idNode.id) && visitor.symbolTable.declaredFunctions.contains(idNode.id);
+        var result = visitor.symbolTable.calledFunctions.contains(id) && visitor.symbolTable.declaredFunctions.contains(id);
 
         //Assert
         assert (result);
@@ -69,7 +70,7 @@ class FuncVisitorTest {
 
         //Act
         visitor.visit(funcCall);
-        var result = visitor.symbolTable.calledFunctions.contains(idNode.id) && visitor.symbolTable.declaredFunctions.contains(idNode.id);
+        var result = visitor.symbolTable.calledFunctions.contains(id) && visitor.symbolTable.declaredFunctions.contains(id);
 
         //Assert
         assert (result);
@@ -88,5 +89,10 @@ class FuncVisitorTest {
 
         //Assert
         assert (result);
+    }
+
+    @AfterEach
+    void tearDown(){
+        visitor = new FuncVisitor(new SymbolTable(), new ErrorBag());
     }
 }
