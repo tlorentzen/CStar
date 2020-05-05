@@ -12,7 +12,7 @@ public class FuncVisitor implements INodeVisitor {
     public FuncVisitor(SymbolTable symbolTable, ErrorBag errors) {
         this.symbolTable = symbolTable;
         this.errors = errors;
-        
+
         //Adds the arduino function "delay()" to the symbol table
         symbolTable.declaredFunctions.add("sleep");
     }
@@ -55,8 +55,8 @@ public class FuncVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(NumberNode node) { 
-        this.visitChildren(node); 
+    public void visit(NumberNode node) {
+        this.visitChildren(node);
     }
 
     @Override public void visit(BooleanNode node) {
@@ -70,6 +70,11 @@ public class FuncVisitor implements INodeVisitor {
 
     @Override
     public void visit(ConstantNode node) {
+        this.visitChildren(node);
+    }
+
+    @Override
+    public void visit(CommentNode node) {
         this.visitChildren(node);
     }
 

@@ -1,6 +1,7 @@
 package com.p4.symbols;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
@@ -11,6 +12,7 @@ public class SymbolTable {
     final private Stack<CStarScope> scopeStack = new Stack<>();
     public ArrayList<String> declaredFunctions = new ArrayList<>();
     public ArrayList<String> calledFunctions = new ArrayList<>();
+    public HashMap<String, PinAttributes> pinList = new HashMap<>();
 
     public SymbolTable(){
         globalScope = new CStarScope("global");
@@ -125,6 +127,11 @@ public class SymbolTable {
     }
 
     public void insertSymbol(String symbol, Attributes attributes){
+
+        if(attributes.variableType.equals("pin")){
+            pinList.put(symbol, (PinAttributes)attributes);
+        }
+
         currentScope.symbols.put(symbol, attributes);
     }
 
@@ -165,5 +172,10 @@ public class SymbolTable {
         return (this.declaredFunctions.contains("setup")
                 && this.declaredFunctions.contains("loop"));
     }
+
+    public PinAttributes getPin(String symbol){
+        return this.pinList.getOrDefault(symbol, null);
+    }
+
 }
 

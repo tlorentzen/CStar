@@ -1,6 +1,5 @@
-// Generated from C:/Users/Niels/Documents/GitHub/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
-package com.p4.syntaxSemantic;
-import com.p4.syntaxSemantic.visitors.CStarVisitor;
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
+package com.p4.parser;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -18,25 +17,25 @@ public class CStarParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		COMP_OP=1, LESS_THAN=2, GREATER_THAN=3, IS=4, ISNOT=5, OR=6, AND=7, ASSIGN_OP=8,
-		PLUS=9, MINUS=10, MULT=11, DIVISION=12, LESS_THAN_EQ=13, GREATER_THAN_EQ=14,
-		MODULO=15, LEFT_PAREN=16, RIGHT_PAREN=17, LEFT_BRACKET=18, RIGHT_BRACKET=19,
-		LEFT_BRACE=20, RIGHT_BRACE=21, SEMICOLON=22, DOT=23, IF=24, ELSE=25, WHILE=26,
-		REPEAT=27, COMMA=28, VOID=29, TYPE=30, ARRAY=31, RETURN=32, PRINT=33,
-		HIGH=34, LOW=35, NUMBER=36, BOOLEAN_LITERAL=37, PIN_LITERAL=38, CHAR_LITERAL=39,
+		COMP_OP=1, LESS_THAN=2, GREATER_THAN=3, IS=4, ISNOT=5, OR=6, AND=7, ASSIGN_OP=8, 
+		PLUS=9, MINUS=10, MULT=11, DIVISION=12, LESS_THAN_EQ=13, GREATER_THAN_EQ=14, 
+		MODULO=15, LEFT_PAREN=16, RIGHT_PAREN=17, LEFT_BRACKET=18, RIGHT_BRACKET=19, 
+		LEFT_BRACE=20, RIGHT_BRACE=21, SEMICOLON=22, DOT=23, IF=24, ELSE=25, WHILE=26, 
+		REPEAT=27, COMMA=28, VOID=29, TYPE=30, ARRAY=31, RETURN=32, PRINT=33, 
+		HIGH=34, LOW=35, NUMBER=36, BOOLEAN_LITERAL=37, PIN_LITERAL=38, CHAR_LITERAL=39, 
 		STRING_LITERAL=40, ID=41, FUNCID=42, WHITESPACE=43, Newline=44, LINE_COMMENT=45;
 	public static final int
-		RULE_prog = 0, RULE_dcl = 1, RULE_assign = 2, RULE_expr = 3, RULE_logical_expr = 4,
-		RULE_cond_expr = 5, RULE_arithm_expr = 6, RULE_term = 7, RULE_factor = 8,
-		RULE_array_dcl = 9, RULE_array_expr = 10, RULE_array_access = 11, RULE_stmt = 12,
-		RULE_iterative = 13, RULE_selection = 14, RULE_blk = 15, RULE_print = 16,
-		RULE_func = 17, RULE_return_type = 18, RULE_param = 19, RULE_return_exp = 20,
+		RULE_prog = 0, RULE_dcl = 1, RULE_assign = 2, RULE_expr = 3, RULE_logical_expr = 4, 
+		RULE_cond_expr = 5, RULE_arithm_expr = 6, RULE_term = 7, RULE_factor = 8, 
+		RULE_array_dcl = 9, RULE_array_expr = 10, RULE_array_access = 11, RULE_stmt = 12, 
+		RULE_iterative = 13, RULE_selection = 14, RULE_blk = 15, RULE_print = 16, 
+		RULE_func = 17, RULE_return_type = 18, RULE_param = 19, RULE_return_exp = 20, 
 		RULE_func_call = 21, RULE_array_func = 22, RULE_val = 23, RULE_comment = 24;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"prog", "dcl", "assign", "expr", "logical_expr", "cond_expr", "arithm_expr",
-			"term", "factor", "array_dcl", "array_expr", "array_access", "stmt",
-			"iterative", "selection", "blk", "print", "func", "return_type", "param",
+			"prog", "dcl", "assign", "expr", "logical_expr", "cond_expr", "arithm_expr", 
+			"term", "factor", "array_dcl", "array_expr", "array_access", "stmt", 
+			"iterative", "selection", "blk", "print", "func", "return_type", "param", 
 			"return_exp", "func_call", "array_func", "val", "comment"
 		};
 	}
@@ -44,22 +43,22 @@ public class CStarParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, null, "'<'", "'>'", "'IS'", "'ISNOT'", "'OR'", "'AND'", "'='",
-			"'+'", "'-'", "'*'", "'/'", "'<='", "'>='", "'%'", "'('", "')'", "'['",
-			"']'", "'{'", "'}'", "';'", "'.'", "'if'", "'else'", "'while'", "'repeat'",
-			"','", "'void'", null, "'array'", "'return'", "'console.print'", "'HIGH'",
+			null, null, "'<'", "'>'", "'IS'", "'ISNOT'", "'OR'", "'AND'", "'='", 
+			"'+'", "'-'", "'*'", "'/'", "'<='", "'>='", "'%'", "'('", "')'", "'['", 
+			"']'", "'{'", "'}'", "';'", "'.'", "'if'", "'else'", "'while'", "'repeat'", 
+			"','", "'void'", null, "'array'", "'return'", "'console.print'", "'HIGH'", 
 			"'LOW'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "COMP_OP", "LESS_THAN", "GREATER_THAN", "IS", "ISNOT", "OR", "AND",
-			"ASSIGN_OP", "PLUS", "MINUS", "MULT", "DIVISION", "LESS_THAN_EQ", "GREATER_THAN_EQ",
-			"MODULO", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACKET", "RIGHT_BRACKET",
-			"LEFT_BRACE", "RIGHT_BRACE", "SEMICOLON", "DOT", "IF", "ELSE", "WHILE",
-			"REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", "PRINT", "HIGH",
-			"LOW", "NUMBER", "BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL",
+			null, "COMP_OP", "LESS_THAN", "GREATER_THAN", "IS", "ISNOT", "OR", "AND", 
+			"ASSIGN_OP", "PLUS", "MINUS", "MULT", "DIVISION", "LESS_THAN_EQ", "GREATER_THAN_EQ", 
+			"MODULO", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACKET", "RIGHT_BRACKET", 
+			"LEFT_BRACE", "RIGHT_BRACE", "SEMICOLON", "DOT", "IF", "ELSE", "WHILE", 
+			"REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", "PRINT", "HIGH", 
+			"LOW", "NUMBER", "BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL", 
 			"ID", "FUNCID", "WHITESPACE", "Newline", "LINE_COMMENT"
 		};
 	}
@@ -148,7 +147,7 @@ public class CStarParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CStarVisitor) return ((CStarVisitor<? extends T>)visitor).visitProg(this);
+			if ( visitor instanceof CStarVisitor ) return ((CStarVisitor<? extends T>)visitor).visitProg(this);
 			else return visitor.visitChildren(this);
 		}
 	}

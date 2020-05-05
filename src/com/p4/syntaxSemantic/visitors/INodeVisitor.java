@@ -48,4 +48,6 @@ public interface INodeVisitor {
     void visit(BooleanNode node);
     void visit(ConstantNode constantNode);
     void visit(StringNode node);
+
+    void visit(CommentNode node);
 }

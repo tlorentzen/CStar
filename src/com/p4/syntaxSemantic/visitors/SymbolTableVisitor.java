@@ -38,6 +38,11 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(ConstantNode node) { this.visitChildren(node); }
 
     @Override
+    public void visit(CommentNode node) {
+        this.visitChildren(node);
+    }
+
+    @Override
     public void visit(BooleanNode node) { this.visitChildren(node); }
 
     @Override
@@ -110,8 +115,11 @@ public class SymbolTableVisitor implements INodeVisitor {
         AstNode secondChild = node.children.get(1);
         if(firstChild instanceof PinDclNode){
             ((PinAttributes)symbolTable.lookup(((PinDclNode) firstChild).getId())).analog = secondChild instanceof PinNode;
-        } else if(firstChild instanceof IdNode && firstChild.type != null && firstChild.type.equals("pin")){
-            ((PinAttributes)symbolTable.lookup(((IdNode) firstChild).getId())).analog = secondChild instanceof PinNode;
+        } else if(firstChild instanceof IdNode){
+            Attributes firstChildAttr = symbolTable.lookup(((IdNode) firstChild).getId());
+            if(firstChildAttr != null && firstChildAttr.variableType.equals("pin")){
+                ((PinAttributes)firstChildAttr).analog = secondChild instanceof PinNode;
+            }
         }
     }
 
@@ -163,11 +171,18 @@ public class SymbolTableVisitor implements INodeVisitor {
             errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
             node.type = symbolTable.lookup(node.getId()).variableType;
         } else {
-            Attributes attr = new Attributes();
-            attr.variableType = arrayNode.type;
-            attr.kind = "dcl";
-            symbolTable.insertSymbol(node.getId(), attr);
-            node.type = attr.variableType;
+            if(arrayNode.type.equals("pin")){
+                PinAttributes attr = new PinAttributes();
+                attr.variableType = arrayNode.type;
+                attr.kind = "dcl";
+                symbolTable.insertSymbol(node.getId(), attr);
+            }else{
+                Attributes attr = new Attributes();
+                attr.variableType = arrayNode.type;
+                attr.kind = "dcl";
+                symbolTable.insertSymbol(node.getId(), attr);
+            }
+            node.type = arrayNode.type;
         }
     }
 
@@ -231,8 +246,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             attr.kind = "function";
             symbolTable.insertSymbol(((IdNode)node.children.get(0)).getId(), attr);
             node.type = attr.variableType;
-        }
-        if(((IdNode)node.children.get(0)).getId().equals("sleep")){
+        } else if(((IdNode)node.children.get(0)).getId().equals("sleep")){
             Attributes attr = new Attributes();
             attr.variableType = "void";
             attr.kind = "function";

@@ -1,5 +1,5 @@
-// Generated from C:/Users/Niels/Documents/GitHub/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
-package com.p4.syntaxSemantic;
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/parser\CStar.g4 by ANTLR 4.8
+package com.p4.parser;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**

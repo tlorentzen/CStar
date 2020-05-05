@@ -68,26 +68,25 @@ public class Main {
                             FuncVisitor funcVisitor = new FuncVisitor(symbolTable, errors);
                             funcVisitor.visit(ast);
 
-                            if(symbolTable.isSetupAndLoopDefined()){
-                                SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable, errors);
-                                symbolTableVisitor.visit(ast);
-
-                                SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
-                                semanticsVisitor.visit(ast);
-
-                                if(!errors.containsErrors()){
-                                    CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
-                                    codeVisitor.visit(ast);
-
-                                    try {
-                                        codeVisitor.print();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                }
-                            }else{
+                            if(!symbolTable.isSetupAndLoopDefined()) {
                                 errors.addEntry(ErrorType.MISSING_ARDUINO_FUNCTION, "Both the functions 'void setup()' and 'void loop()' are required by Arduino");
+                            }
+
+                            SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable, errors);
+                            symbolTableVisitor.visit(ast);
+
+                            SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+                            semanticsVisitor.visit(ast);
+
+                            if(!errors.containsErrors()){
+                                CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
+                                codeVisitor.visit(ast);
+
+                                try {
+                                    codeVisitor.print();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }catch (IOException e){
