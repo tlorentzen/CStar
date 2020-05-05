@@ -211,7 +211,9 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(CharNode node) {
+        stringBuilder.append("'");
         stringBuilder.append(node.getValue());
+        stringBuilder.append("'");
     }
 
     /**

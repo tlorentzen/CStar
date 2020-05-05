@@ -107,7 +107,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 }
             }
             else {
-                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("null"), node.lineNumber);
+                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("nulltype"), node.lineNumber);
             }
         }
     }
@@ -310,7 +310,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String rightType = node.children.get(1).type;
 
         //Checks if either type is decimal (illegal for mod operator)
-        if (!leftType.equals("decimal") || !rightType.equals("decimal")){
+        if (leftType.equals("decimal") || rightType.equals("decimal")){
             node.type = null;
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("non-decimal"), node.lineNumber);
         }
@@ -652,7 +652,7 @@ public class SemanticsVisitor implements INodeVisitor {
             //Error messages with no type   
             case "non-decimal":
                 return "Illegal type: One or both of the operands are of type decimal";
-            case "null":
+            case "nulltype":
                 return "Illegal type: One or both of the operands are null";
             case "invalid":
                 return "Invalid type: Could not find a compatible type";
