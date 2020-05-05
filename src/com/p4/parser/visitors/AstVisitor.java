@@ -423,6 +423,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                         NumberNode numberNode = (NumberNode) node;
                         numberNode.parentheses = true;
                         return numberNode;
+                    case "com.p4.parser.nodes.CondNode":
+                        CondNode condNode = (CondNode) node;
+                        condNode.parentheses = true;
+                        return condNode;
+                    case "com.p4.parser.nodes.LogicalNode":
+                        LogicalNode logicalNode = (LogicalNode) node;
+                        logicalNode.parentheses = true;
+                        return logicalNode;
                 }
                 return node;
             } else {
@@ -698,7 +706,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             ParseTree child = ctx.getChild(i);
 
             if (child.getText().equals("+")){
-                continue; //plus should not be included (not necessary information)
+                continue; //plus should not be included (not necessary information) TODO: slet??
             }
             else if(child.getText().contains("\"")){
                 printNode.addToFormatString(new StringNode(child.getText()));
