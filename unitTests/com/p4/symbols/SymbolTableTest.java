@@ -231,14 +231,6 @@ class SymbolTableTest {
     }
 
     @Test
-    void lookupParam() {
-    }
-
-    @Test
-    void declaredInCurrentScope() {
-    }
-
-    @Test
     void insertSymbol_ReceivesSymbolAndAttributes_TheCurrentScopeContainsTheSymbol() {
         //Arrange
         String symbol = "SymbolName";
@@ -271,17 +263,51 @@ class SymbolTableTest {
     }
 
     @Test
-    void outputAvailableSymbols() {
-    }
-
-    @Test
-    void outputSymbolTable() {
-    }
-
-    @Test
     void isSetupAndLoopDefined_TheSymbolTableContainsBothSetupAndLoop_ReturnsTrue() {
         //Arrange
-        
+        symbolTable.declaredFunctions.add("setup");
+        symbolTable.declaredFunctions.add("loop");
+
+        //Act
+        var result = symbolTable.isSetupAndLoopDefined();
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void isSetupAndLoopDefined_TheSymbolTableContainsOnlySetup_ReturnsFalse() {
+        //Arrange
+        symbolTable.declaredFunctions.add("setup");
+
+        //Act
+        var result = symbolTable.isSetupAndLoopDefined();
+
+        //Assert
+        assert(!result);
+    }
+
+    @Test
+    void isSetupAndLoopDefined_TheSymbolTableContainsOnlyLoop_ReturnsFalse() {
+        //Arrange
+        symbolTable.declaredFunctions.add("loop");
+
+        //Act
+        var result = symbolTable.isSetupAndLoopDefined();
+
+        //Assert
+        assert(!result);
+    }
+
+    @Test
+    void isSetupAndLoopDefined_TheSymbolTableContainsNeitherSetupNorLoop_ReturnsFalse() {
+        //Arrange
+
+        //Act
+        var result = symbolTable.isSetupAndLoopDefined();
+
+        //Assert
+        assert(!result);
     }
 
     @AfterEach
