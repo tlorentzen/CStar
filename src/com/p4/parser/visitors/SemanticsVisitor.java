@@ -373,7 +373,47 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(ModNode node) {
-        visitFactorChildren(node);
+        this.visitChildren(node);
+        String leftType = node.children.get(0).type;
+        String rightType = node.children.get(1).type;
+        var resultType = modResultType(leftType, rightType);
+
+        if (resultType.equals("error")){
+            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType + "when using '%' operator", node.lineNumber);
+        }
+        else {
+            node.type = resultType;
+        }
+    }
+
+    private String modResultType(String leftType, String rightType){
+        //Checks if either type is null
+        if (leftType == null || rightType == null){
+            return "error";
+        }
+        //First semantic rule
+        if(leftType.equals(rightType) && isModNumber(leftType)) {
+            return "integer";
+        }
+        //Third semantic rule
+        else if(((leftType.equals("integer") || leftType.equals("small integer")) && rightType.equals("long integer")) ||
+            ((rightType.equals("integer") || rightType.equals("small integer")) && leftType.equals("long integer"))) {
+            return "integer";
+        }
+        //Fourth semantic rule
+        else if ((leftType.equals("integer") && rightType.equals("small integer")) ||
+            (leftType.equals("small integer") && rightType.equals("integer"))){
+            return "integer";
+        }
+        //Wrong semantic!
+        else{
+            return "error";
+        }
+    }
+    //Checks if the type is compatible with the modular operator
+    private boolean isModNumber(String type){
+        return (type.equals("long integer") || type.equals("integer")
+                                            || type.equals("small integer"));
     }
 
     private void visitFactorChildren(AstNode node){
@@ -381,6 +421,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String leftType = node.children.get(0).type;
         String rightType = node.children.get(1).type;
         var resultType = arithOperationResultType(leftType, rightType);
+
 
         if (resultType.equals("error")){
             errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot combine " + leftType + " with " + rightType, node.lineNumber);
