@@ -82,7 +82,7 @@ public class Main {
                                 CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
                                 codeVisitor.visit(ast);
 
-                                CliExec executor = new CliExec();
+                                CliExec executor = new CliExec(errors);
 
                                 try {
                                     codeVisitor.print();

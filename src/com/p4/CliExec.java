@@ -1,5 +1,8 @@
 package com.p4;
 
+import com.p4.errors.ErrorBag;
+import com.p4.errors.ErrorType;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -10,53 +13,59 @@ public class CliExec {
 
     String basePath = System.getProperty("user.dir");
     String baseCommand = "";
-    Process p;
-    File acli;
-    File outputFolder;
-    String core = "arduino:avr";
-    String board = "uno";
-
+    String arduinoCliFilename;
     BufferedReader stdInput;
     BufferedReader stdError;
+    Process p;
+    File acli;
 
-    public CliExec(){
+    public CliExec(ErrorBag errors){
+        File arduinoCli;
         acli = new File(basePath);
 
         if(SystemInfo.isWindows()){
             baseCommand = "arduino-cli-win.exe";
+            arduinoCliFilename = baseCommand;
+            arduinoCli = new File(basePath+"/"+baseCommand);
         }else{
             baseCommand = "./arduino-cli-"+SystemInfo.getOsString();
+            arduinoCliFilename = "arduino-cli-"+SystemInfo.getOsString();
+            arduinoCli = new File(basePath+"/arduino-cli-"+SystemInfo.getOsString());
         }
 
-        ArrayList<Board> boards = getBoards();
-        Board ado = null;
+        if(arduinoCli.exists() && arduinoCli.isFile()){
+            ArrayList<Board> boards = getBoards();
+            Board board = null;
 
-        int counter = 1;
+            int counter = 1;
 
-        if(boards.size() > 0){
-            if(boards.size() > 1){
-                System.out.println("Select Arduino:");
-                for (Board b: boards) {
-                    System.out.println("  "+counter+" ) "+ b.name+" - "+b.port);
-                    counter++;
+            if(boards.size() > 0){
+                if(boards.size() > 1){
+                    System.out.println("Select Arduino:");
+                    for (Board b: boards) {
+                        System.out.println("  "+counter+" ) "+ b.name+" - "+b.port);
+                        counter++;
+                    }
+
+                    System.out.print("> ");
+                    try{
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                        int index = Integer.parseInt(reader.readLine());
+                        board = boards.get(index-1);
+                    }catch(Exception e){
+                        System.out.println();
+                    }
+                }else{
+                    board = boards.get(0);
                 }
 
-                System.out.print("> ");
-                try{
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-                    int index = Integer.parseInt(reader.readLine());
-                    ado = boards.get(index-1);
-                }catch(Exception e){
-                    System.out.println();
-                }
+                checkCoreInstallation(board);
+                compileAndUpload(board);
             }else{
-                ado = boards.get(0);
+                errors.addEntry(ErrorType.ARDUINO_NOT_FOUND, "No Arduino boards found");
             }
-
-            checkCoreInstallation(ado);
-            compileAndUpload(ado);
         }else{
-            System.out.println("No board...");
+            errors.addEntry(ErrorType.ARDUINO_CLI_MISSING, "Arduino CLI is missing");
         }
     }
 
