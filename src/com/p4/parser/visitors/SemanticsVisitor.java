@@ -41,9 +41,8 @@ public class SemanticsVisitor implements INodeVisitor {
 
             //Adds error if id was not found in an accessible scope
             if(attributes == null){
-                errors.addEntry(ErrorType.TYPE_ERROR, "'"
-                        + node.id + "' has not been declared in any accessible scope. "
-                        + "The type of '" + node.id + "' will be null", node.lineNumber);
+                errors.addEntry(ErrorType.TYPE_ERROR, "'" + node.id + "' has not been declared in any accessible scope. " +
+                                                                "The type of '" + node.id + "' will be null", node.lineNumber);
                 node.type = "Not declared";
             } else {
                 node.type = attributes.variableType;
