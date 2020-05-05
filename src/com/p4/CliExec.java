@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class CliExec {
 
     String basePath = System.getProperty("user.dir");
-    String baseCommand = "./arduino-cli";
+    String baseCommand = "";
     Process p;
     File acli;
     File outputFolder;
@@ -21,6 +21,12 @@ public class CliExec {
 
     public CliExec(){
         acli = new File(basePath);
+
+        if(SystemInfo.isWindows()){
+            baseCommand = "arduino-cli-win.exe";
+        }else{
+            baseCommand = "./arduino-cli-"+SystemInfo.getOsString();
+        }
 
         ArrayList<Board> boards = getBoards();
         Board ado = null;
