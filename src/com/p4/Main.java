@@ -62,8 +62,8 @@ public class Main {
                             CStarBaseVisitor<?> visitor = new AstVisitor<>();
                             ProgNode ast = (ProgNode) visitor.visit(tree);
 
-                            AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
-                            astTreeVisitor.visit(0, ast);
+                            //AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
+                            //astTreeVisitor.visit(0, ast);
 
                             FuncVisitor funcVisitor = new FuncVisitor(symbolTable, errors);
                             funcVisitor.visit(ast);
@@ -81,6 +81,8 @@ public class Main {
                             if(!errors.containsErrors()){
                                 CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
                                 codeVisitor.visit(ast);
+
+                                CliExec executor = new CliExec();
 
                                 try {
                                     codeVisitor.print();
