@@ -419,6 +419,10 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                         SubNode subNode = (SubNode) node;
                         subNode.parentheses = true;
                         return subNode;
+                    case "com.p4.parser.nodes.NumberNode":
+                        NumberNode numberNode = (NumberNode) node;
+                        numberNode.parentheses = true;
+                        return numberNode;
                 }
                 return node;
             } else {
