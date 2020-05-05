@@ -11,7 +11,6 @@ class SymbolTableTest {
     @BeforeEach
     void setUp() {
         symbolTable = new SymbolTable();
-
     }
 
     @Test
@@ -20,8 +19,11 @@ class SymbolTableTest {
         String scopeName = "NewScope";
         symbolTable.addScope(scopeName);
 
-        //Act Assert
-        assert(symbolTable.getCurrentScope().getScopeName().equals(scopeName));
+        //Act
+        var result = symbolTable.getCurrentScope().getScopeName();
+
+        //Assert
+        assert(result.equals(scopeName));
     }
 
     @Test
@@ -29,10 +31,12 @@ class SymbolTableTest {
         //Arrange
         String scopeName = "ExistingScope";
         symbolTable.addScope(scopeName);
+
+        //Act
         CStarScope result = symbolTable.lookupScope(scopeName);
         symbolTable.addScope(scopeName);
 
-        //Act Assert
+        //Assert
         assert(symbolTable.getCurrentScope() == result);
     }
 
@@ -43,8 +47,11 @@ class SymbolTableTest {
         symbolTable.addScope(scopeName);
         symbolTable.leaveScope();
 
-        //Act Assert
-        assert(symbolTable.getCurrentScope().parent == null);
+        //Act
+        var result = symbolTable.getCurrentScope().parent;
+
+        //Assert
+        assert(result == null);
     }
 
     @Test
@@ -58,16 +65,17 @@ class SymbolTableTest {
         symbolTable.addScope(secondScopeName);
         symbolTable.addScope(thirdScopeName);
 
-        //Act Assert
+        //Act
         CStarScope result = symbolTable.getCurrentScope();
         symbolTable.addScope(scopeName);
         symbolTable.leaveScope();
+
+        //Assert
         assert(symbolTable.getCurrentScope() == result);
     }
 
     @Test
     void getCurrentScope_NoScopeAdded_ReturnsTheGlobalScope() {
-        //Act Assert
         assert(symbolTable.getCurrentScope().parent == null);
     }
 
@@ -77,8 +85,11 @@ class SymbolTableTest {
         String scopeName = "NewScope";
         symbolTable.addScope(scopeName);
 
-        //Act Assert
-        assert(symbolTable.getCurrentScope().getScopeName().equals(scopeName));
+        //Act
+        var result = symbolTable.getCurrentScope().getScopeName();
+
+        // Assert
+        assert(result.equals(scopeName));
     }
 
     @Test
@@ -91,8 +102,11 @@ class SymbolTableTest {
         symbolTable.addScope(secondScopeName);
         symbolTable.addScope(thirdScopeName);
 
-        //Act Assert
-        assert(symbolTable.getCurrentScope().parent.getScopeName().equals(secondScopeName));
+        //Act
+        var result = symbolTable.getCurrentScope().parent.getScopeName();
+
+        // Assert
+        assert(result.equals(secondScopeName));
     }
 
     @Test
@@ -104,8 +118,11 @@ class SymbolTableTest {
         attr.kind = "SymbolKind";
         symbolTable.insertSymbol("symbol", attr);
 
-        //Act Assert
-        assert(symbolTable.lookup("symbol").equals(attr));
+        //Act
+        var result = symbolTable.lookup("symbol");
+
+        //Assert
+        assert(result.equals(attr));
     }
 
     @Test
@@ -121,8 +138,11 @@ class SymbolTableTest {
         symbolTable.addScope(secondScopeName);
         symbolTable.addScope(thirdScopeName);
 
-        //Act Assert
-        assert(symbolTable.lookup("symbol").equals(attr));
+        //Act
+        var result = symbolTable.lookup("symbol");
+
+        //Assert
+        assert(result.equals(attr));
     }
 
     @Test
@@ -163,9 +183,7 @@ class SymbolTableTest {
     void lookupScope_ReceivesANonExistentScope_ReturnsNull() {
         //Arrange
         String firstScopeName = "FirstScopeName";
-        String secondScopeName = "SecondScopeName";
         symbolTable.addScope(firstScopeName);
-        symbolTable.addScope(secondScopeName);
 
         //Act
         var result = symbolTable.lookupScope("SomeScope");
@@ -221,7 +239,7 @@ class SymbolTableTest {
     }
 
     @Test
-    void insertSymbol() {
+    void insertSymbol_ReceivesSymbolAndAttributes_TheCurrentScopeContainsTheSymbol() {
         //Arrange
         String symbol = "SymbolName";
         Attributes attr = new Attributes();
@@ -230,30 +248,40 @@ class SymbolTableTest {
 
         //Act
         symbolTable.insertSymbol(symbol, attr);
-        var result = symbolTable.lookup(symbol);
+        var result = symbolTable.getCurrentScope().symbols.containsKey(symbol);
 
         //Assert
-        assert(result.equals(attr));
+        assert(result);
     }
 
     @Test
-    void insertParam() {
-        //Todo: implement
+    void insertParam_ReceivesParamAndAttributes_TheCurrentScopeContainsTheParam() {
+        //Arrange
+        String param = "ParamName";
+        Attributes attr = new Attributes();
+        attr.kind = "symbolKind";
+        attr.variableType = "variableType";
+
+        //Act
+        symbolTable.insertParam(param, attr);
+        var result = symbolTable.getCurrentScope().params.containsKey(param);
+
+        //Assert
+        assert(result);
     }
 
     @Test
     void outputAvailableSymbols() {
-        //Todo: implement
     }
 
     @Test
     void outputSymbolTable() {
-        //Todo: implement
     }
 
     @Test
-    void isSetupAndLoopDefined() {
-        //Todo: implement
+    void isSetupAndLoopDefined_TheSymbolTableContainsBothSetupAndLoop_ReturnsTrue() {
+        //Arrange
+        
     }
 
     @AfterEach
