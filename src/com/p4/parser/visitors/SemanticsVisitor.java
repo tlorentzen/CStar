@@ -62,7 +62,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    public String checkNumberSize(NumberNode node){
+    private String checkNumberSize(NumberNode node){
         //Finds the smallest number type that can fit the number
         if(node.value < Byte.MAX_VALUE && node.value > Byte.MIN_VALUE){
             return "small integer";
