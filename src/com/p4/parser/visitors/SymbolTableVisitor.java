@@ -173,13 +173,13 @@ public class SymbolTableVisitor implements INodeVisitor {
                 attr.variableType = arrayNode.type;
                 attr.kind = "dcl";
                 symbolTable.insertSymbol(node.id, attr);
-                node.type = attr.variableType;
+                node.type = arrayNode.type;
             }else{
                 Attributes attr = new Attributes();
                 attr.variableType = arrayNode.type;
                 attr.kind = "dcl";
                 symbolTable.insertSymbol(node.id, attr);
-                node.type = attr.variableType;
+                node.type = arrayNode.type;
             }
         }
     }
