@@ -12,17 +12,13 @@ public class ErrorBag {
         this.addEntry(type, message, 0, 0);
     }
 
-    public void addEntry(ErrorType type, String message, int lineNumber){
-        this.addEntry(type, message, lineNumber, 0);
-    }
+    public void addEntry(ErrorType type, String message, int lineNumber){ this.addEntry(type, message, lineNumber, 0); }
 
     public void addEntry(ErrorType type, String message, int lineNumber, int column){
         List<String> lines = new ArrayList<>();
         this.addEntry(type, message, lineNumber, column, lines);
 
-        if(type.toString().startsWith("E")){
-            hasErrors = true;
-        }
+        if(type.toString().startsWith("E")){ hasErrors = true; }
     }
 
     public void addEntry(ErrorType type, String message, int lineNumber, int column, List<String> lines){
@@ -45,6 +41,8 @@ public class ErrorBag {
             }
         }
     }
+
+
 
     public boolean isEmpty(){
         return this.errors.isEmpty();
