@@ -7,5 +7,4 @@ public class BlkNode extends AstNode{
     public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }
-    //blk: LEFT_BRACE ( dcl | stmt | return_exp)* RIGHT_BRACE;
 }

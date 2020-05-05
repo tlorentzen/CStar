@@ -223,6 +223,15 @@ public class CodeVisitor implements INodeVisitor{
         this.visitChild(rightChild);
         stringBuilder.append(";\n");
         output.add(getLine());
+        String test = output.get(output.size()-1);
+        if(test.contains("analogRead") || test.contains("digitalRead")){
+            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).id.split("\\.");
+            insert(printPinMode(funcIDSplit[0],false),1);
+        }
+        else if(test.contains("analogWrite") || test.contains("digitalWrite")){
+            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).id.split("\\.");
+            insert(printPinMode(funcIDSplit[0],true),1);
+        }
     }
 
     private String convertIntToPinValue(AstNode node) {
@@ -497,12 +506,10 @@ public class CodeVisitor implements INodeVisitor{
             //The call is assumed to be a pin read
             if(((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).analog){
                 //The pin is instantiated as an analog pin
-                printPinMode(funcIDSplit[0], false);
                 stringBuilder.append("analogRead(");
                 stringBuilder.append(funcIDSplit[0]);
             } else{
                 //The pin is instantiated as a digital pin
-                printPinMode(funcIDSplit[0], false);
                 stringBuilder.append("digitalRead(");
                 stringBuilder.append(funcIDSplit[0]);
             }
@@ -515,15 +522,12 @@ public class CodeVisitor implements INodeVisitor{
                     || firstParam.type.equals("small integer")
                     || firstParam.type.equals("character")
                     || firstParam.type.equals("Arduino C")))) {
-                printPinMode(funcIDSplit[0], true);
                 //The value to be written to the pin could be any number
                 stringBuilder.append("analogWrite(");
                 stringBuilder.append(funcIDSplit[0]);
                 stringBuilder.append(",");
                 visitChild(firstParam);
             } else if (firstParam.type.equals("constant")){
-                printPinMode(funcIDSplit[0], true);
-
                 //The value to be written to the pin is either HIGH or LOW
                 stringBuilder.append("digitalWrite(");
                 stringBuilder.append(funcIDSplit[0]);
@@ -715,16 +719,19 @@ public class CodeVisitor implements INodeVisitor{
         stringBuilder.delete(0, stringBuilder.length());
         return line;
     }
-    private void printPinMode(String pin, boolean isOutput){
-        stringBuilder.append("pinMode(");
-        stringBuilder.append(pin);
-        stringBuilder.append(", ");
+    private String insert(String result, int offset){
+        String line = stringBuilder.toString();
+        output.add(output.size()- offset, result);
+        return line;
+    }
+    private String printPinMode(String pin, boolean isOutput){
+        String pinMode = "pinMode(" + pin + ", ";
         if(isOutput){
-            stringBuilder.append("OUTPUT");
+            pinMode += "OUTPUT";
+        } else{
+            pinMode += "INPUT";
         }
-        else{
-            stringBuilder.append("INPUT");
-        }
-        stringBuilder.append(");\n");
+        pinMode += ");\n";
+        return pinMode;
     }
 }
