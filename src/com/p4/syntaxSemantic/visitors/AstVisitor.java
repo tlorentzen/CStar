@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
+//Creates the AST by visiting all nodes in the parse tree
 public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override
     public AstNode visitProg(CStarParser.ProgContext ctx) {
