@@ -715,6 +715,7 @@ public class CodeVisitor implements INodeVisitor{
         stringBuilder.delete(0, stringBuilder.length());
         return line;
     }
+
     private void printPinMode(String pin, boolean isOutput){
         stringBuilder.append("pinMode(");
         stringBuilder.append(pin);
