@@ -7,6 +7,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
+import javax.xml.stream.events.Comment;
+
 public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     @Override
@@ -197,6 +199,14 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public AstNode visitComment(CStarParser.CommentContext ctx) {
+        CommentNode node = new CommentNode(ctx.getText());
+        node.lineNumber = ctx.start.getLine();
+        node.type = "comment";
+        return node;
     }
 
     @Override
@@ -409,7 +419,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                         SubNode subNode = (SubNode) node;
                         subNode.parentheses = true;
                         return subNode;
+                    case "com.p4.parser.nodes.NumberNode":
+                        NumberNode numberNode = (NumberNode) node;
+                        numberNode.parentheses = true;
+                        return numberNode;
                 }
+                return node;
             } else {
                 IdNode node = new IdNode(child.getText(), isNegative);
                 node.lineNumber = ctx.start.getLine();
