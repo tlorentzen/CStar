@@ -39,30 +39,86 @@ class ErrorBagTest {
     @Test
     void addEntry_ReceivesWarning_HasErrorsIsFalse() {
         //Arrange
+        errors = new ErrorBag();
+        var type = ErrorType.GENERAL_WARNING;
+        var message = "E";
 
         //Act
+        errors.addEntry(type, message);
 
         //Assert
+        assert(errors.containsErrors() == false);
+
     }
 
     @Test
     void addEntry_ReceivesError_HasErrorsIsTrue() {
         //Arrange
+        errors = new ErrorBag();
+        var type = ErrorType.TYPE_ERROR;
+        var message = "E";
 
         //Act
+        errors.addEntry(type, message);
 
         //Assert
+        assert(errors.containsErrors() == true);
     }
 
     @Test
     void isEmpty() {
+        //Arrange
+        errors = new ErrorBag();
+
+        //Assert
+        assert(errors.isEmpty() == true);
+    }
+
+    @Test
+    void isEmpty_NotEmpty() {
+        //Arrange
+        errors = new ErrorBag();
+
+        var type = ErrorType.TYPE_ERROR;
+        var message = "E";
+
+        //Act
+        errors.addEntry(type, message);
+
+        //Assert
+        assert(errors.isEmpty() == false);
     }
 
     @Test
     void display() {
+
     }
 
     @Test
     void containsErrors() {
+        //Arrange
+        errors = new ErrorBag();
+        var type = ErrorType.TYPE_ERROR;
+        var message = "E";
+
+        //Act
+        errors.addEntry(type, message);
+
+        //Assert
+        assert(errors.containsErrors() == true);
+    }
+
+    @Test
+    void containsErrors_NoErrors() {
+        //Arrange
+        errors = new ErrorBag();
+        var type = ErrorType.GENERAL_WARNING;
+        var message = "E";
+
+        //Act
+        errors.addEntry(type, message);
+
+        //Assert
+        assert(errors.containsErrors() == false);
     }
 }
