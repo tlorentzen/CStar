@@ -7,157 +7,8 @@ import com.p4.symbols.SymbolTable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class SymbolTableVisitorTest {
     private SymbolTableVisitor visitor = new SymbolTableVisitor(new SymbolTable(), new ErrorBag());
-
-    @Test
-    void visitBooleanDclNode_ReceivesStandardBooleanDcl_AddsNodeIdAsSymbolInSymbolTable(){
-        //Arrange
-        String id = "BooleanId";
-        BooleanDclNode boolDcl = new BooleanDclNode(id);
-
-        //Act
-        visitor.visit(boolDcl);
-        var result = visitor.symbolTable.lookup(id) != null;
-
-        //Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void visitBooleanDclNode_ReceivesAlreadyAddedBooleanDcl_GeneratesError(){
-        //Arrange
-        String id = "BooleanId";
-        BooleanDclNode boolDcl = new BooleanDclNode(id);
-        visitor.visit(boolDcl);
-
-        //Act
-        visitor.visit(boolDcl);
-        var result = visitor.errors.isEmpty();
-
-        //Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void visitSmallDclNode_ReceivesStandardSmallDcl_AddsNodeIdAsSymbolInSymbolTable(){
-        //Arrange
-        String id = "Id";
-        SmallDclNode Dcl = new SmallDclNode(id);
-
-        //Act
-        visitor.visit(Dcl);
-        var result = visitor.symbolTable.lookup(id) != null;
-
-        //Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void visitSmallDclNode_ReceivesAlreadyAddedSmallDcl_GeneratesError(){
-        //Arrange
-        String id = "Id";
-        SmallDclNode Dcl = new SmallDclNode(id);
-        visitor.visit(Dcl);
-
-        //Act
-        visitor.visit(Dcl);
-        var result = visitor.errors.isEmpty();
-
-        //Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void visitArrayDclNode_ReceivesStandardArrayDcl_AddsNodeIdAsSymbolInSymbolTable(){
-        //Arrange
-        String id = "Id";
-        ArrayDclNode<Integer> Dcl = new ArrayDclNode<>(id);
-        Dcl.children.add(new ArrayNode("array" + id, "integer"));
-
-        //Act
-        visitor.visit(Dcl);
-        var result = visitor.symbolTable.lookup(id) != null;
-
-        //Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void visitArrayDclNode_ReceivesAlreadyAddedArrayDcl_GeneratesError(){
-        //Arrange
-        String id = "Id";
-        ArrayDclNode<Integer> Dcl = new ArrayDclNode<>(id);
-        Dcl.children.add(new ArrayNode("array" + id, "integer"));
-        visitor.visit(Dcl);
-
-        //Act
-        visitor.visit(Dcl);
-        var result = visitor.errors.isEmpty();
-
-        //Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void visitCharDclNode_ReceivesStandardCharDcl_AddsNodeIdAsSymbolInSymbolTable(){
-        //Arrange
-        String id = "Id";
-        CharDclNode Dcl = new CharDclNode(id);
-
-        //Act
-        visitor.visit(Dcl);
-        var result = visitor.symbolTable.lookup(id) != null;
-
-        //Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void visitCharDclNode_ReceivesAlreadyAddedCharDcl_GeneratesError(){
-        //Arrange
-        String id = "Id";
-        CharDclNode Dcl = new CharDclNode(id);
-        visitor.visit(Dcl);
-
-        //Act
-        visitor.visit(Dcl);
-        var result = visitor.errors.isEmpty();
-
-        //Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void visitFloatDclNode_ReceivesStandardFloatDcl_AddsNodeIdAsSymbolInSymbolTable(){
-        //Arrange
-        String id = "Id";
-        FloatDclNode Dcl = new FloatDclNode(id);
-
-        //Act
-        visitor.visit(Dcl);
-        var result = visitor.symbolTable.lookup(id) != null;
-
-        //Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void visitFloatDclNode_ReceivesAlreadyAddedFloatDcl_GeneratesError(){
-        //Arrange
-        String id = "Id";
-        FloatDclNode Dcl = new FloatDclNode(id);
-        visitor.visit(Dcl);
-
-        //Act
-        visitor.visit(Dcl);
-        var result = visitor.errors.isEmpty();
-
-        //Assert
-        assertFalse(result);
-    }
 
     @Test
     void visitIntegerDclNode_ReceivesStandardIntegerDcl_AddsNodeIdAsSymbolInSymbolTable(){
@@ -170,7 +21,7 @@ class SymbolTableVisitorTest {
         var result = visitor.symbolTable.lookup(id) != null;
 
         //Assert
-        assertTrue(result);
+        assert(result);
     }
 
     @Test
@@ -189,7 +40,38 @@ class SymbolTableVisitorTest {
         var result = ((PinAttributes)visitor.symbolTable.lookup(((PinDclNode) leftChild).id)).analog;
 
         //Assert
-        assertTrue(result);
+        assert(result);
+    }
+
+    @Test
+    void visitArrayDclNode_ReceivesStandardArrayDcl_AddsNodeIdAsSymbolInSymbolTable(){
+        //Arrange
+        String id = "Id";
+        ArrayDclNode<Integer> Dcl = new ArrayDclNode<>(id);
+        Dcl.children.add(new ArrayNode("array" + id, "integer"));
+
+        //Act
+        visitor.visit(Dcl);
+        var result = visitor.symbolTable.lookup(id) != null;
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitArrayDclNode_ReceivesAlreadyAddedArrayDcl_GeneratesError(){
+        //Arrange
+        String id = "Id";
+        ArrayDclNode<Integer> Dcl = new ArrayDclNode<>(id);
+        Dcl.children.add(new ArrayNode("array" + id, "integer"));
+        visitor.visit(Dcl);
+
+        //Act
+        visitor.visit(Dcl);
+        var result = visitor.errors.isEmpty();
+
+        //Assert
+        assert(!result);
     }
 
     @Test
@@ -208,7 +90,7 @@ class SymbolTableVisitorTest {
         var result = ((PinAttributes)visitor.symbolTable.lookup(((PinDclNode) leftChild).id)).analog;
 
         //Assert
-        assertFalse(result);
+        assert(!result);
     }
 
     @Test
@@ -228,14 +110,184 @@ class SymbolTableVisitorTest {
         var result = ((PinAttributes)visitor.symbolTable.lookup((leftChild).id)).analog;
 
         //Assert
-        assertTrue(result);
+        assert(result);
     }
 
     @Test
-    void visitFuncCall(){
+    void visitFuncCall_ReceivesStandardFuncCallNode_SymbolIsNotInserted(){
         //Arrange
+        var id = "ID";
+        var idNode = new IdNode(id, false);
+        var funcCall = new FuncCallNode(false);
+        funcCall.children.add(idNode);
 
+        //Act
+        visitor.visit(funcCall);
+        var result = visitor.symbolTable.lookup(id) == null;
 
+        //Arrange
+        assert(result);
+    }
+
+    @Test
+    void visitFuncCall_ReceivesReadFuncCallNode_SymbolInsertedWithKindFunction(){
+        //Arrange
+        var id = "ID.read";
+        var idNode = new IdNode(id, false);
+        var funcCall = new FuncCallNode(false);
+        funcCall.children.add(idNode);
+
+        //Act
+        visitor.visit(funcCall);
+        var result = visitor.symbolTable.lookup(id).kind.equals("function");
+
+        //Arrange
+        assert(result);
+    }
+
+    @Test
+    void visitFuncCall_ReceivesWriteFuncCallNode_SymbolInsertedWithKindFunction(){
+        //Arrange
+        var id = "ID.write";
+        var idNode = new IdNode(id, false);
+        var funcCall = new FuncCallNode(false);
+        funcCall.children.add(idNode);
+
+        //Act
+        visitor.visit(funcCall);
+        var result = visitor.symbolTable.lookup(id).kind.equals("function");
+
+        //Arrange
+        assert(result);
+    }
+
+    @Test
+    void visitFuncCall_ReceivesSleepFuncCallNode_SymbolInsertedWithKindFunction(){
+        //Arrange
+        var id = "sleep";
+        var idNode = new IdNode(id, false);
+        var funcCall = new FuncCallNode(false);
+        funcCall.children.add(idNode);
+
+        //Act
+        visitor.visit(funcCall);
+        var result = visitor.symbolTable.lookup(id).kind.equals("function");
+
+        //Arrange
+        assert(result);
+    }
+
+    @Test
+    void visitFuncDcl_ReceivesFuncDclNode_SymbolInsertedWithKindFunction(){
+        //Arrange
+        var id = "ID";
+        var funcDcl = new FuncDclNode();
+        funcDcl.returnType = "void";
+        funcDcl.id = id;
+
+        //Act
+        visitor.visit(funcDcl);
+        var result = visitor.symbolTable.lookup(id).kind.equals("function");
+
+        //Arrange
+        assert(result);
+    }
+
+    @Test
+    void visitFuncDcl_ReceivesFuncDclNode_FunctionScopeAdded(){
+        //Arrange
+        var id = "ID";
+        var funcDcl = new FuncDclNode();
+        funcDcl.returnType = "void";
+        funcDcl.id = id;
+
+        //Act
+        visitor.visit(funcDcl);
+        var result = visitor.symbolTable.lookupScope(funcDcl.getNodeHash()) != null;
+
+        //Arrange
+        assert(result);
+    }
+
+    @Test
+    void visitFuncDcl_ReceivesAlreadyDeclaredFuncDclNode_DuplicateVarsErrorAdded(){
+        //Arrange
+        var id = "ID";
+        var funcDcl = new FuncDclNode();
+        funcDcl.returnType = "void";
+        funcDcl.id = id;
+        visitor.visit(funcDcl);
+
+        //Act
+        visitor.visit(funcDcl);
+        var result = !visitor.errors.isEmpty();
+
+        //Arrange
+        assert(result);
+    }
+
+    @Test
+    void visitIterative_ReceivesIterativeNode_IterativeScopeAdded(){
+        //Arrange
+        var iterativeNode = new IterativeNode();
+        visitor.visit(iterativeNode);
+
+        //Act
+        var result = visitor.symbolTable.lookupScope(iterativeNode.getNodeHash()) != null;
+
+        //Arrange
+        assert(result);
+    }
+
+    @Test
+    void visitParam_ReceivesParamNodeWithThreeChildren_AddsThreeChildrenToSymbolTable(){
+        //Arrange
+        var param = new ParamNode();
+        var idOne = "id1";
+        var idNodeOne = new IdNode(idOne, false);
+        var idTwo = "id2";
+        var idNodeTwo = new IdNode(idTwo, false);
+        var idThree = "id1";
+        var idNodeThree = new IdNode(idThree, false);
+        param.children.add(idNodeOne);
+        param.children.add(idNodeTwo);
+        param.children.add(idNodeThree);
+
+        //Act
+        visitor.visit(param);
+        var result = (visitor.symbolTable.lookup(idOne) != null && visitor.symbolTable.lookup(idTwo) != null && visitor.symbolTable.lookup(idThree) != null);
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitParam_ReceivesParamNodeWithOneChild_AddsChildWithCurrentScopeToSymbolTable(){
+        //Arrange
+        var param = new ParamNode();
+        var idOne = "id1";
+        var idNodeOne = new IdNode(idOne, false);
+        param.children.add(idNodeOne);
+
+        //Act
+        visitor.visit(param);
+        var result = visitor.symbolTable.lookup(idOne).scope.equals(visitor.symbolTable.getCurrentScope().getScopeName());
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitSelection_ReceivesIterativeNode_IterativeScopeAdded(){
+        //Arrange
+        var selectionNode = new SelectionNode();
+        visitor.visit(selectionNode);
+
+        //Act
+        var result = visitor.symbolTable.lookupScope(selectionNode.getNodeHash()) != null;
+
+        //Arrange
+        assert(result);
     }
 
     @AfterEach
