@@ -4,6 +4,7 @@ import com.p4.parser.visitors.INodeVisitor;
 
 public class CondNode extends AstNode{
         private int operator = -1;
+        public boolean parentheses = false;
 
         public int getOperator() { return operator; }
 

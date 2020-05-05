@@ -154,7 +154,9 @@ public class CodeVisitor implements INodeVisitor{
 
     @Override
     public void visit(LogicalNode node){
-
+        if(node.parentheses){
+            stringBuilder.append("(");
+        }
         //Left operand
         this.visitChild(node.children.get(0));
 
@@ -169,6 +171,9 @@ public class CodeVisitor implements INodeVisitor{
         }
         //Right operand
         this.visitChild(node.children.get(1));
+        if(node.parentheses){
+            stringBuilder.append(")");
+        }
     }
 
     /**
@@ -245,6 +250,9 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(CondNode node) {
+        if(node.parentheses){
+            stringBuilder.append("(");
+        }
         //Left operand
         this.visitChild(node.children.get(0));
 
@@ -271,6 +279,9 @@ public class CodeVisitor implements INodeVisitor{
         }
         //Right operand
         this.visitChild(node.children.get(1));
+        if(node.parentheses){
+            stringBuilder.append(")");
+        }
     }
 
     /**
