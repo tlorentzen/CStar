@@ -1,13 +1,7 @@
 void setup(){
-    if (true) {
-    }
-
-}
-
-void loop(integer i){
-
+   pin pi = a1;
+   pi.read();
 }
 
 void loop(){
-
 }

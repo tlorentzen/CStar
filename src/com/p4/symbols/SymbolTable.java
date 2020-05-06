@@ -31,7 +31,7 @@ public class SymbolTable {
     }
 
     public void leaveScope() {
-        leaveScope(null);
+        this.leaveScope(null);
     }
 
     public void leaveScope(String scopeName) {
@@ -51,12 +51,12 @@ public class SymbolTable {
     }
 
     public CStarScope getParent() {
-        return currentScope.getParent();
+        return this.currentScope.getParent();
     }
 
     //Enters a scope depending on the given scope name
     public void enterScope(String scopeName) {
-        CStarScope scope = findScope(scopeName, globalScope);
+        CStarScope scope = this.findScope(scopeName, globalScope);
 
         if (scope != null) {
             scopeStack.push(currentScope);
@@ -75,7 +75,7 @@ public class SymbolTable {
 
         //Iterates through all nested scopes
         for (CStarScope childScope : current_scope.children) {
-            scope = findScope(scopeName, childScope);
+            scope = this.findScope(scopeName, childScope);
 
             //Enters if the correct scope was found
             if (scope != null)
@@ -88,7 +88,7 @@ public class SymbolTable {
 
     //Returns the scope or null if the scope was not found
     public CStarScope lookupScope(String scopeName){
-        return findScope(scopeName, globalScope);
+        return this.findScope(scopeName, globalScope);
     }
 
     //Returns the attributes for the symbol that is being looked up
