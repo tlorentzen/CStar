@@ -41,13 +41,13 @@ public class CliExec {
         acli = new File(basePath);
 
         if(SystemInfo.isWindows()){
-            baseCommand = "arduino-cli-win.exe";
+            baseCommand = "arduino-cli.exe";
             arduinoCliFilename = baseCommand;
             arduinoCli = new File(basePath+"/"+baseCommand);
         }else{
-            baseCommand = "./arduino-cli-"+SystemInfo.getOsString();
-            arduinoCliFilename = "arduino-cli-"+SystemInfo.getOsString();
-            arduinoCli = new File(basePath+"/arduino-cli-"+SystemInfo.getOsString());
+            baseCommand = "./arduino-cli";
+            arduinoCliFilename = "arduino-cli";
+            arduinoCli = new File(basePath+"/arduino-cli");
         }
 
         if(arduinoCli.exists() && arduinoCli.isFile()){
