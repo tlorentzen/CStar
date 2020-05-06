@@ -90,11 +90,6 @@ class ErrorBagTest {
     }
 
     @Test
-    void display() {
-
-    }
-
-    @Test
     void containsErrors() {
         //Arrange
         errors = new ErrorBag();
