@@ -307,7 +307,8 @@ public class SemanticsVisitor implements INodeVisitor {
             String elementType = exprChild.type;
             if (!isLegalType(leftType, elementType)) {
                 errorOccured = true;
-                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot convert " + elementType + " to " + leftType, node.lineNumber);
+                errors.addEntry(ErrorType.TYPE_ERROR, "Illegal type conversion: cannot convert "
+                        + elementType + " to " + leftType, node.lineNumber);
             }
         }
         if(!errorOccured){

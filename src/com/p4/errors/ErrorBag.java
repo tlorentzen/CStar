@@ -94,6 +94,10 @@ public class ErrorBag {
     public boolean containsErrors(){
         return hasErrors;
     }
+
+    public ErrorType getErrorType(int index){
+        return errors.get(index).type;
+    }
 }
 
 class Item{

@@ -1,6 +1,7 @@
 package com.p4.parser.visitors;
 
 import com.p4.errors.ErrorBag;
+import com.p4.errors.ErrorType;
 import com.p4.parser.CStarParser;
 import com.p4.parser.nodes.*;
 import com.p4.symbols.Attributes;
@@ -27,7 +28,7 @@ class SemanticsVisitorTest {
 
         //Act
         visitor.visit(idNode);
-        var result = idNode.type.equals("type");
+        var result = idNode.type.equals(attr.variableType);
 
         //Assert
         assert(result);
@@ -69,7 +70,7 @@ class SemanticsVisitorTest {
 
         //Act
         visitor.visit(number);
-        var result = !visitor.errors.isEmpty();
+        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -121,16 +122,15 @@ class SemanticsVisitorTest {
 
         var id = "id";
         var funcCallId = new IdNode("func" + id, false);
-        funcCallId.type = "ArduinoC";
-
         var rightChild = new FuncCallNode(false);
         rightChild.children.add(funcCallId);
+        visitor.symbolTable.calledFunctions.add("func" + id);
 
         var leftChild = new IdNode(id, false);
         var attr = new Attributes();
         attr.variableType = "integer";
+        attr.kind = "dcl";
         visitor.symbolTable.insertSymbol(id, attr);
-        visitor.symbolTable.declaredFunctions.add("func" + id);
 
         assign.children.add(leftChild);
         assign.children.add(rightChild);
@@ -198,7 +198,7 @@ class SemanticsVisitorTest {
 
         //Act
         visitor.visit(logical);
-        var result = !visitor.errors.isEmpty();
+        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -252,7 +252,7 @@ class SemanticsVisitorTest {
 
         //Act
         visitor.visit(cond);
-        var result = !visitor.errors.isEmpty();
+        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -296,7 +296,7 @@ class SemanticsVisitorTest {
 
         //Act
         visitor.visit(access);
-        var result = !visitor.errors.isEmpty();
+        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -318,7 +318,115 @@ class SemanticsVisitorTest {
 
         //Act
         visitor.visit(access);
-        var result = !visitor.errors.isEmpty();
+        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitArrayDcl_(){}
+
+    @Test
+    void visitReturnExpr_(){}
+
+    @Test
+    void visitFuncCall_ReceivesDeclaredKnownAndCalledFunction_SetsTheFunctionTypeToTheTypeOfTheRelatedAttribute(){
+        //Arrange
+        var id = "idFunc";
+        Attributes attr = new Attributes();
+        attr.variableType = "integer";
+        attr.kind = "function";
+        attr.scope = visitor.symbolTable.getCurrentScope().getScopeName();
+        visitor.symbolTable.insertSymbol(id, attr);
+        var funcCallId = new IdNode(id, false);
+        var funcCall = new FuncCallNode(false);
+        funcCall.children.add(funcCallId);
+        visitor.symbolTable.declaredFunctions.add("func" + id);
+        visitor.symbolTable.calledFunctions.add("func" + id);
+
+        //Act
+        visitor.visit(funcCall);
+        var result = funcCall.type.equals("integer");
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitFuncCall_ReceivesKnownAndCalledButNotDeclaredFunction_AddsUndeclaredFunctionWarning(){
+        //Arrange
+        var id = "idFunc";
+        Attributes attr = new Attributes();
+        attr.variableType = "integer";
+        attr.kind = "function";
+        attr.scope = visitor.symbolTable.getCurrentScope().getScopeName();
+        visitor.symbolTable.insertSymbol(id, attr);
+        var funcCallId = new IdNode(id, false);
+        var funcCall = new FuncCallNode(false);
+        funcCall.children.add(funcCallId);
+        visitor.symbolTable.calledFunctions.add("func" + id);
+
+        //Act
+        visitor.visit(funcCall);
+        var result = visitor.errors.getErrorType(0) == ErrorType.UNDECLARED_FUNCTION_WARNING;
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitFuncCall_ReceivesFunctionWithTheWorngNumberOfParams_AddsParameterError(){
+        //Arrange
+        var id = "idFunc";
+        Attributes attr = new Attributes();
+        attr.variableType = "integer";
+        attr.kind = "function";
+        attr.scope = visitor.symbolTable.getCurrentScope().getScopeName();
+        visitor.symbolTable.insertSymbol(id, attr);
+        var funcCallId = new IdNode(id, false);
+        var funcCall = new FuncCallNode(false);
+        funcCall.children.add(funcCallId);
+        visitor.symbolTable.calledFunctions.add("func" + id);
+        visitor.symbolTable.addScope("FuncNode-" + id);
+        Attributes param1 = new Attributes();
+        param1.variableType = "integer";
+        param1.kind = "param";
+        param1.scope = visitor.symbolTable.getCurrentScope().getScopeName();
+        visitor.symbolTable.insertParam("param1", param1);
+        param1.variableType = "integer";
+        param1.kind = "param";
+        param1.scope = visitor.symbolTable.getCurrentScope().getScopeName();
+        visitor.symbolTable.insertParam("param2", param1);
+        param1.variableType = "integer";
+        param1.kind = "param";
+        param1.scope = visitor.symbolTable.getCurrentScope().getScopeName();
+        visitor.symbolTable.insertParam("param3", param1);
+        visitor.symbolTable.leaveScope();
+        visitor.symbolTable.declaredFunctions.add(id);
+        visitor.symbolTable.calledFunctions.add(id);
+
+        //Act
+        visitor.visit(funcCall);
+        var result = visitor.errors.getErrorType(0) == ErrorType.PARAMETER_ERROR;
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitFuncDcl_ReceivesFuncScope_FuncScopeIsAdded(){
+        //Arrange
+        var id = "idFunc";
+        var funcDclId = new IdNode(id, false);
+        var funcDcl = new FuncCallNode(false);
+        funcDcl.children.add(funcDclId);
+        visitor.symbolTable.declaredFunctions.add(id);
+        visitor.symbolTable.calledFunctions.add(id);
+
+        //Act
+        visitor.visit(funcDcl);
+        var result = visitor.symbolTable.lookupScope(funcDcl.getNodeHash()) != null;
 
         //Assert
         assert(result);
