@@ -1,9 +1,8 @@
 package com.p4.syntaxSemantic.nodes;
 
 import com.p4.syntaxSemantic.visitors.INodeVisitor;
-import com.p4.syntaxSemantic.Parameters;
 
-public class ArrayNode extends AstNode implements Parameters {
+public class ArrayNode extends AstNode {
     private String id;
     private boolean isNegative;
 

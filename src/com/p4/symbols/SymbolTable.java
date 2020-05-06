@@ -127,8 +127,7 @@ public class SymbolTable {
     }
 
     public void insertSymbol(String symbol, Attributes attributes){
-
-        if(attributes.getVariableType().equals("pin")){
+        if (attributes.getVariableType().equals("pin")) {
             pinList.put(symbol, (PinAttributes)attributes);
         }
 

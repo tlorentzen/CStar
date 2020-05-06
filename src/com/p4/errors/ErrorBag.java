@@ -53,7 +53,7 @@ public class ErrorBag {
     public void display(){
         if(!isEmpty()){
             boolean displayColors = !(OS.contains("win") && System.console() != null);
-
+            //todo ret så der ikke står errors når der er én fejl :((((
             System.out.println("Something went wrong... Found "+errors.size()+ " errors");
             System.out.println("-----------------------");
 

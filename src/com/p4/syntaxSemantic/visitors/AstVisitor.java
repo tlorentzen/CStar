@@ -1,6 +1,7 @@
 package com.p4.syntaxSemantic.visitors;
 
 import com.p4.syntaxSemantic.CStarParser;
+import com.p4.syntaxSemantic.CStarTypes;
 import com.p4.syntaxSemantic.nodes.*;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.ParserRuleContext;

@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.misc.IntervalSet;
 import java.util.*;
 
+//Finds the expected tokens for the error message
 public class CStarErrorStrategy extends DefaultErrorStrategy {
     private final HashMap<String, String> tokenTranslate = new HashMap<>();
 
@@ -23,67 +24,77 @@ public class CStarErrorStrategy extends DefaultErrorStrategy {
 
     @Override
     protected void reportInputMismatch(Parser recognizer, InputMismatchException e) {
+        //Gets the intervals for the expected tokens
         IntervalSet set = e.getExpectedTokens();
-        List<String> expTokens = new ArrayList<>();
+        List<String> expectedTokens = new ArrayList<>();
 
-        for (Interval i : set.getIntervals()) {
-            for (int a = i.a; a <= i.b; a++) {
-                String symName = recognizer.getVocabulary().getDisplayName(a);
-                expTokens.add(tokenTranslate.getOrDefault(symName, symName));
+        //Finds possible symbols that can correct the error
+        //The intervals indicate the expected symbols token numbers
+        for (Interval interval : set.getIntervals()) {
+            for (int a = interval.a; a <= interval.b; a++) {
+                //Finds all the expected tokens and adds them to expected tokens
+                String symbolName = recognizer.getVocabulary().getDisplayName(a);
+                expectedTokens.add(tokenTranslate.getOrDefault(symbolName, symbolName));
             }
         }
 
-        StringBuilder str = new StringBuilder();
+        //Builds the string message for the expected token
+        String tokenString = buildString(expectedTokens).toString();
 
-        int limit = expTokens.size()-1;
-        for (int l=0; l<=limit; l++){
-            if(l == limit && limit > 0){
-                str.append(" or ");
-            }else if(l > 0){
-                str.append(", ");
-            }
-
-            str.append(expTokens.get(l));
-        }
-
-        String msg = "incorrect input " + this.getTokenErrorDisplay(e.getOffendingToken()) + " was expecting ("+ str.toString() +")";
-        recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
+        String message = "Incorrect input: " + this.getTokenErrorDisplay(e.getOffendingToken()) + 
+                         " was expecting ("+ tokenString +")";
+        recognizer.notifyErrorListeners(e.getOffendingToken(), message, e);
     }
 
     @Override
     protected void reportUnwantedToken(Parser recognizer) {
         if (!this.inErrorRecoveryMode(recognizer)) {
             this.beginErrorCondition(recognizer);
-            Token t = recognizer.getCurrentToken();
-            String tokenName = this.getTokenErrorDisplay(t);
+
+            //Gets the unwanted token
+            Token token = recognizer.getCurrentToken();
+            String tokenName = this.getTokenErrorDisplay(token);
+            //Gets the intervals for the expected tokens
             IntervalSet expecting = this.getExpectedTokens(recognizer);
-            List<String> expTokens = new ArrayList<>();
+            List<String> expectedTokens = new ArrayList<>();
 
-            for (Interval i : expecting.getIntervals()){
-                for (int a = i.a; a <= i.b; a++) {
-                    String symName = recognizer.getVocabulary().getDisplayName(a);
-                    expTokens.add(tokenTranslate.getOrDefault(symName, symName));
+            //Finds possible symbols that can correct the error
+            //The intervals indicate the expected symbols token numbers
+            for (Interval interval : expecting.getIntervals()) {
+                for (int a = interval.a; a <= interval.b; a++) {
+                    //Gets the symbol name
+                    String symbolName = recognizer.getVocabulary().getDisplayName(a);
+                    //Adds the symbol to the list of expected tokens
+                    expectedTokens.add(tokenTranslate.getOrDefault(symbolName, symbolName));
                 }
             }
 
-            StringBuilder str = new StringBuilder();
+            //Builds the string message for the expected token
+            String tokenString = buildString(expectedTokens).toString();
 
-            int limit = expTokens.size()-1;
-            for (int l=0; l<=limit; l++){
-                if(l == limit && limit > 0){
-                    str.append(" or ");
-                }else if(l > 0){
-                    str.append(", ");
-                }
-
-                str.append(expTokens.get(l));
-            }
-
-            String msg = "expected " + str.toString() + " found "+ tokenName;
-
-            //String msg = "irrelevant input " + tokenName + " expecting ("+ String.join(", ", expTokens) +")";
-            recognizer.notifyErrorListeners(t, msg, (RecognitionException)null);
+String message = "Expected " + tokenString + " found " + tokenName;
+            recognizer.notifyErrorListeners(token, message, null);
         }
+    }
+    
+    private StringBuilder buildString(List<String> expectedTokens) {
+        StringBuilder stringBuilder = new StringBuilder();
+        int limit = expectedTokens.size() - 1;
+
+        for (int limitCount = 0; limitCount <= limit; limitCount++) {
+            //Enters if the last expected token has been reached
+            if (limitCount == limit && limit > 0) {
+                stringBuilder.append(" or ");
+            }
+            //Enters if there are more tokens left to be appended
+            else if (limitCount > 0) {
+                stringBuilder.append(", ");
+            }
+
+            //Appends the token to the error message
+            stringBuilder.append(expectedTokens.get(limitCount));
+        }
+        return stringBuilder;
     }
 
 }

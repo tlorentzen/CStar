@@ -1,5 +1,5 @@
 void setup(){
-    pin j = a1;
+    int i
 }
 
 void loop(integer i){
