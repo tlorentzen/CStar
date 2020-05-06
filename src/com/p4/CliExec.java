@@ -6,15 +6,13 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.jsoup.Connection;
-import org.jsoup.*;
 import org.jsoup.Jsoup;
-import org.jsoup.helper.HttpConnection;
 
 import java.io.*;
-import java.net.URL;
-import java.security.spec.ECField;
 import java.util.ArrayList;
-import java.util.zip.GZIPInputStream;
+
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.ZipFile;
 
 public class CliExec {
 
@@ -57,48 +55,16 @@ public class CliExec {
             arduinoCli = new File(basePath+"/arduino-cli");
         }
 
+        checkCliInstallation();
+
         if(arduinoCli.exists() && arduinoCli.isFile()){
             arduinoCliPresent = true;
-            /*
-            ArrayList<Board> boards = getBoards();
-            Board board = null;
-
-            int counter = 1;
-
-            if(boards.size() > 0){
-                if(boards.size() > 1){
-                    System.out.println("Select Arduino:");
-                    for (Board b: boards) {
-                        System.out.println("  "+counter+" ) "+ b.name+" - "+b.port);
-                        counter++;
-                    }
-
-                    System.out.print("> ");
-                    try{
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-                        int index = Integer.parseInt(reader.readLine());
-                        board = boards.get(index-1);
-                    }catch(Exception e){
-                        System.out.println();
-                    }
-                }else{
-                    board = boards.get(0);
-                }
-
-                checkCoreInstallation(board);
-                compileAndUpload(board);
-            }else{
-                errors.addEntry(ErrorType.ARDUINO_NOT_FOUND, "No Arduino boards found");
-            }
-             */
         }else{
             errors.addEntry(ErrorType.ARDUINO_CLI_MISSING, "Arduino CLI is missing");
         }
     }
 
     public void arduinoSelection(){
-        initializeCliSetup();
-
         if(!arduinoCliPresent)
             return;
         
@@ -107,6 +73,7 @@ public class CliExec {
 
         if(boards.size() > 0){
             if(boards.size() > 1){
+                initializeCliSetup();
                 System.out.println();
                 System.out.println("Select Arduino:");
                 for (Board b: boards) {
@@ -131,7 +98,7 @@ public class CliExec {
 
             installBoardCore(board.core);
         }else{
-            errors.addEntry(ErrorType.ARDUINO_NOT_FOUND, "No Arduino boards found");
+            errors.addEntry(ErrorType.ARDUINO_NOT_FOUND, "No Arduino boards found. The program has still been compiled and is located in the 'output' folder");
         }
     }
 
@@ -151,8 +118,8 @@ public class CliExec {
                     }
 
                     String[] items = s.split("\\s+");
-
-                    if(items[0].contains("Bluetooth")){
+                    //Does not add bluetooth option and unknown boards
+                    if(items[0].contains("Bluetooth") || items[3].contains("Unknown")){
                         continue;
                     }
 
@@ -267,11 +234,11 @@ public class CliExec {
             try{
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 String answer = reader.readLine();
-                if(answer.equals("Y")){
+                if(answer.equals("Y") || answer.equals("y")){
                     switch(SystemInfo.getOsString()){
                         case "win":
-                            downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_macOS_64bit.tar.gz";
-                            fileName = "arduino-cli_latest_macOS_64bit.tar.gz";
+                            downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Windows_64bit.zip";
+                            fileName = "arduino-cli_latest_Windows_64bit.zip";
                             break;
                         case "mac":
                             downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_macOS_64bit.tar.gz";
@@ -289,6 +256,7 @@ public class CliExec {
                     if(downloadUrl.equals("")){
                         //TODO error
                     } else{
+
                         File output = new File(basePath+"/"+fileName);
 
                         Connection.Response response= Jsoup.connect(downloadUrl)
@@ -302,18 +270,21 @@ public class CliExec {
                             fos.write(response.bodyAsBytes());
                         }
 
-                        unpackZip(output);
+                        if(SystemInfo.getOsString().equals("win")){
+                            unpackZip(output);
+                        }else{
+                            unpackGZip(output);
+                        }
                     }
                 }
 
             }catch(Exception e){
                 System.out.println();
             }
-
         }
     }
 
-    private void unpackZip(File zipFile){
+    private void unpackGZip(File zipFile){
 
         //https://stackoverflow.com/questions/7128171/how-to-compress-decompress-tar-gz-files-in-java
         try{
@@ -349,10 +320,19 @@ public class CliExec {
                     f.setExecutable(true);
                 }
 
+                zipFile.delete();
                 System.out.println("Untar completed successfully!");
             }
         }catch(Exception e){
             System.out.println(e);
+        }
+    }
+    private void unpackZip(File file){
+        try {
+            ZipFile zipFile = new ZipFile(file);
+            zipFile.extractAll(basePath);
+        } catch (ZipException e) {
+            e.printStackTrace();
         }
     }
 }
