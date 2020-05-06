@@ -1,10 +1,13 @@
 void setup(){
-    int i = 5.5;
-    hej();
-    hej1();
+    if(true){
+    }
 
 }
 
 void loop(integer i){
+
+}
+
+void loop(){
 
 }

@@ -6,25 +6,25 @@ public class AstTreeVisitor {
     public void visit(int localIndent, AstNode node){
         if(node != null){
             switch (node.getClass().toString()){
-                case "class com.p4.parser.nodes.CondNode":
+                case "class com.p4.syntaxSemantic.nodes.CondNode":
                     this.print(localIndent, node.getClass().toString() + " with the operator: " + ((CondNode)node).getToken());
                     break;
-                case "class com.p4.parser.nodes.LogicalNode":
+                case "class com.p4.syntaxSemantic.nodes.LogicalNode":
                     this.print(localIndent, node.getClass().toString() + " with the operator: " + ((LogicalNode)node).getToken());
                     break;
-                case "class com.p4.parser.nodes.IntegerDclNode":
+                case "class com.p4.syntaxSemantic.nodes.IntegerDclNode":
                     this.print(localIndent, node.getClass().toString() + " with the ID: " + ((IntegerDclNode)node).getId());
                     break;
-                case "class com.p4.parser.nodes.FloatDclNode":
+                case "class com.p4.syntaxSemantic.nodes.FloatDclNode":
                     this.print(localIndent, node.getClass().toString() + " with the ID: " + ((FloatDclNode)node).getId());
                     break;
-                case "class com.p4.parser.nodes.IntegerNode":
+                case "class com.p4.syntaxSemantic.nodes.IntegerNode":
                     this.print(localIndent, node.getClass().toString() + " with the value: " + ((NumberNode)node).getValue());
                     break;
-                case "class com.p4.parser.nodes.FloatNode":
+                case "class com.p4.syntaxSemantic.nodes.FloatNode":
                     this.print(localIndent, node.getClass().toString() + " with the value: " + ((FloatNode)node).getValue());
                     break;
-                case "class com.p4.parser.nodes.IdNode":
+                case "class com.p4.syntaxSemantic.nodes.IdNode":
                     this.print(localIndent, node.getClass().toString() + " with the name: " + ((IdNode)node).getId());
                     break;
                 default:

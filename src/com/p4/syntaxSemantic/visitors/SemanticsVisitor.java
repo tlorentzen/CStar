@@ -85,7 +85,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String resultType;
 
         //Enters if the right hand side is a function call
-        if (childClass.equals("com.p4.parser.nodes.FuncCallNode")) {
+        if (childClass.equals("com.p4.syntaxSemantic.nodes.FuncCallNode")) {
             resultType = assignFuncCall(node, leftType);
 
             if (!resultType.equals("error")) {
@@ -461,7 +461,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 String blockClass = blockChild.getClass().toString();
 
                 //Enters if a return expression is found
-                if (blockClass.equals("com.p4.parser.nodes.ReturnExpNode")) {
+                if (blockClass.equals("com.p4.syntaxSemantic.nodes.ReturnExpNode")) {
                     //Enters if return type is different and widening cannot be performed
                     if (!isLegalType(dclReturnType, blockChild.type)) {
                         errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("return", blockChild.type, dclReturnType), node.lineNumber);
@@ -494,7 +494,7 @@ public class SemanticsVisitor implements INodeVisitor {
             //Enters if the function scope was found in the symbol table
             if (functionScope != null) {
                 //Checks if the number of actual parameters corresponds to the number of formal parameters
-                if (node.children.size() - 1 != functionScope.params.size()) {
+                if (node.children.size() - 1 != functionScope.getParams().size()) {
                     errors.addEntry(ErrorType.PARAMETER_ERROR, errorMessage("number of param", functionName), node.lineNumber);
                 }
                 else {
@@ -516,7 +516,7 @@ public class SemanticsVisitor implements INodeVisitor {
         int currentChild = 1;
 
         //Goes through all parameters and compares each formal and actual parameter
-        for (Map.Entry<String, Attributes> formalParam : functionScope.params.entrySet()) {
+        for (Map.Entry<String, Attributes> formalParam : functionScope.getParams().entrySet()) {
             actualParamType = node.children.get(currentChild).type;
             formalParamType = formalParam.getValue().getVariableType();
 

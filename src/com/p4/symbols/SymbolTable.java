@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Stack;
 
 public class SymbolTable {
-
     private CStarScope currentScope;
     final private CStarScope globalScope;
     final private Stack<CStarScope> scopeStack = new Stack<>();
@@ -14,61 +13,59 @@ public class SymbolTable {
     public ArrayList<String> calledFunctions = new ArrayList<>();
     public HashMap<String, PinAttributes> pinList = new HashMap<>();
 
-    public SymbolTable(){
+    public SymbolTable() {
         globalScope = new CStarScope("global");
         currentScope = globalScope;
     }
 
-    public void addScope(String scopeName)/* throws Exception */{
-        //If the scope already exists, do not add it.
-        if(lookupScope(scopeName) != null){
-            //throw new Exception("Scope " + scopeName + " has already added");
-            //Todo: implement above maybe
-        } else {
+    //Adds a scope to the symbol table
+    public void addScope(String scopeName) {
+        //Enters if the scope name has not already been used
+        if (lookupScope(scopeName) == null) {
             CStarScope scope = new CStarScope(scopeName);
-            scope.parent = currentScope;
+            scope.setParent(currentScope);
             currentScope.children.add(scope);
             scopeStack.push(currentScope);
             currentScope = scope;
         }
     }
 
-    public void leaveScope(){
+    public void leaveScope() {
         this.leaveScope(null);
     }
 
-    public void leaveScope(String hash){
-        if(currentScope.parent != null){
-            String currentScopeName = currentScope.scopeName;
-
-            if(hash != null){
-                currentScope.scopeName = hash;
-                currentScopeName = hash;
+    public void leaveScope(String scopeName) {
+        //Enters if non-global scope
+        if (currentScope.getParent() != null) {
+            if (scopeName != null) {
+                currentScope.setScopeName(scopeName);
             }
 
+            //Removes the scope from the stack and set current scope to the outer scope
             currentScope = scopeStack.empty() ? globalScope : scopeStack.pop();
         }
     }
-    
-    public CStarScope getCurrentScope(){
+
+    //TODO Ida og lena nåede hertil
+    public CStarScope getCurrentScope() {
         return currentScope;
     }
 
-    public CStarScope getParent(){
-        return currentScope.parent;
+    public CStarScope getParent() {
+        return currentScope.getParent();
     }
 
-    public Attributes lookup(String symbol){
+    public Attributes lookup(String symbol) {
         CStarScope scope = currentScope;
 
-        do{
-            if(!scope.params.isEmpty() && scope.params.containsKey(symbol)){
-                return scope.params.get(symbol);
+        do {
+            if (!scope.getParams().isEmpty() && scope.getParams().containsKey(symbol)) {
+                return scope.getParams().get(symbol);
             }
-            if(!scope.symbols.isEmpty() && scope.symbols.containsKey(symbol)){
-                return scope.symbols.get(symbol);
+            if (!scope.getSymbols().isEmpty() && scope.getSymbols().containsKey(symbol)) {
+                return scope.getSymbols().get(symbol);
             }
-        }while((scope = scope.parent) != null);
+        } while((scope = scope.getParent()) != null);
 
        return null;
     }
@@ -96,7 +93,7 @@ public class SymbolTable {
 
     private CStarScope findScope(String scopeName, CStarScope current_scope){
 
-        if(current_scope.scopeName.equals(scopeName)){
+        if(current_scope.getScopeName().equals(scopeName)){
             return current_scope;
         }
 
@@ -123,7 +120,7 @@ public class SymbolTable {
     }
 
     public boolean declaredInCurrentScope(String symbol){
-        return this.currentScope.symbols.containsKey(symbol);
+        return this.currentScope.getSymbols().containsKey(symbol);
     }
 
     public void insertSymbol(String symbol, Attributes attributes){
@@ -131,30 +128,30 @@ public class SymbolTable {
             pinList.put(symbol, (PinAttributes)attributes);
         }
 
-        currentScope.symbols.put(symbol, attributes);
+        currentScope.getSymbols().put(symbol, attributes);
     }
 
     public void insertParam(String id, Attributes attributes){
-        currentScope.params.put(id, attributes);
+        currentScope.getParams().put(id, attributes);
     }
 
     public void outputAvailableSymbols(){
         CStarScope scope = currentScope;
 
         do{
-            for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
+            for (Map.Entry<String, Attributes> entry : scope.getSymbols().entrySet()){
                 String key = entry.getKey();
                 Attributes value = entry.getValue();
 
                 //System.out.printf("Symbol: %10s:%s \n", key, value.variableType);
             }
-        } while((scope = scope.parent) != null);
+        } while((scope = scope.getParent()) != null);
     }
 
     public void outputSymbolTable(CStarScope scope){
         CStarScope oldScope = scope;
 
-        for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
+        for (Map.Entry<String, Attributes> entry : scope.getSymbols().entrySet()){
             String key = entry.getKey();
             Attributes value = entry.getValue();
 
