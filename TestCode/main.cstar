@@ -1,5 +1,8 @@
 void setup(){
-    int i
+    int i = 5.5;
+    hej();
+    hej1();
+
 }
 
 void loop(integer i){
