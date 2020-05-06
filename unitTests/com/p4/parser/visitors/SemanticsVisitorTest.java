@@ -438,7 +438,7 @@ class SemanticsVisitorTest {
     }
 
     @Test
-    void visitFuncDcl_ReceivesFuncDclWithABlkChildWithADifferentTypeThenFunctype_ErrorIsAdded(){
+    void visitFuncDcl_ReceivesFuncDclWithABlkChildWithADifferentTypeThenFuncType_ErrorIsAdded(){
         //Arrange
         var id = "idFunc";
         var funcDclId = new IdNode(id, false);
@@ -472,5 +472,123 @@ class SemanticsVisitorTest {
 
         //Assert
         assert(result);
+    }
+
+    @Test
+    void visitSelection_ReceivesSelectionNodeWithAcceptedCondition_NoErrorsAreAdded(){
+        //Arrange
+        var selection = new SelectionNode();
+        var condition = new CondNode();
+        var int1 = new NumberNode((long) 2, false);
+        var int2 = new NumberNode((long) 2, false);
+        condition.setOperator(CStarParser.IS);
+        condition.children.add(int1);
+        condition.children.add(int2);
+        selection.children.add(condition);
+
+        visitor.symbolTable.addScope(selection.getNodeHash());
+
+        //Act
+        visitor.visit(selection);
+        var result = visitor.errors.isEmpty();
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitSelection_ReceivesSelectionNodeWithUnacceptedCondition_TypeErrorAdded(){
+        //Arrange
+        var selection = new SelectionNode();
+        var condition = new CondNode();
+        var int1 = new CharNode('c', false);
+        var int2 = new NumberNode((long) 2, false);
+        condition.setOperator(CStarParser.IS);
+        condition.children.add(int1);
+        condition.children.add(int2);
+        selection.children.add(condition);
+
+        visitor.symbolTable.addScope(selection.getNodeHash());
+
+        //Act
+        visitor.visit(selection);
+        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitIterative_ReceivesSelectionNodeWithAcceptedCondition_NoErrorsAreAdded(){
+        //Arrange
+        var iterative = new IterativeNode();
+        var condition = new CondNode();
+        var int1 = new NumberNode((long) 2, false);
+        var int2 = new NumberNode((long) 2, false);
+        condition.setOperator(CStarParser.IS);
+        condition.children.add(int1);
+        condition.children.add(int2);
+        iterative.children.add(condition);
+
+        visitor.symbolTable.addScope(iterative.getNodeHash());
+
+        //Act
+        visitor.visit(iterative);
+        var result = visitor.errors.isEmpty();
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitIterative_ReceivesSelectionNodeWithUnacceptedCondition_TypeErrorAdded(){
+        //Arrange
+        var iterative = new IterativeNode();
+        var condition = new CondNode();
+        var int1 = new CharNode('c', false);
+        var int2 = new NumberNode((long) 2, false);
+        condition.setOperator(CStarParser.IS);
+        condition.children.add(int1);
+        condition.children.add(int2);
+        iterative.children.add(condition);
+
+        visitor.symbolTable.addScope(iterative.getNodeHash());
+
+        //Act
+        visitor.visit(iterative);
+        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitDiv_ReceivesDivNodeWithAcceptedIntegerOperands_NodeTypeSetToInteger(){
+        //Arrange
+
+        //Act
+
+        //Assert
+        assert(false);
+    }
+
+    @Test
+    void visitDiv_ReceivesDivNodeWithUncompinableOperands_TypeErrorAdded(){
+        //Arrange
+
+        //Act
+
+        //Assert
+        assert(false);
+    }
+
+    @Test
+    void visitDiv_ReceivesDivNodeTryingToDivideByZero_ZeroDivisionErrorAdded(){
+        //Arrange
+
+        //Act
+
+        //Assert
+        assert(false);
     }
 }
