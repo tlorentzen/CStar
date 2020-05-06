@@ -8,6 +8,8 @@ import java.net.URL;
 import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.ZipFile;
 
 public class CliExec {
 
@@ -258,8 +260,8 @@ public class CliExec {
                 if(answer.equals("Y")){
                     switch(SystemInfo.getOsString()){
                         case "win":
-                            downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_macOS_64bit.tar.gz";
-                            fileName = "arduino-cli_latest_macOS_64bit.tar.gz";
+                            downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Windows_64bit.zip";
+                            fileName = "arduino-cli_latest_Windows_64bit.zip";
                             break;
                         case "mac":
                             downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_macOS_64bit.tar.gz";
@@ -279,13 +281,18 @@ public class CliExec {
                         File downloadFile = new File(basePath + "/" + fileName);
                         try (BufferedInputStream in = new BufferedInputStream(new URL(downloadUrl).openStream());
                              FileOutputStream fileOutputStream = new FileOutputStream(downloadFile)) {
-                            byte dataBuffer[] = new byte[1024];
+                            byte[] dataBuffer = new byte[1024];
                             int bytesRead;
                             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
                                 fileOutputStream.write(dataBuffer, 0, bytesRead);
                             }
-                            unpackZip(downloadFile);
-                            downloadFile.delete();
+                            if(SystemInfo.getOsString().equals("win")){
+                                unpackZip(downloadFile);
+                            }else{
+                                unpackGZip(downloadFile);
+                            }
+
+                            downloadFile.deleteOnExit();
                         } catch (IOException e) {
                             // handle exception
                         }
@@ -298,7 +305,7 @@ public class CliExec {
 
         }
     }
-    private void unpackZip(File zipFile){
+    private void unpackGZip(File zipFile){
         byte[] buffer = new byte[1024];
 
         try {
@@ -321,6 +328,14 @@ public class CliExec {
 
         } catch (IOException ex) {
             ex.printStackTrace();
+        }
+    }
+    private void unpackZip(File file){
+        try {
+            ZipFile zipFile = new ZipFile(file);
+            zipFile.extractAll(basePath);
+        } catch (ZipException e) {
+            e.printStackTrace();
         }
     }
 }
