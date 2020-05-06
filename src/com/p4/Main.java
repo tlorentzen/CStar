@@ -90,8 +90,8 @@ public class Main {
 
                                 CliExec cli = new CliExec(errors, true);
                                 cli.checkCliInstallation();
-                                //cli.arduinoSelection();
-                                //cli.compileAndUpload();
+                                cli.arduinoSelection();
+                                cli.compileAndUpload();
 
                                 try {
                                     codeVisitor.print();

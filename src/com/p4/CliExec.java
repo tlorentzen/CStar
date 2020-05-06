@@ -2,6 +2,13 @@ package com.p4;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.jsoup.Connection;
+import org.jsoup.*;
+import org.jsoup.Jsoup;
+import org.jsoup.helper.HttpConnection;
 
 import java.io.*;
 import java.net.URL;
@@ -203,6 +210,11 @@ public class CliExec {
 
             while(p.isAlive()){}
 
+            String s;
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+
             return p.exitValue() == 0;
         }catch(Exception e){
             System.out.println(e);
@@ -273,22 +285,24 @@ public class CliExec {
                             downloadUrl = "";
                             fileName = "";
                     }
+
                     if(downloadUrl.equals("")){
                         //TODO error
                     } else{
-                        File downloadFile = new File(basePath + "/" + fileName);
-                        try (BufferedInputStream in = new BufferedInputStream(new URL(downloadUrl).openStream());
-                             FileOutputStream fileOutputStream = new FileOutputStream(downloadFile)) {
-                            byte dataBuffer[] = new byte[1024];
-                            int bytesRead;
-                            while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-                                fileOutputStream.write(dataBuffer, 0, bytesRead);
-                            }
-                            unpackZip(downloadFile);
-                            downloadFile.delete();
-                        } catch (IOException e) {
-                            // handle exception
+                        File output = new File(basePath+"/"+fileName);
+
+                        Connection.Response response= Jsoup.connect(downloadUrl)
+                                .ignoreContentType(true)
+                                .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
+                                .timeout(5000)
+                                .maxBodySize(0)
+                                .execute();
+
+                        try (FileOutputStream fos = new FileOutputStream(output)) {
+                            fos.write(response.bodyAsBytes());
                         }
+
+                        unpackZip(output);
                     }
                 }
 
@@ -298,29 +312,47 @@ public class CliExec {
 
         }
     }
+
     private void unpackZip(File zipFile){
-        byte[] buffer = new byte[1024];
 
-        try {
+        //https://stackoverflow.com/questions/7128171/how-to-compress-decompress-tar-gz-files-in-java
+        try{
+            InputStream fis = new FileInputStream(zipFile);
+            GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(fis);
+            try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn)) {
+                TarArchiveEntry entry;
 
-            FileInputStream fileIn = new FileInputStream(zipFile);
-            GZIPInputStream gZIPInputStream = new GZIPInputStream(fileIn);
-            File outputFile = new File(basePath + "/" + arduinoCliFilename);
-            FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-            int bytes_read;
+                while ((entry = (TarArchiveEntry) tarIn.getNextEntry()) != null) {
+                    /** If the entry is a directory, create the directory. **/
+                    if (entry.isDirectory()) {
+                        File f = new File(entry.getName());
+                        boolean created = f.mkdir();
+                        if (!created) {
+                            System.out.printf("Unable to create directory '%s', during extraction of archive contents.\n",
+                                    f.getAbsolutePath());
+                        }
+                    } else {
+                        int count;
+                        byte data[] = new byte[1024];
+                        FileOutputStream fos = new FileOutputStream(entry.getName(), false);
+                        try (BufferedOutputStream dest = new BufferedOutputStream(fos, 1024)) {
+                            while ((count = tarIn.read(data, 0, 1024)) != -1) {
+                                dest.write(data, 0, count);
+                            }
+                        }
+                    }
+                }
 
-            while ((bytes_read = gZIPInputStream.read(buffer)) > 0) {
-                fileOutputStream.write(buffer, 0, bytes_read);
+                File f = new File(basePath+"/"+arduinoCliFilename);
+
+                if(f.exists() && f.isFile()){
+                    f.setExecutable(true);
+                }
+
+                System.out.println("Untar completed successfully!");
             }
-
-            gZIPInputStream.close();
-            fileOutputStream.close();
-            //fileIn.close();
-
-            System.out.println("The file was decompressed successfully!");
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        }catch(Exception e){
+            System.out.println(e);
         }
     }
 }
