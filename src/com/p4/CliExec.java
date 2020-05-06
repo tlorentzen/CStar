@@ -275,6 +275,7 @@ public class CliExec {
                         }else{
                             unpackGZip(output);
                         }
+                        output.deleteOnExit();
                     }
                 }
 
@@ -320,8 +321,7 @@ public class CliExec {
                     f.setExecutable(true);
                 }
 
-                zipFile.delete();
-                System.out.println("Untar completed successfully!");
+                System.out.println("Installed successfully!");
             }
         }catch(Exception e){
             System.out.println(e);
@@ -331,6 +331,7 @@ public class CliExec {
         try {
             ZipFile zipFile = new ZipFile(file);
             zipFile.extractAll(basePath);
+            System.out.println("Installed successfully!");
         } catch (ZipException e) {
             e.printStackTrace();
         }
