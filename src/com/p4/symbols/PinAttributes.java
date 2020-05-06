@@ -4,6 +4,8 @@ public class PinAttributes extends Attributes {
     private boolean analog;
     private boolean isOutput = false;
 
+    public PinAttributes () {
+    }
     public PinAttributes (String kind, String variableType) {
         super(kind, variableType);
     }

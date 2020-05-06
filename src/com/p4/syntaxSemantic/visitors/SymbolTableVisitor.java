@@ -8,8 +8,8 @@ import com.p4.symbols.FunctionAttributes;
 import com.p4.symbols.PinAttributes;
 import com.p4.symbols.SymbolTable;
 
+//Visits and declares all variables and functions, as well as initializes scopes
 public class SymbolTableVisitor implements INodeVisitor {
-
     SymbolTable symbolTable;
     ErrorBag errors;
 
@@ -52,7 +52,12 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(PinDclNode node) {
-        declareNode(node, "pin");
+        if (!isDeclared(node)) {
+            //Creates and adds the node to the symbol table
+            PinAttributes attribute = new PinAttributes("dcl", "pin");
+            symbolTable.insertSymbol(node.getId(), attribute);
+            node.type = attribute.getVariableType();
+        }
     }
 
     @Override
@@ -60,11 +65,11 @@ public class SymbolTableVisitor implements INodeVisitor {
         declareNode(node, "boolean");
     }
 
-    private void declareNode(DclNode<?> node, String kind) {
+    private void declareNode(DclNode<?> node, String type) {
         //Enters if the node is not already in the symbol table
         if (!isDeclared(node)) {
             //Creates and adds the node to the symbol table
-            Attributes attribute = new Attributes(kind, "dcl");
+            Attributes attribute = new Attributes("dcl", type);
             symbolTable.insertSymbol(node.getId(), attribute);
             node.type = attribute.getVariableType();
         }
@@ -118,11 +123,11 @@ public class SymbolTableVisitor implements INodeVisitor {
         if (!isDeclared(node)) {
             //Enters if the array type is pin
             if (arrayNode.type.equals("pin")) {
-                PinAttributes attr = new PinAttributes(arrayNode.type, "dcl");
+                PinAttributes attr = new PinAttributes("dcl", arrayNode.type);
                 symbolTable.insertSymbol(node.getId(), attr);
             }
             else {
-                Attributes attr = new Attributes(arrayNode.type, "dcl");
+                Attributes attr = new Attributes("dcl", arrayNode.type);
                 symbolTable.insertSymbol(node.getId(), attr);
             }
             node.type = arrayNode.type;
@@ -168,7 +173,8 @@ public class SymbolTableVisitor implements INodeVisitor {
         //Adds each parameter of the function to the symbol table
         for (AstNode child : node.getChildren()) {
             IdNode param = (IdNode)child;
-            Attributes attributes = new Attributes(param.type, scopeName);
+            Attributes attributes = new Attributes("param", param.type);
+            attributes.setScope(scopeName);
 
             symbolTable.insertParam(param.getId(), attributes);
         }
@@ -182,13 +188,13 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         //Enters if the Arduino C functions "read" or "write" are used to avoid getting errors about undeclared functions
         if (funcIDSplit.length > 1 && (funcIDSplit[1].equals("read") || funcIDSplit[1].equals("write"))) {
-            Attributes attr = new Attributes("integer", "function");
+            Attributes attr = new Attributes("function", "integer");
             symbolTable.insertSymbol(functionId, attr);
             node.type = attr.getVariableType();
         }
         //Enters if the Arduino C function "sleep" is used to avoid getting errors about undeclared functions
         else if (functionId.equals("sleep")) {
-            Attributes attr = new Attributes("void", "function");
+            Attributes attr = new Attributes("function", "void");
             symbolTable.insertSymbol(functionId, attr);
             node.type = attr.getVariableType();
         }

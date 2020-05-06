@@ -4,14 +4,13 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.InputMismatchException;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.misc.IntervalSet;
-
 import java.util.*;
 
 public class CStarErrorStrategy extends DefaultErrorStrategy {
-
     private final HashMap<String, String> tokenTranslate = new HashMap<>();
 
-    public CStarErrorStrategy(){
+    //Adds tokens that need to be translated to the hashmap
+    public CStarErrorStrategy() {
         tokenTranslate.put("COMP_OP", "'='");
         tokenTranslate.put("INT_LITERAL", "'integer'");
         tokenTranslate.put("LONG_LITERAL", "'long integer'");
@@ -24,12 +23,11 @@ public class CStarErrorStrategy extends DefaultErrorStrategy {
 
     @Override
     protected void reportInputMismatch(Parser recognizer, InputMismatchException e) {
-
         IntervalSet set = e.getExpectedTokens();
         List<String> expTokens = new ArrayList<>();
 
-        for (Interval i : set.getIntervals()){
-            for(int a = i.a; a <= i.b; a++){
+        for (Interval i : set.getIntervals()) {
+            for (int a = i.a; a <= i.b; a++) {
                 String symName = recognizer.getVocabulary().getDisplayName(a);
                 expTokens.add(tokenTranslate.getOrDefault(symName, symName));
             }
@@ -62,7 +60,7 @@ public class CStarErrorStrategy extends DefaultErrorStrategy {
             List<String> expTokens = new ArrayList<>();
 
             for (Interval i : expecting.getIntervals()){
-                for(int a = i.a; a <= i.b; a++){
+                for (int a = i.a; a <= i.b; a++) {
                     String symName = recognizer.getVocabulary().getDisplayName(a);
                     expTokens.add(tokenTranslate.getOrDefault(symName, symName));
                 }

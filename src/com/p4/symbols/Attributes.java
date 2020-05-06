@@ -5,6 +5,9 @@ public class Attributes{
     private String variableType;
     private String scope;
 
+    public Attributes() {
+
+    }
     public Attributes(String kind, String variableType) {
         this.kind = kind;
         this.variableType = variableType;
