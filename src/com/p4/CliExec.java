@@ -52,6 +52,8 @@ public class CliExec {
             arduinoCli = new File(basePath+"/arduino-cli");
         }
 
+        checkCliInstallation();
+
         if(arduinoCli.exists() && arduinoCli.isFile()){
             arduinoCliPresent = true;
             /*
@@ -92,8 +94,6 @@ public class CliExec {
     }
 
     public void arduinoSelection(){
-        initializeCliSetup();
-
         if(!arduinoCliPresent)
             return;
         
@@ -102,6 +102,7 @@ public class CliExec {
 
         if(boards.size() > 0){
             if(boards.size() > 1){
+                initializeCliSetup();
                 System.out.println();
                 System.out.println("Select Arduino:");
                 for (Board b: boards) {
@@ -126,7 +127,7 @@ public class CliExec {
 
             installBoardCore(board.core);
         }else{
-            errors.addEntry(ErrorType.ARDUINO_NOT_FOUND, "No Arduino boards found");
+            errors.addEntry(ErrorType.ARDUINO_NOT_FOUND, "No Arduino boards found. The program has still been compiled and is located in the 'output' folder");
         }
     }
 
@@ -146,8 +147,8 @@ public class CliExec {
                     }
 
                     String[] items = s.split("\\s+");
-
-                    if(items[0].contains("Bluetooth")){
+                    //Does not add bluetooth option and unknown boards
+                    if(items[0].contains("Bluetooth") || items[3].contains("Unknown")){
                         continue;
                     }
 
@@ -257,7 +258,7 @@ public class CliExec {
             try{
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 String answer = reader.readLine();
-                if(answer.equals("Y")){
+                if(answer.equals("Y") || answer.equals("y")){
                     switch(SystemInfo.getOsString()){
                         case "win":
                             downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Windows_64bit.zip";
