@@ -1,5 +1,5 @@
 void setup(){
-    if(true){
+    if (true) {
     }
 
 }

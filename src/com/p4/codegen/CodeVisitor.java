@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Stack;
 
 public class CodeVisitor implements INodeVisitor{
 
@@ -518,7 +517,7 @@ public class CodeVisitor implements INodeVisitor{
     private void handlePinReadAndWrite(AstNode firstParam, String[] funcIDSplit) {
         if(funcIDSplit[1].equals("read")){
             //The call is assumed to be a pin read
-            if (((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).getAnalog()){
+            if (((PinAttributes)this.symbolTable.lookupSymbol(funcIDSplit[0])).getAnalog()){
                 //The pin is instantiated as an analog pin
                 stringBuilder.append("analogRead(");
             } else{

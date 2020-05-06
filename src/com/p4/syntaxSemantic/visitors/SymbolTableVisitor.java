@@ -76,9 +76,9 @@ public class SymbolTableVisitor implements INodeVisitor {
     }
 
     private boolean isDeclared(DclNode<?> node) {
-        if (symbolTable.lookup(node.getId()) != null){
+        if (symbolTable.lookupSymbol(node.getId()) != null){
             errors.addEntry(ErrorType.DUPLICATE_VARS, "Variable '" + node.getId() + "' already exists", node.lineNumber);
-            node.type = symbolTable.lookup(node.getId()).getVariableType();
+            node.type = symbolTable.lookupSymbol(node.getId()).getVariableType();
 
             return true;
         }
@@ -95,7 +95,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         //Checks if a pin is being assigned to
         if (firstChild instanceof PinDclNode) {
             String pinId = ((PinDclNode) firstChild).getId();
-            PinAttributes pin = (PinAttributes)symbolTable.lookup(pinId);
+            PinAttributes pin = (PinAttributes)symbolTable.lookupSymbol(pinId);
 
             //Checks if the right hand side of the assignment is a pin
             //If it is a pin then "pin.analog" is set to "true"
@@ -103,7 +103,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
         //Checks if a variable is being assigned to
         else if (firstChild instanceof IdNode) {
-            Attributes variable = symbolTable.lookup(((IdNode) firstChild).getId());
+            Attributes variable = symbolTable.lookupSymbol(((IdNode) firstChild).getId());
 
             //Enters if the variable is of type pin
             if (variable != null && variable.getVariableType().equals("pin")) {
@@ -151,7 +151,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(FuncDclNode node) {
         //Enters if the function already declared in the symbol table
-        if (symbolTable.lookup(node.getId()) != null) {
+        if (symbolTable.lookupSymbol(node.getId()) != null) {
             errors.addEntry(ErrorType.DUPLICATE_VARS, "Function '" + node.getId() + "' already exists", node.lineNumber);
         }
         else {

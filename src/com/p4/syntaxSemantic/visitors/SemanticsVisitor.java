@@ -453,7 +453,7 @@ public class SemanticsVisitor implements INodeVisitor {
         this.symbolTable.enterScope(node.getNodeHash());
         this.visitChildren(node);
 
-        String dclReturnType = symbolTable.lookup(node.getId()).getVariableType();
+        String dclReturnType = symbolTable.lookupSymbol(node.getId()).getVariableType();
 
         if (node.children.size() > 1) {
             //Checks if all children of the function's block are well typed
@@ -544,7 +544,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = "ArduinoC";
         }
         else {
-            Attributes attributes = symbolTable.lookup(node.getId());
+            Attributes attributes = symbolTable.lookupSymbol(node.getId());
 
             //Adds error if id was not found in an accessible scope
             if (attributes == null) {

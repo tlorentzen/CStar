@@ -31,7 +31,7 @@ public class SymbolTable {
     }
 
     public void leaveScope() {
-        this.leaveScope(null);
+        leaveScope(null);
     }
 
     public void leaveScope(String scopeName) {
@@ -46,7 +46,6 @@ public class SymbolTable {
         }
     }
 
-    //TODO Ida og lena nåede hertil
     public CStarScope getCurrentScope() {
         return currentScope;
     }
@@ -55,75 +54,65 @@ public class SymbolTable {
         return currentScope.getParent();
     }
 
-    public Attributes lookup(String symbol) {
-        CStarScope scope = currentScope;
+    //Enters a scope depending on the given scope name
+    public void enterScope(String scopeName) {
+        CStarScope scope = findScope(scopeName, globalScope);
 
-        do {
-            if (!scope.getParams().isEmpty() && scope.getParams().containsKey(symbol)) {
-                return scope.getParams().get(symbol);
-            }
-            if (!scope.getSymbols().isEmpty() && scope.getSymbols().containsKey(symbol)) {
-                return scope.getSymbols().get(symbol);
-            }
-        } while((scope = scope.getParent()) != null);
-
-       return null;
-    }
-
-    /**
-     *
-     * @param scopeName the name of the scope to find.
-     * @return the scope or null if not found.
-     */
-    public CStarScope lookupScope(String scopeName){
-        return this.findScope(scopeName, globalScope);
-    }
-
-    public boolean enterScope(String scopeName){
-        CStarScope scope = this.findScope(scopeName, globalScope);
-
-        if(scope != null){
+        if (scope != null) {
             scopeStack.push(currentScope);
             currentScope = scope;
-            return true;
         }
-
-        return false;
     }
 
-    private CStarScope findScope(String scopeName, CStarScope current_scope){
-
-        if(current_scope.getScopeName().equals(scopeName)){
+    //Finds a scope based on the name
+    private CStarScope findScope(String scopeName, CStarScope current_scope) {
+        //Checks if the desired scope is the current scope
+        if (current_scope.getScopeName().equals(scopeName)) {
             return current_scope;
         }
 
         CStarScope scope = null;
 
+        //Iterates through all nested scopes
         for (CStarScope childScope : current_scope.children) {
-            scope = this.findScope(scopeName, childScope);
+            scope = findScope(scopeName, childScope);
 
-            if(scope != null)
+            //Enters if the correct scope was found
+            if (scope != null)
                 break;
         }
 
+        //Returns null if scope was not found
         return scope;
     }
 
-    public Attributes lookupParam(String symbol){
+    //Returns the scope or null if the scope was not found
+    public CStarScope lookupScope(String scopeName){
+        return findScope(scopeName, globalScope);
+    }
+
+    //Returns the attributes for the symbol that is being looked up
+    public Attributes lookupSymbol(String symbol) {
         CStarScope scope = currentScope;
 
-        if (scope == null){
-            return null;
-        }
+        do {
+            //Enters if the symbol is a parameter
+            if (!scope.getParams().isEmpty() && scope.getParams().containsKey(symbol)) {
+                return scope.getParams().get(symbol);
+            }
+            //Enters if the symbol is a regular symbol and it is found in the scope being searched through
+            if (!scope.getSymbols().isEmpty() && scope.getSymbols().containsKey(symbol)) {
+                return scope.getSymbols().get(symbol);
+            }
+            //Goes to the outer scope
+        } while((scope = scope.getParent()) != null);
 
-        return lookup(symbol);
+        //Returns null if the symbol was not found in an accessible scope
+        return null;
     }
 
-    public boolean declaredInCurrentScope(String symbol){
-        return this.currentScope.getSymbols().containsKey(symbol);
-    }
-
-    public void insertSymbol(String symbol, Attributes attributes){
+    public void insertSymbol(String symbol, Attributes attributes) {
+        //Enters if the symbol is a pin
         if (attributes.getVariableType().equals("pin")) {
             pinList.put(symbol, (PinAttributes)attributes);
         }
@@ -135,6 +124,16 @@ public class SymbolTable {
         currentScope.getParams().put(id, attributes);
     }
 
+    //Checks if the Arduino functions are declared
+    public boolean isSetupAndLoopDefined() {
+        return (declaredFunctions.contains("setup") && declaredFunctions.contains("loop"));
+    }
+
+    //todo slet? (bliver ikke brugt)
+    public PinAttributes getPin(String symbol) {
+        return pinList.getOrDefault(symbol, null);
+    }
+    //todo slet
     public void outputAvailableSymbols(){
         CStarScope scope = currentScope;
 
@@ -148,6 +147,7 @@ public class SymbolTable {
         } while((scope = scope.getParent()) != null);
     }
 
+    //todo slet
     public void outputSymbolTable(CStarScope scope){
         CStarScope oldScope = scope;
 
@@ -163,15 +163,5 @@ public class SymbolTable {
             outputSymbolTable(child);
         }
     }
-
-    public boolean isSetupAndLoopDefined(){
-        return (this.declaredFunctions.contains("setup")
-                && this.declaredFunctions.contains("loop"));
-    }
-
-    public PinAttributes getPin(String symbol){
-        return this.pinList.getOrDefault(symbol, null);
-    }
-
 }
 
