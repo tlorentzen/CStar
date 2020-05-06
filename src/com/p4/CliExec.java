@@ -3,12 +3,11 @@ package com.p4;
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URL;
 import java.security.spec.ECField;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
 
 public class CliExec {
 
@@ -34,11 +33,11 @@ public class CliExec {
     boolean outputInfo = false;
     ErrorBag errors;
     Board board;
+    File arduinoCli;
 
     public CliExec(ErrorBag errors, boolean outputInfo){
         this.errors = errors;
         this.outputInfo = outputInfo;
-        File arduinoCli;
         acli = new File(basePath);
 
         if(SystemInfo.isWindows()){
@@ -243,6 +242,85 @@ public class CliExec {
             }else{
                 System.out.println(text);
             }
+        }
+    }
+
+    public void checkCliInstallation() {
+        String downloadUrl = "";
+        String fileName = "";
+        if(!arduinoCli.exists() || !arduinoCli.isFile()){
+            System.out.println("The Arduino CLI does not exist on your system");
+            System.out.println("Would you like to have it downloaded?");
+            System.out.println("Y/N");
+            try{
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                String answer = reader.readLine();
+                if(answer.equals("Y")){
+                    switch(SystemInfo.getOsString()){
+                        case "win":
+                            downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_macOS_64bit.tar.gz";
+                            fileName = "arduino-cli_latest_macOS_64bit.tar.gz";
+                            break;
+                        case "mac":
+                            downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_macOS_64bit.tar.gz";
+                            fileName = "arduino-cli_latest_macOS_64bit.tar.gz";
+                            break;
+                        case "unix":
+                            downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz";
+                            fileName = "arduino-cli_latest_Linux_64bit.tar.gz";
+                            break;
+                        default:
+                            downloadUrl = "";
+                            fileName = "";
+                    }
+                    if(downloadUrl.equals("")){
+                        //TODO error
+                    } else{
+                        File downloadFile = new File(basePath + "/" + fileName);
+                        try (BufferedInputStream in = new BufferedInputStream(new URL(downloadUrl).openStream());
+                             FileOutputStream fileOutputStream = new FileOutputStream(downloadFile)) {
+                            byte dataBuffer[] = new byte[1024];
+                            int bytesRead;
+                            while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+                                fileOutputStream.write(dataBuffer, 0, bytesRead);
+                            }
+                            unpackZip(downloadFile);
+                            downloadFile.delete();
+                        } catch (IOException e) {
+                            // handle exception
+                        }
+                    }
+                }
+
+            }catch(Exception e){
+                System.out.println();
+            }
+
+        }
+    }
+    private void unpackZip(File zipFile){
+        byte[] buffer = new byte[1024];
+
+        try {
+
+            FileInputStream fileIn = new FileInputStream(zipFile);
+            GZIPInputStream gZIPInputStream = new GZIPInputStream(fileIn);
+            File outputFile = new File(basePath + "/" + arduinoCliFilename);
+            FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+            int bytes_read;
+
+            while ((bytes_read = gZIPInputStream.read(buffer)) > 0) {
+                fileOutputStream.write(buffer, 0, bytes_read);
+            }
+
+            gZIPInputStream.close();
+            fileOutputStream.close();
+            //fileIn.close();
+
+            System.out.println("The file was decompressed successfully!");
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 }

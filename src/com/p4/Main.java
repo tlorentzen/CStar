@@ -89,8 +89,9 @@ public class Main {
                                 codeVisitor.visit(ast);
 
                                 CliExec cli = new CliExec(errors, true);
-                                cli.arduinoSelection();
-                                cli.compileAndUpload();
+                                cli.checkCliInstallation();
+                                //cli.arduinoSelection();
+                                //cli.compileAndUpload();
 
                                 try {
                                     codeVisitor.print();
@@ -112,6 +113,8 @@ public class Main {
             errors.display();
         }
     }
+
+
 
     private static String getFileExtension(File file) {
         String fileName = file.getName();
