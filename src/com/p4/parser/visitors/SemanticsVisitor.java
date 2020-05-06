@@ -448,27 +448,27 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visit(FuncDclNode node) {
-        this.symbolTable.enterScope(node.getNodeHash());
-        this.visitChildren(node);
+        if(this.symbolTable.enterScope(node.getNodeHash())){
+            this.visitChildren(node);
 
-        String dclReturnType = symbolTable.lookup(node.id).variableType;
+            String dclReturnType = symbolTable.lookup(node.id).variableType;
 
-        //Checks all children of the function's block
-        if(node.children.size() > 1){
-            for(AstNode blockChild : node.children.get(1).children){
-                String blockClass = blockChild.getClass().toString();
+            //Checks all children of the function's block
+            if(node.children.size() > 1){
+                for(AstNode blockChild : node.children.get(1).children){
 
-                //Enters if a return expression is found
-                if(blockClass.equals("com.p4.parser.nodes.ReturnExpNode")){
-                    //Enters if return type is different and widening cannot be performed
-                    if (!isLegalType(dclReturnType, blockChild.type)) {
-                        errors.addEntry(ErrorType.TYPE_ERROR, "Illegal return type: cannot return " + blockChild.type +
-                                " since the function is " + dclReturnType, node.lineNumber);
+                    //Enters if a return expression is found
+                    if(blockChild instanceof ReturnExpNode){
+                        //Enters if return type is different and widening cannot be performed
+                        if (!isLegalType(dclReturnType, blockChild.type)) {
+                            errors.addEntry(ErrorType.TYPE_ERROR, "Illegal return type: cannot return " + blockChild.type +
+                                    " since the function is " + dclReturnType, node.lineNumber);
+                        }
                     }
                 }
             }
+            this.symbolTable.leaveScope();
         }
-        this.symbolTable.leaveScope();
     }
 
     public void visit(SelectionNode node) {

@@ -96,7 +96,11 @@ public class ErrorBag {
     }
 
     public ErrorType getErrorType(int index){
-        return errors.get(index).type;
+        if(index < errors.size()){
+            return errors.get(index).type;
+        } else{
+            return null;
+        }
     }
 }
 
