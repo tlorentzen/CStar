@@ -415,18 +415,60 @@ class SemanticsVisitorTest {
     }
 
     @Test
-    void visitFuncDcl_ReceivesFuncScope_FuncScopeIsAdded(){
+    void visitFuncDcl_ReceivesFuncDclWithDefinedScope_MethodThrowsNoErrors(){
         //Arrange
         var id = "idFunc";
-        var funcDclId = new IdNode(id, false);
-        var funcDcl = new FuncCallNode(false);
-        funcDcl.children.add(funcDclId);
+        var funcDcl = new FuncDclNode();
+        funcDcl.id = id;
+
+        Attributes attr = new Attributes();
+        attr.variableType = "integer";
+
+        visitor.symbolTable.addScope("FuncNode-" + id);
+        visitor.symbolTable.insertSymbol(id, attr);
         visitor.symbolTable.declaredFunctions.add(id);
         visitor.symbolTable.calledFunctions.add(id);
 
         //Act
         visitor.visit(funcDcl);
-        var result = visitor.symbolTable.lookupScope(funcDcl.getNodeHash()) != null;
+        var result = visitor.errors.isEmpty();
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitFuncDcl_ReceivesFuncDclWithABlkChildWithADifferentTypeThenFunctype_ErrorIsAdded(){
+        //Arrange
+        var id = "idFunc";
+        var funcDclId = new IdNode(id, false);
+        var funcDcl = new FuncDclNode();
+        funcDcl.id = id;
+        funcDcl.children.add(funcDclId);
+
+        var blkNode = new BlkNode();
+        var returnExpNode = new ReturnExpNode();
+        returnExpNode.type = "character";
+
+        var intNode = new CharNode('c', false);
+        returnExpNode.type = "character";
+        returnExpNode.children.add(intNode);
+
+        blkNode.children.add(returnExpNode);
+        funcDcl.children.add(blkNode);
+        Attributes attr = new Attributes();
+        attr.variableType = "integer";
+        attr.kind = "function";
+
+        visitor.symbolTable.insertSymbol(id, attr);
+        visitor.symbolTable.declaredFunctions.add(id);
+        visitor.symbolTable.calledFunctions.add(id);
+        visitor.symbolTable.addScope("FuncNode-" + id);
+        visitor.symbolTable.leaveScope();
+
+        //Act
+        visitor.visit(funcDcl);
+        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
