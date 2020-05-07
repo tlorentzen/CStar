@@ -2,10 +2,11 @@ package com.p4.parser.visitors;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
-import com.p4.parser.CStarParser;
-import com.p4.parser.nodes.*;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.SymbolTable;
+import com.p4.syntaxSemantic.CStarParser;
+import com.p4.syntaxSemantic.nodes.*;
+import com.p4.syntaxSemantic.visitors.SemanticsVisitor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,13 +23,14 @@ class SemanticsVisitorTest {
         //Arrange
         var id = "id";
         var idNode = new IdNode(id, false);
-        var attr = new Attributes();
-        attr.variableType = "type";
-        visitor.symbolTable.insertSymbol(id, attr);
+        var attr = new Attributes("dcl", "type");
+        var symbolTable = new SymbolTable();
+        symbolTable.insertSymbol(id, attr);
+        visitor = new SemanticsVisitor(symbolTable, new ErrorBag());
 
         //Act
         visitor.visit(idNode);
-        var result = idNode.type.equals(attr.variableType);
+        var result = idNode.type.equals(attr.getVariableType());
 
         //Assert
         assert(result);
@@ -39,7 +41,9 @@ class SemanticsVisitorTest {
         //Arrange
         var id = "id";
         var idNode = new IdNode(id, false);
-        visitor.symbolTable.calledFunctions.add(id);
+        var symbolTable = new SymbolTable();
+        symbolTable.calledFunctions.add(id);
+        visitor = new SemanticsVisitor(symbolTable, new ErrorBag());
 
         //Act
         visitor.visit(idNode);
@@ -67,10 +71,12 @@ class SemanticsVisitorTest {
     void visitNumber_ReceivesNumberOfSizeBiggerThanLong_AddsTypeErrorToErrors(){
         //Arrange
         var number = new NumberNode(Long.MAX_VALUE + 1, false);
+        var error = new ErrorBag();
+        visitor = new SemanticsVisitor(new SymbolTable(), error);
 
         //Act
         visitor.visit(number);
-        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+        var result = error.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -124,13 +130,13 @@ class SemanticsVisitorTest {
         var funcCallId = new IdNode("func" + id, false);
         var rightChild = new FuncCallNode(false);
         rightChild.children.add(funcCallId);
-        visitor.symbolTable.calledFunctions.add("func" + id);
+        var symbolTable = new SymbolTable();
+        symbolTable.calledFunctions.add("func" + id);
+        visitor = new SemanticsVisitor(symbolTable, new ErrorBag());
 
         var leftChild = new IdNode(id, false);
-        var attr = new Attributes();
-        attr.variableType = "integer";
-        attr.kind = "dcl";
-        visitor.symbolTable.insertSymbol(id, attr);
+        var attr = new Attributes("dcl", "integer");
+        symbolTable.insertSymbol(id, attr);
 
         assign.children.add(leftChild);
         assign.children.add(rightChild);
@@ -151,10 +157,12 @@ class SemanticsVisitorTest {
         var id = "id";
         var leftChild = new IdNode(id, false);
         leftChild.type = "decimal";
-        var attr = new Attributes();
-        attr.kind = "dcl";
-        attr.variableType = "decimal";
-        visitor.symbolTable.insertSymbol(id, attr);
+
+        var symbolTable = new SymbolTable();
+        var attr = new Attributes("dcl", "decimal");
+
+        symbolTable.insertSymbol(id, attr);
+        visitor = new SemanticsVisitor(symbolTable, new ErrorBag());
 
         var rightChild = new NumberNode((long)1, false);
         rightChild.type = "integer";
@@ -195,10 +203,12 @@ class SemanticsVisitorTest {
         var child2 = new NumberNode((long) 2, false);
         logical.children.add(child1);
         logical.children.add(child2);
+        var error = new ErrorBag();
+        visitor = new SemanticsVisitor(new SymbolTable(), error);
 
         //Act
         visitor.visit(logical);
-        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+        var result = error.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -210,7 +220,7 @@ class SemanticsVisitorTest {
         var cond = new CondNode();
         var child1 = new BooleanNode(true, false);
         var child2 = new BooleanNode(false, false);
-        cond.setOperator(CStarParser.IS);
+        cond.setToken(CStarParser.IS);
         cond.children.add(child1);
         cond.children.add(child2);
 
@@ -228,7 +238,7 @@ class SemanticsVisitorTest {
         var cond = new CondNode();
         var child1 = new NumberNode((long)1, false);
         var child2 = new NumberNode((long)2, false);
-        cond.setOperator(CStarParser.LESS_THAN);
+        cond.setToken(CStarParser.LESS_THAN);
         cond.children.add(child1);
         cond.children.add(child2);
 
@@ -246,13 +256,15 @@ class SemanticsVisitorTest {
         var cond = new CondNode();
         var child1 = new NumberNode((long)1, false);
         var child2 = new BooleanNode(false, false);
-        cond.setOperator(CStarParser.LESS_THAN);
+        cond.setToken(CStarParser.LESS_THAN);
         cond.children.add(child1);
         cond.children.add(child2);
+        var error = new ErrorBag();
+        visitor = new SemanticsVisitor(new SymbolTable(), error);
 
         //Act
         visitor.visit(cond);
-        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+        var result = error.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -264,9 +276,11 @@ class SemanticsVisitorTest {
         var access = new ArrayAccessNode(false);
         String id = "id";
         var idNode = new IdNode(id, false);
-        var attr = new Attributes();
-        attr.variableType = "integer";
-        visitor.symbolTable.insertSymbol(id, attr);
+
+        var attr = new Attributes("dcl", "integer");
+        var symbolTable = new SymbolTable();
+        visitor = new SemanticsVisitor(symbolTable, new ErrorBag());
+        symbolTable.insertSymbol(id, attr);
         var indexNode = new NumberNode((long) 1, false);
 
         access.children.add(idNode);
@@ -286,9 +300,13 @@ class SemanticsVisitorTest {
         var access = new ArrayAccessNode(false);
         String id = "id";
         var idNode = new IdNode(id, false);
-        var attr = new Attributes();
-        attr.variableType = "integer";
-        visitor.symbolTable.insertSymbol(id, attr);
+
+        var attr = new Attributes("dcl", "integer");
+        var symbolTable = new SymbolTable();
+        symbolTable.insertSymbol(id, attr);
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
         var indexNode = new FloatNode(1, false);
 
         access.children.add(idNode);
@@ -296,7 +314,7 @@ class SemanticsVisitorTest {
 
         //Act
         visitor.visit(access);
-        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+        var result = errorBag.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -308,9 +326,12 @@ class SemanticsVisitorTest {
         var access = new ArrayAccessNode(false);
         String id = "id";
         var idNode = new IdNode(id, false);
-        var attr = new Attributes();
-        attr.variableType = "integer";
-        visitor.symbolTable.insertSymbol(id, attr);
+
+        var attr = new Attributes("dcl", "integer");
+        var symbolTable = new SymbolTable();
+        symbolTable.insertSymbol(id, attr);
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
         var indexNode = new BooleanNode(false, false);
 
         access.children.add(idNode);
@@ -318,7 +339,7 @@ class SemanticsVisitorTest {
 
         //Act
         visitor.visit(access);
-        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+        var result = errorBag.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -334,16 +355,18 @@ class SemanticsVisitorTest {
     void visitFuncCall_ReceivesDeclaredKnownAndCalledFunction_SetsTheFunctionTypeToTheTypeOfTheRelatedAttribute(){
         //Arrange
         var id = "idFunc";
-        Attributes attr = new Attributes();
-        attr.variableType = "integer";
-        attr.kind = "function";
-        attr.scope = visitor.symbolTable.getCurrentScope().getScopeName();
-        visitor.symbolTable.insertSymbol(id, attr);
+        Attributes attr = new Attributes("function", "integer");
+
+        var symbolTable = new SymbolTable();
+        symbolTable.insertSymbol(id, attr);
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
         var funcCallId = new IdNode(id, false);
         var funcCall = new FuncCallNode(false);
         funcCall.children.add(funcCallId);
-        visitor.symbolTable.declaredFunctions.add("func" + id);
-        visitor.symbolTable.calledFunctions.add("func" + id);
+        symbolTable.declaredFunctions.add("func" + id);
+        symbolTable.calledFunctions.add("func" + id);
 
         //Act
         visitor.visit(funcCall);
@@ -357,58 +380,59 @@ class SemanticsVisitorTest {
     void visitFuncCall_ReceivesKnownAndCalledButNotDeclaredFunction_AddsUndeclaredFunctionWarning(){
         //Arrange
         var id = "idFunc";
-        Attributes attr = new Attributes();
-        attr.variableType = "integer";
-        attr.kind = "function";
-        attr.scope = visitor.symbolTable.getCurrentScope().getScopeName();
-        visitor.symbolTable.insertSymbol(id, attr);
+        Attributes attr = new Attributes("function", "integer");
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        symbolTable.insertSymbol(id, attr);
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
         var funcCallId = new IdNode(id, false);
         var funcCall = new FuncCallNode(false);
         funcCall.children.add(funcCallId);
-        visitor.symbolTable.calledFunctions.add("func" + id);
+        symbolTable.calledFunctions.add("func" + id);
 
         //Act
         visitor.visit(funcCall);
-        var result = visitor.errors.getErrorType(0) == ErrorType.UNDECLARED_FUNCTION_WARNING;
+        var result = errorBag.getErrorType(0) == ErrorType.UNDECLARED_FUNCTION_WARNING;
 
         //Assert
         assert(result);
     }
 
     @Test
-    void visitFuncCall_ReceivesFunctionWithTheWorngNumberOfParams_AddsParameterError(){
+    void visitFuncCall_ReceivesFunctionWithTheWrongNumberOfParams_AddsParameterError(){
         //Arrange
         var id = "idFunc";
-        Attributes attr = new Attributes();
-        attr.variableType = "integer";
-        attr.kind = "function";
-        attr.scope = visitor.symbolTable.getCurrentScope().getScopeName();
-        visitor.symbolTable.insertSymbol(id, attr);
+        Attributes attr = new Attributes("function", "integer");
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
         var funcCallId = new IdNode(id, false);
         var funcCall = new FuncCallNode(false);
         funcCall.children.add(funcCallId);
-        visitor.symbolTable.calledFunctions.add("func" + id);
-        visitor.symbolTable.addScope("FuncNode-" + id);
-        Attributes param1 = new Attributes();
-        param1.variableType = "integer";
-        param1.kind = "param";
-        param1.scope = visitor.symbolTable.getCurrentScope().getScopeName();
-        visitor.symbolTable.insertParam("param1", param1);
-        param1.variableType = "integer";
-        param1.kind = "param";
-        param1.scope = visitor.symbolTable.getCurrentScope().getScopeName();
-        visitor.symbolTable.insertParam("param2", param1);
-        param1.variableType = "integer";
-        param1.kind = "param";
-        param1.scope = visitor.symbolTable.getCurrentScope().getScopeName();
-        visitor.symbolTable.insertParam("param3", param1);
-        visitor.symbolTable.leaveScope();
-        visitor.symbolTable.declaredFunctions.add(id);
-        visitor.symbolTable.calledFunctions.add(id);
+        symbolTable.insertSymbol(id, attr);
+        symbolTable.declaredFunctions.add(id);
+        symbolTable.calledFunctions.add(id);
+        symbolTable.addScope("FuncNode-" + id);
+
+        Attributes param1 = new Attributes("param", "integer");
+        param1.setScope(symbolTable.getCurrentScope().getScopeName());
+        symbolTable.insertParam("param1", param1);
+
+        param1 = new Attributes("param", "integer");
+        param1.setScope(symbolTable.getCurrentScope().getScopeName());
+        symbolTable.insertParam("param2", param1);
+
+        param1 = new Attributes("param", "integer");
+        param1.setScope(symbolTable.getCurrentScope().getScopeName());
+        symbolTable.insertParam("param3", param1);
 
         //Act
         visitor.visit(funcCall);
-        var result = visitor.errors.getErrorType(0) == ErrorType.PARAMETER_ERROR;
+        var result = errorBag.getErrorType(0) == ErrorType.PARAMETER_ERROR;
 
         //Assert
         assert(result);
@@ -419,19 +443,22 @@ class SemanticsVisitorTest {
         //Arrange
         var id = "idFunc";
         var funcDcl = new FuncDclNode();
-        funcDcl.id = id;
+        funcDcl.setId(id);
 
-        Attributes attr = new Attributes();
-        attr.variableType = "integer";
+        Attributes attr = new Attributes("function", "integer");
 
-        visitor.symbolTable.addScope("FuncNode-" + id);
-        visitor.symbolTable.insertSymbol(id, attr);
-        visitor.symbolTable.declaredFunctions.add(id);
-        visitor.symbolTable.calledFunctions.add(id);
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
+        symbolTable.addScope("FuncNode-" + id);
+        symbolTable.insertSymbol(id, attr);
+        symbolTable.declaredFunctions.add(id);
+        symbolTable.calledFunctions.add(id);
 
         //Act
         visitor.visit(funcDcl);
-        var result = visitor.errors.isEmpty();
+        var result = errorBag.isEmpty();
 
         //Assert
         assert(result);
@@ -443,7 +470,7 @@ class SemanticsVisitorTest {
         var id = "idFunc";
         var funcDclId = new IdNode(id, false);
         var funcDcl = new FuncDclNode();
-        funcDcl.id = id;
+        funcDcl.setId(id);
         funcDcl.children.add(funcDclId);
 
         var blkNode = new BlkNode();
@@ -456,19 +483,21 @@ class SemanticsVisitorTest {
 
         blkNode.children.add(returnExpNode);
         funcDcl.children.add(blkNode);
-        Attributes attr = new Attributes();
-        attr.variableType = "integer";
-        attr.kind = "function";
+        Attributes attr = new Attributes("function", "integer");
 
-        visitor.symbolTable.insertSymbol(id, attr);
-        visitor.symbolTable.declaredFunctions.add(id);
-        visitor.symbolTable.calledFunctions.add(id);
-        visitor.symbolTable.addScope("FuncNode-" + id);
-        visitor.symbolTable.leaveScope();
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
+        symbolTable.insertSymbol(id, attr);
+        symbolTable.declaredFunctions.add(id);
+        symbolTable.calledFunctions.add(id);
+        symbolTable.addScope("FuncNode-" + id);
+        symbolTable.leaveScope();
 
         //Act
         visitor.visit(funcDcl);
-        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+        var result = errorBag.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -481,16 +510,20 @@ class SemanticsVisitorTest {
         var condition = new CondNode();
         var int1 = new NumberNode((long) 2, false);
         var int2 = new NumberNode((long) 2, false);
-        condition.setOperator(CStarParser.IS);
+        condition.setToken(CStarParser.IS);
         condition.children.add(int1);
         condition.children.add(int2);
         selection.children.add(condition);
 
-        visitor.symbolTable.addScope(selection.getNodeHash());
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
+        symbolTable.addScope(selection.getNodeHash());
 
         //Act
         visitor.visit(selection);
-        var result = visitor.errors.isEmpty();
+        var result = errorBag.isEmpty();
 
         //Assert
         assert(result);
@@ -503,16 +536,20 @@ class SemanticsVisitorTest {
         var condition = new CondNode();
         var int1 = new CharNode('c', false);
         var int2 = new NumberNode((long) 2, false);
-        condition.setOperator(CStarParser.IS);
+        condition.setToken(CStarParser.IS);
         condition.children.add(int1);
         condition.children.add(int2);
         selection.children.add(condition);
 
-        visitor.symbolTable.addScope(selection.getNodeHash());
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
+        symbolTable.addScope(selection.getNodeHash());
 
         //Act
         visitor.visit(selection);
-        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+        var result = errorBag.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -525,16 +562,20 @@ class SemanticsVisitorTest {
         var condition = new CondNode();
         var int1 = new NumberNode((long) 2, false);
         var int2 = new NumberNode((long) 2, false);
-        condition.setOperator(CStarParser.IS);
+        condition.setToken(CStarParser.IS);
         condition.children.add(int1);
         condition.children.add(int2);
         iterative.children.add(condition);
 
-        visitor.symbolTable.addScope(iterative.getNodeHash());
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
+        symbolTable.addScope(iterative.getNodeHash());
 
         //Act
         visitor.visit(iterative);
-        var result = visitor.errors.isEmpty();
+        var result = errorBag.isEmpty();
 
         //Assert
         assert(result);
@@ -547,16 +588,20 @@ class SemanticsVisitorTest {
         var condition = new CondNode();
         var int1 = new CharNode('c', false);
         var int2 = new NumberNode((long) 2, false);
-        condition.setOperator(CStarParser.IS);
+        condition.setToken(CStarParser.IS);
         condition.children.add(int1);
         condition.children.add(int2);
         iterative.children.add(condition);
 
-        visitor.symbolTable.addScope(iterative.getNodeHash());
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
+        symbolTable.addScope(iterative.getNodeHash());
 
         //Act
         visitor.visit(iterative);
-        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+        var result = errorBag.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -588,9 +633,13 @@ class SemanticsVisitorTest {
         div.children.add(int1);
         div.children.add(int2);
 
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
         //Act
         visitor.visit(div);
-        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+        var result = errorBag.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -605,9 +654,13 @@ class SemanticsVisitorTest {
         div.children.add(int1);
         div.children.add(int2);
 
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
         //Act
         visitor.visit(div);
-        var result = visitor.errors.getErrorType(0) == ErrorType.ZERO_DIVISION;
+        var result = errorBag.getErrorType(0) == ErrorType.ZERO_DIVISION;
 
         //Assert
         assert(result);
@@ -639,9 +692,13 @@ class SemanticsVisitorTest {
         div.children.add(int1);
         div.children.add(int2);
 
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
         //Act
         visitor.visit(div);
-        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+        var result = errorBag.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
@@ -673,9 +730,13 @@ class SemanticsVisitorTest {
         div.children.add(int1);
         div.children.add(int2);
 
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
         //Act
         visitor.visit(div);
-        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+        var result = errorBag.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
         assert(result);
