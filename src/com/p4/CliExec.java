@@ -202,7 +202,7 @@ public class CliExec {
             if(execute("core update-index", acli)){
                 printOk();
             }else{
-                printFailed();;
+                printFailed();
             }
         }
     }
