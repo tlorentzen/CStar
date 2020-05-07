@@ -43,7 +43,7 @@ public class CStarScope {
     public Map<String, Attributes> getParams() {
         return params;
     }
-    
+
     public void addParams(String id, Attributes attribute) {
         params.put(id, attribute);
     }

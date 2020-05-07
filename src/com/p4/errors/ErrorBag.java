@@ -22,7 +22,7 @@ public class ErrorBag {
     public void addEntry(ErrorType type, String message, int lineNumber, int column) {
         List<String> lines = new ArrayList<>();
         this.addEntry(type, message, lineNumber, column, lines);
-        
+
         setHasErrors(type);
     }
 
@@ -35,14 +35,14 @@ public class ErrorBag {
             setHasErrors(type);
         }
     }
-    
+
     private void setHasErrors(ErrorType type) {
         //Enters if an error was reported
         if (type.toString().startsWith("E")) {
             hasErrors = true;
         }
     }
-    
+
     private boolean shouldBeAdded(ErrorType type, String message) {
         //Enters if the error is of an undeclared function
         if (type == ErrorType.UNDECLARED_FUNCTION_WARNING) {
@@ -60,12 +60,12 @@ public class ErrorBag {
         }
         return true;
     }
-    
+
 
     public void display() {
         boolean isEmpty = this.errors.isEmpty();
-        
-        //Enters if errors have occurred 
+
+        //Enters if errors have occurred
         if(!isEmpty){
 
             System.out.println("Something went wrong... Found " + errorGrammar());
@@ -81,7 +81,7 @@ public class ErrorBag {
         int numberOfErrors;
         String errorGrammar;
         String warningGrammar;
-        
+
         //Finds the number of warnings in the error list
         for (Item error : errors) {
             if (error.type.toString().startsWith("W")) {

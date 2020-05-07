@@ -49,10 +49,10 @@ public class CodeVisitor implements INodeVisitor {
     public void visitChild(AstNode node) {
         node.accept(this);
     }
-    
+
     @Override
     public void visit(PrintNode node) {
-        //Enters if there is more than one element in the format string 
+        //Enters if there is more than one element in the format string
         if (node.getFormatString().size() > 1) {
             //Creates a print function for each element in the format string
             for (AstNode element : node.getFormatString()) {
@@ -61,7 +61,7 @@ public class CodeVisitor implements INodeVisitor {
                 stringBuilder.append(");\n");
             }
             stringBuilder.append("Serial.println()");
-        } 
+        }
         else {
             stringBuilder.append("Serial.println(");
             this.visitChild(node.getFormatString().get(0));
@@ -72,7 +72,7 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(FloatNode node) {
-        //Checks if the node is negative 
+        //Checks if the node is negative
         stringBuilder.append(node.getIsNegative() ? "-" : "");
         stringBuilder.append(node.getValue());
     }
@@ -95,7 +95,7 @@ public class CodeVisitor implements INodeVisitor {
 
         //Enters if there are parentheses present before the expression
         checkParentheses(node, true);
-        
+
         //Adds the expression to the string builder
         this.visitChild(leftChild);
         stringBuilder.append(" % ");
@@ -110,15 +110,15 @@ public class CodeVisitor implements INodeVisitor {
         if (node.getParentheses()) {
             stringBuilder.append("(");
         }
-        
+
         stringBuilder.append(node.getIsNegative() ? "-" : "");
         stringBuilder.append(node.getValue());
-        
+
         if (node.getParentheses()) {
             stringBuilder.append(")");
         }
     }
-    
+
     private void checkParentheses(ExpressionNode node, boolean isStart) {
         if (node.getParentheses() && isStart) {
             stringBuilder.append("(");
