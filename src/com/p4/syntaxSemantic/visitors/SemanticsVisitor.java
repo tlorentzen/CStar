@@ -477,7 +477,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //If no errors occur, then the function call will be seen as well typed
     public void visit(FuncCallNode node) {
-        this.visitChildren(node);
+         this.visitChildren(node);
 
         String functionName = ((IdNode)node.children.get(0)).getId();
         CStarScope functionScope;

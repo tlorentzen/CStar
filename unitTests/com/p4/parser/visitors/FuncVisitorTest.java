@@ -1,10 +1,11 @@
 package com.p4.parser.visitors;
 
 import com.p4.errors.ErrorBag;
-import com.p4.parser.nodes.FuncCallNode;
-import com.p4.parser.nodes.FuncDclNode;
-import com.p4.parser.nodes.IdNode;
 import com.p4.symbols.SymbolTable;
+import com.p4.syntaxSemantic.nodes.FuncCallNode;
+import com.p4.syntaxSemantic.nodes.FuncDclNode;
+import com.p4.syntaxSemantic.nodes.IdNode;
+import com.p4.syntaxSemantic.visitors.FuncVisitor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,11 +33,15 @@ class FuncVisitorTest {
         funcCall.children = new ArrayList<>();
         IdNode idNode = new IdNode("FuncId", false);
         funcCall.children.add(idNode);
-        String id = ((IdNode)funcCall.children.get(0)).id;
+        String id = ((IdNode)funcCall.children.get(0)).getId();
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new FuncVisitor(symbolTable, errorBag);
 
         //Act
         visitor.visit(funcCall);
-        var result = visitor.symbolTable.calledFunctions.contains(id) && !visitor.symbolTable.declaredFunctions.contains(id);
+        var result = symbolTable.calledFunctions.contains(id) && !symbolTable.declaredFunctions.contains(id);
 
         //Assert
         assert (result);
@@ -49,11 +54,15 @@ class FuncVisitorTest {
         funcCall.children = new ArrayList<>();
         IdNode idNode = new IdNode("FuncId.read", false);
         funcCall.children.add(idNode);
-        String id = ((IdNode)funcCall.children.get(0)).id;
+        String id = ((IdNode)funcCall.children.get(0)).getId();
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new FuncVisitor(symbolTable, errorBag);
 
         //Act
         visitor.visit(funcCall);
-        var result = visitor.symbolTable.calledFunctions.contains(id) && visitor.symbolTable.declaredFunctions.contains(id);
+        var result = symbolTable.calledFunctions.contains(id) && symbolTable.declaredFunctions.contains(id);
 
         //Assert
         assert (result);
@@ -66,11 +75,15 @@ class FuncVisitorTest {
         funcCall.children = new ArrayList<>();
         IdNode idNode = new IdNode("FuncId.write", false);
         funcCall.children.add(idNode);
-        String id = ((IdNode)funcCall.children.get(0)).id;
+        String id = ((IdNode)funcCall.children.get(0)).getId();
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new FuncVisitor(symbolTable, errorBag);
 
         //Act
         visitor.visit(funcCall);
-        var result = visitor.symbolTable.calledFunctions.contains(id) && visitor.symbolTable.declaredFunctions.contains(id);
+        var result = symbolTable.calledFunctions.contains(id) && symbolTable.declaredFunctions.contains(id);
 
         //Assert
         assert (result);
@@ -81,11 +94,15 @@ class FuncVisitorTest {
         //Arrange
         FuncDclNode funcDcl = new FuncDclNode();
         funcDcl.children = new ArrayList<>();
-        funcDcl.id = "FuncId";
+        funcDcl.setId("FuncId");
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new FuncVisitor(symbolTable, errorBag);
 
         //Act
         visitor.visit(funcDcl);
-        var result = visitor.symbolTable.declaredFunctions.contains(funcDcl.id);
+        var result = symbolTable.declaredFunctions.contains(funcDcl.getId());
 
         //Assert
         assert (result);

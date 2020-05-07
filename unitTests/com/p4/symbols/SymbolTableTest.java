@@ -48,7 +48,7 @@ class SymbolTableTest {
         symbolTable.leaveScope();
 
         //Act
-        var result = symbolTable.getCurrentScope().parent;
+        var result = symbolTable.getCurrentScope().getParent();
 
         //Assert
         assert(result == null);
@@ -76,7 +76,7 @@ class SymbolTableTest {
 
     @Test
     void getCurrentScope_NoScopeAdded_ReturnsTheGlobalScope() {
-        assert(symbolTable.getCurrentScope().parent == null);
+        assert(symbolTable.getCurrentScope().getParent() == null);
     }
 
     @Test
@@ -103,7 +103,7 @@ class SymbolTableTest {
         symbolTable.addScope(thirdScopeName);
 
         //Act
-        var result = symbolTable.getCurrentScope().parent.getScopeName();
+        var result = symbolTable.getCurrentScope().getParent().getScopeName();
 
         // Assert
         assert(result.equals(secondScopeName));
@@ -114,13 +114,11 @@ class SymbolTableTest {
         //Arrange
         String firstScopeName = "FirstScopeName";
         symbolTable.addScope(firstScopeName);
-        Attributes attr = new Attributes();
-        attr.kind = "SymbolKind";
-        attr.variableType = "someType";
+        Attributes attr = new Attributes("SymbolKind", "someType");
         symbolTable.insertSymbol("symbol", attr);
 
         //Act
-        var result = symbolTable.lookup("symbol");
+        var result = symbolTable.lookupSymbol("symbol");
 
         //Assert
         assert(result.equals(attr));
@@ -133,15 +131,13 @@ class SymbolTableTest {
         String secondScopeName = "SecondScopeName";
         String thirdScopeName = "ThirdScopeName";
         symbolTable.addScope(firstScopeName);
-        Attributes attr = new Attributes();
-        attr.kind = "SymbolKind";
-        attr.variableType = "someType";
+        Attributes attr = new Attributes("SymbolKind", "someType");
         symbolTable.insertSymbol("symbol", attr);
         symbolTable.addScope(secondScopeName);
         symbolTable.addScope(thirdScopeName);
 
         //Act
-        var result = symbolTable.lookup("symbol");
+        var result = symbolTable.lookupSymbol("symbol");
 
         //Assert
         assert(result.equals(attr));
@@ -154,14 +150,12 @@ class SymbolTableTest {
         String secondScopeName = "SecondScopeName";
         symbolTable.addScope(firstScopeName);
         symbolTable.addScope(secondScopeName);
-        Attributes attr = new Attributes();
-        attr.kind = "SymbolKind";
-        attr.variableType = "type";
+        Attributes attr = new Attributes("SymbolKind", "type");
         symbolTable.insertSymbol("symbol", attr);
         symbolTable.leaveScope();
 
         //Act
-        var result = symbolTable.lookup("symbol");
+        var result = symbolTable.lookupSymbol("symbol");
 
         // Assert
         assert(result == null);
@@ -237,13 +231,11 @@ class SymbolTableTest {
     void insertSymbol_ReceivesSymbolAndAttributes_TheCurrentScopeContainsTheSymbol() {
         //Arrange
         String symbol = "SymbolName";
-        Attributes attr = new Attributes();
-        attr.kind = "symbolKind";
-        attr.variableType = "variableType";
+        Attributes attr = new Attributes("symbolKind", "variableType");
 
         //Act
         symbolTable.insertSymbol(symbol, attr);
-        var result = symbolTable.getCurrentScope().symbols.containsKey(symbol);
+        var result = symbolTable.getCurrentScope().getSymbols().containsKey(symbol);
 
         //Assert
         assert(result);
@@ -253,13 +245,11 @@ class SymbolTableTest {
     void insertParam_ReceivesParamAndAttributes_TheCurrentScopeContainsTheParam() {
         //Arrange
         String param = "ParamName";
-        Attributes attr = new Attributes();
-        attr.kind = "symbolKind";
-        attr.variableType = "variableType";
+        Attributes attr = new Attributes("symbolKind", "variableType");
 
         //Act
         symbolTable.insertParam(param, attr);
-        var result = symbolTable.getCurrentScope().params.containsKey(param);
+        var result = symbolTable.getCurrentScope().getParams().containsKey(param);
 
         //Assert
         assert(result);

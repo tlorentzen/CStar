@@ -1,9 +1,10 @@
 package com.p4.parser.visitors;
 
 import com.p4.errors.ErrorBag;
-import com.p4.parser.nodes.*;
 import com.p4.symbols.PinAttributes;
 import com.p4.symbols.SymbolTable;
+import com.p4.syntaxSemantic.nodes.*;
+import com.p4.syntaxSemantic.visitors.SymbolTableVisitor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,9 +17,13 @@ class SymbolTableVisitorTest {
         String id = "Id";
         IntegerDclNode Dcl = new IntegerDclNode(id);
 
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         //Act
         visitor.visit(Dcl);
-        var result = visitor.symbolTable.lookup(id) != null;
+        var result = symbolTable.lookupSymbol(id) != null;
 
         //Assert
         assert(result);
@@ -33,11 +38,16 @@ class SymbolTableVisitorTest {
         AssignNode assign = new AssignNode();
         assign.children.add(leftChild);
         assign.children.add(rightChild);
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         visitor.visit(assign);
 
         //Act
         visitor.visit(assign);
-        var result = ((PinAttributes)visitor.symbolTable.lookup(((PinDclNode) leftChild).id)).analog;
+        var result = ((PinAttributes)symbolTable.lookupSymbol(((PinDclNode) leftChild).getId())).getAnalog();
 
         //Assert
         assert(result);
@@ -50,9 +60,13 @@ class SymbolTableVisitorTest {
         ArrayDclNode<Integer> Dcl = new ArrayDclNode<>(id);
         Dcl.children.add(new ArrayNode("array" + id, "integer"));
 
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         //Act
         visitor.visit(Dcl);
-        var result = visitor.symbolTable.lookup(id) != null;
+        var result = symbolTable.lookupSymbol(id) != null;
 
         //Assert
         assert(result);
@@ -64,11 +78,16 @@ class SymbolTableVisitorTest {
         String id = "Id";
         ArrayDclNode<Integer> Dcl = new ArrayDclNode<>(id);
         Dcl.children.add(new ArrayNode("array" + id, "integer"));
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         visitor.visit(Dcl);
 
         //Act
         visitor.visit(Dcl);
-        var result = visitor.errors.isEmpty();
+        var result = errorBag.isEmpty();
 
         //Assert
         assert(!result);
@@ -83,11 +102,16 @@ class SymbolTableVisitorTest {
         AssignNode assign = new AssignNode();
         assign.children.add(leftChild);
         assign.children.add(rightChild);
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         visitor.visit(assign);
 
         //Act
         visitor.visit(assign);
-        var result = ((PinAttributes)visitor.symbolTable.lookup(((PinDclNode) leftChild).id)).analog;
+        var result = ((PinAttributes)symbolTable.lookupSymbol(((PinDclNode) leftChild).getId())).getAnalog();
 
         //Assert
         assert(!result);
@@ -103,11 +127,16 @@ class SymbolTableVisitorTest {
         AssignNode assign = new AssignNode();
         assign.children.add(leftChild);
         assign.children.add(rightChild);
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         visitor.visit(dcl);
 
         //Act
         visitor.visit(assign);
-        var result = ((PinAttributes)visitor.symbolTable.lookup((leftChild).id)).analog;
+        var result = ((PinAttributes)symbolTable.lookupSymbol((leftChild).getId())).getAnalog();
 
         //Assert
         assert(result);
@@ -121,9 +150,13 @@ class SymbolTableVisitorTest {
         var funcCall = new FuncCallNode(false);
         funcCall.children.add(idNode);
 
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         //Act
         visitor.visit(funcCall);
-        var result = visitor.symbolTable.lookup(id) == null;
+        var result = symbolTable.lookupSymbol(id) == null;
 
         //Arrange
         assert(result);
@@ -137,9 +170,13 @@ class SymbolTableVisitorTest {
         var funcCall = new FuncCallNode(false);
         funcCall.children.add(idNode);
 
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         //Act
         visitor.visit(funcCall);
-        var result = visitor.symbolTable.lookup(id).kind.equals("function");
+        var result = symbolTable.lookupSymbol(id).getKind().equals("function");
 
         //Arrange
         assert(result);
@@ -153,9 +190,13 @@ class SymbolTableVisitorTest {
         var funcCall = new FuncCallNode(false);
         funcCall.children.add(idNode);
 
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         //Act
         visitor.visit(funcCall);
-        var result = visitor.symbolTable.lookup(id).kind.equals("function");
+        var result = symbolTable.lookupSymbol(id).getKind().equals("function");
 
         //Arrange
         assert(result);
@@ -169,9 +210,13 @@ class SymbolTableVisitorTest {
         var funcCall = new FuncCallNode(false);
         funcCall.children.add(idNode);
 
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         //Act
         visitor.visit(funcCall);
-        var result = visitor.symbolTable.lookup(id).kind.equals("function");
+        var result = symbolTable.lookupSymbol(id).getKind().equals("function");
 
         //Arrange
         assert(result);
@@ -182,12 +227,16 @@ class SymbolTableVisitorTest {
         //Arrange
         var id = "ID";
         var funcDcl = new FuncDclNode();
-        funcDcl.returnType = "void";
-        funcDcl.id = id;
+        funcDcl.setReturnType("void");
+        funcDcl.setId(id);
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
 
         //Act
         visitor.visit(funcDcl);
-        var result = visitor.symbolTable.lookup(id).kind.equals("function");
+        var result = symbolTable.lookupSymbol(id).getKind().equals("function");
 
         //Arrange
         assert(result);
@@ -198,12 +247,16 @@ class SymbolTableVisitorTest {
         //Arrange
         var id = "ID";
         var funcDcl = new FuncDclNode();
-        funcDcl.returnType = "void";
-        funcDcl.id = id;
+        funcDcl.setReturnType("void");
+        funcDcl.setId(id);
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
 
         //Act
         visitor.visit(funcDcl);
-        var result = visitor.symbolTable.lookupScope(funcDcl.getNodeHash()) != null;
+        var result = symbolTable.lookupScope(funcDcl.getNodeHash()) != null;
 
         //Arrange
         assert(result);
@@ -214,13 +267,18 @@ class SymbolTableVisitorTest {
         //Arrange
         var id = "ID";
         var funcDcl = new FuncDclNode();
-        funcDcl.returnType = "void";
-        funcDcl.id = id;
+        funcDcl.setReturnType("void");
+        funcDcl.setId(id);
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         visitor.visit(funcDcl);
 
         //Act
         visitor.visit(funcDcl);
-        var result = !visitor.errors.isEmpty();
+        var result = !errorBag.isEmpty();
 
         //Arrange
         assert(result);
@@ -230,10 +288,15 @@ class SymbolTableVisitorTest {
     void visitIterative_ReceivesIterativeNode_IterativeScopeAdded(){
         //Arrange
         var iterativeNode = new IterativeNode();
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         visitor.visit(iterativeNode);
 
         //Act
-        var result = visitor.symbolTable.lookupScope(iterativeNode.getNodeHash()) != null;
+        var result = symbolTable.lookupScope(iterativeNode.getNodeHash()) != null;
 
         //Arrange
         assert(result);
@@ -253,9 +316,13 @@ class SymbolTableVisitorTest {
         param.children.add(idNodeTwo);
         param.children.add(idNodeThree);
 
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         //Act
         visitor.visit(param);
-        var result = (visitor.symbolTable.lookup(idOne) != null && visitor.symbolTable.lookup(idTwo) != null && visitor.symbolTable.lookup(idThree) != null);
+        var result = (symbolTable.lookupSymbol(idOne) != null && symbolTable.lookupSymbol(idTwo) != null && symbolTable.lookupSymbol(idThree) != null);
 
         //Assert
         assert(result);
@@ -269,9 +336,13 @@ class SymbolTableVisitorTest {
         var idNodeOne = new IdNode(idOne, false);
         param.children.add(idNodeOne);
 
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         //Act
         visitor.visit(param);
-        var result = visitor.symbolTable.lookup(idOne).scope.equals(visitor.symbolTable.getCurrentScope().getScopeName());
+        var result = symbolTable.lookupSymbol(idOne).getScope().equals(symbolTable.getCurrentScope().getScopeName());
 
         //Assert
         assert(result);
@@ -281,10 +352,15 @@ class SymbolTableVisitorTest {
     void visitSelection_ReceivesIterativeNode_IterativeScopeAdded(){
         //Arrange
         var selectionNode = new SelectionNode();
+
+        var symbolTable = new SymbolTable();
+        var errorBag = new ErrorBag();
+        visitor = new SymbolTableVisitor(symbolTable, errorBag);
+
         visitor.visit(selectionNode);
 
         //Act
-        var result = visitor.symbolTable.lookupScope(selectionNode.getNodeHash()) != null;
+        var result = symbolTable.lookupScope(selectionNode.getNodeHash()) != null;
 
         //Arrange
         assert(result);
