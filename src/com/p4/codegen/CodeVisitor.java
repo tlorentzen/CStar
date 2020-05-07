@@ -448,7 +448,6 @@ public class CodeVisitor implements INodeVisitor {
      */
     @Override
     public void visit(FuncCallNode node) {
-
         AstNode id = node.children.get(0);
         AstNode firstParam = null;
 
@@ -465,7 +464,7 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append("-");
 
         //Checks if the string contained a '.'
-        if(funcIDSplit.length > 1){
+        if(funcIDSplit.length > 1) {
             this.handlePinReadAndWrite(firstParam, funcIDSplit);
         }else{
             //Handle functions that are not pin read or write
@@ -491,26 +490,32 @@ public class CodeVisitor implements INodeVisitor {
      * @param funcIDSplit the ID of the function split on '.' into an array
      */
     private void handlePinReadAndWrite(AstNode firstParam, String[] funcIDSplit) {
-        if(funcIDSplit[1].equals("read")){
+        if (funcIDSplit[1].equals("read")) {
             Attributes attributes = this.symbolTable.lookupSymbol(funcIDSplit[0]);
+           
             //The call is assumed to be a pin read
-            if (attributes != null && ((PinAttributes)attributes).getAnalog()){
+            if (attributes != null && ((PinAttributes)attributes).getAnalog()) {
                 //The pin is instantiated as an analog pin
                 stringBuilder.append("analogRead(");
-            } else{
+            } 
+            else if (attributes != null) {
                 //The pin is instantiated as a digital pin
                 stringBuilder.append("digitalRead(");
             }
+            else {
+                System.out.println("Pin attributes is null");
+            }
             stringBuilder.append(funcIDSplit[0]);
-        } else if(firstParam != null && funcIDSplit[1].equals("write")){
+        }
+        else if (firstParam != null && funcIDSplit[1].equals("write")) {
             //The call is assumed to be a pin write
-            if(firstParam instanceof NumberNode
-                    || (firstParam instanceof IdNode
-                    && (firstParam.type.equals("integer")
-                    || firstParam.type.equals("long integer")
-                    || firstParam.type.equals("small integer")
-                    || firstParam.type.equals("character")
-                    || firstParam.type.equals("Arduino C")))) {
+            if (firstParam instanceof NumberNode || 
+               (firstParam instanceof IdNode && 
+               (firstParam.type.equals("integer") ||
+                firstParam.type.equals("long integer") || 
+                firstParam.type.equals("small integer") ||
+                firstParam.type.equals("character") ||
+                firstParam.type.equals("Arduino C")))) {
                 //The value to be written to the pin could be any number
                 stringBuilder.append("analogWrite(");
                 stringBuilder.append(funcIDSplit[0]);
@@ -535,6 +540,7 @@ public class CodeVisitor implements INodeVisitor {
      */
     @Override
     public void visit(FuncDclNode node) {
+        symbolTable.enterScope(node.getNodeHash());
         stringBuilder.append(getTargetType(node.getReturnType()));
         stringBuilder.append(" ");
         stringBuilder.append(node.getId());
@@ -542,6 +548,7 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append("()");
         }
         this.visitChildren(node);
+        symbolTable.leaveScope();
     }
 
     /**
