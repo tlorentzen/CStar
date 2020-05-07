@@ -563,32 +563,121 @@ class SemanticsVisitorTest {
     }
 
     @Test
-    void visitDiv_ReceivesDivNodeWithAcceptedIntegerOperands_NodeTypeSetToInteger(){
+    void visitDiv_ReceivesDivNodeWithAcceptedSmallIntegerOperands_NodeTypeSetToInteger(){
         //Arrange
+        var div = new DivNode();
+        var int1 = new NumberNode((long) 2, false);
+        var int2 = new NumberNode((long) 2, false);
+        div.children.add(int1);
+        div.children.add(int2);
 
         //Act
+        visitor.visit(div);
+        var result = div.type;
 
         //Assert
-        assert(false);
+        assert(result.equals("small integer"));
     }
 
     @Test
     void visitDiv_ReceivesDivNodeWithUncompinableOperands_TypeErrorAdded(){
         //Arrange
+        var div = new DivNode();
+        var int1 = new NumberNode((long) 2, false);
+        var int2 = new CharNode('c', false);
+        div.children.add(int1);
+        div.children.add(int2);
 
         //Act
+        visitor.visit(div);
+        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
 
         //Assert
-        assert(false);
+        assert(result);
     }
 
     @Test
     void visitDiv_ReceivesDivNodeTryingToDivideByZero_ZeroDivisionErrorAdded(){
         //Arrange
+        var div = new DivNode();
+        var int1 = new NumberNode((long) 2, false);
+        var int2 = new NumberNode((long) 0, false);
+        div.children.add(int1);
+        div.children.add(int2);
 
         //Act
+        visitor.visit(div);
+        var result = visitor.errors.getErrorType(0) == ErrorType.ZERO_DIVISION;
 
         //Assert
-        assert(false);
+        assert(result);
+    }
+
+    @Test
+    void visitSub_ReceivesDivNodeWithAcceptedSmallIntegerOperands_NodeTypeSetToInteger(){
+        //Arrange
+        var div = new SubNode();
+        var int1 = new NumberNode((long) 2, false);
+        var int2 = new NumberNode((long) 2, false);
+        div.children.add(int1);
+        div.children.add(int2);
+
+        //Act
+        visitor.visit(div);
+        var result = div.type;
+
+        //Assert
+        assert(result.equals("small integer"));
+    }
+
+    @Test
+    void visitSub_ReceivesDivNodeWithUncompinableOperands_TypeErrorAdded(){
+        //Arrange
+        var div = new SubNode();
+        var int1 = new NumberNode((long) 2, false);
+        var int2 = new CharNode('c', false);
+        div.children.add(int1);
+        div.children.add(int2);
+
+        //Act
+        visitor.visit(div);
+        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+
+        //Assert
+        assert(result);
+    }
+
+    @Test
+    void visitAdd_ReceivesDivNodeWithAcceptedSmallIntegerOperands_NodeTypeSetToInteger(){
+        //Arrange
+        var div = new AddNode();
+        var int1 = new NumberNode((long) 2, false);
+        var int2 = new NumberNode((long) 2, false);
+        div.children.add(int1);
+        div.children.add(int2);
+
+        //Act
+        visitor.visit(div);
+        var result = div.type;
+
+        //Assert
+        assert(result.equals("small integer"));
+    }
+
+    @Test
+    void visitAdd_ReceivesDivNodeWithUncompinableOperands_TypeErrorAdded(){
+        //Arrange
+        var div = new AddNode();
+        var int1 = new NumberNode((long) 2, false);
+        var int2 = new CharNode('c', false);
+        div.children.add(int1);
+        div.children.add(int2);
+
+        //Act
+        visitor.visit(div);
+        var result = visitor.errors.getErrorType(0) == ErrorType.TYPE_ERROR;
+
+        //Assert
+        assert(result);
     }
 }
