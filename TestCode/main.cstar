@@ -12,7 +12,7 @@ integer array ko = [1,2,3,4];
 // Hej
 //comment 2
 void setup(){
-    i = hello(ill, j);
+
     i = 5*(10+5);
     i = 10 - 5;
     i = 10/5;
@@ -23,8 +23,6 @@ void setup(){
     // comment dfgdsfgfgsgdfgsd
 
     integer k = -i;
-    integer q = -hello(5.0, -i);
-    integer e = -map();
     integer f = -ko[1];
     small integer pudel = -10;
 }
@@ -33,12 +31,4 @@ void loop(){
 
 }
 
-integer hello (decimal d, long integer l){
-    d = d * (-4) % 4 * 4;
-    boolean b = (d <= 5 AND (d >= 5));
 
-    if(d IS 1){
-
-    } else {
-
-}
