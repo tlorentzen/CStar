@@ -14,16 +14,10 @@ import net.lingala.zip4j.ZipFile;
 
 public class CliExec {
 
+    // Ansi colors
     public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
-
 
     String basePath = System.getProperty("user.dir");
     String baseCommand = "";
@@ -147,16 +141,16 @@ public class CliExec {
             printIt("Compiling C-code... ", true);
 
             if(execute("compile --fqbn "+board.fqbn+" output", acli)){
-                printIt(ANSI_GREEN+"OK!\n"+ANSI_RESET, true);
+                printOk();
                 printIt("Uploading to Arduino... ", true);
 
                 if(execute("upload -p "+board.port+" --fqbn "+board.fqbn+" output", acli)){
-                    printIt(ANSI_GREEN+"OK!\n"+ANSI_RESET, true);
+                    printOk();
                 }else{
-                    printIt(ANSI_RED+"Failed!\n"+ANSI_RESET, true);
+                    printFailed();
                 }
             }else{
-                printIt(ANSI_RED+"Failed!\n"+ANSI_RESET, true);
+                printFailed();
             }
         }
     }
@@ -193,9 +187,9 @@ public class CliExec {
             printIt("Installing core... ", true);
 
             if(execute("core install "+core, acli)){
-                printIt(ANSI_GREEN+"OK!\n"+ANSI_RESET, true);
+                printOk();
             }else{
-                printIt(ANSI_RED+"Failed!\n"+ANSI_RESET, true);
+                printFailed();
             }
         }
     }
@@ -205,9 +199,9 @@ public class CliExec {
             printIt("Updating core index... ", true);
 
             if(execute("core update-index", acli)){
-                printIt(ANSI_GREEN+"OK!\n"+ANSI_RESET, true);
+                printOk();
             }else{
-                printIt(ANSI_RED+"Failed!\n"+ANSI_RESET, true);
+                printFailed();;
             }
         }
     }
@@ -251,10 +245,7 @@ public class CliExec {
                             fileName = "";
                     }
 
-                    if(downloadUrl.equals("")){
-                        //TODO error
-                    } else{
-
+                    if(!downloadUrl.equals("")){
                         File output = new File(basePath+"/"+fileName);
 
                         Connection.Response response= Jsoup.connect(downloadUrl)
@@ -274,6 +265,8 @@ public class CliExec {
                             unpackGZip(output);
                         }
                         output.deleteOnExit();
+                    } else {
+                        //TODO error
                     }
                 }
 
@@ -298,8 +291,7 @@ public class CliExec {
                         File f = new File(entry.getName());
                         boolean created = f.mkdir();
                         if (!created) {
-                            System.out.printf("Unable to create directory '%s', during extraction of archive contents.\n",
-                                    f.getAbsolutePath());
+                            System.out.printf("Unable to create directory '%s', during extraction of archive contents.\n", f.getAbsolutePath());
                         }
                     } else {
                         int count;
@@ -325,6 +317,15 @@ public class CliExec {
             System.out.println(e);
         }
     }
+
+    private void printOk(){
+        printIt(setColor(ANSI_GREEN)+"OK!\n"+setColor(ANSI_RESET), true);
+    }
+
+    private void printFailed(){
+        printIt(setColor(ANSI_RED)+"Failed!\n"+setColor(ANSI_RESET), true);
+    }
+
     private void unpackZip(File file){
         try {
             ZipFile zipFile = new ZipFile(file);
@@ -334,4 +335,11 @@ public class CliExec {
             e.printStackTrace();
         }
     }
+
+    private String setColor(String color){
+        if(!SystemInfo.isWindows())
+            return color;
+        return "";
+    }
+
 }
