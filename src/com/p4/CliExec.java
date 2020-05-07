@@ -68,6 +68,7 @@ public class CliExec {
                 initializeCliSetup();
                 System.out.println();
                 System.out.println("Select Arduino:");
+
                 for (Board b: boards) {
                     System.out.println("  "+counter+") "+ b.name+" - "+b.port);
                     counter++;
