@@ -515,7 +515,7 @@ public class CodeVisitor implements INodeVisitor {
                 firstParam.type.equals("long integer") || 
                 firstParam.type.equals("small integer") ||
                 firstParam.type.equals("character") ||
-                firstParam.type.equals("Arduino C")))) {
+                firstParam.type.equals("ArduinoC")))) {
                 //The value to be written to the pin could be any number
                 stringBuilder.append("analogWrite(");
                 stringBuilder.append(funcIDSplit[0]);
