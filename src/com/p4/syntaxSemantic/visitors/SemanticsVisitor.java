@@ -80,12 +80,11 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(AssignNode node) {
         this.visitChildren(node);
 
-        String childClass = node.children.get(1).getClass().getName();
         String leftType = node.children.get(0).type;
         String resultType;
 
         //Enters if the right hand side is a function call
-        if (childClass.equals("com.p4.syntaxSemantic.nodes.FuncCallNode")) {
+        if (node.children.get(1) instanceof FuncCallNode) {
             resultType = assignFuncCall(node, leftType);
 
             if (!resultType.equals("error")) {
@@ -458,10 +457,9 @@ public class SemanticsVisitor implements INodeVisitor {
         if (node.children.size() > 1) {
             //Checks if all children of the function's block are well typed
             for (AstNode blockChild : node.children.get(1).children) {
-                String blockClass = blockChild.getClass().toString();
 
                 //Enters if a return expression is found
-                if (blockClass.equals("com.p4.syntaxSemantic.nodes.ReturnExpNode")) {
+                if (blockChild instanceof ReturnExpNode) {
                     //Enters if return type is different and widening cannot be performed
                     if (!isLegalType(dclReturnType, blockChild.type)) {
                         errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("return", blockChild.type, dclReturnType), node.lineNumber);
