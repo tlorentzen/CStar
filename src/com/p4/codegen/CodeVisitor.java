@@ -1,17 +1,17 @@
 package com.p4.codegen;
-import com.p4.parser.nodes.*;
-import com.p4.parser.visitors.INodeVisitor;
+
+import com.p4.symbols.Attributes;
+import com.p4.syntaxSemantic.CStarParser;
+import com.p4.syntaxSemantic.nodes.*;
+import com.p4.syntaxSemantic.visitors.INodeVisitor;
 import com.p4.symbols.PinAttributes;
 import com.p4.symbols.SymbolTable;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Stack;
 
-public class CodeVisitor implements INodeVisitor{
-
+public class CodeVisitor implements INodeVisitor {
     //FilePath is used to specify the location for the compiled Arduino file
     String filePath = System.getProperty("user.dir") + "/compile-out/compile-out.ino";
 
@@ -24,78 +24,62 @@ public class CodeVisitor implements INodeVisitor{
         this.symbolTable = symbolTable;
     }
 
-    /**
-     * Prints the content of the string builder to the file.
-     * @throws IOException thrown if anything doing the write fails.
-     */
+    //Prints the content of the string builder to the file
     public void print() throws IOException {
-
         for (String line : output) {
             stringBuilder.append(line);
         }
 
-        //Instantiates new File object
-        File f = new File(filePath);
+        File file = new File(filePath);
+        FileOutputStream outputStream = new FileOutputStream(file);
 
-        //Instantiates new FileOutPutStream
-        FileOutputStream oS = new FileOutputStream(f);
-
-        //Writes the string builder to the file, handling potential creation as well
-        oS.write(stringBuilder.toString().getBytes());
+        //Writes the string builder to the file,
+        //If file not found, it will create one
+        outputStream.write(stringBuilder.toString().getBytes());
     }
-
-    /**
-     * Visits the children of the given node.
-     * @param node the node which children should be visited.
-     */
 
     @Override
     public void visitChildren(AstNode node) {
-        for(AstNode child : node.children){
+        for (AstNode child : node.children) {
             child.accept(this);
         }
     }
 
-    /**
-     * Calls the accept method on the node given.
-     * @param node the node to run accept on.
-     */
+    //Calls the accept method on the node given.
     public void visitChild(AstNode node) {
         node.accept(this);
     }
 
-    /**
-     * Converts the logical operator id to the actual logical operator '&&' or '||'.
-     * Only handles AND and OR.
-     * @param node is the logical node to be handled.
-     */
     @Override
-    public void visit(PrintNode node){
-        if(node.formatString.size() > 1){
-            for(AstNode element : node.formatString){
+    public void visit(PrintNode node) {
+        //Enters if there is more than one element in the format string
+        if (node.getFormatString().size() > 1) {
+            //Creates a print function for each element in the format string
+            for (AstNode element : node.getFormatString()) {
                 stringBuilder.append("Serial.print(");
                 this.visitChild(element);
                 stringBuilder.append(");\n");
             }
             stringBuilder.append("Serial.println()");
-            output.add(getLine());
-        } else {
-            stringBuilder.append("Serial.println(");
-            this.visitChild(node.formatString.get(0));
-            stringBuilder.append(");\n");
-            output.add(getLine());
         }
+        else {
+            stringBuilder.append("Serial.println(");
+            this.visitChild(node.getFormatString().get(0));
+            stringBuilder.append(");\n");
+        }
+        output.add(getLine());
     }
 
     @Override
-    public void visit(FloatNode node){
-        stringBuilder.append(node.isNegative ? "-" : "");
-        stringBuilder.append(node.value);
+    public void visit(FloatNode node) {
+        //Checks if the node is negative
+        stringBuilder.append(node.getIsNegative() ? "-" : "");
+        stringBuilder.append(node.getValue());
     }
 
     @Override
     public void visit(ConstantNode node) {
-        stringBuilder.append(node.value);
+        stringBuilder.append(node.getValue());
     }
 
     @Override
@@ -105,113 +89,112 @@ public class CodeVisitor implements INodeVisitor{
     }
 
     @Override
-    public void visit(ModNode node){
+    public void visit(ModNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
 
-        if(node.parentheses){
-            stringBuilder.append("(");
-        }
+        //Enters if there are parentheses present before the expression
+        checkParentheses(node, true);
+
+        //Adds the expression to the string builder
         this.visitChild(leftChild);
         stringBuilder.append(" % ");
         this.visitChild(rightChild);
-        if(node.parentheses){
-            stringBuilder.append("(");
-        }
+
+        //Enters if there are parentheses present after the expression
+        checkParentheses(node, false);
     }
 
     @Override
-    public void visit(NumberNode node){
-        if(node.parentheses){
+    public void visit(NumberNode node) {
+        if (node.getParentheses()) {
             stringBuilder.append("(");
         }
-        stringBuilder.append(node.isNegative ? "-" : "");
-        stringBuilder.append(node.value);
-        if(node.parentheses){
+
+        stringBuilder.append(node.getIsNegative() ? "-" : "");
+        stringBuilder.append(node.getValue());
+
+        if (node.getParentheses()) {
+            stringBuilder.append(")");
+        }
+    }
+
+    private void checkParentheses(ExpressionNode node, boolean isStart) {
+        if (node.getParentheses() && isStart) {
+            stringBuilder.append("(");
+        }
+        else if (node.getParentheses() && !isStart) {
             stringBuilder.append(")");
         }
     }
 
     @Override
-    public void visit(BooleanNode node){
-        stringBuilder.append(node.value);
+    public void visit(BooleanNode node) {
+        stringBuilder.append(node.getValue());
     }
 
     @Override
-    public void visit(BooleanDclNode node){
+    public void visit(BooleanDclNode node) {
         visitDclNode(node);
     }
 
     @Override
-    public void visit(SmallDclNode node){
+    public void visit(SmallDclNode node) {
         visitDclNode(node);
     }
 
     @Override
     public void visit(StringNode node){
-        stringBuilder.append(node.value);
+        stringBuilder.append(node.getValue());
     }
 
+
     @Override
-    public void visit(LogicalNode node){
-        if(node.parentheses){
-            stringBuilder.append("(");
-        }
-        //Left operand
+    public void visit(LogicalNode node) {
+        checkParentheses(node, true);
+        //Gets the left operand
         this.visitChild(node.children.get(0));
 
-        //Operator
-        switch (node.getOperator()){
-            case 6:
+        //Converts the logical operator to the actual logical operator '&&' or '||'
+        switch (node.getToken()) {
+            case CStarParser.OR:
                 stringBuilder.append(" || ");
                 break;
-            case 7:
+            case CStarParser.AND:
                 stringBuilder.append(" && ");
                 break;
         }
-        //Right operand
+        //Gets the right operand
         this.visitChild(node.children.get(1));
-        if(node.parentheses){
-            stringBuilder.append(")");
-        }
+        checkParentheses(node, false);
     }
 
-    /**
-     * Adds the id of the node to the string builder.
-     * @param node is the id node to be handled.
-     */
     @Override
     public void visit(IdNode node) {
 
-        switch (node.id){
-            case "sleep":
-                stringBuilder.append("delay");
-                break;
-            default:
-                if(node.IsNegative) {
-                    stringBuilder.append("-");
-                }
-                stringBuilder.append(node.id);
-                break;
+        //Enters if the id is the sleep function
+        if (node.getId().equals("sleep")) {
+            stringBuilder.append("delay");
+        }
+        else {
+            //Enters if the id node is negative
+            if (node.getIsNegative()) {
+                stringBuilder.append("-");
+            }
+            stringBuilder.append(node.getId());
         }
     }
 
-    /**
-     * Adds the value of the node to the string builder.
-     * @param node is the pin node to be handled.
-     */
     @Override
     public void visit(PinNode node) {
         stringBuilder.append(convertIntToPinValue(node));
     }
 
-    /**
-     * Adds the value of the node to the string builder.
-     * @param node is the char node to be handled.
-     */
     @Override
     public void visit(CharNode node) {
-        stringBuilder.append(node.value);
+        stringBuilder.append("'");
+        stringBuilder.append(node.getValue());
+        stringBuilder.append("'");
     }
 
     /**
@@ -223,24 +206,31 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(AssignNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
+
+        //Gets the statement and adds it to the output
         this.visitChild(leftChild);
         stringBuilder.append(" = ");
         this.visitChild(rightChild);
         stringBuilder.append(";\n");
         output.add(getLine());
-        String test = output.get(output.size()-1);
-        if(test.contains("analogRead") || test.contains("digitalRead")){
-            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).id.split("\\.");
+
+        String test = output.get(output.size() - 1);
+
+        //Enters if the assignment is to read from a pin
+        if (test.contains("analogRead") || test.contains("digitalRead")) {
+            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
             insert(printPinMode(funcIDSplit[0],false),1);
         }
+
         else if(test.contains("analogWrite") || test.contains("digitalWrite")){
-            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).id.split("\\.");
+            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
             insert(printPinMode(funcIDSplit[0],true),1);
         }
     }
 
+    //todo check if correct convertion
     private String convertIntToPinValue(AstNode node) {
-        return (node instanceof PinNode ? "A" + ((((PinNode) node).value * -1) - 1) : ((NumberNode) node).value.toString());
+        return (node instanceof PinNode ? "A" + (((PinNode) node).getValue() * (-1)) : ((NumberNode) node).getValue().toString());
     }
 
     /**
@@ -250,14 +240,12 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(CondNode node) {
-        if(node.parentheses){
-            stringBuilder.append("(");
-        }
+        checkParentheses(node, true);
         //Left operand
         this.visitChild(node.children.get(0));
 
         //Operator
-        switch (node.getOperator()){
+        switch (node.getToken()){
             case 2:
                 stringBuilder.append(" < ");
                 break;
@@ -279,9 +267,7 @@ public class CodeVisitor implements INodeVisitor{
         }
         //Right operand
         this.visitChild(node.children.get(1));
-        if(node.parentheses){
-            stringBuilder.append(")");
-        }
+        checkParentheses(node, false);
     }
 
     /**
@@ -302,7 +288,7 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(ArrayAccessNode node) {
 
-        if(node.isNegative)
+        if(node.getIsNegative())
             stringBuilder.append("-");
 
         //Id is index 0, the Index is at index 1, and the assigned value is at 2
@@ -386,15 +372,11 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(AddNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
-        if(node.parentheses){
-            stringBuilder.append("(");
-        }
+        checkParentheses(node, true);
         this.visitChild(leftChild);
         stringBuilder.append(" + ");
         this.visitChild(rightChild);
-        if(node.parentheses){
-            stringBuilder.append(")");
-        }
+        checkParentheses(node, false);
     }
 
     /**
@@ -442,15 +424,11 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(DivNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
-        if(node.parentheses){
-            stringBuilder.append("(");
-        }
+        checkParentheses(node, true);
         this.visitChild(leftChild);
         stringBuilder.append(" / ");
         this.visitChild(rightChild);
-        if(node.parentheses){
-            stringBuilder.append(")");
-        }
+        checkParentheses(node, false);
     }
 
     /**
@@ -470,7 +448,6 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(FuncCallNode node) {
-
         AstNode id = node.children.get(0);
         AstNode firstParam = null;
 
@@ -481,13 +458,13 @@ public class CodeVisitor implements INodeVisitor{
         }
 
         //Splits the function ID on '.' to check for read and write functions
-        String[] funcIDSplit = ((IdNode)id).id.split("\\.");
+        String[] funcIDSplit = ((IdNode)id).getId().split("\\.");
 
-        if(node.isNegative)
+        if(node.getIsNegative())
             stringBuilder.append("-");
 
         //Checks if the string contained a '.'
-        if(funcIDSplit.length > 1){
+        if(funcIDSplit.length > 1) {
             this.handlePinReadAndWrite(firstParam, funcIDSplit);
         }else{
             //Handle functions that are not pin read or write
@@ -513,26 +490,32 @@ public class CodeVisitor implements INodeVisitor{
      * @param funcIDSplit the ID of the function split on '.' into an array
      */
     private void handlePinReadAndWrite(AstNode firstParam, String[] funcIDSplit) {
-        if(funcIDSplit[1].equals("read")){
+        if (funcIDSplit[1].equals("read")) {
+            Attributes attributes = this.symbolTable.lookupSymbol(funcIDSplit[0]);
+           
             //The call is assumed to be a pin read
-            if(((PinAttributes)this.symbolTable.lookup(funcIDSplit[0])).analog){
+            if (attributes != null && ((PinAttributes)attributes).getAnalog()) {
                 //The pin is instantiated as an analog pin
                 stringBuilder.append("analogRead(");
-                stringBuilder.append(funcIDSplit[0]);
-            } else{
+            } 
+            else if (attributes != null) {
                 //The pin is instantiated as a digital pin
                 stringBuilder.append("digitalRead(");
-                stringBuilder.append(funcIDSplit[0]);
             }
-        }else if(firstParam != null && funcIDSplit[1].equals("write")){
+            else {
+                System.out.println("Pin attributes is null");
+            }
+            stringBuilder.append(funcIDSplit[0]);
+        }
+        else if (firstParam != null && funcIDSplit[1].equals("write")) {
             //The call is assumed to be a pin write
-            if(firstParam instanceof NumberNode
-                    || (firstParam instanceof IdNode
-                    && (firstParam.type.equals("integer")
-                    || firstParam.type.equals("long integer")
-                    || firstParam.type.equals("small integer")
-                    || firstParam.type.equals("character")
-                    || firstParam.type.equals("Arduino C")))) {
+            if (firstParam instanceof NumberNode || 
+               (firstParam instanceof IdNode && 
+               (firstParam.type.equals("integer") ||
+                firstParam.type.equals("long integer") || 
+                firstParam.type.equals("small integer") ||
+                firstParam.type.equals("character") ||
+                firstParam.type.equals("Arduino C")))) {
                 //The value to be written to the pin could be any number
                 stringBuilder.append("analogWrite(");
                 stringBuilder.append(funcIDSplit[0]);
@@ -557,13 +540,15 @@ public class CodeVisitor implements INodeVisitor{
      */
     @Override
     public void visit(FuncDclNode node) {
-        stringBuilder.append(getTargetType(node.returnType));
+        symbolTable.enterScope(node.getNodeHash());
+        stringBuilder.append(getTargetType(node.getReturnType()));
         stringBuilder.append(" ");
-        stringBuilder.append(node.id);
+        stringBuilder.append(node.getId());
         if(node.children.size() == 1){
             stringBuilder.append("()");
         }
         this.visitChildren(node);
+        symbolTable.leaveScope();
     }
 
     /**
@@ -610,15 +595,11 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(MultNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
-        if(node.parentheses){
-            stringBuilder.append("(");
-        }
+        checkParentheses(node, true);
         this.visitChild(leftChild);
         stringBuilder.append(" * ");
         this.visitChild(rightChild);
-        if(node.parentheses){
-            stringBuilder.append(")");
-        }
+        checkParentheses(node, false);
     }
 
     /**
@@ -649,7 +630,7 @@ public class CodeVisitor implements INodeVisitor{
     @Override
     public void visit(PinDclNode node) {
         stringBuilder.append("int ");
-        stringBuilder.append(node.id);
+        stringBuilder.append(node.getId());
     }
 
     /**
@@ -680,15 +661,11 @@ public class CodeVisitor implements INodeVisitor{
     public void visit(SubNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
-        if(node.parentheses){
-            stringBuilder.append("(");
-        }
+        checkParentheses(node, true);
         this.visitChild(leftChild);
         stringBuilder.append(" - ");
         this.visitChild(rightChild);
-        if(node.parentheses){
-            stringBuilder.append(")");
-        }
+        checkParentheses(node, false);
     }
 
     /**
@@ -699,7 +676,7 @@ public class CodeVisitor implements INodeVisitor{
     public void visitDclNode(DclNode<?> node){
         stringBuilder.append(getTargetType(node.type));
         stringBuilder.append(" ");
-        stringBuilder.append(node.id);
+        stringBuilder.append(node.getId());
     }
 
     /**

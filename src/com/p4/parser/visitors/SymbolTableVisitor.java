@@ -2,11 +2,12 @@ package com.p4.parser.visitors;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
-import com.p4.parser.nodes.*;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.FunctionAttributes;
 import com.p4.symbols.PinAttributes;
 import com.p4.symbols.SymbolTable;
+import com.p4.syntaxSemantic.nodes.*;
+import com.p4.syntaxSemantic.visitors.INodeVisitor;
 
 public class SymbolTableVisitor implements INodeVisitor {
 
