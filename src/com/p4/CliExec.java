@@ -313,6 +313,8 @@ public class CliExec {
                 }
 
                 System.out.println("Installed successfully!");
+            }catch(Exception e){
+                System.out.println(e);
             }
         }catch(Exception e){
             System.out.println(e);
