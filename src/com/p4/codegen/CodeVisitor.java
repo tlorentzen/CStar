@@ -730,8 +730,6 @@ public class CodeVisitor implements INodeVisitor {
             indent--;
         }
 
-        System.out.println("Current: " + currentIndent + ", index: " + indent + "\t\t" + line);
-
         line = line.indent(indent * 4);
         return line;
     }
