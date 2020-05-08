@@ -220,12 +220,12 @@ public class CodeVisitor implements INodeVisitor {
         //Enters if the assignment is to read from a pin
         if (test.contains("analogRead") || test.contains("digitalRead")) {
             String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
-            insert(printPinMode(funcIDSplit[0],false),1);
+            stringBuilder.append(printPinMode(funcIDSplit[0],false));
         }
 
         else if(test.contains("analogWrite") || test.contains("digitalWrite")){
             String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
-            insert(printPinMode(funcIDSplit[0],true),1);
+            stringBuilder.append(printPinMode(funcIDSplit[0],true));
         }
     }
 
@@ -392,6 +392,7 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(BlkNode node) {
         stringBuilder.append("{\n");
         output.add(getLine());
+        currentIndent++;
 
         if(node.getParentID().equals("setup")
                 && symbolTable.calledFunctions.contains("Serial.println")){
@@ -400,15 +401,16 @@ public class CodeVisitor implements INodeVisitor {
         }
 
         for(AstNode child : node.children){
-            //stringBuilder.append("");
             this.visitChild(child);
             if(child instanceof FuncCallNode){
                 stringBuilder.append(";\n");
+                output.add(getLine());
             }
         }
 
         stringBuilder.append("}\n");
         output.add(getLine());
+        currentIndent--;
     }
 
     /**
@@ -713,19 +715,16 @@ public class CodeVisitor implements INodeVisitor {
     private String getLine(){
         String line = stringBuilder.toString();
         stringBuilder.delete(0, stringBuilder.length());
-        if(line.endsWith("{\n")){
-            currentIndent++;
-        }else if (line.endsWith("}\n")){
-            currentIndent--;
-            line = line.substring(4);
-        }
-        stringBuilder.append("    ".repeat(Math.max(0, currentIndent)));
-        return line;
-    }
 
-    private void insert(String result, int offset){
-        String line = stringBuilder.toString();
-        output.add(output.size()- offset, result);
+        int indent = currentIndent;
+        if(line.endsWith("}\n")){
+            indent--;
+        }
+
+        System.out.println("Current: " + currentIndent + ", index: " + indent + "\t\t" + line);
+
+        line = line.indent(indent * 4);
+        return line;
     }
 
     private String printPinMode(String pin, boolean isOutput){
