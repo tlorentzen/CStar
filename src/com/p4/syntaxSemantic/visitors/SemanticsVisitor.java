@@ -657,6 +657,11 @@ public class SemanticsVisitor implements INodeVisitor {
         checkBooleanType(node, false);
     }
 
+    @Override
+    public void visit(MultValNode multValNode) {
+
+    }
+
     //Finds and returns the correct error message
     private String errorMessage(String errorType, String ... type) {
         switch (errorType) {

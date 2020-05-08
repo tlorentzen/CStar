@@ -42,6 +42,12 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLogical_expr(CStarParser.Logical_exprContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CStarParser#test_mult_val}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTest_mult_val(CStarParser.Test_mult_valContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CStarParser#interval}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

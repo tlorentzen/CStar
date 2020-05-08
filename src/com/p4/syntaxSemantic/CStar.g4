@@ -7,7 +7,8 @@ assign: (ID | array_access) ASSIGN_OP expr;
 expr: logical_expr;
 
 //CFG
-logical_expr: (cond_expr | interval | in_array) (( OR | AND ) (cond_expr | interval | in_array))*;
+logical_expr: (cond_expr | interval | in_array | test_mult_val) (( OR | AND ) (cond_expr | interval | in_array | test_mult_val))*;
+test_mult_val: value_expr ONE_OF LEFT_PAREN value_expr (COMMA value_expr)* RIGHT_PAREN;
 interval: value_expr BETWEEN (LEFT_BRACKET | RIGHT_BRACKET) value_expr SEMICOLON value_expr (LEFT_BRACKET | RIGHT_BRACKET);
 in_array: value_expr IN ID;
 cond_expr: arithm_expr (COMP_OP arithm_expr)?;
@@ -47,6 +48,7 @@ IS: 'IS';
 ISNOT: 'ISNOT';
 OR: 'OR';
 AND: 'AND';
+ONE_OF: 'ONE OF';
 ASSIGN_OP: '=';
 PLUS: '+';
 MINUS: '-';

@@ -125,6 +125,11 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(MultValNode multValNode) {
+
+    }
+
+    @Override
     public void visit(ModNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);

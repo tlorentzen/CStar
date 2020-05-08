@@ -53,4 +53,6 @@ public interface INodeVisitor {
     void visit(IncludeNode node);
 
     void visit(IntervalNode node);
+
+    void visit(MultValNode multValNode);
 }

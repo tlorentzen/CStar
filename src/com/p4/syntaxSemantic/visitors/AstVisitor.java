@@ -6,6 +6,7 @@ import com.p4.syntaxSemantic.nodes.*;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 //Creates the AST by visiting all nodes in the parse tree
@@ -168,8 +169,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         if (childCount == 1 && ctx.getChild(0) instanceof CStarParser.Cond_exprContext) {
             return visit(ctx.cond_expr(0));
         }
-        if (childCount == 1 && ctx.getChild(0) instanceof CStarParser.IntervalContext) {
+        else if (childCount == 1 && ctx.getChild(0) instanceof CStarParser.IntervalContext) {
             return visit(ctx.interval(0));
+        }
+        else if (childCount == 1 && ctx.getChild(0) instanceof CStarParser.Test_mult_valContext) {
+            return visit(ctx.test_mult_val(0));
         }
 
         //Enters if there are operations with AND OR OR
@@ -209,6 +213,9 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             } else if(parent.interval(condIndex) != null){
                 //Adds left child (interval)
                 node.children.add(visit(parent.interval(condIndex)));
+            } else if(parent.test_mult_val(condIndex) != null){
+                //Adds left child (interval)
+                node.children.add(visit(parent.test_mult_val(condIndex)));
             }
 
             //Adds right child (operator) by calling the method recursively
@@ -224,6 +231,10 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 // Adds left and right child (interval)
                 node.children.add(visit(parent.interval(condIndex)));
                 node.children.add(visit(parent.interval(condIndex + 1)));
+            } else if(parent.test_mult_val(condIndex) != null){
+                // Adds left and right child (testMultVal)
+                node.children.add(visit(parent.test_mult_val(condIndex)));
+                node.children.add(visit(parent.test_mult_val(condIndex + 1)));
             }
 
         }
@@ -875,4 +886,15 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
+    @Override public AstNode visitTest_mult_val(CStarParser.Test_mult_valContext ctx) {
+        MultValNode node = new MultValNode();
+
+        for(ParseTree child : ctx.children){
+            if(!(child instanceof TerminalNode)){
+                node.children.add(visit(child));
+            }
+        }
+
+        return node;
+    }
 }
