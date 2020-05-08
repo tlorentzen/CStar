@@ -113,6 +113,11 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append(")");
     }
 
+    @Override
+    public void visit(MultValNode multValNode) {
+        
+    }
+
     public void visit(FloatDclNode node) {
         visitDclNode(node);
     }
