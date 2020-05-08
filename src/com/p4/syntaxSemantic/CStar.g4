@@ -1,6 +1,6 @@
 grammar CStar;
 
-prog: ( dcl | stmt | func )* EOF;
+prog: ( dcl | stmt | func | include )* EOF;
 
 dcl: TYPE (ID | assign | array_dcl ) SEMICOLON;
 assign: (ID | array_access) ASSIGN_OP expr;
@@ -34,6 +34,7 @@ array_func: array_access DOT ID;
 val: CHAR_LITERAL | PIN_LITERAL | BOOLEAN_LITERAL | NUMBER | HIGH | LOW;
 
 comment: LINE_COMMENT;
+include: INCLUDE HEADER;
 
 //TOKEN SPECIFICATION
 COMP_OP: LESS_THAN | GREATER_THAN | IS | ISNOT | LESS_THAN_EQ | GREATER_THAN_EQ;
@@ -84,3 +85,5 @@ FUNCID: ( ('a'..'z' | 'A'..'Z' | '0'..'9' | '_') + ('.')? )+;
 WHITESPACE: [ \t]+ -> skip;
 Newline: ('\r' '\n'? | '\n' ) -> skip;
 LINE_COMMENT: '//' ~[\r\n]*;
+INCLUDE: '#include';
+HEADER: '<'(ID | FUNCID)'>';

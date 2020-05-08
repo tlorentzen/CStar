@@ -21,6 +21,7 @@ public class CodeVisitor implements INodeVisitor {
     StringBuilder stringBuilder = new StringBuilder();
     ArrayList<String> output = new ArrayList<>();
     SymbolTable symbolTable;
+    int currentIndent = 0;
 
     public CodeVisitor(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
@@ -228,12 +229,12 @@ public class CodeVisitor implements INodeVisitor {
         //Enters if the assignment is to read from a pin
         if (test.contains("analogRead") || test.contains("digitalRead")) {
             String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
-            insert(printPinMode(funcIDSplit[0],false),1);
+            stringBuilder.append(printPinMode(funcIDSplit[0],false));
         }
 
         else if(test.contains("analogWrite") || test.contains("digitalWrite")){
             String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
-            insert(printPinMode(funcIDSplit[0],true),1);
+            stringBuilder.append(printPinMode(funcIDSplit[0],true));
         }
     }
 
@@ -400,17 +401,25 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(BlkNode node) {
         stringBuilder.append("{\n");
         output.add(getLine());
+        currentIndent++;
+
+        if(node.getParentID().equals("setup")
+                && symbolTable.calledFunctions.contains("Serial.println")){
+            stringBuilder.append("Serial.begin(9600);\n");
+            output.add(getLine());
+        }
 
         for(AstNode child : node.children){
-            stringBuilder.append("    ");
             this.visitChild(child);
             if(child instanceof FuncCallNode){
                 stringBuilder.append(";\n");
+                output.add(getLine());
             }
         }
 
-        stringBuilder.append("\n}\n");
+        stringBuilder.append("}\n");
         output.add(getLine());
+        currentIndent--;
     }
 
     /**
@@ -473,7 +482,8 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append("-");
 
         //Checks if the string contained a '.'
-        if(funcIDSplit.length > 1) {
+        if(funcIDSplit.length > 1
+                && (funcIDSplit[1].equals("write") || funcIDSplit[1].equals("read"))) {
             this.handlePinReadAndWrite(firstParam, funcIDSplit);
         }else{
             //Handle functions that are not pin read or write
@@ -714,12 +724,16 @@ public class CodeVisitor implements INodeVisitor {
     private String getLine(){
         String line = stringBuilder.toString();
         stringBuilder.delete(0, stringBuilder.length());
-        return line;
-    }
 
-    private void insert(String result, int offset){
-        String line = stringBuilder.toString();
-        output.add(output.size()- offset, result);
+        int indent = currentIndent;
+        if(line.endsWith("}\n")){
+            indent--;
+        }
+
+        System.out.println("Current: " + currentIndent + ", index: " + indent + "\t\t" + line);
+
+        line = line.indent(indent * 4);
+        return line;
     }
 
     private String printPinMode(String pin, boolean isOutput){
