@@ -51,4 +51,5 @@ public interface INodeVisitor {
     void visit(StringNode node);
 
     void visit(CommentNode node);
+    void visit(IncludeNode node);
 }

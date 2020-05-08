@@ -678,6 +678,11 @@ public class SemanticsVisitor implements INodeVisitor {
 
     }
 
+    @Override
+    public void visit(IncludeNode node) {
+
+    }
+
     //Finds and returns the correct error message
     private String errorMessage(String errorType, String ... type) {
         switch (errorType) {

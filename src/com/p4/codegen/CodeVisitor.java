@@ -79,6 +79,28 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(FloatDclNode node) {
         visitDclNode(node);
+
+    @Override
+    public void visit(IncludeNode node) {
+        stringBuilder.append(node.getInclude());
+        stringBuilder.append("\n");
+    }
+
+    @Override
+    public void visit(ModNode node) {
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+
+        //Enters if there are parentheses present before the expression
+        checkParentheses(node, true);
+
+        //Adds the expression to the string builder
+        this.visitChild(leftChild);
+        stringBuilder.append(" % ");
+        this.visitChild(rightChild);
+
+        //Enters if there are parentheses present after the expression
+        checkParentheses(node, false);
     }
 
     //Format in Arduino C: char i;
