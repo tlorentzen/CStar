@@ -21,6 +21,7 @@ public class CodeVisitor implements INodeVisitor {
     StringBuilder stringBuilder = new StringBuilder();
     ArrayList<String> output = new ArrayList<>();
     SymbolTable symbolTable;
+    int currentIndent = 0;
 
     public CodeVisitor(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
@@ -401,15 +402,21 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append("{\n");
         output.add(getLine());
 
+        if(node.getParentID().equals("setup")
+                && symbolTable.calledFunctions.contains("Serial.println")){
+            stringBuilder.append("Serial.begin(9600);\n");
+            output.add(getLine());
+        }
+
         for(AstNode child : node.children){
-            stringBuilder.append("    ");
+            //stringBuilder.append("");
             this.visitChild(child);
             if(child instanceof FuncCallNode){
                 stringBuilder.append(";\n");
             }
         }
 
-        stringBuilder.append("\n}\n");
+        stringBuilder.append("}\n");
         output.add(getLine());
     }
 
@@ -473,7 +480,8 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append("-");
 
         //Checks if the string contained a '.'
-        if(funcIDSplit.length > 1) {
+        if(funcIDSplit.length > 1
+                && (funcIDSplit[1].equals("write") || funcIDSplit[1].equals("read"))) {
             this.handlePinReadAndWrite(firstParam, funcIDSplit);
         }else{
             //Handle functions that are not pin read or write
@@ -714,6 +722,15 @@ public class CodeVisitor implements INodeVisitor {
     private String getLine(){
         String line = stringBuilder.toString();
         stringBuilder.delete(0, stringBuilder.length());
+        System.out.println(line);
+        if(line.endsWith("{\n")){
+            currentIndent++;
+        } else if (line.equals("\n}\n")){
+            currentIndent -= 2;
+        } else if (line.endsWith("}\n")){
+            currentIndent--;
+        }
+        stringBuilder.append("    ".repeat(Math.max(0, currentIndent)));
         return line;
     }
 

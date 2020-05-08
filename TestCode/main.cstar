@@ -1,7 +1,10 @@
+pin hest = 2;
+
 void setup(){
 
 }
 
+//Hest
 void loop(){
 
 }

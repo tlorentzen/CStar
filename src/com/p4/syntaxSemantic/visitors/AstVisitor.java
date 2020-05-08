@@ -587,6 +587,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return childVisitor(blkNode, ctx.children.toArray(ParseTree[]::new));
     }
 
+    public AstNode handleBlk(CStarParser.BlkContext ctx, String id) {
+        BlkNode node = (BlkNode)visit(ctx);
+        node.setParentID(id);
+        return node;
+    }
+
 
     @Override
     public AstNode visitPrint(CStarParser.PrintContext ctx) {
@@ -635,7 +641,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             funcNode.children.add(visit(ctx.param()));
         }
 
-        funcNode.children.add(visit(ctx.blk()));
+        funcNode.children.add( handleBlk(ctx.blk(), funcNode.getId()));
+        funcNode.lineNumber = ctx.start.getLine();
         funcNode.lineNumber = ctx.start.getLine();
 
         return funcNode;
@@ -817,5 +824,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         else {
             return null;
         }
+    }
+    @Override public AstNode visitComment(CStarParser.CommentContext ctx) {
+        return new CommentNode(ctx.getText());
     }
 }
