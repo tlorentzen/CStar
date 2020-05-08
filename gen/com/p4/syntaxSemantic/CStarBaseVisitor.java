@@ -1,13 +1,4 @@
-CStar.interp
-		CStar.tokens
-		CStarBaseListener.java
-		CStarBaseVisitor.java
-		CStarLexer.interp
-		CStarLexer.java
-		CStarLexer.tokens
-		CStarListener.java
-		CStarParser.java
-		CStarVisitor.java// Generated from C:/Users/ichris18/Documents/GitHub/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/ichris18/Documents/GitHub/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
 package com.p4.syntaxSemantic;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
