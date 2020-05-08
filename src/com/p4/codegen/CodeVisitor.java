@@ -722,7 +722,7 @@ public class CodeVisitor implements INodeVisitor {
     private String getLine(){
         String line = stringBuilder.toString();
         stringBuilder.delete(0, stringBuilder.length());
-        System.out.println(line);
+        //System.out.println(line);
         if(line.endsWith("{\n")){
             currentIndent++;
         } else if (line.equals("\n}\n")){

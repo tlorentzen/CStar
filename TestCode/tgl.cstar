@@ -36,10 +36,9 @@ void setBarGraph() {
     integer barState = map(constrain(valPot1, 0, 1023), 0, 1023, 0, 10);
 
     while(counter < numOfGraphLeds) repeat{
-        if(barState > counter+1 AND barState IS counter+1){
-            bargraph[counter].write(255);
+        if(barState >= counter+1){
+            bargraph[counter].write(HIGH);
         }else{
-            bargraph[counter].write(0);
             bargraph[counter].write(LOW);
         }
 
