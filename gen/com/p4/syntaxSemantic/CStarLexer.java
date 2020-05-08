@@ -1,4 +1,4 @@
-// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/ichris18/Documents/GitHub/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
 package com.p4.syntaxSemantic;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -22,8 +22,8 @@ public class CStarLexer extends Lexer {
 		MODULO=15, LEFT_PAREN=16, RIGHT_PAREN=17, LEFT_BRACKET=18, RIGHT_BRACKET=19, 
 		LEFT_BRACE=20, RIGHT_BRACE=21, SEMICOLON=22, DOT=23, IF=24, ELSE=25, WHILE=26, 
 		REPEAT=27, COMMA=28, VOID=29, TYPE=30, ARRAY=31, RETURN=32, PRINT=33, 
-		HIGH=34, LOW=35, NUMBER=36, BOOLEAN_LITERAL=37, PIN_LITERAL=38, CHAR_LITERAL=39, 
-		STRING_LITERAL=40, ID=41, FUNCID=42, WHITESPACE=43, Newline=44, LINE_COMMENT=45, 
+		HIGH=34, LOW=35, NUMBER=36, BOOLEAN_LITERAL=37, PIN_LITERAL=38, CHAR_LITERAL=39,
+		STRING_LITERAL=40, ID=41, FUNCID=42, WHITESPACE=43, Newline=44, LINE_COMMENT=45,
 		INCLUDE=46, HEADER=47;
 	public static String[] channelNames = {
 		"DEFAULT_TOKEN_CHANNEL", "HIDDEN"
@@ -40,7 +40,7 @@ public class CStarLexer extends Lexer {
 			"MODULO", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACKET", "RIGHT_BRACKET", 
 			"LEFT_BRACE", "RIGHT_BRACE", "SEMICOLON", "DOT", "IF", "ELSE", "WHILE", 
 			"REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", "PRINT", "HIGH", 
-			"LOW", "NUMBER", "BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL", 
+			"LOW", "NUMBER", "BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL",
 			"ID", "FUNCID", "WHITESPACE", "Newline", "LINE_COMMENT", "INCLUDE", "HEADER"
 		};
 	}
@@ -52,7 +52,7 @@ public class CStarLexer extends Lexer {
 			"'+'", "'-'", "'*'", "'/'", "'<='", "'>='", "'%'", "'('", "')'", "'['", 
 			"']'", "'{'", "'}'", "';'", "'.'", "'if'", "'else'", "'while'", "'repeat'", 
 			"','", "'void'", null, "'array'", "'return'", "'console.print'", "'HIGH'", 
-			"'LOW'", null, null, null, null, null, null, null, null, null, null, 
+			"'LOW'", null, null, null, null, null, null, null, null, null, null,
 			"'#include'"
 		};
 	}
@@ -64,7 +64,7 @@ public class CStarLexer extends Lexer {
 			"MODULO", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACKET", "RIGHT_BRACKET", 
 			"LEFT_BRACE", "RIGHT_BRACE", "SEMICOLON", "DOT", "IF", "ELSE", "WHILE", 
 			"REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", "PRINT", "HIGH", 
-			"LOW", "NUMBER", "BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL", 
+			"LOW", "NUMBER", "BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL",
 			"ID", "FUNCID", "WHITESPACE", "Newline", "LINE_COMMENT", "INCLUDE", "HEADER"
 		};
 	}

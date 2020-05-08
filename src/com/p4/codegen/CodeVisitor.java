@@ -10,7 +10,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+//Generates the Arduino code that corresponds to the CStar source code
 public class CodeVisitor implements INodeVisitor {
     //FilePath is used to specify the location for the compiled Arduino file
     String filePath = System.getProperty("user.dir") + "/compile-out/compile-out.ino";
@@ -40,6 +42,12 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(ProgNode node) {
+        //Only visits as no information should be added to the generated file.
+        this.visitChildren(node);
+    }
+
+    @Override
     public void visitChildren(AstNode node) {
         for (AstNode child : node.children) {
             child.accept(this);
@@ -51,91 +59,15 @@ public class CodeVisitor implements INodeVisitor {
         node.accept(this);
     }
 
+    //Format in Arduino C: int i;
     @Override
-    public void visit(PrintNode node) {
-        //Enters if there is more than one element in the format string
-        if (node.getFormatString().size() > 1) {
-            //Creates a print function for each element in the format string
-            for (AstNode element : node.getFormatString()) {
-                stringBuilder.append("Serial.print(");
-                this.visitChild(element);
-                stringBuilder.append(");\n");
-            }
-            stringBuilder.append("Serial.println()");
-        }
-        else {
-            stringBuilder.append("Serial.println(");
-            this.visitChild(node.getFormatString().get(0));
-            stringBuilder.append(");\n");
-        }
-        output.add(getLine());
+    public void visit(IntegerDclNode node) {
+        visitDclNode(node);
     }
 
+    //Format in Arduino C: long i;
     @Override
-    public void visit(FloatNode node) {
-        //Checks if the node is negative
-        stringBuilder.append(node.getIsNegative() ? "-" : "");
-        stringBuilder.append(node.getValue());
-    }
-
-    @Override
-    public void visit(ConstantNode node) {
-        stringBuilder.append(node.getValue());
-    }
-
-    @Override
-    public void visit(CommentNode node) {
-        stringBuilder.append(node.getComment());
-        output.add(getLine());
-    }
-
-    @Override
-    public void visit(ModNode node) {
-        AstNode leftChild = node.children.get(0);
-        AstNode rightChild = node.children.get(1);
-
-        //Enters if there are parentheses present before the expression
-        checkParentheses(node, true);
-
-        //Adds the expression to the string builder
-        this.visitChild(leftChild);
-        stringBuilder.append(" % ");
-        this.visitChild(rightChild);
-
-        //Enters if there are parentheses present after the expression
-        checkParentheses(node, false);
-    }
-
-    @Override
-    public void visit(NumberNode node) {
-        if (node.getParentheses()) {
-            stringBuilder.append("(");
-        }
-
-        stringBuilder.append(node.getIsNegative() ? "-" : "");
-        stringBuilder.append(node.getValue());
-
-        if (node.getParentheses()) {
-            stringBuilder.append(")");
-        }
-    }
-
-    private void checkParentheses(ExpressionNode node, boolean isStart) {
-        if (node.getParentheses() && isStart) {
-            stringBuilder.append("(");
-        }
-        else if (node.getParentheses() && !isStart) {
-            stringBuilder.append(")");
-        }
-    }
-
-    @Override
-    public void visit(BooleanNode node) {
-        stringBuilder.append(node.getValue());
-    }
-
-    @Override
-    public void visit(BooleanDclNode node) {
+    public void visit(LongDclNode node) {
         visitDclNode(node);
     }
 
@@ -144,16 +76,73 @@ public class CodeVisitor implements INodeVisitor {
         visitDclNode(node);
     }
 
+    //Format in Arduino C: float i;
     @Override
-    public void visit(StringNode node){
-        stringBuilder.append(node.getValue());
+    public void visit(FloatDclNode node) {
+        visitDclNode(node);
     }
 
+    //Format in Arduino C: char i;
+    @Override
+    public void visit(CharDclNode node) {
+        visitDclNode(node);
+    }
+
+    //Format in Arduino C: int pinName;
+    @Override
+    public void visit(PinDclNode node) {
+        stringBuilder.append("int ");
+        stringBuilder.append(node.getId());
+    }
+
+    @Override
+    public void visit(BooleanDclNode node) {
+        visitDclNode(node);
+    }
+
+    //Format in Arduino C: int i
+    public void visitDclNode(DclNode<?> node){
+        stringBuilder.append(getTargetType(node.type));
+        stringBuilder.append(" ");
+        stringBuilder.append(node.getId());
+    }
+
+    //Converts CStar types to Arduino C types
+    private String getTargetType(String type){
+        switch (type) {
+            case "integer":
+            case "pin":
+                return "int";
+            case "decimal":
+                return "float";
+            case "long integer":
+                return "long";
+            case "character":
+                return "char";
+            case "small integer":
+                return "byte";
+            default:
+                return type;
+        }
+    }
+
+    @Override
+    public void visit(AssignNode node) {
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+
+        //Gets the statement and adds it to the output
+        this.visitChild(leftChild);
+        stringBuilder.append(" = ");
+        this.visitChild(rightChild);
+        stringBuilder.append(";\n");
+        output.add(getLine());
+    }
 
     @Override
     public void visit(LogicalNode node) {
         checkParentheses(node, true);
-        //Gets the left operand
+        //Visits the left operand
         this.visitChild(node.children.get(0));
 
         //Converts the logical operator to the actual logical operator '&&' or '||'
@@ -165,7 +154,7 @@ public class CodeVisitor implements INodeVisitor {
                 stringBuilder.append(" && ");
                 break;
         }
-        //Gets the right operand
+        //Visits the right operand
         this.visitChild(node.children.get(1));
         checkParentheses(node, false);
     }
@@ -242,137 +231,42 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(CondNode node) {
         checkParentheses(node, true);
-        //Left operand
+        //Visits the left operand
         this.visitChild(node.children.get(0));
 
-        //Operator
-        switch (node.getToken()){
-            case 2:
+        //Gets the correct operator
+        switch (node.getToken()) {
+            case CStarParser.LESS_THAN:
                 stringBuilder.append(" < ");
                 break;
-            case 3:
+            case CStarParser.GREATER_THAN:
                 stringBuilder.append(" > ");
                 break;
-            case 4:
+            case CStarParser.IS:
                 stringBuilder.append(" == ");
                 break;
-            case 5:
+            case CStarParser.ISNOT:
                 stringBuilder.append(" != ");
                 break;
-            case 13:
+            case CStarParser.LESS_THAN_EQ:
                 stringBuilder.append(" <= ");
                 break;
-            case 14:
+            case CStarParser.GREATER_THAN_EQ:
                 stringBuilder.append(" >= ");
                 break;
         }
-        //Right operand
+        //Visits the right operand
         this.visitChild(node.children.get(1));
         checkParentheses(node, false);
     }
 
-    /**
-     * Just visits the children of the program node, as no information should be added to the generated file.
-     * @param node is the program node to be handled.
-     */
-    @Override
-    public void visit(ProgNode node) {
-        this.visitChildren(node);
-    }
-
-    /**
-     * Creates an array assign
-     * First child is ID, second is the index value of the array, and third is the value to be assigned to.
-     * Format in Arduino C: intArray[0] = 10;
-     * @param node is the array assign node to be handled.
-     */
-    @Override
-    public void visit(ArrayAccessNode node) {
-
-        if(node.getIsNegative())
-            stringBuilder.append("-");
-
-        //Id is index 0, the Index is at index 1, and the assigned value is at 2
-        visitChild(node.children.get(0));
-        stringBuilder.append("[");
-        visitChild(node.children.get(1));
-        //Deletes semicolon and new line if its found
-        int length = stringBuilder.length();
-        if(stringBuilder.charAt( length - 2) == ';'){
-            stringBuilder.delete(length -2, length);
-        }
-        stringBuilder.append("]");
-    }
-
-    /**
-     * Creates an array expr (array elements)
-     * All children are elements of an array
-     * @param node is the array expr node to be handled.
-     */
-    @Override
-    public void visit(ArrayExprNode node) {
-        for(AstNode child : node.children){
-            visitChild(child);
-            stringBuilder.append(", ");
-        }
-        //Deletes leftover comma and whitespace
-        stringBuilder.deleteCharAt(stringBuilder.length()-2);
-        stringBuilder.deleteCharAt(stringBuilder.length()-1);
-    }
-
-    /**
-     * The array id of an array
-     * Format in Arduino C: int i[]
-     * @param node is the array node to be handled.
-     */
-    @Override
-    public void visit(ArrayNode node) {
-        stringBuilder.append(getTargetType(node.type));
-        stringBuilder.append(" ");
-        stringBuilder.append(node.getId());
-        stringBuilder.append("[]");
-    }
-
-    /**
-     * Creates an array dcl
-     * First child is the array ID, second is the array expr (array elements)
-     * Format in Arduino C: int i[] = {1, 2, 3};
-     * @param node is the array dcl node to be handled.
-     */
-    @Override
-    public void visit(ArrayDclNode<?> node) {
-        visitChild(node.children.get(0));
-        stringBuilder.append(" = ");
-        stringBuilder.append("{");
-        visitChild(node.children.get(1));
-        stringBuilder.append("}");
-        stringBuilder.append(";\n");
-        output.add(getLine());
-    }
-
-    /**
-     * Creates an return expr
-     * Format in Arduino C: return i + 10;
-     * @param node is the return expr node to be handled.
-     */
-    @Override
-    public void visit(ReturnExpNode node) {
-        stringBuilder.append("return ");
-        this.visitChild(node.children.get(0));
-        stringBuilder.append(";\n");
-        output.add(getLine());
-    }
-
-    /**
-     * Creates an add operation.
-     * First child is left side, second is right side
-     * Format in Arduion C: 10 + 20
-     * @param node is the add node to be handled.
-     */
+    //Format in Arduino C: 10 + 20
     @Override
     public void visit(AddNode node) {
+        //First child is left side, second is right side
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
+
         checkParentheses(node, true);
         this.visitChild(leftChild);
         stringBuilder.append(" + ");
@@ -380,14 +274,7 @@ public class CodeVisitor implements INodeVisitor {
         checkParentheses(node, false);
     }
 
-    /**
-     * Creates a block with all its children
-     * Format in Arduino C:
-     * {
-     *     int i = 0;
-     * }
-     * @param node is the blk node to be handled.
-     */
+    //Format in Arduino C: 10 - 20
     @Override
     public void visit(BlkNode node) {
         stringBuilder.append("{\n");
@@ -412,265 +299,12 @@ public class CodeVisitor implements INodeVisitor {
         output.add(getLine());
         currentIndent--;
     }
-
-    /**
-     * Creates a char declaration
-     * Format in Arduino C: char i;
-     * @param node is the char node to be handled.
-     */
-    @Override
-    public void visit(CharDclNode node) {
-        visitDclNode(node);
-    }
-
-    /**
-     * Creates a division operation.
-     * First child is left side, second is right side
-     * Format in Arduion C: 10 / 20
-     * @param node is the division node to be handled.
-     */
-    @Override
-    public void visit(DivNode node) {
-        AstNode leftChild = node.children.get(0);
-        AstNode rightChild = node.children.get(1);
-        checkParentheses(node, true);
-        this.visitChild(leftChild);
-        stringBuilder.append(" / ");
-        this.visitChild(rightChild);
-        checkParentheses(node, false);
-    }
-
-    /**
-     * Creates a float declaration
-     * Format in Arduino C: float i;
-     * @param node is the float node to be handled.
-     */
-    @Override
-    public void visit(FloatDclNode node) {
-        visitDclNode(node);
-    }
-
-    /**
-     * Creates a function call. First child is the ID, all subsequent children are parameters.
-     * Format in Arduino C: modulo(10, 20);
-     * @param node is the func call node to be handled.
-     */
-    @Override
-    public void visit(FuncCallNode node) {
-        AstNode id = node.children.get(0);
-        AstNode firstParam = null;
-
-        //Checks if the node has more than 1 child and sets the second child it as the first parameter,
-        //as the first child is the ID of the node
-        if(node.children.size() > 1){
-            firstParam = node.children.get(1);
-        }
-
-        //Splits the function ID on '.' to check for read and write functions
-        String[] funcIDSplit = ((IdNode)id).getId().split("\\.");
-
-        if(node.getIsNegative())
-            stringBuilder.append("-");
-
-        //Checks if the string contained a '.'
-        if(funcIDSplit.length > 1
-                && (funcIDSplit[1].equals("write") || funcIDSplit[1].equals("read"))) {
-            this.handlePinReadAndWrite(firstParam, funcIDSplit);
-        }else{
-            //Handle functions that are not pin read or write
-            this.visitChild(id);
-            stringBuilder.append("(");
-
-            //Adds the parameters of the function to the call
-            int counter = node.children.size() - 1;
-            for(AstNode child : node.children.subList( 1, node.children.size())){
-                this.visitChild(child);
-                counter--;
-                if(counter > 0){
-                    stringBuilder.append(", ");
-                }
-            }
-            stringBuilder.append(")");
-        }
-    }
-
-    /**
-     * Handles code generation for the pin.read and pin.write functions
-     * @param firstParam the first parameter of the function call
-     * @param funcIDSplit the ID of the function split on '.' into an array
-     */
-    private void handlePinReadAndWrite(AstNode firstParam, String[] funcIDSplit) {
-        if (funcIDSplit[1].equals("read")) {
-            Attributes attributes = this.symbolTable.lookupSymbol(funcIDSplit[0]);
-           
-            //The call is assumed to be a pin read
-            if (attributes != null && ((PinAttributes)attributes).getAnalog()) {
-                //The pin is instantiated as an analog pin
-                stringBuilder.append("analogRead(");
-            } 
-            else if (attributes != null) {
-                //The pin is instantiated as a digital pin
-                stringBuilder.append("digitalRead(");
-            }
-            else {
-                System.out.println("Pin attributes is null");
-            }
-            stringBuilder.append(funcIDSplit[0]);
-        }
-        else if (firstParam != null && funcIDSplit[1].equals("write")) {
-            //The call is assumed to be a pin write
-            if (firstParam instanceof NumberNode || 
-               (firstParam instanceof IdNode && 
-               (firstParam.type.equals("integer") ||
-                firstParam.type.equals("long integer") || 
-                firstParam.type.equals("small integer") ||
-                firstParam.type.equals("character") ||
-                firstParam.type.equals("ArduinoC")))) {
-                //The value to be written to the pin could be any number
-                stringBuilder.append("analogWrite(");
-                stringBuilder.append(funcIDSplit[0]);
-                stringBuilder.append(",");
-                visitChild(firstParam);
-            } else if (firstParam.type.equals("constant")){
-                //The value to be written to the pin is either HIGH or LOW
-                stringBuilder.append("digitalWrite(");
-                stringBuilder.append(funcIDSplit[0]);
-                stringBuilder.append(",");
-                visitChild(firstParam);
-            }
-        }
-        stringBuilder.append(")");
-    }
-
-    /**
-     * Creates a function declaration.
-     * Children are parameters and a block.
-     * Format in Arduino C: void main(char argv[]){ }
-     * @param node is the func node to be handled.
-     */
-    @Override
-    public void visit(FuncDclNode node) {
-        symbolTable.enterScope(node.getNodeHash());
-        stringBuilder.append(getTargetType(node.getReturnType()));
-        stringBuilder.append(" ");
-        stringBuilder.append(node.getId());
-        if(node.children.size() == 1){
-            stringBuilder.append("()");
-        }
-        this.visitChildren(node);
-        symbolTable.leaveScope();
-    }
-
-    /**
-     * Creates an integer declaration
-     * Format in Arduino C: int i;
-     * @param node is the integer node to be handled.
-     */
-    @Override
-    public void visit(IntegerDclNode node) {
-        visitDclNode(node);
-    }
-
-    /**
-     * Creates an iterative while loop
-     * First child is logical expression, second is a block.
-     * Format in Arduino C: while(10 < 20){ int i = 0; }
-     * @param node is the iterative node to be handled.
-     */
-    @Override
-    public void visit(IterativeNode node) {
-        stringBuilder.append("while(");
-        this.visitChild(node.children.get(0));
-        stringBuilder.append(")");
-        this.visitChild(node.children.get(1));
-    }
-
-    /**
-     * Creates a long declaration
-     * Format in Arduino C: long i;
-     * @param node is the long dcl node to be handled.
-     */
-    @Override
-    public void visit(LongDclNode node) {
-        visitDclNode(node);
-    }
-
-    /**
-     * Creates a multiply operation
-     * First child is left side, second is right side
-     * Format in Arduino C: 10 * 20
-     * @param node is the return expr node to be handled.
-     */
-    @Override
-    public void visit(MultNode node) {
-        AstNode leftChild = node.children.get(0);
-        AstNode rightChild = node.children.get(1);
-        checkParentheses(node, true);
-        this.visitChild(leftChild);
-        stringBuilder.append(" * ");
-        this.visitChild(rightChild);
-        checkParentheses(node, false);
-    }
-
-    /**
-     * Creates parameters for functions
-     * All children are different parameters.
-     * Format in Arduino C: void main(int i, long j){ }
-     * @param node is the parameter node to be handled.
-     */
-    @Override
-    public void visit(ParamNode node) {
-        stringBuilder.append("(");
-        for(AstNode child : node.children){
-            stringBuilder.append(getTargetType(child.type)).append(" ");
-            this.visitChild(child);
-            stringBuilder.append(", ");
-        }
-        //Deletes leftover comma and whitespace
-        stringBuilder.deleteCharAt(stringBuilder.length()-2);
-        stringBuilder.deleteCharAt(stringBuilder.length()-1);
-        stringBuilder.append(")");
-    }
-
-    /**
-     * Makes a pin declaration.
-     * Format in Arduino C: int pinName;
-     * @param node is the pin dcl node to be handled.
-     */
-    @Override
-    public void visit(PinDclNode node) {
-        stringBuilder.append("int ");
-        stringBuilder.append(node.getId());
-    }
-
-    /**
-     * Creates a selection if else.
-     * First child is a logical expr, second is a block, third is also a block
-     * Format in Arduino C: if(10 < 20){ int i = 0; } else { int i = 1; }
-     * @param node is the selection node to be handled.
-     */
-    @Override
-    public void visit(SelectionNode node) {
-        stringBuilder.append("if (");
-        this.visitChild(node.children.get(0));
-        stringBuilder.append(")");
-        visitChild(node.children.get(1));
-        if(node.children.size() > 2){
-            stringBuilder.append("else ");
-            visitChild(node.children.get(2));
-        }
-    }
-
-    /**
-     * Creates a subtraction operation
-     * First child is left side, second is right side
-     * Format in Arduino C: 10 - 20
-     * @param node is the subtraction node to be handled.
-     */
-    @Override
+  
     public void visit(SubNode node) {
+        //First child is left side, second is right side
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
+
         checkParentheses(node, true);
         this.visitChild(leftChild);
         stringBuilder.append(" - ");
@@ -678,37 +312,400 @@ public class CodeVisitor implements INodeVisitor {
         checkParentheses(node, false);
     }
 
-    /**
-     * Makes a general declaration for types.
-     * Format in Ardunio C: int i
-     * @param node is the dcl node to be handled.
-     */
-    public void visitDclNode(DclNode<?> node){
+    //Format in Arduino C: 10 * 20
+    @Override
+    public void visit(MultNode node) {
+        //First child is left side, second is right side
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+
+        checkParentheses(node, true);
+        this.visitChild(leftChild);
+        stringBuilder.append(" * ");
+        this.visitChild(rightChild);
+        checkParentheses(node, false);
+    }
+
+    //Format in Arduino C: 10 / 20
+    @Override
+    public void visit(DivNode node) {
+        //First child is left side, second is right side
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+
+        checkParentheses(node, true);
+        this.visitChild(leftChild);
+        stringBuilder.append(" / ");
+        this.visitChild(rightChild);
+        checkParentheses(node, false);
+    }
+
+    @Override
+    public void visit(ModNode node) {
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+
+        //Enters if there are parentheses present before the expression
+        checkParentheses(node, true);
+
+        //Adds the expression to the string builder
+        this.visitChild(leftChild);
+        stringBuilder.append(" % ");
+        this.visitChild(rightChild);
+
+        //Enters if there are parentheses present after the expression
+        checkParentheses(node, false);
+    }
+
+    private void checkParentheses(ExpressionNode node, boolean isStart) {
+        if (node.getParentheses() && isStart) {
+            stringBuilder.append("(");
+        }
+        else if (node.getParentheses() && !isStart) {
+            stringBuilder.append(")");
+        }
+    }
+
+    //Format in Arduino C: int i[] = {1, 2, 3};
+    @Override
+    public void visit(ArrayDclNode<?> node) {
+        //First child is the array ID
+        visitChild(node.children.get(0));
+        stringBuilder.append(" = ");
+        stringBuilder.append("{");
+        //Second child is the array expr (array elements)
+        visitChild(node.children.get(1));
+        stringBuilder.append("}");
+        stringBuilder.append(";\n");
+        output.add(getLine());
+    }
+
+    @Override
+    public void visit(ArrayExprNode node) {
+        //Visits the elements of an array and adds commas between them
+        for (AstNode child : node.children) {
+            visitChild(child);
+            stringBuilder.append(", ");
+        }
+
+        //Deletes the extra comma and whitespace
+        stringBuilder.deleteCharAt(stringBuilder.length() - 2);
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+    }
+
+    //Format in Arduino C: i[0]
+    @Override
+    public void visit(ArrayAccessNode node) {
+        if (node.getIsNegative()) {
+            stringBuilder.append("-");
+        }
+
+        //Id is at index 0 and the Index is at index 1
+        visitChild(node.children.get(0));
+        stringBuilder.append("[");
+        visitChild(node.children.get(1));
+        stringBuilder.append("]");
+    }
+
+    //Format in Arduino C: int i[]
+    @Override
+    public void visit(ArrayNode node) {
         stringBuilder.append(getTargetType(node.type));
         stringBuilder.append(" ");
         stringBuilder.append(node.getId());
+        stringBuilder.append("[]");
     }
 
-    /**
-     * Converts CStar types to Arduino C types
-     * @param type is the CStar type
-     * @return Arduino C type
-     */
-    private String getTargetType(String type){
-        switch (type){
-            case "integer":
-            case "pin":
-                return "int";
-            case "decimal":
-                return "float";
-            case "long integer":
-                return "long";
-            case "character":
-                return "char";
-            case "small integer":
-                return "byte";
-            default:
-                return type;
+    //Format in Arduino C: while(10 < 20){ int i = 0; }
+    @Override
+    public void visit(IterativeNode node) {
+        stringBuilder.append("while(");
+        //First child is logical expression
+        this.visitChild(node.children.get(0));
+        stringBuilder.append(")");
+        //Second child is the block
+        this.visitChild(node.children.get(1));
+    }
+
+    //Format in Arduino C: if(10 < 20){ int i = 0; } else { int i = 1; }
+    @Override
+    public void visit(SelectionNode node) {
+        stringBuilder.append("if (");
+
+        //First child is a logical expr
+        this.visitChild(node.children.get(0));
+        stringBuilder.append(")");
+        //Second and third children are blocks
+        visitChild(node.children.get(1));
+
+        //Enters if there is an else block
+        if (node.children.size() > 2) {
+            stringBuilder.append("else ");
+            visitChild(node.children.get(2));
+        }
+    }
+
+    //Format in Arduino C:
+    // {
+    //    int i = 0;
+    // }
+    @Override
+    public void visit(BlkNode node) {
+        stringBuilder.append("{\n");
+        output.add(getLine());
+
+        //Visits the children of the block and adds indentation
+        for (AstNode child : node.children) {
+            stringBuilder.append("    ");
+            this.visitChild(child);
+
+            if (child instanceof FuncCallNode) {
+                stringBuilder.append(";\n");
+            }
+        }
+
+        stringBuilder.append("\n}\n");
+        output.add(getLine());
+    }
+
+    @Override
+    public void visit(PrintNode node) {
+        //Enters if there is more than one element in the format string
+        if (node.getFormatString().size() > 1) {
+            //Creates a print function for each element in the format string
+            for (AstNode element : node.getFormatString()) {
+                stringBuilder.append("Serial.print(");
+                this.visitChild(element);
+                stringBuilder.append(");\n");
+            }
+            stringBuilder.append("Serial.println()");
+        }
+        else {
+            stringBuilder.append("Serial.println(");
+            this.visitChild(node.getFormatString().get(0));
+            stringBuilder.append(");\n");
+        }
+        output.add(getLine());
+    }
+
+    //Format in Arduino C: void main(char argv[]){ }
+    @Override
+    public void visit(FuncDclNode node) {
+        symbolTable.enterScope(node.getNodeHash());
+
+        stringBuilder.append(getTargetType(node.getReturnType()));
+        stringBuilder.append(" ");
+        stringBuilder.append(node.getId());
+
+        //Enters if there are no parameters
+        if (node.children.size() == 1) {
+            stringBuilder.append("()");
+        }
+        this.visitChildren(node);
+
+        symbolTable.leaveScope();
+    }
+
+    //Format in Arduino C: (int i, long j)
+    @Override
+    public void visit(ParamNode node) {
+        stringBuilder.append("(");
+
+        for (AstNode child : node.children) {
+            stringBuilder.append(getTargetType(child.type)).append(" ");
+            this.visitChild(child);
+            stringBuilder.append(", ");
+        }
+
+        //Deletes the extra comma and whitespace
+        stringBuilder.deleteCharAt(stringBuilder.length() - 2);
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+
+        stringBuilder.append(")");
+    }
+
+    //Format in Arduino C: return i + 10;
+    @Override
+    public void visit(ReturnExpNode node) {
+        stringBuilder.append("return ");
+        this.visitChild(node.children.get(0));
+        stringBuilder.append(";\n");
+        output.add(getLine());
+    }
+
+    //Format in Arduino C: modulo(10, 20);
+    @Override
+    public void visit(FuncCallNode node) {
+        //First child is the ID of the function, all subsequent children are parameters.
+        AstNode id = node.children.get(0);
+        AstNode firstParam = null;
+
+        //Enters if there are parameters
+        if (node.children.size() > 1) {
+            firstParam = node.children.get(1);
+        }
+        if (node.getIsNegative()) {
+            stringBuilder.append("-");
+        }
+
+        String[] funcIDSplit = ((IdNode)id).getId().split("\\.");
+
+        //Checks if the string contains a '.'
+        if (funcIDSplit.length > 1) {
+            this.handleReadAndWrite(firstParam, funcIDSplit);
+        }
+        //Enters if functions are not pin read or write
+        else {
+            addParameters(node, id);
+        }
+    }
+
+    //Handles code generation for the pin.read and pin.write functions
+    private void handleReadAndWrite(AstNode parameter, String[] funcIDSplit) {
+        //Enters if a read function has been called on the pin
+        if (funcIDSplit[1].equals("read")) {
+            String pinMode = printPinMode(funcIDSplit[0],false);
+            output.add(output.size(), pinMode);
+            handleRead(funcIDSplit[0]);
+        }
+        //Enters if a write function has been called on the pin
+        else if (parameter != null && funcIDSplit[1].equals("write")) {
+            String pinMode = printPinMode(funcIDSplit[0],true);
+            output.add(output.size(), pinMode);
+            handleWrite(parameter, funcIDSplit[0]);
+        }
+        stringBuilder.append(")");
+    }
+
+    //Sets pin mode for the pin
+    private String printPinMode(String pin, boolean isOutput) {
+        String pinMode = "\tpinMode(" + pin + ", ";
+
+        if (isOutput) {
+            pinMode += "OUTPUT";
+        }
+        else {
+            pinMode += "INPUT";
+        }
+
+        pinMode += ");\n";
+        return pinMode;
+    }
+
+    private void handleRead(String pinId) {
+        Attributes attributes = this.symbolTable.lookupSymbol(pinId);
+
+        //Enters if the pin is analog
+        if (attributes != null && ((PinAttributes)attributes).getAnalog()) {
+            stringBuilder.append("analogRead(");
+        }
+        //Enters if the pin is digital
+        else if (attributes != null) {
+            stringBuilder.append("digitalRead(");
+        }
+        else {
+            //Todo: handle attributes = null
+        }
+        stringBuilder.append(pinId);
+    }
+
+    private void handleWrite(AstNode parameter, String pinId) {
+        if (parameter instanceof ConstantNode) {
+            //The value to be written to the pin is either HIGH or LOW
+            stringBuilder.append("digitalWrite(");
+            stringBuilder.append(pinId);
+            stringBuilder.append(",");
+            visitChild(parameter);
+        }
+        else if ((parameter instanceof NumberNode || parameter instanceof IdNode) && checkWriteType(parameter.type)) {
+            //The value to be written to the pin is either HIGH or LOW
+            stringBuilder.append("analogWrite(");
+            stringBuilder.append(pinId);
+            stringBuilder.append(",");
+            visitChild(parameter);
+        }
+    }
+
+    private boolean checkWriteType(String writeType) {
+        return (writeType.equals("integer") || writeType.equals("long integer") ||
+                writeType.equals("small integer") || writeType.equals("character") ||
+                writeType.equals("ArduinoC"));
+    }
+
+    private void addParameters(AstNode node, AstNode id) {
+        this.visitChild(id);
+        stringBuilder.append("(");
+
+        int parameterCounter = node.children.size() - 1;
+        List<AstNode> parameters = node.children.subList( 1, node.children.size());
+
+        //Adds the parameters of the function to the call
+        for (AstNode parameter : parameters) {
+            this.visitChild(parameter);
+            parameterCounter--;
+
+            //Enters if there are more than one parameter to be added
+            if (parameterCounter > 0) {
+                stringBuilder.append(", ");
+            }
+        }
+        stringBuilder.append(")");
+    }
+
+    @Override
+    public void visit(IdNode node) {
+        //Enters if the id is the sleep function
+        if (node.getId().equals("sleep")) {
+            stringBuilder.append("delay");
+        }
+        else {
+            //Enters if the id node is negative
+            if (node.getIsNegative()) {
+                stringBuilder.append("-");
+            }
+            stringBuilder.append(node.getId());
+        }
+    }
+
+    @Override
+    public void visit(NumberNode node) {
+        if (node.getParentheses()) {
+            stringBuilder.append("(");
+        }
+
+        stringBuilder.append(node.getIsNegative() ? "-" : "");
+        stringBuilder.append(node.getValue());
+
+        if (node.getParentheses()) {
+            stringBuilder.append(")");
+        }
+    }
+
+    @Override
+    public void visit(FloatNode node) {
+        //Checks if the node is negative
+        stringBuilder.append(node.getIsNegative() ? "-" : "");
+        stringBuilder.append(node.getValue());
+    }
+
+    @Override
+    public void visit(CharNode node) {
+        stringBuilder.append("'");
+        stringBuilder.append(node.getValue());
+        stringBuilder.append("'");
+    }
+
+    @Override
+    public void visit(PinNode node) {
+        stringBuilder.append(convertIntToPinValue(node));
+    }
+
+    private String convertIntToPinValue(AstNode node) {
+        if (node instanceof PinNode) {
+            return "A" + ((PinNode) node).getValue() * (-1);
+        }
+        else {
+            return ((NumberNode) node).getValue().toString();
         }
     }
 
@@ -721,22 +718,34 @@ public class CodeVisitor implements INodeVisitor {
             indent--;
         }
 
-        System.out.println("Current: " + currentIndent + ", index: " + indent + "\t\t" + line);
-
         line = line.indent(indent * 4);
         return line;
     }
+    @Override
+    public void visit(BooleanNode node) {
+        stringBuilder.append(node.getValue());
+    }
 
-    private String printPinMode(String pin, boolean isOutput){
-        String pinMode = "pinMode(" + pin + ", ";
+    @Override
+    public void visit(ConstantNode node) {
+        stringBuilder.append(node.getValue());
+    }
 
-        if(isOutput){
-            pinMode += "OUTPUT";
-        } else{
-            pinMode += "INPUT";
-        }
+    @Override
+    public void visit(StringNode node){
+        stringBuilder.append(node.getValue());
+    }
 
-        pinMode += ");\n";
-        return pinMode;
+    @Override
+    public void visit(CommentNode node) {
+        stringBuilder.append(node.getComment());
+        output.add(getLine());
+    }
+
+    //Gets the string from the string builder and resets string builder
+    private String getLine() {
+        String line = stringBuilder.toString();
+        stringBuilder.delete(0, stringBuilder.length());
+        return line;
     }
 }
