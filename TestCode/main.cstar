@@ -1,13 +1,16 @@
 pin hest = 2;
 
 void setup(){
-    // Heste comment
+// Heste comment
 
 }
 
 //Hest
 void loop(){
-    //Hest
-    hest.write(HIGH);
-    console.print("hest");
+//Hest
+hest.write(HIGH);
+console.print("hest");
+if(2 IS 4){
+console.print("hest");
+}
 }
