@@ -3,9 +3,9 @@ package com.p4;
 import com.p4.codegen.CodeVisitor;
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
-import com.p4.parser.*;
-import com.p4.parser.nodes.ProgNode;
-import com.p4.parser.visitors.*;
+import com.p4.syntaxSemantic.*;
+import com.p4.syntaxSemantic.nodes.ProgNode;
+import com.p4.syntaxSemantic.visitors.*;
 import com.p4.symbols.SymbolTable;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -68,26 +68,25 @@ public class Main {
                             FuncVisitor funcVisitor = new FuncVisitor(symbolTable, errors);
                             funcVisitor.visit(ast);
 
-                            if(symbolTable.isSetupAndLoopDefined()){
-                                SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable, errors);
-                                symbolTableVisitor.visit(ast);
-
-                                SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
-                                semanticsVisitor.visit(ast);
-
-                                if(!errors.containsErrors()){
-                                    CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
-                                    codeVisitor.visit(ast);
-
-                                    try {
-                                        codeVisitor.print();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                }
-                            }else{
+                            if(!symbolTable.isSetupAndLoopDefined()) {
                                 errors.addEntry(ErrorType.MISSING_ARDUINO_FUNCTION, "Both the functions 'void setup()' and 'void loop()' are required by Arduino");
+                            }
+
+                            SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable, errors);
+                            symbolTableVisitor.visit(ast);
+
+                            SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
+                            semanticsVisitor.visit(ast);
+
+                            if(!errors.containsErrors()){
+                                CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
+                                codeVisitor.visit(ast);
+
+                                try {
+                                    codeVisitor.print();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }catch (IOException e){

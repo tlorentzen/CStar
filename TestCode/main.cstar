@@ -1,33 +1,18 @@
-integer i = 0;
-integer j = 100000000;
-integer g = 1000000000;
-decimal o = 5.0;
-integer p = 200 * g;
-small integer ill = 22;
-
 void setup(){
-
-    i = hello(ill, j);
     i = 5*(10+5);
     i = 10 - 5;
     i = 10/5;
     i = j * i;
     i = -5;
     o = -5.0;
+
+    // comment dfgdsfgfgsgdfgsd
+
+    integer k = -i;
+    integer f = -ko[1];
+    small integer pudel = -10;
 }
-// hej
+
 void loop(){
-integer i = 0.5;
 
-}
-
-integer hello (decimal d, long integer l){
-    d = d * (-4) % 4 * 4;
-    boolean b = (d <= 5 AND (d >= 5));
-    //Hey
-    if(d IS 1){
-
-    } else {
-
-    }
 }
