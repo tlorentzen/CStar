@@ -1,13 +1,7 @@
-
-pin led = 13;
-
 void setup(){
 
 }
 
 void loop(){
-    led.write(HIGH);
-    sleep(1000);
-    led.write(LOW);
-    sleep(1000);
+
 }

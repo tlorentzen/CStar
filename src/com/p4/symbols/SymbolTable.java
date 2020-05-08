@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Stack;
 
 public class SymbolTable {
-
     private CStarScope currentScope;
     final private CStarScope globalScope;
     final private Stack<CStarScope> scopeStack = new Stack<>();
@@ -14,148 +13,145 @@ public class SymbolTable {
     public ArrayList<String> calledFunctions = new ArrayList<>();
     public HashMap<String, PinAttributes> pinList = new HashMap<>();
 
-    public SymbolTable(){
+    public SymbolTable() {
         globalScope = new CStarScope("global");
         currentScope = globalScope;
     }
 
-    public void addScope(String scopeName)/* throws Exception */{
-        //If the scope already exists, do not add it.
-        if(lookupScope(scopeName) != null){
-            //throw new Exception("Scope " + scopeName + " has already added");
-            //Todo: implement above maybe
-        } else {
+    //Adds a scope to the symbol table
+    public void addScope(String scopeName) {
+        //Enters if the scope name has not already been used
+        if (lookupScope(scopeName) == null) {
             CStarScope scope = new CStarScope(scopeName);
-            scope.parent = currentScope;
+            scope.setParent(currentScope);
             currentScope.children.add(scope);
             scopeStack.push(currentScope);
             currentScope = scope;
         }
     }
 
-    public void leaveScope(){
+    public void leaveScope() {
         this.leaveScope(null);
     }
 
-    public void leaveScope(String hash){
-        if(currentScope.parent != null){
-            String currentScopeName = currentScope.scopeName;
-
-            if(hash != null){
-                currentScope.scopeName = hash;
-                currentScopeName = hash;
+    public void leaveScope(String scopeName) {
+        //Enters if non-global scope
+        if (currentScope.getParent() != null) {
+            if (scopeName != null) {
+                currentScope.setScopeName(scopeName);
             }
 
+            //Removes the scope from the stack and set current scope to the outer scope
             currentScope = scopeStack.empty() ? globalScope : scopeStack.pop();
         }
     }
-    
-    public CStarScope getCurrentScope(){
+
+    public CStarScope getCurrentScope() {
         return currentScope;
     }
 
-    public CStarScope getParent(){
-        return currentScope.parent;
+    public CStarScope getParent() {
+        return this.currentScope.getParent();
     }
 
-    public Attributes lookup(String symbol){
-        CStarScope scope = currentScope;
-
-        do{
-            if(!scope.params.isEmpty() && scope.params.containsKey(symbol)){
-                return scope.params.get(symbol);
-            }
-            if(!scope.symbols.isEmpty() && scope.symbols.containsKey(symbol)){
-                return scope.symbols.get(symbol);
-            }
-        }while((scope = scope.parent) != null);
-
-       return null;
-    }
-
-    /**
-     *
-     * @param scopeName the name of the scope to find.
-     * @return the scope or null if not found.
-     */
-    public CStarScope lookupScope(String scopeName){
-        return this.findScope(scopeName, globalScope);
-    }
-
-    public boolean enterScope(String scopeName){
+    //Enters a scope depending on the given scope name
+    public void enterScope(String scopeName) {
         CStarScope scope = this.findScope(scopeName, globalScope);
 
-        if(scope != null){
+        if (scope != null) {
             scopeStack.push(currentScope);
             currentScope = scope;
-            return true;
         }
-
-        return false;
     }
 
-    private CStarScope findScope(String scopeName, CStarScope current_scope){
-
-        if(current_scope.scopeName.equals(scopeName)){
+    //Finds a scope based on the name
+    private CStarScope findScope(String scopeName, CStarScope current_scope) {
+        //Checks if the desired scope is the current scope
+        if (current_scope.getScopeName().equals(scopeName)) {
             return current_scope;
         }
 
         CStarScope scope = null;
 
+        //Iterates through all nested scopes
         for (CStarScope childScope : current_scope.children) {
             scope = this.findScope(scopeName, childScope);
 
-            if(scope != null)
+            //Enters if the correct scope was found
+            if (scope != null)
                 break;
         }
 
+        //Returns null if scope was not found
         return scope;
     }
 
-    public Attributes lookupParam(String symbol){
+    //Returns the scope or null if the scope was not found
+    public CStarScope lookupScope(String scopeName){
+        return this.findScope(scopeName, globalScope);
+    }
+
+    //Returns the attributes for the symbol that is being looked up
+    public Attributes lookupSymbol(String symbol) {
         CStarScope scope = currentScope;
 
-        if (scope == null){
-            return null;
-        }
+        do {
+            //Enters if the symbol is a parameter
+            if (!scope.getParams().isEmpty() && scope.getParams().containsKey(symbol)) {
+                return scope.getParams().get(symbol);
+            }
+            //Enters if the symbol is a regular symbol and it is found in the scope being searched through
+            if (!scope.getSymbols().isEmpty() && scope.getSymbols().containsKey(symbol)) {
+                return scope.getSymbols().get(symbol);
+            }
+            //Goes to the outer scope
+        } while((scope = scope.getParent()) != null);
 
-        return lookup(symbol);
+        //Returns null if the symbol was not found in an accessible scope
+        return null;
     }
 
-    public boolean declaredInCurrentScope(String symbol){
-        return this.currentScope.symbols.containsKey(symbol);
-    }
-
-    public void insertSymbol(String symbol, Attributes attributes){
-
-        if(attributes.variableType.equals("pin")){
+    public void insertSymbol(String symbol, Attributes attributes) {
+        //Enters if the symbol is a pin
+        if (attributes.getVariableType().equals("pin")) {
             pinList.put(symbol, (PinAttributes)attributes);
         }
 
-        currentScope.symbols.put(symbol, attributes);
+        currentScope.getSymbols().put(symbol, attributes);
     }
 
     public void insertParam(String id, Attributes attributes){
-        currentScope.params.put(id, attributes);
+        currentScope.getParams().put(id, attributes);
     }
 
+    //Checks if the Arduino functions are declared
+    public boolean isSetupAndLoopDefined() {
+        return (declaredFunctions.contains("setup") && declaredFunctions.contains("loop"));
+    }
+
+    //todo slet? (bliver ikke brugt)
+    public PinAttributes getPin(String symbol) {
+        return pinList.getOrDefault(symbol, null);
+    }
+    //todo slet
     public void outputAvailableSymbols(){
         CStarScope scope = currentScope;
 
         do{
-            for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
+            for (Map.Entry<String, Attributes> entry : scope.getSymbols().entrySet()){
                 String key = entry.getKey();
                 Attributes value = entry.getValue();
 
                 //System.out.printf("Symbol: %10s:%s \n", key, value.variableType);
             }
-        } while((scope = scope.parent) != null);
+        } while((scope = scope.getParent()) != null);
     }
 
+    //todo slet
     public void outputSymbolTable(CStarScope scope){
         CStarScope oldScope = scope;
 
-        for (Map.Entry<String, Attributes> entry : scope.symbols.entrySet()){
+        for (Map.Entry<String, Attributes> entry : scope.getSymbols().entrySet()){
             String key = entry.getKey();
             Attributes value = entry.getValue();
 
@@ -167,15 +163,5 @@ public class SymbolTable {
             outputSymbolTable(child);
         }
     }
-
-    public boolean isSetupAndLoopDefined(){
-        return (this.declaredFunctions.contains("setup")
-                && this.declaredFunctions.contains("loop"));
-    }
-
-    public PinAttributes getPin(String symbol){
-        return this.pinList.getOrDefault(symbol, null);
-    }
-
 }
 
