@@ -166,7 +166,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         //Enters if there are no operations with AND or OR
         if (childCount == 1) {
-            return visit(ctx.cond_expr(0));
+            return visit(ctx.getChild(0));
         }
         //Enters if there are operations with AND OR OR
         else {
@@ -198,7 +198,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         //Enters if there are more operators in the tree
         if (parent.getChild(nextOperator) != null) {
-            System.out.println(visit(parent.getChild(operatorIndex - 1)));
             //Adds left child (cond_expr, in_array, or interval)
             node.children.add(visit(parent.getChild(operatorIndex - 1)));
             //Adds right child (operator) by calling the method recursively
