@@ -286,7 +286,26 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitIn_array(CStarParser.In_arrayContext ctx) {
-        return super.visitIn_array(ctx);
+        boolean isNegative = false;
+        ParseTree idChild = ctx.getChild(2);
+        InNode inNode = new InNode();
+
+        //Checks if negative factor
+        if (idChild.getText().equals("-")) {
+            idChild = ctx.getChild(1);
+            isNegative = true;
+        }
+
+        //Adds the operand
+        inNode.children.add(visit(ctx.value_expr()));
+
+        IdNode idNode = new IdNode(idChild.getText(), isNegative);
+        inNode.children.add(idNode);
+
+        idNode.lineNumber = ctx.start.getLine();
+        inNode.lineNumber = ctx.start.getLine();
+
+        return inNode;
     }
 
     @Override

@@ -1,19 +1,9 @@
-void setup(){
+integer setup(integer i, integer d){
+ integer array a = [3,4,5];
+ //integer array b = [3,4,5];
+ //    if(a IS b){}
 
-    boolean noget = i IN a OR i IN a AND i IN a;
-
-    i = 5*(10+5);
-    i = 10 - 5;
-    i = 10/5;
-    i = j * i;
-    i = -5;
-    o = -5.0;
-
-    // comment dfgdsfgfgsgdfgsd
-
-    integer k = -i;
-    integer f = -ko[1];
-    small integer pudel = -10;
+  return a;
 }
 
 void loop(){

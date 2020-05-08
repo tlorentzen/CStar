@@ -190,6 +190,11 @@ public class CodeVisitor implements INodeVisitor {
         checkParentheses(node, false);
     }
 
+    @Override
+    public void visit(InNode node) {
+
+    }
+
     //Format in Arduino C: 10 + 20
     @Override
     public void visit(AddNode node) {

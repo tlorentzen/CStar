@@ -106,7 +106,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 }
             }
             else {
-                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("nulltype"), node.lineNumber);
+                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("null type"), node.lineNumber);
             }
         }
     }
@@ -171,7 +171,66 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(CondNode node) {
         this.visitChildren(node);
+
+        checkIfArrayIsOperand(node, "compare");
         checkBooleanType(node, false);
+    }
+
+
+    private void checkIfArray(AstNode node, String errorMessage) {
+        //Displays error if an array is one of the operands
+        if (tryCastId(node)) {
+            IdNode idNode = (IdNode)node;
+            Attributes leftAttribute = symbolTable.lookupSymbol(idNode.getId());
+
+            if (leftAttribute == null) {
+                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl", idNode.getId()), node.lineNumber);
+            }
+            else if (leftAttribute.getKind().equals("array")) {
+                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage(errorMessage), node.lineNumber);
+            }
+        }
+    }
+    
+    private void checkIfArrayIsOperand(AstNode node, String errorMessage) {
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+
+        //Displays error if an array is one of the operands
+        if (tryCastId(leftChild)) {
+            checkIfArray(leftChild, node, errorMessage);
+        }
+        if (tryCastId(rightChild)) {
+            checkIfArray(leftChild, node, errorMessage);
+        }
+    }
+
+    //Returns true if it is possible to cast the node to an idNode
+    private boolean tryCastId(AstNode id) {
+        IdNode idNode;
+        
+        try {
+            idNode = (IdNode)id;
+            return true;
+        }
+        catch (ClassCastException e) {
+            return false;
+        }
+    }
+
+    //Displays error if the id is an array
+    private void checkIfArray(AstNode id, AstNode parent, String message) {
+        IdNode leftId = (IdNode)id;
+        Attributes leftAttribute = symbolTable.lookupSymbol(leftId.getId());
+
+        if (leftAttribute.getKind().equals("array")) {
+            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("array", message), parent.lineNumber);
+        }
+    } 
+
+    @Override
+    public void visit(InNode node) {
+
     }
 
     private void checkBooleanType(AstNode node, boolean isLogical) {
@@ -241,10 +300,12 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(AddNode node) {
         visitTermChildren(node);
+        checkIfArrayIsOperand(node, "add");
     }
 
     public void visit(SubNode node) {
         visitTermChildren(node);
+        checkIfArrayIsOperand(node, "subtract");
     }
 
     private void visitTermChildren(AstNode node) {
@@ -298,6 +359,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(MultNode node) {
         this.visitChildren(node);
         visitFactorChildren(node);
+        checkIfArrayIsOperand(node, "multiply");
     }
 
     public void visit(ModNode node) {
@@ -313,6 +375,7 @@ public class SemanticsVisitor implements INodeVisitor {
             node.type = null;
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("non-decimal"), node.lineNumber);
         }
+        checkIfArrayIsOperand(node, "modulo");
     }
 
     public void visit(DivNode node) {
@@ -328,6 +391,7 @@ public class SemanticsVisitor implements INodeVisitor {
             //Checks if the types are legal and compatible
             visitFactorChildren(node);
         }
+        checkIfArrayIsOperand(node, "divide");
     }
 
     //Checks if the denominator is zero
@@ -472,6 +536,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     public void visit(ReturnExpNode node) {
         this.visitChildren(node);
+        checkIfArray(node.children.get(0), "array return");
         node.type = node.children.get(0).type;
     }
 
@@ -483,7 +548,6 @@ public class SemanticsVisitor implements INodeVisitor {
         CStarScope functionScope;
 
         node.type = ((IdNode) node.children.get(0)).type;
-
 
         //Enters if the function is declared
         if (symbolTable.declaredFunctions.contains(functionName)) {
@@ -524,6 +588,8 @@ public class SemanticsVisitor implements INodeVisitor {
             }
             //Enters if the formal parameter has a type
             else if (formalParamType != null) {
+                checkIfArray(node.children.get(currentChild), "array parameter");
+
                 //Checks if types are the same or if type widening is possible
                 String resultType = assignOperationResultType(formalParamType, actualParamType);
 
@@ -617,15 +683,15 @@ public class SemanticsVisitor implements INodeVisitor {
         switch (errorType) {
             //Error messages with two types
             case "combination":
-                return "Illegal type conversion: cannot combine " + type[0] + " with " + type[1];
+                return "Illegal type conversion: Cannot combine " + type[0] + " with " + type[1];
             case "assignment":
-                return "Illegal type conversion: cannot assign " + type[1] + " to " + type[0];
+                return "Illegal type conversion: Cannot assign " + type[1] + " to " + type[0];
             case "comparison":
-                return "Illegal type conversion: cannot compare " + type[0] + " with " + type[1];
+                return "Illegal type conversion: Cannot compare " + type[0] + " with " + type[1];
             case "conversion":
-                return "Illegal type conversion: cannot convert " + type[1] + " to " + type[0];
+                return "Illegal type conversion: Cannot convert " + type[1] + " to " + type[0];
             case "return":
-                return "Illegal return type: cannot return " + type[0] + " since the function is " + type[1];
+                return "Illegal return type: Cannot return " + type[0] + " since the function is " + type[1];
             case "parameter":
                 return "Illegal parameter type: The actual parameter should be of type " + type[0] + " but is type " + type[1];
             case "func assignment":
@@ -633,24 +699,30 @@ public class SemanticsVisitor implements INodeVisitor {
 
             //Error messages with one type
             case "non-number":
-                return "Illegal type: the operands must be of a number type, but was of type " + type[0];
+                return "Illegal type: The operands must be of a number type, but was of type " + type[0];
             case "non-boolean":
-                return "Illegal type: the condition must be of type boolean, but was of type " + type[0];
+                return "Illegal type: The condition must be of type boolean, but was of type " + type[0];
             case "no id dcl":
                 return "ID not declared: '" + type[0] + "' has not been declared in any accessible scope. The type of '" + type[0] + "' will be null";
             case "indexing":
-                return "Illegal indexing type: the index can not be of type " + type[0];
+                return "Illegal indexing type: The index can not be of type " + type[0];
             case "actual parameter":
                 return "Illegal parameter type: The actual parameter '"+ type[0] +"' is not a legal type";
             case "number of param":
                 return "The number of actual parameters does not correspond with the number of formal parameters in call to function '" + type[0] + "'";
             case "no func dcl":
                 return "'" + type[0] + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.";
+            case "array":
+                return "Illegal type conversion: Cannot " + type[0] + "with an entire array";
 
-            //Error messages with no type   
+                //Error messages with no type
+            case "array parameter":
+                return "Illegal type: Cannot use an entire array as a parameter";
+            case "array return":
+                return "Illegal type: Cannot return an entire array";
             case "non-decimal":
                 return "Illegal type: One or both of the operands are of type decimal";
-            case "nulltype":
+            case "null type":
                 return "Illegal type: One or both of the operands are null";
             case "invalid":
                 return "Invalid type: Could not find a compatible type";

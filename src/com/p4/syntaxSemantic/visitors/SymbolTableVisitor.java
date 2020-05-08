@@ -123,11 +123,11 @@ public class SymbolTableVisitor implements INodeVisitor {
         if (!isDeclared(node)) {
             //Enters if the array type is pin
             if (arrayNode.type.equals("pin")) {
-                PinAttributes attr = new PinAttributes("dcl", arrayNode.type);
+                PinAttributes attr = new PinAttributes("array", arrayNode.type);
                 symbolTable.insertSymbol(node.getId(), attr);
             }
             else {
-                Attributes attr = new Attributes("dcl", arrayNode.type);
+                Attributes attr = new Attributes("array", arrayNode.type);
                 symbolTable.insertSymbol(node.getId(), attr);
             }
             node.type = arrayNode.type;
@@ -213,6 +213,11 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(CondNode node) {
+        this.visitChildren(node);
+    }
+
+    @Override
+    public void visit(InNode node) {
         this.visitChildren(node);
     }
 
