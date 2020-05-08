@@ -1,6 +1,7 @@
 pin hest = 2;
 
 void setup(){
+    // Heste comment
 
 }
 
@@ -8,4 +9,5 @@ void setup(){
 void loop(){
     //Hest
     hest.write(HIGH);
+    console.print("hest");
 }

@@ -392,6 +392,12 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append("{\n");
         output.add(getLine());
 
+        if(node.getParentID().equals("setup")
+                && symbolTable.calledFunctions.contains("console.print")){
+            stringBuilder.append("Serial.begin(9600);");
+            output.add(getLine());
+        }
+
         for(AstNode child : node.children){
             stringBuilder.append("    ");
             this.visitChild(child);
