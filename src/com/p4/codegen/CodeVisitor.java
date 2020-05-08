@@ -393,8 +393,8 @@ public class CodeVisitor implements INodeVisitor {
         output.add(getLine());
 
         if(node.getParentID().equals("setup")
-                && symbolTable.calledFunctions.contains("console.print")){
-            stringBuilder.append("Serial.begin(9600);");
+                && symbolTable.calledFunctions.contains("Serial.println")){
+            stringBuilder.append("Serial.begin(9600);\n");
             output.add(getLine());
         }
 
@@ -471,7 +471,7 @@ public class CodeVisitor implements INodeVisitor {
 
         //Checks if the string contained a '.'
         if(funcIDSplit.length > 1
-                && funcIDSplit[1].equals("write") || funcIDSplit[1].equals("read")) {
+                && (funcIDSplit[1].equals("write") || funcIDSplit[1].equals("read"))) {
             this.handlePinReadAndWrite(firstParam, funcIDSplit);
         }else{
             //Handle functions that are not pin read or write
