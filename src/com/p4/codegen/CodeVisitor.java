@@ -21,6 +21,7 @@ public class CodeVisitor implements INodeVisitor {
     StringBuilder stringBuilder = new StringBuilder();
     ArrayList<String> output = new ArrayList<>();
     SymbolTable symbolTable;
+    int currentIndent = 0;
 
     public CodeVisitor(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
@@ -125,6 +126,11 @@ public class CodeVisitor implements INodeVisitor {
         }
     }
 
+    /**
+     * Handles assignments and calls methods to handle pins when necessary.
+     * Format in Arduino C: i = 10
+     * @param node is the assign node to be handled.
+     */
     @Override
     public void visit(AssignNode node) {
         AstNode leftChild = node.children.get(0);
@@ -135,6 +141,21 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append(" = ");
         this.visitChild(rightChild);
         stringBuilder.append(";\n");
+        output.add(getLine());
+
+        String test = output.get(output.size() - 1);
+
+        //Enters if the assignment is to read from a pin
+        if (test.contains("analogRead") || test.contains("digitalRead")) {
+            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
+            stringBuilder.append(printPinMode(funcIDSplit[0],false));
+        }
+
+        else if(test.contains("analogWrite") || test.contains("digitalWrite")){
+            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
+            stringBuilder.append(printPinMode(funcIDSplit[0],true));
+        }
+
         output.add(getLine());
     }
 
@@ -158,6 +179,11 @@ public class CodeVisitor implements INodeVisitor {
         checkParentheses(node, false);
     }
 
+    /**
+     * Converts the operator id to the actual logical operator '<', '>', '==', or '!='.
+     * Only handles '>', '<', 'IS', and 'ISNOT'.
+     * @param node is the conditional node to be handled.
+     */
     @Override
     public void visit(CondNode node) {
         checkParentheses(node, true);
@@ -205,7 +231,6 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     //Format in Arduino C: 10 - 20
-    @Override
     public void visit(SubNode node) {
         //First child is left side, second is right side
         AstNode leftChild = node.children.get(0);
@@ -359,19 +384,25 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(BlkNode node) {
         stringBuilder.append("{\n");
         output.add(getLine());
+        currentIndent++;
 
-        //Visits the children of the block and adds indentation
-        for (AstNode child : node.children) {
-            stringBuilder.append("    ");
+        if(node.getParentID().equals("setup")
+                && symbolTable.calledFunctions.contains("Serial.println")){
+            stringBuilder.append("Serial.begin(9600);\n");
+            output.add(getLine());
+        }
+
+        for(AstNode child : node.children){
             this.visitChild(child);
-
-            if (child instanceof FuncCallNode) {
+            if(child instanceof FuncCallNode){
                 stringBuilder.append(";\n");
+                output.add(getLine());
             }
         }
 
-        stringBuilder.append("\n}\n");
+        stringBuilder.append("}\n");
         output.add(getLine());
+        currentIndent--;
     }
 
     @Override
@@ -470,14 +501,10 @@ public class CodeVisitor implements INodeVisitor {
     private void handleReadAndWrite(AstNode parameter, String[] funcIDSplit) {
         //Enters if a read function has been called on the pin
         if (funcIDSplit[1].equals("read")) {
-            String pinMode = printPinMode(funcIDSplit[0],false);
-            output.add(output.size(), pinMode);
             handleRead(funcIDSplit[0]);
         }
         //Enters if a write function has been called on the pin
         else if (parameter != null && funcIDSplit[1].equals("write")) {
-            String pinMode = printPinMode(funcIDSplit[0],true);
-            output.add(output.size(), pinMode);
             handleWrite(parameter, funcIDSplit[0]);
         }
         stringBuilder.append(")");
@@ -510,7 +537,7 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append("digitalRead(");
         }
         else {
-            System.out.println("Pin attribute is null");
+            //Todo: handle attributes = null
         }
         stringBuilder.append(pinId);
     }
@@ -637,9 +664,16 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     //Gets the string from the string builder and resets string builder
-    private String getLine() {
+    private String getLine(){
         String line = stringBuilder.toString();
         stringBuilder.delete(0, stringBuilder.length());
+
+        int indent = currentIndent;
+        if(line.endsWith("}\n")){
+            indent--;
+        }
+
+        line = line.indent(indent * 4);
         return line;
     }
 }
