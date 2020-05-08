@@ -46,8 +46,13 @@ public interface INodeVisitor {
     void visit(CharNode node);
     void visit(PinNode node);
     void visit(BooleanNode node);
-    void visit(ConstantNode constantNode);
+    void visit(ConstantNode node);
     void visit(StringNode node);
 
     void visit(CommentNode node);
+    void visit(IncludeNode node);
+
+    void visit(IntervalNode node);
+
+    void visit(MultValNode multValNode);
 }

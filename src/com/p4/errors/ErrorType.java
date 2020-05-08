@@ -13,7 +13,8 @@ public enum ErrorType {
     GENERAL_WARNING("W1"),
     UNDECLARED_FUNCTION_WARNING("W2"),
     MISSING_ARDUINO_FUNCTION("W300"),
-    INFORMATION("I1");
+    INFORMATION("I1"),
+    ARDUINO_FUNCTION_IN_INTERVAL("E666");
 
     private final String code;
 

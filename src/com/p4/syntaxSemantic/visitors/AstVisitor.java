@@ -6,6 +6,7 @@ import com.p4.syntaxSemantic.nodes.*;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 //Creates the AST by visiting all nodes in the parse tree
@@ -165,9 +166,16 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         int childCount = ctx.getChildCount();
 
         //Enters if there are no operations with AND or OR
-        if (childCount == 1) {
+        if (childCount == 1 && ctx.getChild(0) instanceof CStarParser.Cond_exprContext) {
             return visit(ctx.cond_expr(0));
         }
+        else if (childCount == 1 && ctx.getChild(0) instanceof CStarParser.IntervalContext) {
+            return visit(ctx.interval(0));
+        }
+        else if (childCount == 1 && ctx.getChild(0) instanceof CStarParser.Test_mult_valContext) {
+            return visit(ctx.test_mult_val(0));
+        }
+
         //Enters if there are operations with AND OR OR
         else {
             return visitLogicalChild(ctx.getChild(1), ctx, 1);
@@ -199,16 +207,36 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         //Enters if there are more operators in the tree
         if (parent.getChild(nextOperator) != null) {
 
-            //Adds left child (cond_expr)
-            node.children.add(visit(parent.cond_expr(condIndex)));
+            if(parent.cond_expr(condIndex) != null){
+                //Adds left child (cond_expr)
+                node.children.add(visit(parent.cond_expr(condIndex)));
+            } else if(parent.interval(condIndex) != null){
+                //Adds left child (interval)
+                node.children.add(visit(parent.interval(condIndex)));
+            } else if(parent.test_mult_val(condIndex) != null){
+                //Adds left child (interval)
+                node.children.add(visit(parent.test_mult_val(condIndex)));
+            }
+
             //Adds right child (operator) by calling the method recursively
             node.children.add(visitLogicalChild(parent.getChild(nextOperator), parent, nextOperator));
         }
         //Enters if there is only a cond_expr child left
         else {
-            // Adds left and right child (cond_expr)
-            node.children.add(visit(parent.cond_expr(condIndex)));
-            node.children.add(visit(parent.cond_expr(condIndex + 1)));
+            if(parent.cond_expr(condIndex) != null){
+                // Adds left and right child (cond_expr)
+                node.children.add(visit(parent.cond_expr(condIndex)));
+                node.children.add(visit(parent.cond_expr(condIndex + 1)));
+            } else if(parent.interval(condIndex) != null){
+                // Adds left and right child (interval)
+                node.children.add(visit(parent.interval(condIndex)));
+                node.children.add(visit(parent.interval(condIndex + 1)));
+            } else if(parent.test_mult_val(condIndex) != null){
+                // Adds left and right child (testMultVal)
+                node.children.add(visit(parent.test_mult_val(condIndex)));
+                node.children.add(visit(parent.test_mult_val(condIndex + 1)));
+            }
+
         }
 
         node.lineNumber = parent.start.getLine();
@@ -400,7 +428,27 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override
     public AstNode visitFactor(CStarParser.FactorContext ctx) {
         ParseTree child = ctx.getChild(0);
+
+        //Checks if the child is a value expression
+        if (child instanceof CStarParser.Value_exprContext) {
+            return visit(ctx.value_expr());
+        }
+        //Checks if the child is a terminal node
+        else if (child instanceof TerminalNodeImpl) {
+            //Checks if the child is a parentheses
+            if (child.getText().equals("(")) {
+                AstNode node = visit(ctx.expr());
+
+                return addParentheses(node);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public AstNode visitValue_expr(CStarParser.Value_exprContext ctx) {
         boolean isNegative = false;
+        ParseTree child = ctx.getChild(0);
 
         //Checks if negative factor
         if (child.getText().equals("-")) {
@@ -412,22 +460,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         if (child instanceof CStarParser.ValContext) {
             return visit(ctx.val());
         }
-        //Checks if the child is a terminal node
-        else if (child instanceof TerminalNodeImpl) {
-            //Checks if the child is a parentheses
-            if (child.getText().equals("(")) {
-                AstNode node = visit(ctx.expr());
-
-                return addParentheses(node);
-            }
-            //Enters if the child is a variable
-            else {
-                IdNode idNode = new IdNode(child.getText(), isNegative);
-                idNode.lineNumber = ctx.start.getLine();
-
-                return idNode;
-            }
-        }
         //Checks if the child is a function call
         else if (child instanceof CStarParser.Func_callContext) {
             return visit(ctx.func_call());
@@ -435,6 +467,13 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         //Checks if the child is an array access
         else if (child instanceof CStarParser.Array_accessContext) {
             return visit(ctx.array_access());
+        }
+        //Enters if the child is a variable
+        else if (child instanceof TerminalNodeImpl) {
+            IdNode idNode = new IdNode(child.getText(), isNegative);
+            idNode.lineNumber = ctx.start.getLine();
+
+            return idNode;
         }
         return null;
     }
@@ -825,7 +864,44 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             return null;
         }
     }
-    @Override public AstNode visitComment(CStarParser.CommentContext ctx) {
+
+    @Override
+    public AstNode visitComment(CStarParser.CommentContext ctx) {
         return new CommentNode(ctx.getText());
+    }
+    @Override public AstNode visitInclude(CStarParser.IncludeContext ctx) {
+        String header = ctx.INCLUDE().getText() + ' ' + ctx.HEADER().getText();
+        return new IncludeNode(header);
+    }
+
+    @Override public AstNode visitInterval(CStarParser.IntervalContext ctx) {
+        IntervalNode node = new IntervalNode();
+
+        //Sets the brackets around the interval
+        node.setLeftBracket(ctx.children.get(2).getText());
+        node.setRightBracket(ctx.children.get(6).getText());
+
+        //Sets the children of the interval
+        //Child 0 is the variable to be compared
+        //Child 1 is the lower bound
+        //Child 2 is the upper bound
+        node.children.add(visit(ctx.children.get(0)));
+        node.children.add(visit(ctx.children.get(3)));
+        node.children.add(visit(ctx.children.get(5)));
+
+        node.lineNumber = ctx.start.getLine();
+        return node;
+    }
+
+    @Override public AstNode visitTest_mult_val(CStarParser.Test_mult_valContext ctx) {
+        MultValNode node = new MultValNode();
+
+        for(ParseTree child : ctx.children){
+            if(!(child instanceof TerminalNode)){
+                node.children.add(visit(child));
+            }
+        }
+
+        return node;
     }
 }
