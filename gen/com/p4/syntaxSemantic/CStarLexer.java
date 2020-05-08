@@ -1,4 +1,4 @@
-// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/ichris18/Documents/GitHub/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
 package com.p4.syntaxSemantic;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -17,6 +17,7 @@ public class CStarLexer extends Lexer {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
+
 		COMP_OP=1, LESS_THAN=2, GREATER_THAN=3, IS=4, ISNOT=5, OR=6, AND=7, ONE_OF=8, 
 		ASSIGN_OP=9, PLUS=10, MINUS=11, MULT=12, DIVISION=13, LESS_THAN_EQ=14, 
 		GREATER_THAN_EQ=15, MODULO=16, LEFT_PAREN=17, RIGHT_PAREN=18, LEFT_BRACKET=19, 
@@ -25,6 +26,7 @@ public class CStarLexer extends Lexer {
 		RETURN=33, PRINT=34, HIGH=35, LOW=36, BETWEEN=37, IN=38, NUMBER=39, BOOLEAN_LITERAL=40, 
 		PIN_LITERAL=41, CHAR_LITERAL=42, STRING_LITERAL=43, ID=44, FUNCID=45, 
 		WHITESPACE=46, Newline=47, LINE_COMMENT=48, INCLUDE=49, HEADER=50;
+
 	public static String[] channelNames = {
 		"DEFAULT_TOKEN_CHANNEL", "HIDDEN"
 	};
@@ -39,7 +41,7 @@ public class CStarLexer extends Lexer {
 			"ASSIGN_OP", "PLUS", "MINUS", "MULT", "DIVISION", "LESS_THAN_EQ", "GREATER_THAN_EQ", 
 			"MODULO", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACKET", "RIGHT_BRACKET", 
 			"LEFT_BRACE", "RIGHT_BRACE", "SEMICOLON", "DOT", "IF", "ELSE", "WHILE", 
-			"REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", "PRINT", "HIGH", 
+			"REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", "PRINT", "HIGH",
 			"LOW", "BETWEEN", "IN", "NUMBER", "BOOLEAN_LITERAL", "PIN_LITERAL", "CHAR_LITERAL", 
 			"STRING_LITERAL", "ID", "FUNCID", "WHITESPACE", "Newline", "LINE_COMMENT", 
 			"INCLUDE", "HEADER"

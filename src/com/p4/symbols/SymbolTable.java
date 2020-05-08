@@ -113,9 +113,11 @@ public class SymbolTable {
 
     public void insertSymbol(String symbol, Attributes attributes) {
         //Enters if the symbol is a pin
+        /*
         if (attributes.getVariableType().equals("pin")) {
             pinList.put(symbol, (PinAttributes)attributes);
         }
+         */
 
         currentScope.getSymbols().put(symbol, attributes);
     }

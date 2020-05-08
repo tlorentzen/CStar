@@ -1,0 +1,13 @@
+pin led = 10;
+
+void setup() {
+
+}
+
+// the loop function runs over and over again forever
+void loop() {
+  led.write(HIGH);   // turn the LED on (HIGH is the voltage level)
+  sleep(1000);                       // wait for a second
+  led.write(LOW);    // turn the LED off by making the voltage LOW
+  sleep(1000);                       // wait for a second
+}
