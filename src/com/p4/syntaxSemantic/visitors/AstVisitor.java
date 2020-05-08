@@ -198,9 +198,9 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         //Enters if there are more operators in the tree
         if (parent.getChild(nextOperator) != null) {
-
-            //Adds left child (cond_expr)
-            node.children.add(visit(parent.cond_expr(condIndex)));
+            System.out.println(visit(parent.getChild(operatorIndex - 1)));
+            //Adds left child (cond_expr, in_array, or interval)
+            node.children.add(visit(parent.getChild(operatorIndex - 1)));
             //Adds right child (operator) by calling the method recursively
             node.children.add(visitLogicalChild(parent.getChild(nextOperator), parent, nextOperator));
         }
@@ -282,6 +282,11 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         node.lineNumber = parent.start.getLine();
 
         return node;
+    }
+
+    @Override
+    public AstNode visitIn_array(CStarParser.In_arrayContext ctx) {
+        return super.visitIn_array(ctx);
     }
 
     @Override

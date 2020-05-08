@@ -17,6 +17,7 @@ public interface INodeVisitor {
     void visit(AssignNode node);
     void visit(LogicalNode node);
     void visit(CondNode node);
+    void visit(InNode node);
 
     void visit(AddNode node);
     void visit(SubNode node);

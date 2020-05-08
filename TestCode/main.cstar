@@ -1,4 +1,7 @@
 void setup(){
+
+    boolean noget = i IN a OR i IN a AND i IN a;
+
     i = 5*(10+5);
     i = 10 - 5;
     i = 10/5;
