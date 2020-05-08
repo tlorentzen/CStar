@@ -713,13 +713,11 @@ public class CodeVisitor implements INodeVisitor {
     private String getLine(){
         String line = stringBuilder.toString();
         stringBuilder.delete(0, stringBuilder.length());
-        System.out.println(line);
         if(line.endsWith("{\n")){
             currentIndent++;
-        } else if (line.equals("\n}\n")){
-            currentIndent -= 2;
-        } else if (line.endsWith("}\n")){
+        }else if (line.endsWith("}\n")){
             currentIndent--;
+            line = line.substring(4);
         }
         stringBuilder.append("    ".repeat(Math.max(0, currentIndent)));
         return line;

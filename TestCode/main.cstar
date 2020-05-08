@@ -10,6 +10,5 @@ void loop(){
 hest.write(HIGH);
 console.print("hest");
 if(2 IS 4){
-console.print("hest");
-}
+console.print("hest");}
 }
