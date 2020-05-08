@@ -126,67 +126,6 @@ public class CodeVisitor implements INodeVisitor {
         }
     }
 
-    @Override
-    public void visit(AssignNode node) {
-        AstNode leftChild = node.children.get(0);
-        AstNode rightChild = node.children.get(1);
-
-        //Gets the statement and adds it to the output
-        this.visitChild(leftChild);
-        stringBuilder.append(" = ");
-        this.visitChild(rightChild);
-        stringBuilder.append(";\n");
-        output.add(getLine());
-    }
-
-    @Override
-    public void visit(LogicalNode node) {
-        checkParentheses(node, true);
-        //Visits the left operand
-        this.visitChild(node.children.get(0));
-
-        //Converts the logical operator to the actual logical operator '&&' or '||'
-        switch (node.getToken()) {
-            case CStarParser.OR:
-                stringBuilder.append(" || ");
-                break;
-            case CStarParser.AND:
-                stringBuilder.append(" && ");
-                break;
-        }
-        //Visits the right operand
-        this.visitChild(node.children.get(1));
-        checkParentheses(node, false);
-    }
-
-    @Override
-    public void visit(IdNode node) {
-
-        //Enters if the id is the sleep function
-        if (node.getId().equals("sleep")) {
-            stringBuilder.append("delay");
-        }
-        else {
-            //Enters if the id node is negative
-            if (node.getIsNegative()) {
-                stringBuilder.append("-");
-            }
-            stringBuilder.append(node.getId());
-        }
-    }
-
-    @Override
-    public void visit(PinNode node) {
-        stringBuilder.append(convertIntToPinValue(node));
-    }
-
-    @Override
-    public void visit(CharNode node) {
-        stringBuilder.append("'");
-        stringBuilder.append(node.getValue());
-        stringBuilder.append("'");
-    }
-
     /**
      * Handles assignments and calls methods to handle pins when necessary.
      * Format in Arduino C: i = 10
@@ -216,11 +155,28 @@ public class CodeVisitor implements INodeVisitor {
             String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
             stringBuilder.append(printPinMode(funcIDSplit[0],true));
         }
+
+        output.add(getLine());
     }
 
-    //todo check if correct convertion
-    private String convertIntToPinValue(AstNode node) {
-        return (node instanceof PinNode ? "A" + (((PinNode) node).getValue() * (-1)) : ((NumberNode) node).getValue().toString());
+    @Override
+    public void visit(LogicalNode node) {
+        checkParentheses(node, true);
+        //Visits the left operand
+        this.visitChild(node.children.get(0));
+
+        //Converts the logical operator to the actual logical operator '&&' or '||'
+        switch (node.getToken()) {
+            case CStarParser.OR:
+                stringBuilder.append(" || ");
+                break;
+            case CStarParser.AND:
+                stringBuilder.append(" && ");
+                break;
+        }
+        //Visits the right operand
+        this.visitChild(node.children.get(1));
+        checkParentheses(node, false);
     }
 
     /**
@@ -275,31 +231,6 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     //Format in Arduino C: 10 - 20
-    @Override
-    public void visit(BlkNode node) {
-        stringBuilder.append("{\n");
-        output.add(getLine());
-        currentIndent++;
-
-        if(node.getParentID().equals("setup")
-                && symbolTable.calledFunctions.contains("Serial.println")){
-            stringBuilder.append("Serial.begin(9600);\n");
-            output.add(getLine());
-        }
-
-        for(AstNode child : node.children){
-            this.visitChild(child);
-            if(child instanceof FuncCallNode){
-                stringBuilder.append(";\n");
-                output.add(getLine());
-            }
-        }
-
-        stringBuilder.append("}\n");
-        output.add(getLine());
-        currentIndent--;
-    }
-  
     public void visit(SubNode node) {
         //First child is left side, second is right side
         AstNode leftChild = node.children.get(0);
@@ -453,19 +384,25 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(BlkNode node) {
         stringBuilder.append("{\n");
         output.add(getLine());
+        currentIndent++;
 
-        //Visits the children of the block and adds indentation
-        for (AstNode child : node.children) {
-            stringBuilder.append("    ");
+        if(node.getParentID().equals("setup")
+                && symbolTable.calledFunctions.contains("Serial.println")){
+            stringBuilder.append("Serial.begin(9600);\n");
+            output.add(getLine());
+        }
+
+        for(AstNode child : node.children){
             this.visitChild(child);
-
-            if (child instanceof FuncCallNode) {
+            if(child instanceof FuncCallNode){
                 stringBuilder.append(";\n");
+                output.add(getLine());
             }
         }
 
-        stringBuilder.append("\n}\n");
+        stringBuilder.append("}\n");
         output.add(getLine());
+        currentIndent--;
     }
 
     @Override
@@ -564,14 +501,10 @@ public class CodeVisitor implements INodeVisitor {
     private void handleReadAndWrite(AstNode parameter, String[] funcIDSplit) {
         //Enters if a read function has been called on the pin
         if (funcIDSplit[1].equals("read")) {
-            String pinMode = printPinMode(funcIDSplit[0],false);
-            output.add(output.size(), pinMode);
             handleRead(funcIDSplit[0]);
         }
         //Enters if a write function has been called on the pin
         else if (parameter != null && funcIDSplit[1].equals("write")) {
-            String pinMode = printPinMode(funcIDSplit[0],true);
-            output.add(output.size(), pinMode);
             handleWrite(parameter, funcIDSplit[0]);
         }
         stringBuilder.append(")");
@@ -709,18 +642,6 @@ public class CodeVisitor implements INodeVisitor {
         }
     }
 
-    private String getLine(){
-        String line = stringBuilder.toString();
-        stringBuilder.delete(0, stringBuilder.length());
-
-        int indent = currentIndent;
-        if(line.endsWith("}\n")){
-            indent--;
-        }
-
-        line = line.indent(indent * 4);
-        return line;
-    }
     @Override
     public void visit(BooleanNode node) {
         stringBuilder.append(node.getValue());
@@ -743,9 +664,16 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     //Gets the string from the string builder and resets string builder
-    private String getLine() {
+    private String getLine(){
         String line = stringBuilder.toString();
         stringBuilder.delete(0, stringBuilder.length());
+
+        int indent = currentIndent;
+        if(line.endsWith("}\n")){
+            indent--;
+        }
+
+        line = line.indent(indent * 4);
         return line;
     }
 }
