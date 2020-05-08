@@ -144,18 +144,6 @@ public class CodeVisitor implements INodeVisitor {
         output.add(getLine());
 
         String test = output.get(output.size() - 1);
-
-        //Enters if the assignment is to read from a pin
-        if (test.contains("analogRead") || test.contains("digitalRead")) {
-            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
-            stringBuilder.append(printPinMode(funcIDSplit[0],false));
-        }
-
-        else if(test.contains("analogWrite") || test.contains("digitalWrite")){
-            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
-            stringBuilder.append(printPinMode(funcIDSplit[0],true));
-        }
-
         output.add(getLine());
     }
 
@@ -501,28 +489,28 @@ public class CodeVisitor implements INodeVisitor {
     private void handleReadAndWrite(AstNode parameter, String[] funcIDSplit) {
         //Enters if a read function has been called on the pin
         if (funcIDSplit[1].equals("read")) {
+            appendPinModeIfNeeded(false, funcIDSplit[0]);
             handleRead(funcIDSplit[0]);
         }
+
         //Enters if a write function has been called on the pin
         else if (parameter != null && funcIDSplit[1].equals("write")) {
+            appendPinModeIfNeeded(true, funcIDSplit[0]);
             handleWrite(parameter, funcIDSplit[0]);
         }
+
         stringBuilder.append(")");
     }
 
-    //Sets pin mode for the pin
-    private String printPinMode(String pin, boolean isOutput) {
-        String pinMode = "\tpinMode(" + pin + ", ";
+    private void appendPinModeIfNeeded(boolean isOutput, String pinId){
+        PinAttributes pinAttr = (PinAttributes)symbolTable.lookupSymbol(pinId);
 
-        if (isOutput) {
-            pinMode += "OUTPUT";
-        }
-        else {
-            pinMode += "INPUT";
-        }
+        if(isOutput != pinAttr.getIsOutput()){
+            pinAttr.setIsOutput(!pinAttr.getIsOutput());
+            symbolTable.insertSymbol(pinId, pinAttr);
 
-        pinMode += ");\n";
-        return pinMode;
+            stringBuilder.append("pinMode("+pinId+", "+(isOutput ? "OUTPUT" : "INPUT")+");\n");
+        }
     }
 
     private void handleRead(String pinId) {

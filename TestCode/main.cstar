@@ -1,18 +1,11 @@
 pin hest = 2;
 
+
 void setup(){
-// Heste comment
+
 }
 
 //Hest
 void loop(){
-//Hest
-hest.write(HIGH);
-console.print("hest");
-if(2 IS 4){
-console.print("hest");
-if(5 IS 3){
-console.print("kanin");
-}
-}
+    hest.read();
 }
