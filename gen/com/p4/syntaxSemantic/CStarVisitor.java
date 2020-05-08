@@ -1,4 +1,4 @@
-// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/ichris18/Documents/GitHub/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
 package com.p4.syntaxSemantic;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -41,6 +41,18 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLogical_expr(CStarParser.Logical_exprContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CStarParser#interval}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInterval(CStarParser.IntervalContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CStarParser#in_array}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIn_array(CStarParser.In_arrayContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CStarParser#cond_expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -64,6 +76,12 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFactor(CStarParser.FactorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CStarParser#value_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitValue_expr(CStarParser.Value_exprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CStarParser#array_dcl}.
 	 * @param ctx the parse tree

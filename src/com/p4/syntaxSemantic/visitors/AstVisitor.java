@@ -400,7 +400,27 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override
     public AstNode visitFactor(CStarParser.FactorContext ctx) {
         ParseTree child = ctx.getChild(0);
+
+        //Checks if the child is a value expression
+        if (child instanceof CStarParser.Value_exprContext) {
+            return visit(ctx.value_expr());
+        }
+        //Checks if the child is a terminal node
+        else if (child instanceof TerminalNodeImpl) {
+            //Checks if the child is a parentheses
+            if (child.getText().equals("(")) {
+                AstNode node = visit(ctx.expr());
+
+                return addParentheses(node);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public AstNode visitValue_expr(CStarParser.Value_exprContext ctx) {
         boolean isNegative = false;
+        ParseTree child = ctx.getChild(0);
 
         //Checks if negative factor
         if (child.getText().equals("-")) {
@@ -412,22 +432,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         if (child instanceof CStarParser.ValContext) {
             return visit(ctx.val());
         }
-        //Checks if the child is a terminal node
-        else if (child instanceof TerminalNodeImpl) {
-            //Checks if the child is a parentheses
-            if (child.getText().equals("(")) {
-                AstNode node = visit(ctx.expr());
-
-                return addParentheses(node);
-            }
-            //Enters if the child is a variable
-            else {
-                IdNode idNode = new IdNode(child.getText(), isNegative);
-                idNode.lineNumber = ctx.start.getLine();
-
-                return idNode;
-            }
-        }
         //Checks if the child is a function call
         else if (child instanceof CStarParser.Func_callContext) {
             return visit(ctx.func_call());
@@ -435,6 +439,13 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         //Checks if the child is an array access
         else if (child instanceof CStarParser.Array_accessContext) {
             return visit(ctx.array_access());
+        }
+        //Enters if the child is a variable
+        else if (child instanceof TerminalNodeImpl) {
+            IdNode idNode = new IdNode(child.getText(), isNegative);
+            idNode.lineNumber = ctx.start.getLine();
+
+            return idNode;
         }
         return null;
     }
@@ -818,7 +829,9 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             return null;
         }
     }
-    @Override public AstNode visitComment(CStarParser.CommentContext ctx) {
+
+    @Override
+    public AstNode visitComment(CStarParser.CommentContext ctx) {
         return new CommentNode(ctx.getText());
     }
 }
