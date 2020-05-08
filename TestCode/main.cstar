@@ -1,9 +1,8 @@
 integer setup(integer i, integer d){
  integer array a = [3,4,5];
- //integer array b = [3,4,5];
- //    if(a IS b){}
 
-  return a;
+ 5 IN a;
+
 }
 
 void loop(){
