@@ -2,3 +2,7 @@ out
 .idea
 .DS_Store
 compile-out/compile-out.ino
+output/
+arduino-cli
+arduino-cli.exe
+language-meta.json
