@@ -321,4 +321,9 @@ public class SymbolTableVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
+    @Override
+    public void visit(IntervalNode node) {
+
+    }
+
 }

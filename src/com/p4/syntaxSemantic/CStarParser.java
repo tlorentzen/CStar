@@ -1,6 +1,5 @@
-// Generated from C:/Users/ichris18/Documents/GitHub/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
 package com.p4.syntaxSemantic;
-import com.p4.syntaxSemantic.visitors.*;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -9,6 +8,7 @@ import org.antlr.v4.runtime.tree.*;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
+import com.p4.syntaxSemantic.visitors.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class CStarParser extends Parser {

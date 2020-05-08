@@ -95,6 +95,36 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(IntervalNode node) {
+        //Left side of the interval
+        stringBuilder.append("(");
+        if(node.getLeftBracket().equals("]")){
+            visitChild(node.children.get(0));
+            stringBuilder.append(" > ");
+            visitChild(node.children.get(1));
+            stringBuilder.append(" + 1");
+        }else{
+            visitChild(node.children.get(0));
+            stringBuilder.append(" > ");
+            visitChild(node.children.get(1));
+        }
+        //Sides are always connected with logical AND
+        stringBuilder.append(" && ");
+        //Right side of the interval
+        if(node.getRightBracket().equals("[")){
+            visitChild(node.children.get(0));
+            stringBuilder.append(" < ");
+            visitChild(node.children.get(2));
+            stringBuilder.append(" - 1");
+        }else{
+            visitChild(node.children.get(0));
+            stringBuilder.append(" < ");
+            visitChild(node.children.get(2));
+        }
+        stringBuilder.append(")");
+    }
+
+    @Override
     public void visit(ModNode node) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);

@@ -1,6 +1,6 @@
 // Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
 package com.p4.syntaxSemantic.visitors;
-import com.p4.syntaxSemantic.*;
+import com.p4.syntaxSemantic.CStarParser;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -47,17 +47,20 @@ public class CStarBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitLogical_expr(CStarParser.Logical_exprContext ctx) { return visitChildren(ctx); }
-
-	@Override
-	public T visitInterval(CStarParser.IntervalContext ctx) {
-		return null;
-	}
-
-	@Override
-	public T visitIn_array(CStarParser.In_arrayContext ctx) {
-		return null;
-	}
-
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitInterval(CStarParser.IntervalContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitIn_array(CStarParser.In_arrayContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -86,12 +89,13 @@ public class CStarBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitFactor(CStarParser.FactorContext ctx) { return visitChildren(ctx); }
-
-	@Override
-	public T visitValue_expr(CStarParser.Value_exprContext ctx) {
-		return null;
-	}
-
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitValue_expr(CStarParser.Value_exprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

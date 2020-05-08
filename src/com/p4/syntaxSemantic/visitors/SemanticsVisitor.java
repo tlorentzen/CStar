@@ -7,6 +7,8 @@ import com.p4.syntaxSemantic.nodes.*;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.CStarScope;
 import com.p4.symbols.SymbolTable;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.util.List;
 import java.util.Map;
 
@@ -183,6 +185,9 @@ public class SemanticsVisitor implements INodeVisitor {
         if (isLogical) {
             isValidType = logicalOperationValid(leftType, rightType);
         }
+        else if (node instanceof IntervalNode){
+            isValidType = intervalOperationValid((IntervalNode) node);
+        }
         else {
             isValidType = compareOperationValid(((CondNode)node).getToken(), leftType, rightType);
         }
@@ -202,6 +207,25 @@ public class SemanticsVisitor implements INodeVisitor {
             return false;
         }
         return leftType.equals("boolean") && rightType.equals("boolean");
+    }
+
+    //Checks whether the operands in the interval are a number type
+    private boolean intervalOperationValid(IntervalNode node) {
+        String varType = node.children.get(0).type;
+        String firstNumType = node.children.get(1).type;
+        String secondNumType = node.children.get(2).type;
+
+        if (varType == null || firstNumType == null || secondNumType == null) {
+            return false;
+        }
+        //Return true if all types are a number type
+        if((isNumber(varType) && isNumber(firstNumType) && isNumber(secondNumType))){
+            return true;
+        }else{
+            errors.addEntry(ErrorType.ARDUINO_FUNCTION_IN_INTERVAL, errorMessage("arduinocInInterval"), node.lineNumber);
+            return false;
+        }
+
     }
 
     private boolean compareOperationValid(int operator, String leftType, String rightType) {
@@ -617,6 +641,22 @@ public class SemanticsVisitor implements INodeVisitor {
 
     }
 
+    @Override
+    public void visit(IntervalNode node) {
+        visitChildren(node);
+        String varType = "";
+        if(node.children.get(0) instanceof IdNode){
+            varType = ((IdNode)node.children.get(0)).type;
+        } else if(node.children.get(0) instanceof NumberNode){
+            varType = ((NumberNode)node.children.get(0)).type;
+        }
+        if(varType.equals("character") || varType.equals("pin") || varType.equals("boolean")){
+            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("intervalNotID/Var", varType), node.lineNumber);
+        }
+
+        checkBooleanType(node, false);
+    }
+
     //Finds and returns the correct error message
     private String errorMessage(String errorType, String ... type) {
         switch (errorType) {
@@ -661,6 +701,10 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "Invalid type: Could not find a compatible type";
             case "div by zero":
                 return "Cannot divide by zero";
+            case "intervalNotID/Var":
+                return "Cannot compare the interval because type is '" + type[0] + "'. Intervals can only be of type 'integer', 'small integer', 'long integer', or 'decimal'";
+            case "arduinocInInterval":
+                return "Arduino C functions are not compatible with intervals.";
             default:
                 return null;
         }
