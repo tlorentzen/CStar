@@ -821,4 +821,8 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     @Override public AstNode visitComment(CStarParser.CommentContext ctx) {
         return new CommentNode(ctx.getText());
     }
+    @Override public AstNode visitInclude(CStarParser.IncludeContext ctx) {
+        String header = ctx.INCLUDE().getText() + ' ' + ctx.HEADER().getText();
+        return new IncludeNode(header);
+    }
 }

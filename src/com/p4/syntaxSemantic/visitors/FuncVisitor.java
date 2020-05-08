@@ -79,6 +79,11 @@ public class FuncVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(IncludeNode node) {
+        this.visitChildren(node);
+    }
+
+    @Override
     public void visit(PinNode node) {
         this.visitChildren(node);
     }
