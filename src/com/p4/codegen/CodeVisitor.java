@@ -503,7 +503,9 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     private void appendPinModeIfNeeded(boolean isOutput, String pinId){
-        PinAttributes pinAttr = (PinAttributes)symbolTable.lookupSymbol(pinId);
+
+        String id = (pinId.contains("[") ? pinId.split("\\[")[0] : pinId);
+        PinAttributes pinAttr = (PinAttributes)symbolTable.lookupSymbol(id);
 
         if(isOutput != pinAttr.getIsOutput()){
             pinAttr.setIsOutput(!pinAttr.getIsOutput());
