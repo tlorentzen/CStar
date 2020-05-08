@@ -1,18 +1,9 @@
+pin hest = 2;
+
 void setup(){
-    i = 5*(10+5);
-    i = 10 - 5;
-    i = 10/5;
-    i = j * i;
-    i = -5;
-    o = -5.0;
 
-    // comment dfgdsfgfgsgdfgsd
-
-    integer k = -i;
-    integer f = -ko[1];
-    small integer pudel = -10;
 }
 
 void loop(){
-
+    hest.write(HIGH);
 }

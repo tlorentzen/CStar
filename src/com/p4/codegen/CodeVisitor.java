@@ -464,7 +464,8 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append("-");
 
         //Checks if the string contained a '.'
-        if(funcIDSplit.length > 1) {
+        if(funcIDSplit.length > 1
+                && funcIDSplit[1].equals("write") || funcIDSplit[1].equals("read")) {
             this.handlePinReadAndWrite(firstParam, funcIDSplit);
         }else{
             //Handle functions that are not pin read or write
