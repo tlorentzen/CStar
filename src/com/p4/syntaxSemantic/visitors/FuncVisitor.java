@@ -216,7 +216,7 @@ public class FuncVisitor implements INodeVisitor {
     @Override
     public void visit(PrintNode node) {
         this.visitChildren(node);
-        String funcId = "console.print";
+        String funcId = "Serial.println";
         symbolTable.calledFunctions.add(funcId);
     }
 
