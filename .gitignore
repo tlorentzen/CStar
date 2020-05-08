@@ -7,3 +7,4 @@ output/output.ino
 arduino-cli
 arduino-cli.exe
 LICENSE.txt
+language-meta.json
