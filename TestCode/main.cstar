@@ -1,6 +1,6 @@
 integer i = 5;
 
-i BETWEEN [1; 5];
+i BETWEEN ]1; 5];
 
 integer setup(integer i, integer d){
 

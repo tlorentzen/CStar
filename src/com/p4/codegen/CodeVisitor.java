@@ -92,73 +92,34 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(CharDclNode node) {
         visitDclNode(node);
     }
+
+    //Format in Aruino C: (i > 5 && i < 10);
     @Override
     public void visit(IntervalNode node) {
-        //Left side of the interval
         stringBuilder.append("(");
-        if(node.getLeftBracket().equals("]")){
-            visitChild(node.children.get(0));
-            stringBuilder.append(" > ");
-            visitChild(node.children.get(1));
-            stringBuilder.append(" + 1");
-        }else{
-            visitChild(node.children.get(0));
-            stringBuilder.append(" > ");
-            visitChild(node.children.get(1));
-        }
+        //Left side of the interval
+        changeComparison(node, "]", " > ", 1);
         //Sides are always connected with logical AND
         stringBuilder.append(" && ");
         //Right side of the interval
-        if(node.getRightBracket().equals("[")){
-            visitChild(node.children.get(0));
-            stringBuilder.append(" < ");
-            visitChild(node.children.get(2));
-            stringBuilder.append(" - 1");
-        }else{
-            visitChild(node.children.get(0));
-            stringBuilder.append(" < ");
-            visitChild(node.children.get(2));
-        }
+        changeComparison(node, "[", " < ", 2);
         stringBuilder.append(")");
     }
+    
+    //Converts the interval to an Arduino C comparison
+    private void changeComparison(IntervalNode node, String bracket, String comp, int childNumber) {
+        String inclusive = bracket.equals("]") ? " + 1" : " - 1";
 
-    @Override
-    public void visit(ModNode node) {
-        AstNode leftChild = node.children.get(0);
-        AstNode rightChild = node.children.get(1);
-
-        //Enters if there are parentheses present before the expression
-        checkParentheses(node, true);
-
-        //Adds the expression to the string builder
-        this.visitChild(leftChild);
-        stringBuilder.append(" % ");
-        this.visitChild(rightChild);
-
-        //Enters if there are parentheses present after the expression
-        checkParentheses(node, false);
-    }
-
-    @Override
-    public void visit(NumberNode node) {
-        if (node.getParentheses()) {
-            stringBuilder.append("(");
+        if (node.getLeftBracket().equals(bracket)) {
+            visitChild(node.children.get(0));
+            stringBuilder.append(comp);
+            visitChild(node.children.get(childNumber));
+            stringBuilder.append(inclusive);
         }
-
-        stringBuilder.append(node.getIsNegative() ? "-" : "");
-        stringBuilder.append(node.getValue());
-
-        if (node.getParentheses()) {
-            stringBuilder.append(")");
-        }
-    }
-
-    private void checkParentheses(ExpressionNode node, boolean isStart) {
-        if (node.getParentheses() && isStart) {
-            stringBuilder.append("(");
-        }
-        else if (node.getParentheses() && !isStart) {
-            stringBuilder.append(")");
+        else {
+            visitChild(node.children.get(0));
+            stringBuilder.append(comp);
+            visitChild(node.children.get(childNumber));
         }
     }
 
