@@ -97,19 +97,8 @@ public class CodeVisitor implements INodeVisitor {
     //Format in Arduino C: (i > 5 && i < 10);
     @Override
     public void visit(IntervalNode node) {
-        stringBuilder.append("(");
         //Left side of the interval
-        changeComparison(node, "]", " > ", 1);
-        //Sides are always connected with logical AND
-        stringBuilder.append(" && ");
-        //Right side of the interval
-        changeComparison(node, "[", " < ", 2);
-        stringBuilder.append(")");
-    }
-
-    //Converts the interval to an Arduino C comparison
-    private void changeComparison(IntervalNode node, String bracket, String comp, int childNumber) {
-        String inclusive = bracket.equals("]") ? " + 1" : " - 1";
+        stringBuilder.append("(");
         if(node.getLeftBracket().equals("]")){
             visitChild(node.children.get(0));
             stringBuilder.append(" > ");
