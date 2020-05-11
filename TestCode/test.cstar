@@ -80,26 +80,15 @@ void loop(){
         console.print("character i in 'fish'");
     }
 
-    // Not handled in out language since only boolean true and false and not >= 1 or 0 are supported.
-    // -----------
-    //if(10-10){
-    //    console.print("Should be false");
-    //}
-
-    //if(-10+11){
-    //    console.print("Should be true");
-    //}
-    // -----------
-
     // Arduino function call
     //if(100 < random(50, 150)){
     //    console.print("100 is less then a random number between 50 and 150");
     //}
 
     // Normal function call
-    //if(100 < getRandomNumber(50, 150)){
-    //    console.print("100 is less then a random number between 50 and 150");
-    //}
+    if(100 < getRandomNumber(50, 150)){
+        console.print("100 is less then a random number between 50 and 150");
+    }
 
     // ##########################################
     // BETWEEN TEST (INTERVAL)
@@ -140,19 +129,26 @@ void loop(){
     // PIN TEST
     // ##########################################
     // Read: no pinMode change required.
-    led.read();
+    cow = led.read();
     // Write: pinMode should change from INPUT to OUTPUT
     led.write(HIGH);
     // Write: pinMode should not change
     led.write(LOW);
     // Read: pinMode should change from OUTPUT to INPUT
-    led.read();
+    weight = led.read();
     // Read: pinMode should not change
+    cow = led.read();
 
+    // Read: no pinMode change required.
+    led_array[1].read();
+    led_array[0].read();
+
+    // Write: pinMode should change from INPUT to OUTPUT
+    led_array[1].write(HIGH);
 
     counter = counter + 1;
 }
 
-//integer getRandomNumber(integer min, integer max){
-//    return random(min, max);
-//}
+integer getRandomNumber(integer min, integer max){
+    return random(min, max);
+}
