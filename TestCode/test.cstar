@@ -81,9 +81,9 @@ void loop(){
     }
 
     // Arduino function call
-    //if(100 < random(50, 150)){
-    //    console.print("100 is less then a random number between 50 and 150");
-    //}
+    if(100 < random(50, 150)){
+        console.print("100 is less then a random number between 50 and 150");
+    }
 
     // Normal function call
     if(100 < getRandomNumber(50, 150)){
@@ -140,11 +140,11 @@ void loop(){
     cow = led.read();
 
     // Read: no pinMode change required.
-    led_array[1].read();
-    led_array[0].read();
+    // led_array[1].read();
+    // led_array[0].read();
 
     // Write: pinMode should change from INPUT to OUTPUT
-    led_array[1].write(HIGH);
+    // led_array[1].write(HIGH);
 
     counter = counter + 1;
 }
