@@ -259,7 +259,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("not array"), node.lineNumber);
             }
             //Enters if the types were not compatible
-            else if (resultType.equals("error")) {
+            else if (resultType.equals("error") && !leftType.equals("ArduinoC")) {
                 errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, rightType), node.lineNumber);
             }
             //Enters if the types were compatible and the id was an array
@@ -283,9 +283,12 @@ public class SemanticsVisitor implements INodeVisitor {
             isValidType = intervalOperationValid((IntervalNode) node);
         }
         else {
-            isValidType = compareOperationValid(((CondNode)node).getToken(), leftType, rightType);
+            boolean areTypesArduino = leftType.equals("ArduinoC") || rightType.equals("ArduinoC");
+            boolean isCompareLegal = compareOperationValid(((CondNode)node).getToken(), leftType, rightType);
+            isValidType = isCompareLegal || areTypesArduino;
         }
 
+        //Enters if the type is valid
         if (!isValidType) {
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage(isLogical ? "combination" : "comparison", leftType, rightType), node.lineNumber);
         }
@@ -305,19 +308,22 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //Checks whether the operands in the interval are a number type
     private boolean intervalOperationValid(IntervalNode node) {
-        String varType = node.children.get(0).type;
+        String leftType = node.children.get(0).type;
         String firstNumType = node.children.get(1).type;
         String secondNumType = node.children.get(2).type;
 
-        if (varType == null || firstNumType == null || secondNumType == null) {
+        if (leftType == null || firstNumType == null || secondNumType == null) {
             return false;
         }
         //Return true if all types are a number type
-        if ((isNumber(varType) && isNumber(firstNumType) && isNumber(secondNumType))) {
+        if ((isNumber(leftType) && isNumber(firstNumType) && isNumber(secondNumType))) {
             return true;
         }
-        else {
+        else if (leftType.equals("ArduinoC")) {
             errors.addEntry(ErrorType.ARDUINO_FUNCTION_IN_INTERVAL, errorMessage("arduino c in interval"), node.lineNumber);
+            return false;
+        }
+        else {
             return false;
         }
     }
@@ -409,6 +415,12 @@ public class SemanticsVisitor implements INodeVisitor {
         else if ((leftType.equals("integer") && rightType.equals("small integer")) ||
                 (leftType.equals("small integer") && rightType.equals("integer"))) {
             return "integer";
+        }
+        else if (leftType.equals("ArduinoC")) {
+            return rightType;
+        } 
+        else if (rightType.equals("ArduinoC")) {
+            return leftType;
         }
         else {
             return "error";
@@ -759,16 +771,17 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(IntervalNode node) {
         visitChildren(node);
-        String varType = "";
+        String leftType = null;
 
         if (node.children.get(0) instanceof IdNode) {
-            varType = ((IdNode)node.children.get(0)).type;
+            leftType = ((IdNode)node.children.get(0)).type;
         }
         else if (node.children.get(0) instanceof NumberNode) {
-            varType = ((NumberNode)node.children.get(0)).type;
+            leftType = ((NumberNode)node.children.get(0)).type;
         }
-        if (varType.equals("character") || varType.equals("pin") || varType.equals("boolean")) {
-            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("interval not ID", varType), node.lineNumber);
+        //Enters if the left type is a character, pin, or boolean
+        if (leftType != null && (leftType.equals("character") || leftType.equals("pin") || leftType.equals("boolean"))) {
+            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("interval not ID", leftType), node.lineNumber);
         }
 
         checkBooleanType(node, false);
@@ -778,26 +791,29 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(MultValNode node) {
         this.visitChildren(node);
         boolean isValid = multValOperationValid(node);
-        if(isValid){
+
+        if (isValid) {
             node.type = "boolean";
         }
-
     }
 
     //Checks whether the elements in the MultVal expression are numbers
     private boolean multValOperationValid(MultValNode node) {
         boolean valid = false;
         String leftType = node.children.get(0).type;
-        if(!(leftType.equals("pin") || leftType.equals("boolean"))){
+
+        if (!(leftType.equals("pin") || leftType.equals("boolean"))) {
             for (AstNode child : node.children.subList(1, node.children.size() - 1)) {
-                if(multValTypeCheck(leftType, child)){
+                if (multValTypeCheck(leftType, child)) {
                     valid = true;
-                }else{
+                }
+                else {
                     valid = false;
                     errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("combination", leftType, child.type), node.lineNumber);
                 }
             }
-        }else{
+        }
+        else {
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("MultValNodeTypeError"), node.lineNumber);
         }
 
