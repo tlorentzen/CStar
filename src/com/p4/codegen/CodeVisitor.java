@@ -466,7 +466,7 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(FuncDclNode node) {
         symbolTable.enterScope(node.getNodeHash());
-
+        stringBuilder.append('\n');
         stringBuilder.append(getTargetType(node.getReturnType()));
         stringBuilder.append(" ");
         stringBuilder.append(node.getId());
@@ -593,7 +593,7 @@ public class CodeVisitor implements INodeVisitor {
             //The value to be written to the pin is either HIGH or LOW
             stringBuilder.append("analogWrite(");
             stringBuilder.append(pinId);
-            stringBuilder.append(",");
+            stringBuilder.append(", ");
             visitChild(parameter);
         }
     }
@@ -675,8 +675,7 @@ public class CodeVisitor implements INodeVisitor {
     private String convertIntToPinValue(AstNode node) {
         if (node instanceof PinNode) {
             return "A" + ((PinNode) node).getValue() * (-1);
-        }
-        else {
+        } else {
             return ((NumberNode) node).getValue().toString();
         }
     }

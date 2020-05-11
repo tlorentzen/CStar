@@ -1,7 +1,30 @@
+#include <SPI.h>
+#include <stdio.h>
+// #include "math.h"
+
+integer counter = 0;
+
 void setup(){
 
 }
 
 void loop(){
 
+    if(counter BETWEEN [1; 10]){
+        console.print("Is between 2 and 9"); // hest
+    }
+
+    if(counter BETWEEN ]1; 10]){
+        console.print("Is between 1 and 9");
+    }
+
+    if(counter BETWEEN [1; 10[){
+        console.print("Is between 2 and 10");
+    }
+
+    if(counter BETWEEN ]1; 10[){
+        console.print("Is between 1 and 10");
+    }
+
+    counter = counter + 1;
 }
