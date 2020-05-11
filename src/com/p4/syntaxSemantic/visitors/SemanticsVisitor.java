@@ -33,7 +33,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(IntegerDclNode node) {
         this.visitChildren(node);
     }
-    
+
     public void visit(LongDclNode node) {
         this.visitChildren(node);
     }
@@ -41,7 +41,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(SmallDclNode node) {
         this.visitChildren(node);
     }
-    
+
     public void visit(FloatDclNode node) {
         this.visitChildren(node);
     }
@@ -49,11 +49,11 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(CharDclNode node) {
         this.visitChildren(node);
     }
-    
+
     public void visit(PinDclNode node) {
         this.visitChildren(node);
     }
-    
+
     public void visit(BooleanDclNode node) {
         this.visitChildren(node);
     }
@@ -191,7 +191,7 @@ public class SemanticsVisitor implements INodeVisitor {
             }
         }
     }
-    
+
     private void checkIfArrayIsOperand(AstNode node, String errorMessage) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
@@ -208,7 +208,7 @@ public class SemanticsVisitor implements INodeVisitor {
     //Returns true if it is possible to cast the node to an idNode
     private boolean tryCastId(AstNode id) {
         IdNode idNode;
-        
+
         try {
             idNode = (IdNode)id;
             return true;
@@ -226,7 +226,7 @@ public class SemanticsVisitor implements INodeVisitor {
         if (leftAttribute.getKind().equals("array")) {
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("array", message), parent.lineNumber);
         }
-    } 
+    }
 
     @Override
     public void visit(InNode node) {
@@ -278,7 +278,8 @@ public class SemanticsVisitor implements INodeVisitor {
         if (isLogical) {
             isValidType = logicalOperationValid(leftType, rightType);
         }
-        else if (node instanceof IntervalNode) {
+        //TODO tjek om dette er 100% korrekt
+        else if (node instanceof IntervalNode){
             isValidType = intervalOperationValid((IntervalNode) node);
         }
         else {
@@ -774,8 +775,43 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(MultValNode multValNode) {
+    public void visit(MultValNode node) {
+        this.visitChildren(node);
+        boolean isValid = multValOperationValid(node);
+        if(isValid){
+            node.type = "boolean";
+        }
 
+    }
+
+    //Checks whether the elements in the MultVal expression are numbers
+    private boolean multValOperationValid(MultValNode node) {
+        boolean valid = false;
+        String leftType = node.children.get(0).type;
+        if(!(leftType.equals("pin") || leftType.equals("boolean"))){
+            for (AstNode child : node.children.subList(1, node.children.size() - 1)) {
+                if(multValTypeCheck(leftType, child)){
+                    valid = true;
+                }else{
+                    valid = false;
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("combination", leftType, child.type), node.lineNumber);
+                }
+            }
+        }else{
+            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("MultValNodeTypeError"), node.lineNumber);
+        }
+
+        return valid;
+    }
+
+    private boolean multValTypeCheck(String leftType, AstNode child){
+        String rightType = child.type;
+        //Returns true if left and right types are both numbers
+        if(isNumber(leftType) && isNumber(rightType)){
+            return true;
+        }
+        //Returns true if left and right types are both characters
+        else return leftType.equals("character") && rightType.equals("character");
     }
 
     //Finds and returns the correct error message
@@ -817,7 +853,7 @@ public class SemanticsVisitor implements INodeVisitor {
             case "interval not ID":
                 return "Cannot compare the interval because type is '" + type[0] + "'. " +
                         "Intervals can only be of type 'integer', 'small integer', 'long integer', or 'decimal'";
-                
+
             //Error messages with no type
             case "array parameter":
                 return "Illegal type: Cannot use an entire array as a parameter";
@@ -835,6 +871,8 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "Arduino C functions are not compatible with intervals.";
             case "not array":
                 return "Illegal type: the right operand must be an array";
+            case "MultValNodeTypeError":
+                return "Cannot test the variable because it is of boolean or pin type. Make sure all elements are a number or a character";
             default:
                 return null;
         }
