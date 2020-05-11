@@ -106,24 +106,54 @@ public class CodeVisitor implements INodeVisitor {
     //Format in Arduino C: (i > 5 && i < 10);
     @Override
     public void visit(IntervalNode node) {
-        stringBuilder.append("(");
         //Left side of the interval
-        changeComparison(node, "]", " > ", 1);
+        stringBuilder.append("(");
+        if(node.getLeftBracket().equals("]")){
+            visitChild(node.children.get(0));
+            stringBuilder.append(" > ");
+            visitChild(node.children.get(1));
+        }else{
+            visitChild(node.children.get(0));
+            stringBuilder.append(" >= ");
+            visitChild(node.children.get(1));
+        }
         //Sides are always connected with logical AND
         stringBuilder.append(" && ");
         //Right side of the interval
-        changeComparison(node, "[", " < ", 2);
+        if(node.getRightBracket().equals("[")){
+            visitChild(node.children.get(0));
+            stringBuilder.append(" < ");
+            visitChild(node.children.get(2));
+        }else{
+            visitChild(node.children.get(0));
+            stringBuilder.append(" <= ");
+            visitChild(node.children.get(2));
+        }
         stringBuilder.append(")");
     }
 
-    //Converts the interval to an Arduino C comparison
-    private void changeComparison(IntervalNode node, String bracket, String comp, int childNumber) {
-        String inclusive = bracket.equals("]") ? " + 1" : " - 1";
-    }
-
+    /**
+     * Creates comparison of one value to many values
+     * Format in Arduino C: (i == 1 || i == 2 || i == 3)
+     * @param node is the MultValNode to be handled
+     */
     @Override
-    public void visit(MultValNode multValNode) {
+    public void visit(MultValNode node) {
+        AstNode firstChild = node.children.get(0);
+        //Add parentheses to ensure the precedens is correct
+        stringBuilder.append("(");
+        //Takes every child on right side and creates an arduino c comparison to the left side
+        //"(i == 1 || i == 2...)"
+        for (AstNode child: node.children.subList(1,node.children.size())){
+            visitChild(firstChild);
+            stringBuilder.append(" == ");
+            visitChild(child);
+            stringBuilder.append(" || ");
 
+        }
+        //Deletes leftover " || "
+        stringBuilder.delete(stringBuilder.length() - 4, stringBuilder.length());
+        stringBuilder.append(")");
     }
 
     //Format in Arduino C: int pinName;

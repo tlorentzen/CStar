@@ -252,17 +252,20 @@ public class SemanticsVisitor implements INodeVisitor {
         IdNode idNode = (IdNode) node.children.get(1);
         Attributes rightAttribute = symbolTable.lookupSymbol(idNode.getId());
 
-        //Enters if the id is not an array
-        if (!rightAttribute.getKind().equals("array")) {
-            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("not array"), node.lineNumber);
-        }
-        //Enters if the types were not compatible
-        else if (resultType.equals("error")) {
-            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, rightType), node.lineNumber);
-        }
-        //Enters if the types were compatible and the id was an array
-        else {
-            node.type = "boolean";
+        //Enters if the id h node has not been declared
+        if (rightAttribute != null) {
+            //Enters if the id is not an array
+            if (!rightAttribute.getKind().equals("array")) {
+                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("not array"), node.lineNumber);
+            }
+            //Enters if the types were not compatible
+            else if (resultType.equals("error")) {
+                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, rightType), node.lineNumber);
+            }
+            //Enters if the types were compatible and the id was an array
+            else {
+                node.type = "boolean";
+            }
         }
     }
 
@@ -275,7 +278,8 @@ public class SemanticsVisitor implements INodeVisitor {
         if (isLogical) {
             isValidType = logicalOperationValid(leftType, rightType);
         }
-        else if (node instanceof IntervalNode) {
+        //TODO tjek om dette er 100% korrekt
+        else if (node instanceof IntervalNode){
             isValidType = intervalOperationValid((IntervalNode) node);
         }
         else {
@@ -600,29 +604,44 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
 
         String functionName = ((IdNode)node.children.get(0)).getId();
-        CStarScope functionScope;
 
         node.type = ((IdNode) node.children.get(0)).type;
 
         //Enters if the function is declared
         if (symbolTable.declaredFunctions.contains(functionName)) {
-            functionScope = this.symbolTable.lookupScope("FuncNode-" + functionName);
+            //Enters if the function includes a dot operator
+            if (functionName.contains(".")) {
+                String idName = functionName.split("\\.")[0];
 
-            //Enters if the function scope was found in the symbol table
-            if (functionScope != null) {
-                //Checks if the number of actual parameters corresponds to the number of formal parameters
-                if (node.children.size() - 1 != functionScope.getParams().size()) {
-                    errors.addEntry(ErrorType.PARAMETER_ERROR, errorMessage("number of param", functionName), node.lineNumber);
+                //Enters if the pin has not been declared
+                if (symbolTable.lookupSymbol(idName) == null) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl",idName), node.lineNumber);
                 }
                 else {
-                    //Checks if the types of the actual parameters are legal
-                    checkParameterTypes(node, functionScope);
+                    checkFunction(node, functionName);
                 }
             }
         }
         //Enters if the function has not been declared
         else {
             errors.addEntry(ErrorType.UNDECLARED_FUNCTION_WARNING, errorMessage("no func dcl", functionName), node.lineNumber);
+        }
+    }
+
+    //Checks if the function scope and parameters are valid
+    private void checkFunction(FuncCallNode node, String functionName) {
+        CStarScope functionScope = this.symbolTable.lookupScope("FuncNode-" + functionName);
+
+        //Enters if the function scope was found in the symbol table
+        if (functionScope != null) {
+            //Checks if the number of actual parameters corresponds to the number of formal parameters
+            if (node.children.size() - 1 != functionScope.getParams().size()) {
+                errors.addEntry(ErrorType.PARAMETER_ERROR, errorMessage("number of param", functionName), node.lineNumber);
+            }
+            else {
+                //Checks if the types of the actual parameters are legal
+                checkParameterTypes(node, functionScope);
+            }
         }
     }
 
@@ -669,7 +688,6 @@ public class SemanticsVisitor implements INodeVisitor {
             if (attributes == null) {
                 // errorMessage("not declared ID");
                 errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl", node.getId()), node.lineNumber);
-                node.type = "Not declared";
             }
             else {
                 node.type = attributes.getVariableType();
@@ -757,8 +775,43 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(MultValNode multValNode) {
+    public void visit(MultValNode node) {
+        this.visitChildren(node);
+        boolean isValid = multValOperationValid(node);
+        if(isValid){
+            node.type = "boolean";
+        }
 
+    }
+
+    //Checks whether the elements in the MultVal expression are numbers
+    private boolean multValOperationValid(MultValNode node) {
+        boolean valid = false;
+        String leftType = node.children.get(0).type;
+        if(!(leftType.equals("pin") || leftType.equals("boolean"))){
+            for (AstNode child : node.children.subList(1, node.children.size() - 1)) {
+                if(multValTypeCheck(leftType, child)){
+                    valid = true;
+                }else{
+                    valid = false;
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("combination", leftType, child.type), node.lineNumber);
+                }
+            }
+        }else{
+            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("MultValNodeTypeError"), node.lineNumber);
+        }
+
+        return valid;
+    }
+
+    private boolean multValTypeCheck(String leftType, AstNode child){
+        String rightType = child.type;
+        //Returns true if left and right types are both numbers
+        if(isNumber(leftType) && isNumber(rightType)){
+            return true;
+        }
+        //Returns true if left and right types are both characters
+        else return leftType.equals("character") && rightType.equals("character");
     }
 
     //Finds and returns the correct error message
@@ -818,6 +871,8 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "Arduino C functions are not compatible with intervals.";
             case "not array":
                 return "Illegal type: the right operand must be an array";
+            case "MultValNodeTypeError":
+                return "Cannot test the variable because it is of boolean or pin type. Make sure all elements are a number or a character";
             default:
                 return null;
         }
