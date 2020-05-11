@@ -9,8 +9,15 @@ integer setup(){
     console.print("hey heeey");
     }
 }
-void loop() {
+pin array led_array = [A1, 2, 10];
 
+void loop(){
+    // Read: no pinMode change required.
+    led_array[1].read();
+    led_array[0].read();
+
+    // Write: pinMode should change from INPUT to OUTPUT
+    led_array[1].write(HIGH);
 }
 
 
