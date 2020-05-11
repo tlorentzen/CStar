@@ -140,11 +140,14 @@ void loop(){
     // PIN TEST
     // ##########################################
     // Read: no pinMode change required.
-    pin.read();
+    led.read();
     // Write: pinMode should change from INPUT to OUTPUT
-    pin.write(HIGH);
+    led.write(HIGH);
     // Write: pinMode should not change
-    pin.write(LOW);
+    led.write(LOW);
+    // Read: pinMode should change from OUTPUT to INPUT
+    led.read();
+    // Read: pinMode should not change
 
 
     counter = counter + 1;
