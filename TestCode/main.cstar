@@ -9,6 +9,11 @@ void setup(){
     }
 }
 
-void loop() {
+void loop(){
+    // Read: no pinMode change required.
+    led_array[1].read();
+    led_array[0].read();
 
+    // Write: pinMode should change from INPUT to OUTPUT
+    led_array[1].write(HIGH);
 }
