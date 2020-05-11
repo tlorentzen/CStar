@@ -584,7 +584,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 //Enters if a return expression is found
                 if (blockChild instanceof ReturnExpNode) {
                     //Enters if return type is different and widening cannot be performed
-                    if (!isLegalType(dclReturnType, blockChild.type)) {
+                    if (!isLegalType(dclReturnType, blockChild.type) && !(blockChild.type.equals("ArduinoC"))) {
                         errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("return", blockChild.type, dclReturnType), node.lineNumber);
                     }
                 }
