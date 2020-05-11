@@ -33,7 +33,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(IntegerDclNode node) {
         this.visitChildren(node);
     }
-    
+
     public void visit(LongDclNode node) {
         this.visitChildren(node);
     }
@@ -41,7 +41,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(SmallDclNode node) {
         this.visitChildren(node);
     }
-    
+
     public void visit(FloatDclNode node) {
         this.visitChildren(node);
     }
@@ -49,11 +49,11 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(CharDclNode node) {
         this.visitChildren(node);
     }
-    
+
     public void visit(PinDclNode node) {
         this.visitChildren(node);
     }
-    
+
     public void visit(BooleanDclNode node) {
         this.visitChildren(node);
     }
@@ -191,7 +191,7 @@ public class SemanticsVisitor implements INodeVisitor {
             }
         }
     }
-    
+
     private void checkIfArrayIsOperand(AstNode node, String errorMessage) {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
@@ -201,14 +201,14 @@ public class SemanticsVisitor implements INodeVisitor {
             checkIfArray(leftChild, node, errorMessage);
         }
         if (tryCastId(rightChild)) {
-            checkIfArray(leftChild, node, errorMessage);
+            checkIfArray(rightChild, node, errorMessage);
         }
     }
 
     //Returns true if it is possible to cast the node to an idNode
     private boolean tryCastId(AstNode id) {
         IdNode idNode;
-        
+
         try {
             idNode = (IdNode)id;
             return true;
@@ -226,7 +226,7 @@ public class SemanticsVisitor implements INodeVisitor {
         if (leftAttribute.getKind().equals("array")) {
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("array", message), parent.lineNumber);
         }
-    } 
+    }
 
     @Override
     public void visit(InNode node) {
@@ -597,7 +597,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //If no errors occur, then the function call will be seen as well typed
     public void visit(FuncCallNode node) {
-         this.visitChildren(node);
+        this.visitChildren(node);
 
         String functionName = ((IdNode)node.children.get(0)).getId();
         CStarScope functionScope;
@@ -800,7 +800,7 @@ public class SemanticsVisitor implements INodeVisitor {
             case "interval not ID":
                 return "Cannot compare the interval because type is '" + type[0] + "'. " +
                         "Intervals can only be of type 'integer', 'small integer', 'long integer', or 'decimal'";
-                
+
             //Error messages with no type
             case "array parameter":
                 return "Illegal type: Cannot use an entire array as a parameter";
