@@ -393,6 +393,7 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append(")");
         //Second child is the block
         this.visitChild(node.children.get(1));
+        stringBuilder.append('\n');
     }
 
     //Format in Arduino C: if(10 < 20){ int i = 0; } else { int i = 1; }
@@ -411,6 +412,7 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append("else ");
             visitChild(node.children.get(2));
         }
+        stringBuilder.append('\n');
     }
 
     //Format in Arduino C:

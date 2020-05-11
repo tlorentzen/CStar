@@ -4,9 +4,21 @@
 
 integer counter = 0;
 integer array numbers = [2,6,7,9,1];
+boolean isTrue = true;
 
 void setup(){
 
+    // Literal assigning
+    integer cow = 1000;
+    small integer horse = 1;
+    long integer elephant = 10000000000;
+    decimal weight = 145.95;
+    character fish = 'f';
+    pin led = A2;
+    pin led2 = 10;
+
+    // Array assigning
+    integer array cow_array = {1,2,3,4};
 }
 
 void loop(){
@@ -26,15 +38,34 @@ void loop(){
         console.print("array index 3 (9) < 10");
     }
 
+    if(true AND isTrue){
+        console.print("This is true");
+    }
+
+    if(false OR isTrue){
+        console.print("This is false");
+    }
+
+    // Not handled in out language since only boolean true and false and not >= 1 or 0 are supported.
+    // -----------
+    //if(10-10){
+    //    console.print("Should be false");
+    //}
+
+    //if(-10+11){
+    //    console.print("Should be true");
+    //}
+    // -----------
+
     // Arduino function call
-    // if(100 < random(50, 150)){
+    //if(100 < random(50, 150)){
     //    console.print("100 is less then a random number between 50 and 150");
-    // }
+    //}
 
     // Normal function call
-    if(100 < getRandomNumber(50, 150)){
-        console.print("100 is less then a random number between 50 and 150");
-    }
+    //if(100 < getRandomNumber(50, 150)){
+    //    console.print("100 is less then a random number between 50 and 150");
+    //}
 
     // ##########################################
     // BETWEEN TEST (INTERVAL)
@@ -74,6 +105,6 @@ void loop(){
     counter = counter + 1;
 }
 
-integer getRandomNumber(integer min, integer max){
-    return random(min, max);
-}
+//integer getRandomNumber(integer min, integer max){
+//    return random(min, max);
+//}
