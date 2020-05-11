@@ -4,10 +4,17 @@ public class Attributes{
     private String kind;
     private String variableType;
     private String scope;
+    private int arrayLength;
 
     public Attributes(String kind, String variableType) {
         this.kind = kind;
         this.variableType = variableType;
+    }
+
+    public Attributes(String kind, String variableType, int arrayLength) {
+        this.kind = kind;
+        this.variableType = variableType;
+        this.arrayLength = arrayLength;
     }
 
     public String getKind() {
@@ -33,4 +40,6 @@ public class Attributes{
     public void setScope(String scope) {
         this.scope = scope;
     }
+
+    public int getArrayLength() { return arrayLength; }
 }

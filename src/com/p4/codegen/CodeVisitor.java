@@ -93,7 +93,7 @@ public class CodeVisitor implements INodeVisitor {
         visitDclNode(node);
     }
 
-    //Format in Aruino C: (i > 5 && i < 10);
+    //Format in Arduino C: (i > 5 && i < 10);
     @Override
     public void visit(IntervalNode node) {
         stringBuilder.append("(");
@@ -228,13 +228,35 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(InNode node) {
+        //First child is a value and right side is an array
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
 
+        Attributes array = symbolTable.lookupSymbol(((IdNode)rightChild).getId());
+        
+        stringBuilder.append("(");
+        for (int i = 0; i < array.getArrayLength(); i++) {
+            //Appends the value being compared with
+            this.visitChild(leftChild);
+            stringBuilder.append(" == ");
+            //Appends the array id
+            this.visitChild(rightChild);
+            //Appends index
+            stringBuilder.append("[");
+            stringBuilder.append(i);
+            stringBuilder.append("]");
+            
+            if (i != array.getArrayLength() - 1) {
+                stringBuilder.append(" ||\n");
+            }
+        }
+        stringBuilder.append(")\n");
+        output.add(getLine());
     }
 
     //Format in Arduino C: 10 + 20
     @Override
     public void visit(AddNode node) {
-        //First child is left side, second is right side
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
 

@@ -1,8 +1,9 @@
+pin array a = [1,2,3];
 integer i = 5;
-
-i BETWEEN ]1; 5];
-
-integer setup(integer i, integer d){
+5 IN a;
+//if(5 IN a AND 5 IS 2 OR 5 IS 3) {
+//}
+integer setup(){
 
 
 }

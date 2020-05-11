@@ -7,7 +7,6 @@ import com.p4.syntaxSemantic.nodes.*;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.CStarScope;
 import com.p4.symbols.SymbolTable;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     public void visitChildren(AstNode node) {
-        for(AstNode child : node.children){
+        for (AstNode child : node.children) {
             child.accept(this);
         }
     }
@@ -98,7 +97,7 @@ public class SemanticsVisitor implements INodeVisitor {
             String rightType = node.children.get(1).type;
 
             if (leftType != null && rightType != null) {
-                resultType = assignOperationResultType(leftType, rightType);
+                resultType = operationResultType(leftType, rightType);
 
                 if (resultType.equals("error")) {
                     errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("assignment", leftType, rightType), node.lineNumber);
@@ -114,7 +113,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     //Checks if the return type of the function call is the compatible with the type on the left hand side of the assignment
-    private String assignFuncCall(AssignNode assignNode, String leftType){
+    private String assignFuncCall(AssignNode assignNode, String leftType) {
         FuncCallNode funcCallNode = (FuncCallNode) assignNode.children.get(1);
         String rightType = ((IdNode)funcCallNode.children.get(0)).type;
 
@@ -134,9 +133,9 @@ public class SemanticsVisitor implements INodeVisitor {
         else if (rightType.equals("ArduinoC")) {
             return leftType;
         }
-        //Returns the result type found in assignOperationResultType
+        //Returns the result type found in operationResultType
         else {
-            String resultType = assignOperationResultType(leftType, rightType);
+            String resultType = operationResultType(leftType, rightType);
 
             if (resultType.equals("error")) {
                 errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("assignment", leftType, rightType), assignNode.lineNumber);
@@ -146,15 +145,14 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     //Checks if the left and right hand side of the assignment are compatible
-    private String assignOperationResultType(String leftType, String rightType){
+    private String operationResultType(String leftType, String rightType) {
         //First Semantic rule
         if (leftType.equals(rightType)) {
             return leftType;
         }
         //Second rule
         else if ((leftType.equals("decimal") || leftType.equals("long integer")) &&
-                (rightType.equals("integer") || rightType.equals("long integer") ||
-                        rightType.equals("small integer"))) {
+                (rightType.equals("integer") || rightType.equals("small integer"))) {
             return leftType;
         }
         //Third rule
@@ -232,7 +230,40 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(InNode node) {
+        visitChildren(node);
 
+        String leftType = node.children.get(0).type;
+        String rightType = node.children.get(1).type;
+
+        //Enters if one or both of operands has no type
+        if (leftType == null || rightType == null) {
+            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("null type"), node.lineNumber);
+        }
+        else {
+            checkInNode(leftType, rightType, node);
+        }
+    }
+
+    //Checks if the inNode operands are valid
+    private void checkInNode(String leftType, String rightType, AstNode node) {
+        //Parameters below are switched, since widening is only possible for the left side instead of right side
+        String resultType = operationResultType(rightType, leftType);
+        //Gets right side and checks if it is an array
+        IdNode idNode = (IdNode) node.children.get(1);
+        Attributes rightAttribute = symbolTable.lookupSymbol(idNode.getId());
+
+        //Enters if the id is not an array
+        if (!rightAttribute.getKind().equals("array")) {
+            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("not array"), node.lineNumber);
+        }
+        //Enters if the types were not compatible
+        else if (resultType.equals("error")) {
+            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, rightType), node.lineNumber);
+        }
+        //Enters if the types were compatible and the id was an array
+        else {
+            node.type = "boolean";
+        }
     }
 
     private void checkBooleanType(AstNode node, boolean isLogical) {
@@ -244,7 +275,7 @@ public class SemanticsVisitor implements INodeVisitor {
         if (isLogical) {
             isValidType = logicalOperationValid(leftType, rightType);
         }
-        else if (node instanceof IntervalNode){
+        else if (node instanceof IntervalNode) {
             isValidType = intervalOperationValid((IntervalNode) node);
         }
         else {
@@ -278,13 +309,13 @@ public class SemanticsVisitor implements INodeVisitor {
             return false;
         }
         //Return true if all types are a number type
-        if((isNumber(varType) && isNumber(firstNumType) && isNumber(secondNumType))){
+        if ((isNumber(varType) && isNumber(firstNumType) && isNumber(secondNumType))) {
             return true;
-        }else{
-            errors.addEntry(ErrorType.ARDUINO_FUNCTION_IN_INTERVAL, errorMessage("arduinocInInterval"), node.lineNumber);
+        }
+        else {
+            errors.addEntry(ErrorType.ARDUINO_FUNCTION_IN_INTERVAL, errorMessage("arduino c in interval"), node.lineNumber);
             return false;
         }
-
     }
 
     private boolean compareOperationValid(int operator, String leftType, String rightType) {
@@ -339,7 +370,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String resultType = arithOperationResultType(leftType, rightType);
 
         //Enters if the conversion is illegal and both types are numbers
-        if (resultType.equals("error") && (isNumber(leftType) || isNumber(rightType))){
+        if (resultType.equals("error") && (isNumber(leftType) || isNumber(rightType))) {
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("conversion", leftType, rightType), node.lineNumber);
         }
         //Enters if one of the operand types is illegal (e.g. char or bool)
@@ -395,7 +426,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String rightType = node.children.get(1).type;
 
         //Checks if either type is decimal (illegal for mod operator)
-        if (leftType.equals("decimal") || rightType.equals("decimal")){
+        if (leftType.equals("decimal") || rightType.equals("decimal")) {
             node.type = null;
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("non-decimal"), node.lineNumber);
         }
@@ -615,7 +646,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 checkIfArray(node.children.get(currentChild), "array parameter");
 
                 //Checks if types are the same or if type widening is possible
-                String resultType = assignOperationResultType(formalParamType, actualParamType);
+                String resultType = operationResultType(formalParamType, actualParamType);
 
                 //Enters if an error has occurred and either parameter is not of the arduino type
                 if (resultType.equals("error") && !actualParamType.equals("ArduinoC") && !formalParamType.equals("ArduinoC")) {
@@ -665,7 +696,7 @@ public class SemanticsVisitor implements INodeVisitor {
         else if (node.getValue() < Integer.MAX_VALUE && node.getValue() > Integer.MIN_VALUE) {
             return "integer";
         }
-        else if (node.getValue() < Long.MAX_VALUE && node.getValue() > Long.MIN_VALUE){
+        else if (node.getValue() < Long.MAX_VALUE && node.getValue() > Long.MIN_VALUE) {
             return "long integer";
         }
         else {
@@ -711,13 +742,15 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(IntervalNode node) {
         visitChildren(node);
         String varType = "";
-        if(node.children.get(0) instanceof IdNode){
+
+        if (node.children.get(0) instanceof IdNode) {
             varType = ((IdNode)node.children.get(0)).type;
-        } else if(node.children.get(0) instanceof NumberNode){
+        }
+        else if (node.children.get(0) instanceof NumberNode) {
             varType = ((NumberNode)node.children.get(0)).type;
         }
-        if(varType.equals("character") || varType.equals("pin") || varType.equals("boolean")){
-            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("intervalNotID/Var", varType), node.lineNumber);
+        if (varType.equals("character") || varType.equals("pin") || varType.equals("boolean")) {
+            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("interval not ID", varType), node.lineNumber);
         }
 
         checkBooleanType(node, false);
@@ -759,8 +792,11 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "'" + type[0] + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.";
             case "array":
                 return "Illegal type conversion: Cannot " + type[0] + "with an entire array";
-
-                //Error messages with no type
+            case "interval not ID":
+                return "Cannot compare the interval because type is '" + type[0] + "'. " +
+                        "Intervals can only be of type 'integer', 'small integer', 'long integer', or 'decimal'";
+                
+            //Error messages with no type
             case "array parameter":
                 return "Illegal type: Cannot use an entire array as a parameter";
             case "array return":
@@ -773,10 +809,10 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "Invalid type: Could not find a compatible type";
             case "div by zero":
                 return "Cannot divide by zero";
-            case "intervalNotID/Var":
-                return "Cannot compare the interval because type is '" + type[0] + "'. Intervals can only be of type 'integer', 'small integer', 'long integer', or 'decimal'";
-            case "arduinocInInterval":
+            case "arduino c in interval":
                 return "Arduino C functions are not compatible with intervals.";
+            case "not array":
+                return "Illegal type: the right operand must be an array";
             default:
                 return null;
         }
