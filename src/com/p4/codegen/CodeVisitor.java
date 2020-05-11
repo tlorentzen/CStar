@@ -91,10 +91,9 @@ public class CodeVisitor implements INodeVisitor {
             visitChild(node.children.get(0));
             stringBuilder.append(" > ");
             visitChild(node.children.get(1));
-            stringBuilder.append(" + 1");
         }else{
             visitChild(node.children.get(0));
-            stringBuilder.append(" > ");
+            stringBuilder.append(" >= ");
             visitChild(node.children.get(1));
         }
         //Sides are always connected with logical AND
@@ -104,18 +103,27 @@ public class CodeVisitor implements INodeVisitor {
             visitChild(node.children.get(0));
             stringBuilder.append(" < ");
             visitChild(node.children.get(2));
-            stringBuilder.append(" - 1");
         }else{
             visitChild(node.children.get(0));
-            stringBuilder.append(" < ");
+            stringBuilder.append(" <= ");
             visitChild(node.children.get(2));
         }
         stringBuilder.append(")");
     }
 
     @Override
-    public void visit(MultValNode multValNode) {
-        
+    public void visit(MultValNode node) {
+        AstNode firstChild = node.children.get(0);
+        stringBuilder.append("(");
+        for (AstNode child: node.children.subList(1,node.children.size())){
+            visitChild(firstChild);
+            stringBuilder.append(" == ");
+            visitChild(child);
+            stringBuilder.append(" || ");
+
+        }
+        stringBuilder.delete(stringBuilder.length() - 4, stringBuilder.length());
+        stringBuilder.append(")");
     }
 
     public void visit(FloatDclNode node) {

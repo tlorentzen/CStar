@@ -185,6 +185,7 @@ public class SemanticsVisitor implements INodeVisitor {
         if (isLogical) {
             isValidType = logicalOperationValid(leftType, rightType);
         }
+        //TODO tjek om dette er 100% korrekt
         else if (node instanceof IntervalNode){
             isValidType = intervalOperationValid((IntervalNode) node);
         }
@@ -658,8 +659,43 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(MultValNode multValNode) {
+    public void visit(MultValNode node) {
+        this.visitChildren(node);
+        boolean isValid = multValOperationValid(node);
+        if(isValid){
+            node.type = "boolean";
+        }
 
+    }
+
+    //Checks whether the elements in the MultVal expression are numbers
+    private boolean multValOperationValid(MultValNode node) {
+        boolean valid = false;
+        String leftType = node.children.get(0).type;
+        if(!(leftType.equals("pin") || leftType.equals("boolean"))){
+            for (AstNode child : node.children.subList(1, node.children.size() - 1)) {
+                if(multValTypeCheck(leftType, child)){
+                    valid = true;
+                }else{
+                    valid = false;
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("combination", leftType, child.type), node.lineNumber);
+                }
+            }
+        }else{
+            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("MultValNodeTypeError"), node.lineNumber);
+        }
+
+        return valid;
+    }
+
+    private boolean multValTypeCheck(String leftType, AstNode child){
+        String rightType = child.type;
+        //Returns true if left and right types are both numbers
+        if(isNumber(leftType) && isNumber(rightType)){
+            return true;
+        }
+        //Returns true if left and right types are both characters
+        else return leftType.equals("character") && rightType.equals("character");
     }
 
     //Finds and returns the correct error message
@@ -710,6 +746,8 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "Cannot compare the interval because type is '" + type[0] + "'. Intervals can only be of type 'integer', 'small integer', 'long integer', or 'decimal'";
             case "arduinocInInterval":
                 return "Arduino C functions are not compatible with intervals.";
+            case "MultValNodeTypeError":
+                return "Cannot test the variable because it is of boolean or pin type. Make sure all elements are a number or a character";
             default:
                 return null;
         }
