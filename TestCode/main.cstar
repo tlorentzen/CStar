@@ -1,9 +1,12 @@
-console.print("hej");
-
-5 IN a;
+pin pin1 = 5;
 integer setup(){
 
 }
 void loop() {
-
+    
 }
+
+integer hej(integer min, integer max){
+    return randomNumber(min, max);
+}
+
