@@ -110,11 +110,43 @@ public class CodeVisitor implements INodeVisitor {
     //Converts the interval to an Arduino C comparison
     private void changeComparison(IntervalNode node, String bracket, String comp, int childNumber) {
         String inclusive = bracket.equals("]") ? " + 1" : " - 1";
+        if(node.getLeftBracket().equals("]")){
+            visitChild(node.children.get(0));
+            stringBuilder.append(" > ");
+            visitChild(node.children.get(1));
+        }else{
+            visitChild(node.children.get(0));
+            stringBuilder.append(" >= ");
+            visitChild(node.children.get(1));
+        }
+        //Sides are always connected with logical AND
+        stringBuilder.append(" && ");
+        //Right side of the interval
+        if(node.getRightBracket().equals("[")){
+            visitChild(node.children.get(0));
+            stringBuilder.append(" < ");
+            visitChild(node.children.get(2));
+        }else{
+            visitChild(node.children.get(0));
+            stringBuilder.append(" <= ");
+            visitChild(node.children.get(2));
+        }
+        stringBuilder.append(")");
     }
 
     @Override
-    public void visit(MultValNode multValNode) {
+    public void visit(MultValNode node) {
+        AstNode firstChild = node.children.get(0);
+        stringBuilder.append("(");
+        for (AstNode child: node.children.subList(1,node.children.size())){
+            visitChild(firstChild);
+            stringBuilder.append(" == ");
+            visitChild(child);
+            stringBuilder.append(" || ");
 
+        }
+        stringBuilder.delete(stringBuilder.length() - 4, stringBuilder.length());
+        stringBuilder.append(")");
     }
 
     //Format in Arduino C: int pinName;

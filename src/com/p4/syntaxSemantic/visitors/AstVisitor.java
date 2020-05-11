@@ -896,6 +896,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
                 node.children.add(visit(child));
             }
         }
+        node.lineNumber = ctx.start.getLine();
 
         return node;
     }
