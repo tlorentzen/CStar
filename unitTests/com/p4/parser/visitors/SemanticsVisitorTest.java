@@ -54,14 +54,14 @@ class SemanticsVisitorTest {
     }
 
     @Test
-    void visitId_ReceivesIdNotDeclared_SetsTypeToNotDeclared(){
+    void visitId_ReceivesIdNull_SetsTypeToNull(){
         //Arrange
         var id = "id";
         var idNode = new IdNode(id, false);
 
         //Act
         visitor.visit(idNode);
-        var result = idNode.type.equals("Not declared");
+        var result = idNode.type == null;
 
         //Assert
         assert(result);

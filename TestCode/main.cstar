@@ -1,15 +1,11 @@
-pin array a = [1,2,3];
-
-if(5 IN a) {
-    console.print("nono");
-}
-if(1 IN a) {
-    console.print("det virker!");
-}
+pin pin1 = 5;
 integer setup(){
+    if (100 < random(50, 150) ) {
+    console.print("hey heeey");
+    }
+}
+void loop() {
+    
+}
 
 
-}
-void loop(){
-    hest.read();
-}
