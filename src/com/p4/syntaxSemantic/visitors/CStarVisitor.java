@@ -1,46 +1,47 @@
 // Generated from C:/Users/ichris18/Documents/GitHub/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
 package com.p4.syntaxSemantic.visitors;
+
 import com.p4.syntaxSemantic.CStarParser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
  * This interface defines a complete generic visitor for a parse tree produced
- * by {@link com.p4.syntaxSemantic.CStarParser}.
+ * by {@link CStarParser}.
  *
  * @param <T> The return type of the visit operation. Use {@link Void} for
  * operations with no return type.
  */
 public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#prog}.
+	 * Visit a parse tree produced by {@link CStarParser#prog}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitProg(com.p4.syntaxSemantic.CStarParser.ProgContext ctx);
+	T visitProg(CStarParser.ProgContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#dcl}.
+	 * Visit a parse tree produced by {@link CStarParser#dcl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDcl(com.p4.syntaxSemantic.CStarParser.DclContext ctx);
+	T visitDcl(CStarParser.DclContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#assign}.
+	 * Visit a parse tree produced by {@link CStarParser#assign}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAssign(com.p4.syntaxSemantic.CStarParser.AssignContext ctx);
+	T visitAssign(CStarParser.AssignContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#expr}.
+	 * Visit a parse tree produced by {@link CStarParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitExpr(com.p4.syntaxSemantic.CStarParser.ExprContext ctx);
+	T visitExpr(CStarParser.ExprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#logical_expr}.
+	 * Visit a parse tree produced by {@link CStarParser#logical_expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLogical_expr(com.p4.syntaxSemantic.CStarParser.Logical_exprContext ctx);
+	T visitLogical_expr(CStarParser.Logical_exprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CStarParser#test_mult_val}.
 	 * @param ctx the parse tree
@@ -64,25 +65,25 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitCond_expr(com.p4.syntaxSemantic.CStarParser.Cond_exprContext ctx);
+	T visitCond_expr(CStarParser.Cond_exprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#arithm_expr}.
+	 * Visit a parse tree produced by {@link CStarParser#arithm_expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArithm_expr(com.p4.syntaxSemantic.CStarParser.Arithm_exprContext ctx);
+	T visitArithm_expr(CStarParser.Arithm_exprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#term}.
+	 * Visit a parse tree produced by {@link CStarParser#term}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTerm(com.p4.syntaxSemantic.CStarParser.TermContext ctx);
+	T visitTerm(CStarParser.TermContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#factor}.
+	 * Visit a parse tree produced by {@link CStarParser#factor}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFactor(com.p4.syntaxSemantic.CStarParser.FactorContext ctx);
+	T visitFactor(CStarParser.FactorContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CStarParser#value_expr}.
 	 * @param ctx the parse tree
@@ -94,99 +95,99 @@ public interface CStarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArray_dcl(com.p4.syntaxSemantic.CStarParser.Array_dclContext ctx);
+	T visitArray_dcl(CStarParser.Array_dclContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#array_expr}.
+	 * Visit a parse tree produced by {@link CStarParser#array_expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArray_expr(com.p4.syntaxSemantic.CStarParser.Array_exprContext ctx);
+	T visitArray_expr(CStarParser.Array_exprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#array_access}.
+	 * Visit a parse tree produced by {@link CStarParser#array_access}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArray_access(com.p4.syntaxSemantic.CStarParser.Array_accessContext ctx);
+	T visitArray_access(CStarParser.Array_accessContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#stmt}.
+	 * Visit a parse tree produced by {@link CStarParser#stmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitStmt(com.p4.syntaxSemantic.CStarParser.StmtContext ctx);
+	T visitStmt(CStarParser.StmtContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#iterative}.
+	 * Visit a parse tree produced by {@link CStarParser#iterative}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitIterative(com.p4.syntaxSemantic.CStarParser.IterativeContext ctx);
+	T visitIterative(CStarParser.IterativeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#selection}.
+	 * Visit a parse tree produced by {@link CStarParser#selection}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSelection(com.p4.syntaxSemantic.CStarParser.SelectionContext ctx);
+	T visitSelection(CStarParser.SelectionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#blk}.
+	 * Visit a parse tree produced by {@link CStarParser#blk}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitBlk(com.p4.syntaxSemantic.CStarParser.BlkContext ctx);
+	T visitBlk(CStarParser.BlkContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#print}.
+	 * Visit a parse tree produced by {@link CStarParser#print}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPrint(com.p4.syntaxSemantic.CStarParser.PrintContext ctx);
+	T visitPrint(CStarParser.PrintContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#func}.
+	 * Visit a parse tree produced by {@link CStarParser#func}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFunc(com.p4.syntaxSemantic.CStarParser.FuncContext ctx);
+	T visitFunc(CStarParser.FuncContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#return_type}.
+	 * Visit a parse tree produced by {@link CStarParser#return_type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitReturn_type(com.p4.syntaxSemantic.CStarParser.Return_typeContext ctx);
+	T visitReturn_type(CStarParser.Return_typeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#param}.
+	 * Visit a parse tree produced by {@link CStarParser#param}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParam(com.p4.syntaxSemantic.CStarParser.ParamContext ctx);
+	T visitParam(CStarParser.ParamContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#return_exp}.
+	 * Visit a parse tree produced by {@link CStarParser#return_exp}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitReturn_exp(com.p4.syntaxSemantic.CStarParser.Return_expContext ctx);
+	T visitReturn_exp(CStarParser.Return_expContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#func_call}.
+	 * Visit a parse tree produced by {@link CStarParser#func_call}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFunc_call(com.p4.syntaxSemantic.CStarParser.Func_callContext ctx);
+	T visitFunc_call(CStarParser.Func_callContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#array_func}.
+	 * Visit a parse tree produced by {@link CStarParser#array_func}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArray_func(com.p4.syntaxSemantic.CStarParser.Array_funcContext ctx);
+	T visitArray_func(CStarParser.Array_funcContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#val}.
+	 * Visit a parse tree produced by {@link CStarParser#val}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitVal(com.p4.syntaxSemantic.CStarParser.ValContext ctx);
+	T visitVal(CStarParser.ValContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#comment}.
+	 * Visit a parse tree produced by {@link CStarParser#comment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitComment(com.p4.syntaxSemantic.CStarParser.CommentContext ctx);
+	T visitComment(CStarParser.CommentContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link com.p4.syntaxSemantic.CStarParser#include}.
+	 * Visit a parse tree produced by {@link CStarParser#include}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */

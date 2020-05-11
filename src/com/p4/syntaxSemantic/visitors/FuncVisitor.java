@@ -1,6 +1,7 @@
 package com.p4.syntaxSemantic.visitors;
 
 import com.p4.errors.ErrorBag;
+import com.p4.syntaxSemantic.CStarParser;
 import com.p4.syntaxSemantic.nodes.*;
 import com.p4.symbols.SymbolTable;
 
@@ -225,6 +226,11 @@ public class FuncVisitor implements INodeVisitor {
 
     @Override
     public void visit(LogicalNode node) {
+        this.visitChildren(node);
+    }
+
+    @Override
+    public void visit(InNode node) {
         this.visitChildren(node);
     }
 

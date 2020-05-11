@@ -1,11 +1,15 @@
-pin hest = 2;
+pin array a = [1,2,3];
 
+if(5 IN a) {
+    console.print("nono");
+}
+if(1 IN a) {
+    console.print("det virker!");
+}
+integer setup(){
 
-void setup(){
 
 }
-
-//Hest
 void loop(){
     hest.read();
 }

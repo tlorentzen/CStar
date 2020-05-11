@@ -2,11 +2,8 @@ package com.p4.syntaxSemantic.visitors;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
+import com.p4.symbols.*;
 import com.p4.syntaxSemantic.nodes.*;
-import com.p4.symbols.Attributes;
-import com.p4.symbols.FunctionAttributes;
-import com.p4.symbols.PinAttributes;
-import com.p4.symbols.SymbolTable;
 
 //Visits and declares all variables and functions, as well as initializes scopes
 public class SymbolTableVisitor implements INodeVisitor {
@@ -122,13 +119,17 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         //Enters if the node is not already in the symbol table
         if (!isDeclared(node)) {
+            //Gets the size of the array
+            AstNode arrayExpr = node.children.get(1);
+            int arrayLength = arrayExpr.children.size();
+
             //Enters if the array type is pin
             if (arrayNode.type.equals("pin")) {
-                PinAttributes attr = new PinAttributes("dcl", arrayNode.type);
+                PinAttributes attr = new PinAttributes("array", arrayNode.type, arrayLength);
                 symbolTable.insertSymbol(node.getId(), attr);
             }
             else {
-                Attributes attr = new Attributes("dcl", arrayNode.type);
+                Attributes attr = new Attributes("array", arrayNode.type, arrayLength);
                 symbolTable.insertSymbol(node.getId(), attr);
             }
             node.type = arrayNode.type;
@@ -214,6 +215,11 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(CondNode node) {
+        this.visitChildren(node);
+    }
+
+    @Override
+    public void visit(InNode node) {
         this.visitChildren(node);
     }
 
