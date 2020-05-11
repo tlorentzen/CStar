@@ -87,6 +87,46 @@ public class CodeVisitor implements INodeVisitor {
 
     //Format in Arduino C: float i;
     @Override
+    public void visit(IncludeNode node) {
+        stringBuilder.append(node.getInclude());
+        stringBuilder.append("\n");
+    }
+
+    @Override
+    public void visit(IntervalNode node) {
+        //Left side of the interval
+        stringBuilder.append("(");
+        if(node.getLeftBracket().equals("]")){
+            visitChild(node.children.get(0));
+            stringBuilder.append(" > ");
+            visitChild(node.children.get(1));
+            stringBuilder.append(" + 1");
+        }else{
+            visitChild(node.children.get(0));
+            stringBuilder.append(" > ");
+            visitChild(node.children.get(1));
+        }
+        //Sides are always connected with logical AND
+        stringBuilder.append(" && ");
+        //Right side of the interval
+        if(node.getRightBracket().equals("[")){
+            visitChild(node.children.get(0));
+            stringBuilder.append(" < ");
+            visitChild(node.children.get(2));
+            stringBuilder.append(" - 1");
+        }else{
+            visitChild(node.children.get(0));
+            stringBuilder.append(" < ");
+            visitChild(node.children.get(2));
+        }
+        stringBuilder.append(")");
+    }
+
+    @Override
+    public void visit(MultValNode multValNode) {
+        
+    }
+
     public void visit(FloatDclNode node) {
         visitDclNode(node);
     }
@@ -153,18 +193,6 @@ public class CodeVisitor implements INodeVisitor {
         output.add(getLine());
 
         String test = output.get(output.size() - 1);
-
-        //Enters if the assignment is to read from a pin
-        if (test.contains("analogRead") || test.contains("digitalRead")) {
-            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
-            stringBuilder.append(printPinMode(funcIDSplit[0],false));
-        }
-
-        else if(test.contains("analogWrite") || test.contains("digitalWrite")){
-            String[] funcIDSplit = ((IdNode)rightChild.children.get(0)).getId().split("\\.");
-            stringBuilder.append(printPinMode(funcIDSplit[0],true));
-        }
-
         output.add(getLine());
     }
 
@@ -510,28 +538,30 @@ public class CodeVisitor implements INodeVisitor {
     private void handleReadAndWrite(AstNode parameter, String[] funcIDSplit) {
         //Enters if a read function has been called on the pin
         if (funcIDSplit[1].equals("read")) {
+            appendPinModeIfNeeded(false, funcIDSplit[0]);
             handleRead(funcIDSplit[0]);
         }
+
         //Enters if a write function has been called on the pin
         else if (parameter != null && funcIDSplit[1].equals("write")) {
+            appendPinModeIfNeeded(true, funcIDSplit[0]);
             handleWrite(parameter, funcIDSplit[0]);
         }
+
         stringBuilder.append(")");
     }
 
-    //Sets pin mode for the pin
-    private String printPinMode(String pin, boolean isOutput) {
-        String pinMode = "\tpinMode(" + pin + ", ";
+    private void appendPinModeIfNeeded(boolean isOutput, String pinId){
 
-        if (isOutput) {
-            pinMode += "OUTPUT";
-        }
-        else {
-            pinMode += "INPUT";
-        }
+        String id = (pinId.contains("[") ? pinId.split("\\[")[0] : pinId);
+        PinAttributes pinAttr = (PinAttributes)symbolTable.lookupSymbol(id);
 
-        pinMode += ");\n";
-        return pinMode;
+        if(isOutput != pinAttr.getIsOutput()){
+            pinAttr.setIsOutput(!pinAttr.getIsOutput());
+            symbolTable.insertSymbol(pinId, pinAttr);
+
+            stringBuilder.append("pinMode("+pinId+", "+(isOutput ? "OUTPUT" : "INPUT")+");\n");
+        }
     }
 
     private void handleRead(String pinId) {

@@ -15,7 +15,6 @@
     <orderEntry type="library" name="com.google.code.gson:gson:2.8.5" level="project" />
     <orderEntry type="library" name="commons-compress-1.20" level="project" />
     <orderEntry type="library" name="gson-2.8.5" level="project" />
-    <orderEntry type="library" name="jsoup-1.13.1" level="project" />
     <orderEntry type="module-library" scope="TEST">
       <library name="JUnit5.4">
         <CLASSES>
@@ -34,5 +33,8 @@
     </orderEntry>
     <orderEntry type="library" name="org.junit.jupiter:junit-jupiter:5.6.2" level="project" />
     <orderEntry type="library" name="junit-platform-engine-1.6.2" level="project" />
+    <orderEntry type="library" name="jsoup-1.13.1" level="project" />
+    <orderEntry type="library" name="gson-2.8.5-javadoc" level="project" />
+    <orderEntry type="library" name="commons-compress-1.20-javadoc" level="project" />
   </component>
 </module>

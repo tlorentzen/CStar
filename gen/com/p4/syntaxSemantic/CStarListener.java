@@ -58,6 +58,36 @@ public interface CStarListener extends ParseTreeListener {
 	 */
 	void exitLogical_expr(CStarParser.Logical_exprContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CStarParser#test_mult_val}.
+	 * @param ctx the parse tree
+	 */
+	void enterTest_mult_val(CStarParser.Test_mult_valContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CStarParser#test_mult_val}.
+	 * @param ctx the parse tree
+	 */
+	void exitTest_mult_val(CStarParser.Test_mult_valContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CStarParser#interval}.
+	 * @param ctx the parse tree
+	 */
+	void enterInterval(CStarParser.IntervalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CStarParser#interval}.
+	 * @param ctx the parse tree
+	 */
+	void exitInterval(CStarParser.IntervalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CStarParser#in_array}.
+	 * @param ctx the parse tree
+	 */
+	void enterIn_array(CStarParser.In_arrayContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CStarParser#in_array}.
+	 * @param ctx the parse tree
+	 */
+	void exitIn_array(CStarParser.In_arrayContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CStarParser#cond_expr}.
 	 * @param ctx the parse tree
 	 */
@@ -97,6 +127,16 @@ public interface CStarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFactor(CStarParser.FactorContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CStarParser#value_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterValue_expr(CStarParser.Value_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CStarParser#value_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitValue_expr(CStarParser.Value_exprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CStarParser#array_dcl}.
 	 * @param ctx the parse tree

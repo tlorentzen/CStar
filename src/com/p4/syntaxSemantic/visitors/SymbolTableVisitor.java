@@ -55,6 +55,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         if (!isDeclared(node)) {
             //Creates and adds the node to the symbol table
             PinAttributes attribute = new PinAttributes("dcl", "pin");
+            attribute.setIsOutput(false);
             symbolTable.insertSymbol(node.getId(), attribute);
             node.type = attribute.getVariableType();
         }
@@ -314,6 +315,21 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(CommentNode node) {
         this.visitChildren(node);
+    }
+
+    @Override
+    public void visit(IncludeNode node) {
+        this.visitChildren(node);
+    }
+
+    @Override
+    public void visit(IntervalNode node) {
+
+    }
+
+    @Override
+    public void visit(MultValNode multValNode) {
+
     }
 
 }

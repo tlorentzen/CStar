@@ -76,6 +76,42 @@ public class CStarBaseListener implements CStarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterTest_mult_val(CStarParser.Test_mult_valContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTest_mult_val(CStarParser.Test_mult_valContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInterval(CStarParser.IntervalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInterval(CStarParser.IntervalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIn_array(CStarParser.In_arrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIn_array(CStarParser.In_arrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterCond_expr(CStarParser.Cond_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -119,6 +155,18 @@ public class CStarBaseListener implements CStarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFactor(CStarParser.FactorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterValue_expr(CStarParser.Value_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitValue_expr(CStarParser.Value_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

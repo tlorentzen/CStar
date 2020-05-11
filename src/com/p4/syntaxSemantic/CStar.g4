@@ -7,11 +7,15 @@ assign: (ID | array_access) ASSIGN_OP expr;
 expr: logical_expr;
 
 //CFG
-logical_expr: cond_expr (( OR | AND ) cond_expr)*;
+logical_expr: (cond_expr | interval | in_array | test_mult_val) (( OR | AND ) (cond_expr | interval | in_array | test_mult_val))*;
+test_mult_val: value_expr ONE_OF LEFT_PAREN value_expr (COMMA value_expr)* RIGHT_PAREN;
+interval: value_expr BETWEEN (LEFT_BRACKET | RIGHT_BRACKET) value_expr SEMICOLON value_expr (LEFT_BRACKET | RIGHT_BRACKET);
+in_array: value_expr IN ID;
 cond_expr: arithm_expr (COMP_OP arithm_expr)?;
 arithm_expr: term (( PLUS | MINUS ) term)*;
 term: factor (( MULT | DIVISION | MODULO ) factor)*;
-factor:	(MINUS)? (ID | val | LEFT_PAREN expr RIGHT_PAREN | func_call | array_access);
+factor:	value_expr | ((MINUS)? LEFT_PAREN expr RIGHT_PAREN);
+value_expr: (MINUS)? (ID | val | func_call | array_access);
 
 array_dcl: ARRAY ID ASSIGN_OP array_expr;
 array_expr: LEFT_BRACKET expr (COMMA expr)* RIGHT_BRACKET;
@@ -44,6 +48,7 @@ IS: 'IS';
 ISNOT: 'ISNOT';
 OR: 'OR';
 AND: 'AND';
+ONE_OF: 'ONE OF';
 ASSIGN_OP: '=';
 PLUS: '+';
 MINUS: '-';
@@ -72,6 +77,8 @@ RETURN: 'return';
 PRINT: 'console.print';
 HIGH: 'HIGH';
 LOW: 'LOW';
+BETWEEN: 'BETWEEN';
+IN: 'IN';
 
 NUMBER: ('0'..'9') + ('.' ('0'..'9')+ )?;
 BOOLEAN_LITERAL: 'true' | 'false';

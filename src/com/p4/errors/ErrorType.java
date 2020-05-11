@@ -15,7 +15,8 @@ public enum ErrorType {
     INFORMATION("I1"),
     ARDUINO_NOT_FOUND("W207"),
     ARDUINO_CLI_MISSING("W100"),
-    MISSING_ARDUINO_FUNCTION("W300");
+    MISSING_ARDUINO_FUNCTION("W300"),
+    ARDUINO_FUNCTION_IN_INTERVAL("E666");
 
     private final String code;
 
