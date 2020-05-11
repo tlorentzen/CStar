@@ -43,8 +43,17 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(ProgNode node) {
-        //Only visits as no information should be added to the generated file.
-        this.visitChildren(node);
+        //Visits all its children and puts a semicolon if a Dcl with no value is made in global scope
+        for (AstNode child: node.children) {
+            this.visitChild(child);
+            /*if(stringBuilder.length() > 0){
+                char c = stringBuilder.charAt(stringBuilder.length()-1);
+                if (child instanceof DclNode && !Character.toString(c).matches(";")){
+                    stringBuilder.append(";\n");
+                }
+            }*/
+
+        }
     }
 
     @Override
@@ -468,8 +477,8 @@ public class CodeVisitor implements INodeVisitor {
 
         for(AstNode child : node.children){
             this.visitChild(child);
+            stringBuilder.append(";\n");
             if(child instanceof FuncCallNode){
-                stringBuilder.append(";\n");
                 output.add(getLine());
             }
         }
@@ -596,7 +605,11 @@ public class CodeVisitor implements INodeVisitor {
             pinAttr.setIsOutput(!pinAttr.getIsOutput());
             symbolTable.insertSymbol(pinId, pinAttr);
 
-            stringBuilder.append("pinMode("+pinId+", "+(isOutput ? "OUTPUT" : "INPUT")+");\n");
+            if(stringBuilder.toString().contains("=")){
+                output.add("pinMode("+pinId+", "+(isOutput ? "OUTPUT" : "INPUT")+");\n");
+            }else{
+                stringBuilder.append("pinMode("+pinId+", "+(isOutput ? "OUTPUT" : "INPUT")+");\n");
+            }
         }
     }
 
