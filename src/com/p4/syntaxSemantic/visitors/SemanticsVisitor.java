@@ -283,9 +283,12 @@ public class SemanticsVisitor implements INodeVisitor {
             isValidType = intervalOperationValid((IntervalNode) node);
         }
         else {
-            isValidType = compareOperationValid(((CondNode)node).getToken(), leftType, rightType);
+            boolean areTypesArduino = leftType.equals("ArduinoC") || rightType.equals("ArduinoC");
+            boolean isCompareLegal = compareOperationValid(((CondNode)node).getToken(), leftType, rightType);
+            isValidType = isCompareLegal || areTypesArduino;
         }
 
+        //Enters if the type is valid
         if (!isValidType) {
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage(isLogical ? "combination" : "comparison", leftType, rightType), node.lineNumber);
         }

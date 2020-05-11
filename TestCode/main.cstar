@@ -1,12 +1,11 @@
 pin pin1 = 5;
 integer setup(){
-
+    if (100 < random(50, 150) ) {
+    console.print("hey heeey");
+    }
 }
 void loop() {
     
 }
 
-integer hej(integer min, integer max){
-    return randomNumber(min, max);
-}
 
