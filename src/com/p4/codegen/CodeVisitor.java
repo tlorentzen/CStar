@@ -110,32 +110,11 @@ public class CodeVisitor implements INodeVisitor {
     //Converts the interval to an Arduino C comparison
     private void changeComparison(IntervalNode node, String bracket, String comp, int childNumber) {
         String inclusive = bracket.equals("]") ? " + 1" : " - 1";
+    }
 
     @Override
     public void visit(MultValNode multValNode) {
 
-    }
-
-    public void visit(FloatDclNode node) {
-        visitDclNode(node);
-    }
-
-    //Format in Arduino C: char i;
-    @Override
-    public void visit(CharDclNode node) {
-        visitDclNode(node);
-
-        if (node.getLeftBracket().equals(bracket)) {
-            visitChild(node.children.get(0));
-            stringBuilder.append(comp);
-            visitChild(node.children.get(childNumber));
-            stringBuilder.append(inclusive);
-        }
-        else {
-            visitChild(node.children.get(0));
-            stringBuilder.append(comp);
-            visitChild(node.children.get(childNumber));
-        }
     }
 
     //Format in Arduino C: int pinName;
@@ -579,12 +558,11 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append(")");
     }
 
-    private void appendPinModeIfNeeded(boolean isOutput, String pinId){
-
+    private void appendPinModeIfNeeded(boolean isOutput, String pinId) {
         String id = (pinId.contains("[") ? pinId.split("\\[")[0] : pinId);
         PinAttributes pinAttr = (PinAttributes)symbolTable.lookupSymbol(id);
 
-        if(isOutput != pinAttr.getIsOutput()){
+        if (isOutput != pinAttr.getIsOutput()) {
             pinAttr.setIsOutput(!pinAttr.getIsOutput());
             symbolTable.insertSymbol(pinId, pinAttr);
 
