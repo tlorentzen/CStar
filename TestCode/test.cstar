@@ -2,28 +2,45 @@
 #include <stdio.h>
 // #include "math.h"
 
-integer counter = 0;
-integer array numbers = [2,6,7,9,1];
+// Literal assigning with value
+boolean isFalse = false;
 boolean isTrue = true;
+integer cow = 1000;
+small integer horse = 1;
+long integer elephant = 10000000000;
+decimal weight = 145.95;
+character fish = 'f';
+pin led = A2;
+pin led2 = 10;
+integer counter = 0;
+
+// Literal assigning without value
+boolean isFalseNoValue;
+boolean isTrueNoValue;
+integer cowNoValue;
+small integer horseNoValue;
+long integer elephantNoValue;
+decimal weightNoValue;
+character fishNoValue;
+pin ledNoValue;
+
+// Array assigning
+integer array cow_array = [1000, 2000, 3000, 4000];
+small integer array horse_array = [1,2,3,4];
+long integer array elephant_array = [10000000000, 20000000000, 30000000000, 40000000000];
+decimal array weight_array = [1.1, 1.2, 1.3, 1.4];
+character array fish_array = ['f', 'i', 's', 'h'];
+pin array led_array = [A1, 2, 10];
 
 void setup(){
-
-    // Literal assigning
-    integer cow = 1000;
-    small integer horse = 1;
-    long integer elephant = 10000000000;
-    decimal weight = 145.95;
-    character fish = 'f';
-    pin led = A2;
-    pin led2 = 10;
-
-    // Array assigning
-    integer array cow_array = [1000, 2000, 3000, 4000];
-    small integer array horse_array = [1,2,3,4];
-    long integer array elephant_array = [10000000000, 20000000000, 30000000000, 40000000000];
-    decimal array weight_array = [1.1, 1.2, 1.3, 1.4];
-    character array fish_array = ['f', 'i', 's', 'h'];
-    pin array led_array = [A1, 2, 10];
+    isFalseNoValue = false;
+    isTrueNoValue = true;
+    cowNoValue = 1500;
+    horseNoValue = 10;
+    elephantNoValue = 1230000000000;
+    weightNoValue = 5.78;
+    fishNoValue = 'h';
+    ledNoValue = A6;
 }
 
 void loop(){
@@ -39,7 +56,7 @@ void loop(){
         console.print("10 is bigger then 6+1");
     }
 
-    if(numbers[3] < 10){
+    if(cow_array[3] < 10){
         console.print("array index 3 (9) < 10");
     }
 
@@ -118,6 +135,17 @@ void loop(){
     while(counter BETWEEN ]1; 10[) repeat {
         console.print("Is between 2 and 9");
     }
+
+    // ##########################################
+    // PIN TEST
+    // ##########################################
+    // Read: no pinMode change required.
+    pin.read();
+    // Write: pinMode should change from INPUT to OUTPUT
+    pin.write(HIGH);
+    // Write: pinMode should not change
+    pin.write(LOW);
+
 
     counter = counter + 1;
 }
