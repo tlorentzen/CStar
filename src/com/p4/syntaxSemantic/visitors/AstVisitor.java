@@ -865,7 +865,12 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return new CommentNode(ctx.getText());
     }
     @Override public AstNode visitInclude(CStarParser.IncludeContext ctx) {
-        String header = ctx.INCLUDE().getText() + ' ' + ctx.HEADER().getText();
+        String header = "";
+        if(ctx.HEADER() != null){
+            header = ctx.INCLUDE().getText() + ' ' + ctx.HEADER().getText();
+        } else if (ctx.STRING_LITERAL() != null){
+            header = ctx.INCLUDE().getText() + ' ' + ctx.STRING_LITERAL().getText();
+        }
         return new IncludeNode(header);
     }
 
