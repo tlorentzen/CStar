@@ -863,9 +863,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
     @Override public AstNode visitInterval(CStarParser.IntervalContext ctx) {
         IntervalNode node = new IntervalNode();
-        boolean isNegative = false;
-        ParseTree leftOperand = ctx.getChild(0);
-        InNode inNode = new InNode();
 
         //Sets the brackets around the interval
         node.setLeftBracket(ctx.children.get(2).getText());
