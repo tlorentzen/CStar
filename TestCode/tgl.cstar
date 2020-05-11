@@ -22,7 +22,7 @@ void loop() {
         readInput();
         setBarGraph();
         setRGB();
-    }else{
+    } else {
         makeFun();
     }
 
@@ -31,7 +31,6 @@ void loop() {
 }
 
 void setBarGraph() {
-
     integer counter = 0;
     integer barState = map(constrain(valPot1, 0, 1023), 0, 1023, 0, 10);
 

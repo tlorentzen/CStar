@@ -1,15 +1,9 @@
-pin array a = [1,2,3];
+console.print("hej");
 
-if(5 IN a) {
-    console.print("nono");
-}
-if(1 IN a) {
-    console.print("det virker!");
-}
+5 IN a;
 integer setup(){
 
-
 }
-void loop(){
-    hest.read();
+void loop() {
+
 }
