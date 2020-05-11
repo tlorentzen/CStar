@@ -166,16 +166,9 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         int childCount = ctx.getChildCount();
 
         //Enters if there are no operations with AND or OR
-        if (childCount == 1 && ctx.getChild(0) instanceof CStarParser.Cond_exprContext) {
-            return visit(ctx.cond_expr(0));
+        if (childCount == 1) {
+            return visit(ctx.getChild(0));
         }
-        else if (childCount == 1 && ctx.getChild(0) instanceof CStarParser.IntervalContext) {
-            return visit(ctx.interval(0));
-        }
-        else if (childCount == 1 && ctx.getChild(0) instanceof CStarParser.Test_mult_valContext) {
-            return visit(ctx.test_mult_val(0));
-        }
-
         //Enters if there are operations with AND OR OR
         else {
             return visitLogicalChild(ctx.getChild(1), ctx, 1);
@@ -187,8 +180,6 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     public AstNode visitLogicalChild(ParseTree child, CStarParser.Logical_exprContext parent, int operatorIndex) {
         LogicalNode node = new LogicalNode();
 
-        //Finds the index of the first operand
-        int condIndex = (operatorIndex - 1) / 2;
         //Finds the next operator index
         int nextOperator = operatorIndex + 2;
 
@@ -206,36 +197,15 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
         //Enters if there are more operators in the tree
         if (parent.getChild(nextOperator) != null) {
-
-            if(parent.cond_expr(condIndex) != null){
-                //Adds left child (cond_expr)
-                node.children.add(visit(parent.cond_expr(condIndex)));
-            } else if(parent.interval(condIndex) != null){
-                //Adds left child (interval)
-                node.children.add(visit(parent.interval(condIndex)));
-            } else if(parent.test_mult_val(condIndex) != null){
-                //Adds left child (interval)
-                node.children.add(visit(parent.test_mult_val(condIndex)));
-            }
-
+            //Adds left child (cond_expr, interval, or in_array)
+            node.children.add(visit(parent.getChild(operatorIndex - 1)));
             //Adds right child (operator) by calling the method recursively
             node.children.add(visitLogicalChild(parent.getChild(nextOperator), parent, nextOperator));
         }
         //Enters if there is only a cond_expr child left
         else {
-            if(parent.cond_expr(condIndex) != null){
-                // Adds left and right child (cond_expr)
-                node.children.add(visit(parent.cond_expr(condIndex)));
-                node.children.add(visit(parent.cond_expr(condIndex + 1)));
-            } else if(parent.interval(condIndex) != null){
-                // Adds left and right child (interval)
-                node.children.add(visit(parent.interval(condIndex)));
-                node.children.add(visit(parent.interval(condIndex + 1)));
-            } else if(parent.test_mult_val(condIndex) != null){
-                // Adds left and right child (testMultVal)
-                node.children.add(visit(parent.test_mult_val(condIndex)));
-                node.children.add(visit(parent.test_mult_val(condIndex + 1)));
-            }
+            node.children.add(visit(parent.getChild(operatorIndex - 1)));
+            node.children.add(visit(parent.getChild(operatorIndex + 1)));
 
         }
 
@@ -310,6 +280,31 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         node.lineNumber = parent.start.getLine();
 
         return node;
+    }
+
+    @Override
+    public AstNode visitIn_array(CStarParser.In_arrayContext ctx) {
+        boolean isNegative = false;
+        ParseTree idChild = ctx.getChild(2);
+        InNode inNode = new InNode();
+
+        //Checks if negative factor
+        if (idChild.getText().equals("-")) {
+            idChild = ctx.getChild(1);
+            isNegative = true;
+        }
+
+        //Adds the left operand
+        inNode.children.add(visit(ctx.value_expr()));
+
+        //Adds the right operand (the array)
+        IdNode idNode = new IdNode(idChild.getText(), isNegative);
+        inNode.children.add(idNode);
+
+        idNode.lineNumber = ctx.start.getLine();
+        inNode.lineNumber = ctx.start.getLine();
+
+        return inNode;
     }
 
     @Override

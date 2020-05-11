@@ -1,4 +1,4 @@
-// Generated from C:/Users/ichris18/Documents/GitHub/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
+// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
 package com.p4.syntaxSemantic;
 
 import com.p4.syntaxSemantic.visitors.*;
@@ -19,29 +19,29 @@ public class CStarParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		COMP_OP=1, LESS_THAN=2, GREATER_THAN=3, IS=4, ISNOT=5, OR=6, AND=7, ONE_OF=8, 
-		ASSIGN_OP=9, PLUS=10, MINUS=11, MULT=12, DIVISION=13, LESS_THAN_EQ=14, 
-		GREATER_THAN_EQ=15, MODULO=16, LEFT_PAREN=17, RIGHT_PAREN=18, LEFT_BRACKET=19, 
-		RIGHT_BRACKET=20, LEFT_BRACE=21, RIGHT_BRACE=22, SEMICOLON=23, DOT=24, 
-		IF=25, ELSE=26, WHILE=27, REPEAT=28, COMMA=29, VOID=30, TYPE=31, ARRAY=32, 
-		RETURN=33, PRINT=34, HIGH=35, LOW=36, BETWEEN=37, IN=38, NUMBER=39, BOOLEAN_LITERAL=40, 
-		PIN_LITERAL=41, CHAR_LITERAL=42, STRING_LITERAL=43, ID=44, FUNCID=45, 
+		COMP_OP=1, LESS_THAN=2, GREATER_THAN=3, IS=4, ISNOT=5, OR=6, AND=7, ONE_OF=8,
+		ASSIGN_OP=9, PLUS=10, MINUS=11, MULT=12, DIVISION=13, LESS_THAN_EQ=14,
+		GREATER_THAN_EQ=15, MODULO=16, LEFT_PAREN=17, RIGHT_PAREN=18, LEFT_BRACKET=19,
+		RIGHT_BRACKET=20, LEFT_BRACE=21, RIGHT_BRACE=22, SEMICOLON=23, DOT=24,
+		IF=25, ELSE=26, WHILE=27, REPEAT=28, COMMA=29, VOID=30, TYPE=31, ARRAY=32,
+		RETURN=33, PRINT=34, HIGH=35, LOW=36, BETWEEN=37, IN=38, NUMBER=39, BOOLEAN_LITERAL=40,
+		PIN_LITERAL=41, CHAR_LITERAL=42, STRING_LITERAL=43, ID=44, FUNCID=45,
 		WHITESPACE=46, Newline=47, LINE_COMMENT=48, INCLUDE=49, HEADER=50;
 	public static final int
-		RULE_prog = 0, RULE_dcl = 1, RULE_assign = 2, RULE_expr = 3, RULE_logical_expr = 4, 
-		RULE_test_mult_val = 5, RULE_interval = 6, RULE_in_array = 7, RULE_cond_expr = 8, 
-		RULE_arithm_expr = 9, RULE_term = 10, RULE_factor = 11, RULE_value_expr = 12, 
-		RULE_array_dcl = 13, RULE_array_expr = 14, RULE_array_access = 15, RULE_stmt = 16, 
-		RULE_iterative = 17, RULE_selection = 18, RULE_blk = 19, RULE_print = 20, 
-		RULE_func = 21, RULE_return_type = 22, RULE_param = 23, RULE_return_exp = 24, 
-		RULE_func_call = 25, RULE_array_func = 26, RULE_val = 27, RULE_comment = 28, 
+		RULE_prog = 0, RULE_dcl = 1, RULE_assign = 2, RULE_expr = 3, RULE_logical_expr = 4,
+		RULE_test_mult_val = 5, RULE_interval = 6, RULE_in_array = 7, RULE_cond_expr = 8,
+		RULE_arithm_expr = 9, RULE_term = 10, RULE_factor = 11, RULE_value_expr = 12,
+		RULE_array_dcl = 13, RULE_array_expr = 14, RULE_array_access = 15, RULE_stmt = 16,
+		RULE_iterative = 17, RULE_selection = 18, RULE_blk = 19, RULE_print = 20,
+		RULE_func = 21, RULE_return_type = 22, RULE_param = 23, RULE_return_exp = 24,
+		RULE_func_call = 25, RULE_array_func = 26, RULE_val = 27, RULE_comment = 28,
 		RULE_include = 29;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"prog", "dcl", "assign", "expr", "logical_expr", "test_mult_val", "interval", 
-			"in_array", "cond_expr", "arithm_expr", "term", "factor", "value_expr", 
-			"array_dcl", "array_expr", "array_access", "stmt", "iterative", "selection", 
-			"blk", "print", "func", "return_type", "param", "return_exp", "func_call", 
+			"prog", "dcl", "assign", "expr", "logical_expr", "test_mult_val", "interval",
+			"in_array", "cond_expr", "arithm_expr", "term", "factor", "value_expr",
+			"array_dcl", "array_expr", "array_access", "stmt", "iterative", "selection",
+			"blk", "print", "func", "return_type", "param", "return_exp", "func_call",
 			"array_func", "val", "comment", "include"
 		};
 	}
@@ -49,24 +49,24 @@ public class CStarParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, null, "'<'", "'>'", "'IS'", "'ISNOT'", "'OR'", "'AND'", "'ONE OF'", 
-			"'='", "'+'", "'-'", "'*'", "'/'", "'<='", "'>='", "'%'", "'('", "')'", 
-			"'['", "']'", "'{'", "'}'", "';'", "'.'", "'if'", "'else'", "'while'", 
-			"'repeat'", "','", "'void'", null, "'array'", "'return'", "'console.print'", 
-			"'HIGH'", "'LOW'", "'BETWEEN'", "'IN'", null, null, null, null, null, 
+			null, null, "'<'", "'>'", "'IS'", "'ISNOT'", "'OR'", "'AND'", "'ONE OF'",
+			"'='", "'+'", "'-'", "'*'", "'/'", "'<='", "'>='", "'%'", "'('", "')'",
+			"'['", "']'", "'{'", "'}'", "';'", "'.'", "'if'", "'else'", "'while'",
+			"'repeat'", "','", "'void'", null, "'array'", "'return'", "'console.print'",
+			"'HIGH'", "'LOW'", "'BETWEEN'", "'IN'", null, null, null, null, null,
 			null, null, null, null, null, "'#include'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "COMP_OP", "LESS_THAN", "GREATER_THAN", "IS", "ISNOT", "OR", "AND", 
-			"ONE_OF", "ASSIGN_OP", "PLUS", "MINUS", "MULT", "DIVISION", "LESS_THAN_EQ", 
-			"GREATER_THAN_EQ", "MODULO", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACKET", 
-			"RIGHT_BRACKET", "LEFT_BRACE", "RIGHT_BRACE", "SEMICOLON", "DOT", "IF", 
-			"ELSE", "WHILE", "REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", 
-			"PRINT", "HIGH", "LOW", "BETWEEN", "IN", "NUMBER", "BOOLEAN_LITERAL", 
-			"PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL", "ID", "FUNCID", "WHITESPACE", 
+			null, "COMP_OP", "LESS_THAN", "GREATER_THAN", "IS", "ISNOT", "OR", "AND",
+			"ONE_OF", "ASSIGN_OP", "PLUS", "MINUS", "MULT", "DIVISION", "LESS_THAN_EQ",
+			"GREATER_THAN_EQ", "MODULO", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACKET",
+			"RIGHT_BRACKET", "LEFT_BRACE", "RIGHT_BRACE", "SEMICOLON", "DOT", "IF",
+			"ELSE", "WHILE", "REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN",
+			"PRINT", "HIGH", "LOW", "BETWEEN", "IN", "NUMBER", "BOOLEAN_LITERAL",
+			"PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL", "ID", "FUNCID", "WHITESPACE",
 			"Newline", "LINE_COMMENT", "INCLUDE", "HEADER"
 		};
 	}

@@ -1,79 +1,15 @@
-#include <SPI.h>
-#include <stdio.h>
-// #include "math.h"
+pin array a = [1,2,3];
 
-integer counter = 0;
-integer array numbers = [2,6,7,9,1];
-
-void setup(){
+if(5 IN a) {
+    console.print("nono");
+}
+if(1 IN a) {
+    console.print("det virker!");
+}
+integer setup(){
 
 }
 
 void loop(){
-
-    // ##########################################
-    // SELECTION TEST (IF)
-    // ##########################################
-    if(1 < 100){
-        console.print("1 is lower then 100");
-    }
-
-    if(10 > 6+1){
-        console.print("10 is bigger then 6+1");
-    }
-
-    if(numbers[3] < 10){
-        console.print("array index 3 (9) < 10");
-    }
-
-    // Arduino function call
-    // if(100 < random(50, 150)){
-    //    console.print("100 is less then a random number between 50 and 150");
-    // }
-
-    // Normal function call
-    if(100 < getRandomNumber(50, 150)){
-        console.print("100 is less then a random number between 50 and 150");
-    }
-
-    // ##########################################
-    // BETWEEN TEST (INTERVAL)
-    // ##########################################
-    if(counter BETWEEN [1; 10]){
-        console.print("Is between 1 and 10");
-    }
-
-    if(counter BETWEEN ]1; 10]){
-        console.print("Is between 2 and 10");
-    }
-
-    if(counter BETWEEN [1; 10[){
-        console.print("Is between 1 and 9");
-    }
-
-    if(counter BETWEEN ]1; 10[){
-        console.print("Is between 2 and 9");
-    }
-
-    while(counter BETWEEN [1; 10]) repeat {
-        console.print("Is between 1 and 10");
-    }
-
-    while(counter BETWEEN ]1; 10]) repeat {
-        console.print("Is between 2 and 10");
-    }
-
-    while(counter BETWEEN [1; 10[) repeat {
-        console.print("Is between 1 and 9");
-    }
-
-    while(counter BETWEEN ]1; 10[) repeat {
-        console.print("Is between 2 and 9");
-    }
-
-    counter = counter + 1;
-}
-
-integer getRandomNumber(integer min, integer max){
-    return random(min, max);
+    hest.read();
 }

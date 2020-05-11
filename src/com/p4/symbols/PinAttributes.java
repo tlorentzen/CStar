@@ -8,6 +8,10 @@ public class PinAttributes extends Attributes {
         super(kind, variableType);
     }
 
+    public PinAttributes (String kind, String variableType, int length) {
+        super(kind, variableType, length);
+    }
+
     public boolean getAnalog() {
         return analog;
     }

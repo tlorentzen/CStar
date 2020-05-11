@@ -1,6 +1,7 @@
-package com.p4.syntaxSemantic.visitors;
 // Generated from C:/Users/ichris18/Documents/GitHub/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
-import com.p4.syntaxSemantic.*;
+package com.p4.syntaxSemantic.visitors;
+
+import com.p4.syntaxSemantic.CStarParser;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**

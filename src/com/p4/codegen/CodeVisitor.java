@@ -87,54 +87,43 @@ public class CodeVisitor implements INodeVisitor {
 
     //Format in Arduino C: float i;
     @Override
+    public void visit(FloatDclNode node) {
+        visitDclNode(node);
+    }
+
+    @Override
     public void visit(IncludeNode node) {
         stringBuilder.append(node.getInclude());
         stringBuilder.append("\n");
-    }
-
-    @Override
-    public void visit(IntervalNode node) {
-        //Left side of the interval
-        stringBuilder.append("(");
-        if(node.getLeftBracket().equals("]")){
-            visitChild(node.children.get(0));
-            stringBuilder.append(" > ");
-            visitChild(node.children.get(1));
-            stringBuilder.append(" + 1");
-        }else{
-            visitChild(node.children.get(0));
-            stringBuilder.append(" > ");
-            visitChild(node.children.get(1));
-        }
-        //Sides are always connected with logical AND
-        stringBuilder.append(" && ");
-        //Right side of the interval
-        if(node.getRightBracket().equals("[")){
-            visitChild(node.children.get(0));
-            stringBuilder.append(" < ");
-            visitChild(node.children.get(2));
-            stringBuilder.append(" - 1");
-        }else{
-            visitChild(node.children.get(0));
-            stringBuilder.append(" < ");
-            visitChild(node.children.get(2));
-        }
-        stringBuilder.append(")");
-    }
-
-    @Override
-    public void visit(MultValNode multValNode) {
-        
-    }
-
-    public void visit(FloatDclNode node) {
-        visitDclNode(node);
     }
 
     //Format in Arduino C: char i;
     @Override
     public void visit(CharDclNode node) {
         visitDclNode(node);
+    }
+
+    //Format in Arduino C: (i > 5 && i < 10);
+    @Override
+    public void visit(IntervalNode node) {
+        stringBuilder.append("(");
+        //Left side of the interval
+        changeComparison(node, "]", " > ", 1);
+        //Sides are always connected with logical AND
+        stringBuilder.append(" && ");
+        //Right side of the interval
+        changeComparison(node, "[", " < ", 2);
+        stringBuilder.append(")");
+    }
+
+    //Converts the interval to an Arduino C comparison
+    private void changeComparison(IntervalNode node, String bracket, String comp, int childNumber) {
+        String inclusive = bracket.equals("]") ? " + 1" : " - 1";
+    }
+
+    @Override
+    public void visit(MultValNode multValNode) {
+
     }
 
     //Format in Arduino C: int pinName;
@@ -253,10 +242,37 @@ public class CodeVisitor implements INodeVisitor {
         checkParentheses(node, false);
     }
 
+    @Override
+    public void visit(InNode node) {
+        //First child is a value and right side is an array
+        AstNode leftChild = node.children.get(0);
+        AstNode rightChild = node.children.get(1);
+
+        Attributes array = symbolTable.lookupSymbol(((IdNode)rightChild).getId());
+
+        stringBuilder.append("(");
+        for (int i = 0; i < array.getArrayLength(); i++) {
+            //Appends the value being compared with
+            this.visitChild(leftChild);
+            stringBuilder.append(" == ");
+            //Appends the array id
+            this.visitChild(rightChild);
+            //Appends index
+            stringBuilder.append("[");
+            stringBuilder.append(i);
+            stringBuilder.append("]");
+
+            if (i != array.getArrayLength() - 1) {
+                stringBuilder.append(" ||\n");
+            }
+        }
+        stringBuilder.append(")\n");
+        output.add(getLine());
+    }
+
     //Format in Arduino C: 10 + 20
     @Override
     public void visit(AddNode node) {
-        //First child is left side, second is right side
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
 
@@ -553,12 +569,11 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append(")");
     }
 
-    private void appendPinModeIfNeeded(boolean isOutput, String pinId){
-
+    private void appendPinModeIfNeeded(boolean isOutput, String pinId) {
         String id = (pinId.contains("[") ? pinId.split("\\[")[0] : pinId);
         PinAttributes pinAttr = (PinAttributes)symbolTable.lookupSymbol(id);
 
-        if(isOutput != pinAttr.getIsOutput()){
+        if (isOutput != pinAttr.getIsOutput()) {
             pinAttr.setIsOutput(!pinAttr.getIsOutput());
             symbolTable.insertSymbol(pinId, pinAttr);
 
