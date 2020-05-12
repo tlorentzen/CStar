@@ -15,7 +15,9 @@ import java.util.List;
 //Generates the Arduino code that corresponds to the CStar source code
 public class CodeVisitor implements INodeVisitor {
     //FilePath is used to specify the location for the compiled Arduino file
-    String filePath = System.getProperty("user.dir") + "/compile-out/compile-out.ino";
+    String filePath = System.getProperty("user.dir") + "/output/output.ino";
+    //FilePath is used to specify the directory for the compiled Arduino file
+    String dirPath = System.getProperty("user.dir") + "/output";
 
     //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
@@ -33,12 +35,19 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append(line);
         }
 
-        File file = new File(filePath);
-        FileOutputStream outputStream = new FileOutputStream(file);
+        File directory = new File(dirPath);
+        if (! directory.exists()){
+            directory.mkdirs();
+        }
+        //Instantiates new File object
+        File f = new File(filePath);
+
+        //Instantiates new FileOutPutStream
+        FileOutputStream oS = new FileOutputStream(f);
 
         //Writes the string builder to the file,
         //If file not found, it will create one
-        outputStream.write(stringBuilder.toString().getBytes());
+        oS.write(stringBuilder.toString().getBytes());
     }
 
     @Override
@@ -46,12 +55,12 @@ public class CodeVisitor implements INodeVisitor {
         //Visits all its children and puts a semicolon if a Dcl with no value is made in global scope
         for (AstNode child: node.children) {
             this.visitChild(child);
-            /*if(stringBuilder.length() > 0){
+            if(stringBuilder.length() > 0){
                 char c = stringBuilder.charAt(stringBuilder.length()-1);
                 if (child instanceof DclNode && !Character.toString(c).matches(";")){
                     stringBuilder.append(";\n");
                 }
-            }*/
+            }
 
         }
     }
@@ -439,6 +448,7 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append(")");
         //Second child is the block
         this.visitChild(node.children.get(1));
+        stringBuilder.append('\n');
     }
 
     //Format in Arduino C: if(10 < 20){ int i = 0; } else { int i = 1; }
@@ -457,6 +467,7 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append("else ");
             visitChild(node.children.get(2));
         }
+        stringBuilder.append('\n');
     }
 
     //Format in Arduino C:
@@ -477,7 +488,9 @@ public class CodeVisitor implements INodeVisitor {
 
         for(AstNode child : node.children){
             this.visitChild(child);
-            stringBuilder.append(";\n");
+            if (!(child instanceof CommentNode)){
+                stringBuilder.append(";\n");
+            }
             if(child instanceof FuncCallNode){
                 output.add(getLine());
             }
@@ -512,7 +525,7 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(FuncDclNode node) {
         symbolTable.enterScope(node.getNodeHash());
-
+        stringBuilder.append('\n');
         stringBuilder.append(getTargetType(node.getReturnType()));
         stringBuilder.append(" ");
         stringBuilder.append(node.getId());
@@ -617,6 +630,10 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     private void handleRead(String pinId) {
+        //Deletes the index of an array access
+        if (pinId.contains("[")){
+            pinId = pinId.substring(0, pinId.length() - 3);
+        }
         Attributes attributes = this.symbolTable.lookupSymbol(pinId);
 
         //Enters if the pin is analog
@@ -638,14 +655,14 @@ public class CodeVisitor implements INodeVisitor {
             //The value to be written to the pin is either HIGH or LOW
             stringBuilder.append("digitalWrite(");
             stringBuilder.append(pinId);
-            stringBuilder.append(",");
+            stringBuilder.append(", ");
             visitChild(parameter);
         }
         else if ((parameter instanceof NumberNode || parameter instanceof IdNode) && checkWriteType(parameter.type)) {
             //The value to be written to the pin is either HIGH or LOW
             stringBuilder.append("analogWrite(");
             stringBuilder.append(pinId);
-            stringBuilder.append(",");
+            stringBuilder.append(", ");
             visitChild(parameter);
         }
     }
@@ -727,8 +744,7 @@ public class CodeVisitor implements INodeVisitor {
     private String convertIntToPinValue(AstNode node) {
         if (node instanceof PinNode) {
             return "A" + ((PinNode) node).getValue() * (-1);
-        }
-        else {
+        } else {
             return ((NumberNode) node).getValue().toString();
         }
     }
@@ -751,7 +767,6 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(CommentNode node) {
         stringBuilder.append(node.getComment());
-        output.add(getLine());
     }
 
     //Gets the string from the string builder and resets string builder

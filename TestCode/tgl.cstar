@@ -35,10 +35,9 @@ void setBarGraph() {
     integer barState = map(constrain(valPot1, 0, 1023), 0, 1023, 0, 10);
 
     while(counter < numOfGraphLeds) repeat{
-        if(barState > counter+1 AND barState IS counter+1){
-            bargraph[counter].write(255);
+        if(barState >= counter+1){
+            bargraph[counter].write(HIGH);
         }else{
-            bargraph[counter].write(0);
             bargraph[counter].write(LOW);
         }
 
@@ -61,13 +60,12 @@ void readInput() {
 void setRGB() {
     integer potState = map(constrain(valPot2, 0, 1023), 0, 1023, 0, 765);
 
-
-    if(potState IS 1 OR potState > 1 AND potState < 255 OR potState IS 255){
+    if(potState BETWEEN [1; 255]){
         integer red = map(potState, 1, 255, 1, 255);
         writeRGBState(red, 0, 0);
     }
 
-    if(potState IS 256 OR potState > 256 AND potState < 510 OR potState IS 510){
+    if(potState BETWEEN ]255; 510]){
         integer green = map(potState, 256, 510, 1, 255);
         writeRGBState(0, green, 0);
     }
@@ -76,7 +74,6 @@ void setRGB() {
         integer blue = map(potState, 511, 765, 1, 255);
         writeRGBState(0, 0, blue);
     }
-
 }
 
 void writeRGBState(integer r, integer g, integer b){

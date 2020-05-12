@@ -5,7 +5,3 @@ led_array[1].write(HIGH);
 led_array[0].write(LOW);
 led_array[1].write(LOW);
 led_array[0].write(HIGH);
-
-
-
-

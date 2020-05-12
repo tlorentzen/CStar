@@ -1,0 +1,161 @@
+#include <SPI.h>
+#include <stdio.h>
+#include "math.h"
+
+// Literal assigning with value
+boolean isFalse = false;
+boolean isTrue = true;
+integer cow = 1000;
+small integer horse = 1;
+long integer elephant = 10000000000;
+decimal weight = 145.95;
+character fish = 'f';
+pin led = A2;
+pin led2 = 10;
+integer counter = 0;
+
+// Literal assigning without value
+boolean isFalseNoValue;
+boolean isTrueNoValue;
+integer cowNoValue;
+small integer horseNoValue;
+long integer elephantNoValue;
+decimal weightNoValue;
+character fishNoValue;
+pin ledNoValue;
+
+// Array assigning
+integer array cow_array = [1000, 2000, 3000, 4000];
+small integer array horse_array = [1,2,3,4];
+long integer array elephant_array = [10000000000, 20000000000, 30000000000, 40000000000];
+decimal array weight_array = [1.1, 1.2, 1.3, 1.4];
+character array fish_array = ['f', 'i', 's', 'h'];
+pin array led_array = [A1, 2, 10];
+
+void setup(){
+    isFalseNoValue = false;
+    isTrueNoValue = true;
+    cowNoValue = 1500;
+    horseNoValue = 10;
+    elephantNoValue = 1230000000000;
+    weightNoValue = 5.78;
+    fishNoValue = 'h';
+    ledNoValue = A6;
+}
+
+void loop(){
+
+    // ##########################################
+    // SELECTION TEST (IF)
+    // ##########################################
+    if(1 < 100){
+        console.print("1 is lower then 100");
+    }
+
+    if(10 > 6+1){
+        console.print("10 is bigger then 6+1");
+    }
+
+    if(cow_array[3] < 10){
+        console.print("array index 3 (9) < 10");
+    }
+
+    if(true AND isTrue){
+        console.print("This is true");
+    }
+
+    if(false OR isTrue){
+        console.print("This is false");
+    }
+
+    if(1000 IN cow_array) {
+        console.print("1000 is in array 'cow_array'");
+    }
+
+    if(1.5 IN weight_array) {
+        console.print("1.4 in 'weight_array'");
+    }
+
+    if('i' IN fish_array){
+        console.print("character i in 'fish'");
+    }
+
+    // Arduino function call
+    if(100 < random(50, 150)){
+        console.print("100 is less then a random number between 50 and 150");
+    }
+
+    // Normal function call
+    if(100 < getRandomNumber(50, 150)){
+        console.print("100 is less then a random number between 50 and 150");
+    }
+
+    // ##########################################
+    // BETWEEN TEST (INTERVAL)
+    // ##########################################
+    if(counter BETWEEN [1; 10]){
+        console.print("Is between 1 and 10");
+    }
+
+    if(counter BETWEEN ]1; 10]){
+        console.print("Is between 2 and 10");
+    }
+
+    if(counter BETWEEN [1; 10[){
+        console.print("Is between 1 and 9");
+    }
+
+    if(counter BETWEEN ]1; 10[){
+        console.print("Is between 2 and 9");
+    }
+
+    while(counter BETWEEN [1; 10]) repeat {
+        console.print("Is between 1 and 10");
+    }
+
+    while(counter BETWEEN ]1; 10]) repeat {
+        console.print("Is between 2 and 10");
+    }
+
+    while(counter BETWEEN [1; 10[) repeat {
+        console.print("Is between 1 and 9");
+    }
+
+    while(counter BETWEEN ]1; 10[) repeat {
+        console.print("Is between 2 and 9");
+    }
+
+    // ##########################################
+    // PIN TEST
+    // ##########################################
+    // Read: no pinMode change required.
+    cow = led.read();
+    // Write: pinMode should change from INPUT to OUTPUT
+    led.write(HIGH);
+    // Write: pinMode should not change
+    led.write(LOW);
+    // Read: pinMode should change from OUTPUT to INPUT
+    weight = led.read();
+    // Read: pinMode should not change
+    cow = led.read();
+
+    // Read: no pinMode change required.
+    led_array[1].read();
+    led_array[0].read();
+
+    // Write: pinMode should change from INPUT to OUTPUT on both
+    led_array[1].write(HIGH);
+    led_array[0].write(LOW);
+    led_array[1].write(LOW);
+    led_array[0].write(HIGH);
+
+    // Read: pinMode should change from OUTPUT to INPUT
+    cow = led_array[1].read();
+    weight = led_array[0].read();
+
+    counter = counter + 1;
+}
+
+integer getRandomNumber(integer min, integer max){
+    return random(min, max);
+}

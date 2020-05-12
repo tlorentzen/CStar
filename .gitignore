@@ -2,7 +2,9 @@ out
 .idea
 .DS_Store
 compile-out/compile-out.ino
-output
-language-meta.json
+output/
+output/output.ino
 arduino-cli
 arduino-cli.exe
+LICENSE.txt
+language-meta.json
