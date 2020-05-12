@@ -616,6 +616,10 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     private void handleRead(String pinId) {
+        //Deletes the index of an array access
+        if (pinId.contains("[")){
+            pinId = pinId.substring(0, pinId.length() - 3);
+        }
         Attributes attributes = this.symbolTable.lookupSymbol(pinId);
 
         //Enters if the pin is analog
@@ -637,14 +641,14 @@ public class CodeVisitor implements INodeVisitor {
             //The value to be written to the pin is either HIGH or LOW
             stringBuilder.append("digitalWrite(");
             stringBuilder.append(pinId);
-            stringBuilder.append(",");
+            stringBuilder.append(", ");
             visitChild(parameter);
         }
         else if ((parameter instanceof NumberNode || parameter instanceof IdNode) && checkWriteType(parameter.type)) {
             //The value to be written to the pin is either HIGH or LOW
             stringBuilder.append("analogWrite(");
             stringBuilder.append(pinId);
-            stringBuilder.append(",");
+            stringBuilder.append(", ");
             visitChild(parameter);
         }
     }
