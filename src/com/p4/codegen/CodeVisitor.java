@@ -610,18 +610,21 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append(")");
     }
 
+    //Handles pin mode. Changes it to input or output if necessary
     private void appendPinModeIfNeeded(boolean isOutput, String pinId) {
         String id = (pinId.contains("[") ? pinId.split("\\[")[0] : pinId);
         PinAttributes pinAttr = (PinAttributes)symbolTable.lookupSymbol(id);
 
-        if (isOutput != pinAttr.getIsOutput()) {
+        //Enters if the output is not set yet
+        if (isOutput != pinAttr.getIsOutput() || pinId.contains("[")) {
             pinAttr.setIsOutput(!pinAttr.getIsOutput());
             symbolTable.insertSymbol(pinId, pinAttr);
 
-            if(stringBuilder.toString().contains("=")){
-                output.add("pinMode("+pinId+", "+(isOutput ? "OUTPUT" : "INPUT")+");\n");
-            }else{
-                stringBuilder.append("pinMode("+pinId+", "+(isOutput ? "OUTPUT" : "INPUT")+");\n");
+            if (stringBuilder.toString().contains("=")) {
+                output.add("pinMode(" + pinId + ", " + (isOutput ? "OUTPUT" : "INPUT") + ");\n");
+            }
+            else {
+                stringBuilder.append("pinMode(" + pinId + ", " + (isOutput ? "OUTPUT" : "INPUT") + ");\n");
             }
         }
     }

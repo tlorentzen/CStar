@@ -1,14 +1,7 @@
+pin array led_array = [11,12,13];
 
-pin array led_array = [A1, 2, 10];
-void setup(){
-
-}
-
-void loop(){
-    // Read: no pinMode change required.
-    led_array[1].read();
-    led_array[0].read();
-
-    // Write: pinMode should change from INPUT to OUTPUT
-    led_array[1].write(HIGH);
-}
+// Write: pinMode should change from INPUT to OUTPUT on both
+led_array[1].write(HIGH);
+led_array[0].write(LOW);
+led_array[1].write(LOW);
+led_array[0].write(HIGH);
