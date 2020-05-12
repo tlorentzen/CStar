@@ -140,11 +140,18 @@ void loop(){
     cow = led.read();
 
     // Read: no pinMode change required.
-    // led_array[1].read();
-    // led_array[0].read();
+    led_array[1].read();
+    led_array[0].read();
 
-    // Write: pinMode should change from INPUT to OUTPUT
-    // led_array[1].write(HIGH);
+    // Write: pinMode should change from INPUT to OUTPUT on both
+    led_array[1].write(HIGH);
+    led_array[0].write(LOW);
+    led_array[1].write(LOW);
+    led_array[0].write(HIGH);
+
+    // Read: pinMode should change from OUTPUT to INPUT
+    cow = led_array[1].read();
+    weight = led_array[0].read();
 
     counter = counter + 1;
 }
