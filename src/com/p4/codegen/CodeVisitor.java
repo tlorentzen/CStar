@@ -210,9 +210,6 @@ public class CodeVisitor implements INodeVisitor {
         this.visitChild(rightChild);
         stringBuilder.append(";\n");
         output.add(getLine());
-
-        String test = output.get(output.size() - 1);
-        output.add(getLine());
     }
 
     @Override
@@ -477,9 +474,6 @@ public class CodeVisitor implements INodeVisitor {
 
         for(AstNode child : node.children){
             this.visitChild(child);
-            if (!(child instanceof CommentNode)){
-                stringBuilder.append(";\n");
-            }
             if(child instanceof FuncCallNode){
                 output.add(getLine());
             }
