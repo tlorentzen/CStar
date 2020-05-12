@@ -13,7 +13,6 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.ZipFile;
 
 public class CliExec {
-
     // Ansi colors
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
