@@ -25,9 +25,6 @@ public class Main {
         Path inputSource = null;
         ErrorBag errors = new ErrorBag();
 
-        TargetLangStore langStore = new TargetLangStore();
-        langStore.getStore();
-
         if(args.length == 1){
             inputSource = Paths.get(args[0]);
 

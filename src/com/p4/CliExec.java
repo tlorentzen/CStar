@@ -70,7 +70,7 @@ public class CliExec {
                 System.out.println("Select Arduino:");
 
                 for (Board b: boards) {
-                    System.out.println("  "+counter+") "+ b.name+" - "+b.port);
+                    System.out.println("  "+counter+") "+ b.getName()+" - "+b.getCore());
                     counter++;
                 }
 
@@ -89,7 +89,7 @@ public class CliExec {
                 board = boards.get(0);
             }
 
-            installBoardCore(board.core);
+            installBoardCore(board.getCore());
         }else{
             errors.addEntry(ErrorType.ARDUINO_NOT_FOUND, "No Arduino boards found. The program has still been compiled and is located in the 'output' folder");
         }
@@ -116,16 +116,12 @@ public class CliExec {
                         continue;
                     }
 
-                    Board board = new Board();
-                    board.port = items[0];
-                    board.core = items[items.length-1];
-                    board.fqbn = items[items.length-2];
-
+                    String boardname = "";
                     for(int j=4; j < items.length-2; j++){
-                        board.name = board.name.concat(items[j]+" ");
+                        boardname = boardname.concat(items[j]+" ");
                     }
 
-                    board.name = board.name.trim();
+                    Board board = new Board(boardname.trim(), items[items.length-1], items[0], items[items.length-2]);
                     boards.add(board);
                 }
             }catch(IOException e){
@@ -141,11 +137,11 @@ public class CliExec {
         if(arduinoCliPresent && board != null){
             printIt("Compiling C-code... ", true);
 
-            if(execute("compile --fqbn "+board.fqbn+" output", acli)){
+            if(execute("compile --fqbn "+board.getFqbn()+" output", acli)){
                 printOk();
                 printIt("Uploading to Arduino... ", true);
 
-                if(execute("upload -p "+board.port+" --fqbn "+board.fqbn+" output", acli)){
+                if(execute("upload -p "+board.getPort()+" --fqbn "+board.getFqbn()+" output", acli)){
                     printOk();
                 }else{
                     printFailed();
