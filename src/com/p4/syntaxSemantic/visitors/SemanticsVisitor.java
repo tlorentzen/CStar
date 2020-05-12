@@ -623,10 +623,10 @@ public class SemanticsVisitor implements INodeVisitor {
         if (symbolTable.declaredFunctions.contains(functionName)) {
             //Enters if the function includes a dot operator
             if (functionName.contains(".")) {
+                //TODO check if its an array
                 String idName = functionName.split("\\.")[0];
 
-                //Enters if the id is an array access
-                if (idName.contains("[")) {
+                if (idName.contains("[")){
                     idName = idName.substring(0, idName.length() - 3);
                 }
 
