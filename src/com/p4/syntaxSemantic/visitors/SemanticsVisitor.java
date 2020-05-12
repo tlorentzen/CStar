@@ -418,7 +418,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
         else if (leftType.equals("ArduinoC")) {
             return rightType;
-        } 
+        }
         else if (rightType.equals("ArduinoC")) {
             return leftType;
         }
@@ -623,6 +623,7 @@ public class SemanticsVisitor implements INodeVisitor {
         if (symbolTable.declaredFunctions.contains(functionName)) {
             //Enters if the function includes a dot operator
             if (functionName.contains(".")) {
+                //TODO check if its an array
                 String idName = functionName.split("\\.")[0];
 
                 //Enters if the id is an array access
