@@ -1,12 +1,7 @@
-pin pin1 = 5;
-integer array a = [1, 2, 3];
 
+pin array led_array = [A1, 2, 10];
 void setup(){
-    'a' BETWEEN [1; 5];
 
-    if (100 < random(50, 150) ) {
-        console.print("hey heeey");
-    }
 }
 
 void loop(){

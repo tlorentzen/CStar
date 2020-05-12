@@ -625,12 +625,13 @@ public class SemanticsVisitor implements INodeVisitor {
             if (functionName.contains(".")) {
                 String idName = functionName.split("\\.")[0];
 
+                //Enters if the id is an array access
+                if (idName.contains("[")) {
+                    idName = idName.substring(0, idName.length() - 3);
+                }
                 //Enters if the pin has not been declared
                 if (symbolTable.lookupSymbol(idName) == null) {
-                    //Enters if the left side is an array access
-                    if (!idName.contains("[")) {
                         errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl",idName), node.lineNumber);
-                    }
                 }
                 else {
                     checkFunction(node, functionName);
