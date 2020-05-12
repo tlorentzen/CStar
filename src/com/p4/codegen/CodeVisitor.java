@@ -46,12 +46,12 @@ public class CodeVisitor implements INodeVisitor {
         //Visits all its children and puts a semicolon if a Dcl with no value is made in global scope
         for (AstNode child: node.children) {
             this.visitChild(child);
-            /*if(stringBuilder.length() > 0){
+            if(stringBuilder.length() > 0){
                 char c = stringBuilder.charAt(stringBuilder.length()-1);
                 if (child instanceof DclNode && !Character.toString(c).matches(";")){
                     stringBuilder.append(";\n");
                 }
-            }*/
+            }
 
         }
     }
@@ -477,7 +477,9 @@ public class CodeVisitor implements INodeVisitor {
 
         for(AstNode child : node.children){
             this.visitChild(child);
-            stringBuilder.append(";\n");
+            if (!(child instanceof CommentNode)){
+                stringBuilder.append(";\n");
+            }
             if(child instanceof FuncCallNode){
                 output.add(getLine());
             }
@@ -748,7 +750,6 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(CommentNode node) {
         stringBuilder.append(node.getComment());
-        output.add(getLine());
     }
 
     //Gets the string from the string builder and resets string builder
