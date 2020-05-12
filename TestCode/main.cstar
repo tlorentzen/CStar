@@ -1,4 +1,5 @@
 pin array led_array = [11,12,13];
+//heyhey
 
 // Write: pinMode should change from INPUT to OUTPUT on both
 led_array[1].write(HIGH);

@@ -19,104 +19,141 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Main {
-
     public static void main(String[] args) {
-
-        Path inputSource = null;
+        Path inputSource;
         ErrorBag errors = new ErrorBag();
 
-        if(args.length == 1){
+        if (args.length == 1) {
             inputSource = Paths.get(args[0]);
 
-            System.out.println(" ██████╗███████╗████████╗ █████╗ ██████╗ \n" +
-                               "██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗\n" +
-                               "██║     ███████╗   ██║   ███████║██████╔╝\n" +
-                               "██║     ╚════██║   ██║   ██╔══██║██╔══██╗\n" +
-                               "╚██████╗███████║   ██║   ██║  ██║██║  ██║\n" +
-                               " ╚═════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝");
-            System.out.println();
-            System.out.println("File: "+inputSource.getFileName());
-            System.out.println("Path: "+inputSource.toAbsolutePath());
+            printStartInfo(inputSource);
 
-            if(Files.exists(inputSource)){
+            //Enters if the path for the source code does not exist
+            if (!Files.exists(inputSource)) {
+                errors.addEntry(ErrorType.SOURCE_FILE_DOES_NOT_EXIST, "Source file not found");
+            }
+            else {
+                String extension = getFileExtension(new File(args[0]));
+                System.out.println("Ext:  " + extension);
+                System.out.println();
 
-                String ext = getFileExtension(new File(args[0]));
-                System.out.println("Ext:  "+ext);
-                System.out.println("");
-
-                if(ext.equals("cstar")){
-                    try{
+                //Enters if the program being compiled is not in a cstar format
+                if (!extension.equals("cstar")) {
+                    errors.addEntry(ErrorType.WRONG_EXTENSION, "Wrong file extension, expected .cstar");
+                }
+                else{
+                    try {
+                        //Get the contents of the file
                         CharStream inputStream = CharStreams.fromPath(inputSource);
 
-                        var symbolTable = new SymbolTable();
+                        //Gets a parse tree for making the AST
+                        ParseTree tree = syntaxPhase(inputStream, errors);
 
-                        CStarLexer lexer = new CStarLexer(inputStream);
-                        lexer.removeErrorListeners();
-                        lexer.addErrorListener(new LexerErrorListener(errors));
-                        CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-
-                        CStarParser parser = new CStarParser(commonTokenStream);
-                        parser.setBuildParseTree(true);
-                        parser.setErrorHandler(new CStarErrorStrategy());
-                        parser.removeErrorListeners();
-                        parser.addErrorListener(new ParserErrorListener(errors));
-
-                        ParseTree tree = parser.prog();
-
-                        if(!errors.containsErrors()) {
-
+                        //Enters if there were no errors when parsing or scanning
+                        if (!errors.containsErrors()) {
+                            //Creates the AST
                             CStarBaseVisitor<?> visitor = new AstVisitor<>();
                             ProgNode ast = (ProgNode) visitor.visit(tree);
 
                             //AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
                             //astTreeVisitor.visit(0, ast);
 
-                            FuncVisitor funcVisitor = new FuncVisitor(symbolTable, errors);
-                            funcVisitor.visit(ast);
+                            //Creates the symbol table
+                            SymbolTable symbolTable = symbolTableSetup(ast,  errors);
 
-                            if(!symbolTable.isSetupAndLoopDefined()) {
-                                errors.addEntry(ErrorType.MISSING_ARDUINO_FUNCTION, "Both the functions 'void setup()' and 'void loop()' are required by Arduino");
-                            }
-
-                            SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable, errors);
-                            symbolTableVisitor.visit(ast);
-
+                            //Type checks and scope checks the AST
                             SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
                             semanticsVisitor.visit(ast);
 
-                            if(!errors.containsErrors()){
-                                CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
-                                codeVisitor.visit(ast);
-
-                                CliExec cli = new CliExec(errors, true);
-                                cli.arduinoSelection();
-                                cli.compileAndUpload();
-
-                                try {
-                                    codeVisitor.print();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                            //Enters if no errors were found when type/scope checking
+                            if (!errors.containsErrors()) {
+                               codeGenerationPhase(symbolTable, ast, errors);
                             }
                         }
-                    }catch (IOException e){
+                    }
+                    catch (IOException e) {
                         System.out.println(e);
                     }
-                }else{
-                    errors.addEntry(ErrorType.WRONG_EXTENSION, "Wrong file extension, expected .cstar");
                 }
-            }else{
-                errors.addEntry(ErrorType.SOURCE_FILE_DOES_NOT_EXIST, "Source file not found.");
             }
-
             errors.display();
+        }
+    }
+
+    private static void printStartInfo(Path inputSource) {
+        System.out.println(" ██████╗███████╗████████╗ █████╗ ██████╗ \n" +
+                           "██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗\n" +
+                           "██║     ███████╗   ██║   ███████║██████╔╝\n" +
+                           "██║     ╚════██║   ██║   ██╔══██║██╔══██╗\n" +
+                           "╚██████╗███████║   ██║   ██║  ██║██║  ██║\n" +
+                           " ╚═════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝");
+        System.out.println();
+        System.out.println("File: " + inputSource.getFileName());
+        System.out.println("Path: " + inputSource.toAbsolutePath());
+    }
+    
+    private static ParseTree syntaxPhase(CharStream inputStream, ErrorBag errors) {
+        //Scans the source code
+        CStarLexer lexer = new CStarLexer(inputStream);
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(new LexerErrorListener(errors));
+        CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+
+        //Parses the source source code
+        CStarParser parser = new CStarParser(commonTokenStream);
+        parser.setBuildParseTree(true);
+        parser.setErrorHandler(new CStarErrorStrategy());
+        parser.removeErrorListeners();
+        parser.addErrorListener(new ParserErrorListener(errors));
+
+        return parser.prog();
+    }
+
+    private static SymbolTable symbolTableSetup(ProgNode ast, ErrorBag errors) {
+        //Visits functions and adds their declaration into the symbol table
+        SymbolTable symbolTable = new SymbolTable();
+        FuncVisitor funcVisitor = new FuncVisitor(symbolTable, errors);
+        funcVisitor.visit(ast);
+
+        //Enters if the setup and loop functions haven't been declared in the source code
+        if (!symbolTable.isSetupAndLoopDefined()) {
+            errors.addEntry(ErrorType.MISSING_ARDUINO_FUNCTION,
+                    "Both the functions 'void setup()' and 'void loop()' are required by Arduino");
+        }
+
+        //Adds variable declarations in the symbol table
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable, errors);
+        symbolTableVisitor.visit(ast);
+        
+        return symbolTable;
+    }
+
+    private static void codeGenerationPhase(SymbolTable symbolTable, ProgNode ast, ErrorBag errors) {
+        //Generates theArduino C code equivalent to the CStar code
+        CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
+        codeVisitor.visit(ast);
+
+        //Create the command line interface
+        CliExec cli = new CliExec(errors, true);
+        cli.arduinoSelection();
+        cli.compileAndUpload();
+
+        try {
+            codeVisitor.print();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     private static String getFileExtension(File file) {
         String fileName = file.getName();
-        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+
+        if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
             return fileName.substring(fileName.lastIndexOf(".")+1);
-        else return "";
+        }
+        else {
+            return "";
+        }
     }
 }
