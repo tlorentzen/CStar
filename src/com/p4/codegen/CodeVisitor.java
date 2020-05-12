@@ -219,9 +219,6 @@ public class CodeVisitor implements INodeVisitor {
         this.visitChild(rightChild);
         stringBuilder.append(";\n");
         output.add(getLine());
-
-        String test = output.get(output.size() - 1);
-        output.add(getLine());
     }
 
     @Override
@@ -488,11 +485,8 @@ public class CodeVisitor implements INodeVisitor {
 
         for(AstNode child : node.children){
             this.visitChild(child);
-            if (!(child instanceof CommentNode)){
-                stringBuilder.append(";\n");
-            }
             if(child instanceof FuncCallNode){
-                output.add(getLine());
+                stringBuilder.append(";\n");
             }
         }
 
@@ -630,11 +624,15 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     private void handleRead(String pinId) {
-        //Deletes the index of an array access
+        Attributes attributes = null;
+        //Checks if its an array access and then deletes the index to do lookup
         if (pinId.contains("[")){
-            pinId = pinId.substring(0, pinId.length() - 3);
+            String tempPinID = pinId.substring(0, pinId.length() - 3);
+            attributes = this.symbolTable.lookupSymbol(tempPinID);
         }
-        Attributes attributes = this.symbolTable.lookupSymbol(pinId);
+        else{
+            attributes = this.symbolTable.lookupSymbol(pinId);
+        }
 
         //Enters if the pin is analog
         if (attributes != null && ((PinAttributes)attributes).getAnalog()) {
@@ -657,6 +655,7 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append(pinId);
             stringBuilder.append(", ");
             visitChild(parameter);
+
         }
         else if ((parameter instanceof NumberNode || parameter instanceof IdNode) && checkWriteType(parameter.type)) {
             //The value to be written to the pin is either HIGH or LOW

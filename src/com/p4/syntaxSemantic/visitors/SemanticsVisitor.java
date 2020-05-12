@@ -627,7 +627,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 String idName = functionName.split("\\.")[0];
 
                 if (idName.contains("[")){
-                    idName = idName.substring(0, idName.length() - 3);
+                    idName = idName.split("\\[")[0];
                 }
 
                 //Enters if the pin has not been declared
