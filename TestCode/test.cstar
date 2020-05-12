@@ -1,6 +1,6 @@
 #include <SPI.h>
 #include <stdio.h>
-// #include "math.h"
+#include "math.h"
 
 // Literal assigning with value
 boolean isFalse = false;
