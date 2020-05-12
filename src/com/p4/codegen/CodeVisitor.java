@@ -590,7 +590,7 @@ public class CodeVisitor implements INodeVisitor {
             handleWrite(parameter, funcIDSplit[0]);
         }
 
-        stringBuilder.append(")");
+        stringBuilder.append(");");
     }
 
     private void appendPinModeIfNeeded(boolean isOutput, String pinId) {
@@ -610,11 +610,15 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     private void handleRead(String pinId) {
-        //Deletes the index of an array access
+        Attributes attributes = null;
+        //Checks if its an array access and then deletes the index to do lookup
         if (pinId.contains("[")){
-            pinId = pinId.substring(0, pinId.length() - 3);
+            String tempPinID = pinId.substring(0, pinId.length() - 3);
+            attributes = this.symbolTable.lookupSymbol(tempPinID);
         }
-        Attributes attributes = this.symbolTable.lookupSymbol(pinId);
+        else{
+            attributes = this.symbolTable.lookupSymbol(pinId);
+        }
 
         //Enters if the pin is analog
         if (attributes != null && ((PinAttributes)attributes).getAnalog()) {
