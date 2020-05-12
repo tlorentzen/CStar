@@ -475,7 +475,7 @@ public class CodeVisitor implements INodeVisitor {
         for(AstNode child : node.children){
             this.visitChild(child);
             if(child instanceof FuncCallNode){
-                output.add(getLine());
+                stringBuilder.append(";\n");
             }
         }
 
@@ -590,7 +590,7 @@ public class CodeVisitor implements INodeVisitor {
             handleWrite(parameter, funcIDSplit[0]);
         }
 
-        stringBuilder.append(");");
+        stringBuilder.append(")");
     }
 
     private void appendPinModeIfNeeded(boolean isOutput, String pinId) {
@@ -641,6 +641,7 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append(pinId);
             stringBuilder.append(", ");
             visitChild(parameter);
+
         }
         else if ((parameter instanceof NumberNode || parameter instanceof IdNode) && checkWriteType(parameter.type)) {
             //The value to be written to the pin is either HIGH or LOW
