@@ -236,7 +236,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String rightType = node.children.get(1).type;
 
         //Enters if one or both of operands has no type
-        if (leftType == null || rightType == null) {
+        if ((leftType == null || rightType == null) && node.children.get(1) instanceof IdNode) {
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("null type"), node.lineNumber);
         }
         else {
@@ -246,27 +246,44 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //Checks if the inNode operands are valid
     private void checkInNode(String leftType, String rightType, AstNode node) {
-        //Parameters below are switched, since widening is only possible for the left side instead of right side
-        String resultType = operationResultType(rightType, leftType);
-        //Gets right side and checks if it is an array
-        IdNode idNode = (IdNode) node.children.get(1);
-        Attributes rightAttribute = symbolTable.lookupSymbol(idNode.getId());
+        if(node.children.get(1) instanceof IdNode){
+            //Parameters below are switched, since widening is only possible for the left side instead of right side
+            String resultType = operationResultType(rightType, leftType);
+            //Gets right side and checks if it is an array
+            IdNode idNode = (IdNode) node.children.get(1);
+            Attributes rightAttribute = symbolTable.lookupSymbol(idNode.getId());
 
-        //Enters if the id h node has not been declared
-        if (rightAttribute != null) {
-            //Enters if the id is not an array
-            if (!rightAttribute.getKind().equals("array")) {
-                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("not array"), node.lineNumber);
-            }
-            //Enters if the types were not compatible
-            else if (resultType.equals("error") && !leftType.equals("ArduinoC")) {
-                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, rightType), node.lineNumber);
-            }
-            //Enters if the types were compatible and the id was an array
-            else {
-                node.type = "boolean";
+            //Enters if the id h node has not been declared
+            if (rightAttribute != null) {
+                //Enters if the id is not an array
+                if (!rightAttribute.getKind().equals("array")) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("not array"), node.lineNumber);
+                }
+                //Enters if the types were not compatible
+                else if (resultType.equals("error") && !leftType.equals("ArduinoC")) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, rightType), node.lineNumber);
+                }
+                //Enters if the types were compatible and the id was an array
+                else {
+                    node.type = "boolean";
+                }
             }
         }
+        else if (node.children.get(1) instanceof ArrayExprNode){
+            ArrayExprNode arrayExprNode = (ArrayExprNode)node.children.get(1);
+
+            for (AstNode child : arrayExprNode.children){
+                String childRightType = child.type;
+                String resultType = operationResultType(leftType, childRightType);
+                if (resultType.equals("error") && !leftType.equals("ArduinoC")){
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, child.type), node.lineNumber);
+                }
+                else{
+                    node.type = "boolean";
+                }
+            }
+        }
+
     }
 
     private void checkBooleanType(AstNode node, boolean isLogical) {
@@ -278,7 +295,6 @@ public class SemanticsVisitor implements INodeVisitor {
         if (isLogical) {
             isValidType = logicalOperationValid(leftType, rightType);
         }
-        //TODO tjek om dette er 100% korrekt
         else if (node instanceof IntervalNode){
             isValidType = intervalOperationValid((IntervalNode) node);
         }
@@ -467,7 +483,13 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //Checks if the denominator is zero
     private boolean isDivByZero(AstNode denominator) {
-        boolean isZero = (((NumberNode)denominator).getValue() == 0);
+        boolean isZero;
+        if (denominator instanceof NumberNode){
+            isZero = (((NumberNode)denominator).getValue() == 0);
+        }
+        else{
+            return false;
+        }
 
         return (denominator.type.equals("small integer") && isZero) ||
                 (denominator.type.equals("integer") && isZero) ||
