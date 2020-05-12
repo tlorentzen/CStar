@@ -623,14 +623,16 @@ public class SemanticsVisitor implements INodeVisitor {
         if (symbolTable.declaredFunctions.contains(functionName)) {
             //Enters if the function includes a dot operator
             if (functionName.contains(".")) {
+                //TODO check if its an array
                 String idName = functionName.split("\\.")[0];
-                idName = idName.substring(0, idName.length() - 3);
+                if (idName.contains("[")){
+                    idName = idName.substring(0, idName.length() - 3);
+                }
                 //Enters if the pin has not been declared
                 if (symbolTable.lookupSymbol(idName) == null) {
                     //Enters if the left side is an array access
-                    if (!idName.contains("[")) {
-                        errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl",idName), node.lineNumber);
-                    }
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl",idName), node.lineNumber);
+
                 }
                 else {
                     checkFunction(node, functionName);
