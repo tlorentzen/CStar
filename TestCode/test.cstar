@@ -80,6 +80,18 @@ void loop(){
         console.print("character i in 'fish'");
     }
 
+    //if(1 IN [1,2,3,4]){
+    //    console.print("1 is in the list");
+    //}
+
+    //if('r' IN ['r', 'g', 'b', 'h']){
+    //    console.print("1 is in the list");
+    //}
+
+    //if(fish IN ['f', 'g', 'b', 'h']){
+    //    console.print("fish (char f) is in the list");
+    //}
+
     // Arduino function call
     if(100 < random(50, 150)){
         console.print("100 is less then a random number between 50 and 150");
