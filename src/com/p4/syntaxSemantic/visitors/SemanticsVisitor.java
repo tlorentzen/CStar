@@ -629,11 +629,12 @@ public class SemanticsVisitor implements INodeVisitor {
                 if (idName.contains("[")) {
                     idName = idName.substring(0, idName.length() - 3);
                 }
+
                 //Enters if the pin has not been declared
                 if (symbolTable.lookupSymbol(idName) == null) {
-                        errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl",idName), node.lineNumber);
-                }
-                else {
+                    //Enters if the left side is an array access
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl",idName), node.lineNumber);
+                } else {
                     checkFunction(node, functionName);
                 }
             }

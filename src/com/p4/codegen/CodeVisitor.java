@@ -55,12 +55,12 @@ public class CodeVisitor implements INodeVisitor {
         //Visits all its children and puts a semicolon if a Dcl with no value is made in global scope
         for (AstNode child: node.children) {
             this.visitChild(child);
-            /*if(stringBuilder.length() > 0){
+            if(stringBuilder.length() > 0){
                 char c = stringBuilder.charAt(stringBuilder.length()-1);
                 if (child instanceof DclNode && !Character.toString(c).matches(";")){
                     stringBuilder.append(";\n");
                 }
-            }*/
+            }
 
         }
     }
@@ -488,7 +488,9 @@ public class CodeVisitor implements INodeVisitor {
 
         for(AstNode child : node.children){
             this.visitChild(child);
-            stringBuilder.append(";\n");
+            if (!(child instanceof CommentNode)){
+                stringBuilder.append(";\n");
+            }
             if(child instanceof FuncCallNode){
                 output.add(getLine());
             }
@@ -625,6 +627,10 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     private void handleRead(String pinId) {
+        //Deletes the index of an array access
+        if (pinId.contains("[")){
+            pinId = pinId.substring(0, pinId.length() - 3);
+        }
         Attributes attributes = this.symbolTable.lookupSymbol(pinId);
 
         //Enters if the pin is analog
@@ -646,7 +652,7 @@ public class CodeVisitor implements INodeVisitor {
             //The value to be written to the pin is either HIGH or LOW
             stringBuilder.append("digitalWrite(");
             stringBuilder.append(pinId);
-            stringBuilder.append(",");
+            stringBuilder.append(", ");
             visitChild(parameter);
         }
         else if ((parameter instanceof NumberNode || parameter instanceof IdNode) && checkWriteType(parameter.type)) {
@@ -758,7 +764,6 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(CommentNode node) {
         stringBuilder.append(node.getComment());
-        output.add(getLine());
     }
 
     //Gets the string from the string builder and resets string builder
