@@ -59,10 +59,6 @@ void loop(){
 
 
     // Literal assigning with value
-    integer cow = 1000;
-    small integer horse = 1;
-    decimal weight = 145.95;
-
     cow = (5 * (10 / 4)) - 2;
     cow = cow + horse / weight;
 
@@ -196,6 +192,25 @@ void loop(){
     while(i <= newIntArray[5]) repeat {
         i = i + 1;
         console.print(i);
+    }
+
+    if(i ISNOT 2){
+        console.print("i is not 2");
+    } else {
+        console.print("i is 2");
+    }
+
+    character char = 'c';
+    if(char IS 'a'){
+        console.print("The character is 'a'");
+    }
+
+    if(4 IN newIntArray){
+        console.print("4 is in the array");
+    }
+
+    if(newIntArray[2] BETWEEN ]1;4[){
+        console.print("The third element is between one and four");
     }
 
 }
