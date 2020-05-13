@@ -122,7 +122,7 @@ class SymbolTableVisitorTest {
         //Arrange
         String id = "Id";
         PinDclNode dcl = new PinDclNode(id);
-        vIdNodear leftChild = new IdNode(id, false);
+        IdNode leftChild = new IdNode(id, false);
         PinNode rightChild = new PinNode(1, false);
         AssignNode assign = new AssignNode();
         assign.children.add(leftChild);
