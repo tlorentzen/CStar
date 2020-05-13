@@ -82,6 +82,7 @@ class SymbolTableVisitorTest {
         String id = "Id";
         ArrayDclNode<Integer> Dcl = new ArrayDclNode<>(id);
         Dcl.children.add(new ArrayNode("array" + id, "integer"));
+        Dcl.children.add(new ArrayExprNode());
 
         ArrayExprNode arrayExpr = new ArrayExprNode();
         arrayExpr.children.add(new NumberNode((long)1, false));
