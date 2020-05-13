@@ -478,7 +478,7 @@ public class CodeVisitor implements INodeVisitor {
 
         for(AstNode child : node.children){
             this.visitChild(child);
-            if(child instanceof FuncCallNode || child instanceof InNode){
+            if(child instanceof FuncCallNode || child instanceof InNode || child instanceof IntervalNode){
                 stringBuilder.append(";\n");
             }
         }
