@@ -3,18 +3,17 @@ package com.p4.errors;
 import org.junit.jupiter.api.Test;
 
 class ErrorBagTest {
-
     private ErrorBag errors = new ErrorBag();
 
     @Test
     void addEntry_ReceivesACorrectInput_AddsItemToErrors() {
         //Arrange
-        var type = ErrorType.TYPE_ERROR;
-        var message = "ErrorMessage";
+        ErrorType type = ErrorType.TYPE_ERROR;
+        String message = "ErrorMessage";
 
         //Act
         errors.addEntry(type, message);
-        var result = !errors.isEmpty();
+        boolean result = !errors.isEmpty();
 
         //Assert
         assert (result);
@@ -23,14 +22,14 @@ class ErrorBagTest {
     @Test
     void addEntry_ReceivesAlreadyAddedUndeclaredFunctionWarning_SkipsOverAdd() {
         //Arrange
-        var type = ErrorType.UNDECLARED_FUNCTION_WARNING;
-        var functionName = "func";
-        var message = "'" + functionName + "' is not declared in your project.";
+        ErrorType type = ErrorType.UNDECLARED_FUNCTION_WARNING;
+        String functionName = "func";
+        String message = "'" + functionName + "' is not declared in your project.";
         errors.addEntry(type, message);
 
         //Act
         errors.addEntry(type, message);
-        var result = !errors.isEmpty();
+        boolean result = !errors.isEmpty();
 
         //Assert
         assert (result);
@@ -40,8 +39,8 @@ class ErrorBagTest {
     void addEntry_ReceivesWarning_HasErrorsIsFalse() {
         //Arrange
         errors = new ErrorBag();
-        var type = ErrorType.GENERAL_WARNING;
-        var message = "E";
+        ErrorType type = ErrorType.GENERAL_WARNING;
+        String message = "E";
 
         //Act
         errors.addEntry(type, message);
@@ -55,8 +54,8 @@ class ErrorBagTest {
     void addEntry_ReceivesError_HasErrorsIsTrue() {
         //Arrange
         errors = new ErrorBag();
-        var type = ErrorType.TYPE_ERROR;
-        var message = "E";
+        ErrorType type = ErrorType.TYPE_ERROR;
+        String message = "E";
 
         //Act
         errors.addEntry(type, message);
@@ -79,8 +78,8 @@ class ErrorBagTest {
         //Arrange
         errors = new ErrorBag();
 
-        var type = ErrorType.TYPE_ERROR;
-        var message = "E";
+        ErrorType type = ErrorType.TYPE_ERROR;
+        String message = "E";
 
         //Act
         errors.addEntry(type, message);
@@ -93,8 +92,8 @@ class ErrorBagTest {
     void containsErrors() {
         //Arrange
         errors = new ErrorBag();
-        var type = ErrorType.TYPE_ERROR;
-        var message = "E";
+        ErrorType type = ErrorType.TYPE_ERROR;
+        String message = "E";
 
         //Act
         errors.addEntry(type, message);
@@ -107,8 +106,8 @@ class ErrorBagTest {
     void containsErrors_NoErrors() {
         //Arrange
         errors = new ErrorBag();
-        var type = ErrorType.GENERAL_WARNING;
-        var message = "E";
+        ErrorType type = ErrorType.GENERAL_WARNING;
+        String message = "E";
 
         //Act
         errors.addEntry(type, message);

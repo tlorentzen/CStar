@@ -10,16 +10,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 
 class FuncVisitorTest {
-
     private FuncVisitor visitor = new FuncVisitor(new SymbolTable(), new ErrorBag());
 
     @BeforeAll
     static void beforeAll() {
-
     }
 
     @BeforeEach
@@ -35,16 +32,16 @@ class FuncVisitorTest {
         funcCall.children.add(idNode);
         String id = ((IdNode)funcCall.children.get(0)).getId();
 
-        var symbolTable = new SymbolTable();
-        var errorBag = new ErrorBag();
+        SymbolTable symbolTable = new SymbolTable();
+        Errorbag errorBag = new ErrorBag();
         visitor = new FuncVisitor(symbolTable, errorBag);
 
         //Act
         visitor.visit(funcCall);
-        var result = symbolTable.calledFunctions.contains(id) && !symbolTable.declaredFunctions.contains(id);
+        boolean result = symbolTable.calledFunctions.contains(id) && !symbolTable.declaredFunctions.contains(id);
 
         //Assert
-        assert (result);
+        assert(result);
     }
 
     @Test
@@ -56,13 +53,13 @@ class FuncVisitorTest {
         funcCall.children.add(idNode);
         String id = ((IdNode)funcCall.children.get(0)).getId();
 
-        var symbolTable = new SymbolTable();
-        var errorBag = new ErrorBag();
+        SymbolTable symbolTable = new SymbolTable();
+        ErrorBag errorBag = new ErrorBag();
         visitor = new FuncVisitor(symbolTable, errorBag);
 
         //Act
         visitor.visit(funcCall);
-        var result = symbolTable.calledFunctions.contains(id) && symbolTable.declaredFunctions.contains(id);
+        boolean result = symbolTable.calledFunctions.contains(id) && symbolTable.declaredFunctions.contains(id);
 
         //Assert
         assert (result);
@@ -77,13 +74,13 @@ class FuncVisitorTest {
         funcCall.children.add(idNode);
         String id = ((IdNode)funcCall.children.get(0)).getId();
 
-        var symbolTable = new SymbolTable();
-        var errorBag = new ErrorBag();
+        SymbolTable symbolTable = new SymbolTable();
+        ErrorBag errorBag = new ErrorBag();
         visitor = new FuncVisitor(symbolTable, errorBag);
 
         //Act
         visitor.visit(funcCall);
-        var result = symbolTable.calledFunctions.contains(id) && symbolTable.declaredFunctions.contains(id);
+        boolean result = symbolTable.calledFunctions.contains(id) && symbolTable.declaredFunctions.contains(id);
 
         //Assert
         assert (result);
@@ -96,13 +93,13 @@ class FuncVisitorTest {
         funcDcl.children = new ArrayList<>();
         funcDcl.setId("FuncId");
 
-        var symbolTable = new SymbolTable();
-        var errorBag = new ErrorBag();
+        SymbolTable symbolTable = new SymbolTable();
+        ErrorBag errorBag = new ErrorBag();
         visitor = new FuncVisitor(symbolTable, errorBag);
 
         //Act
         visitor.visit(funcDcl);
-        var result = symbolTable.declaredFunctions.contains(funcDcl.getId());
+        boolean result = symbolTable.declaredFunctions.contains(funcDcl.getId());
 
         //Assert
         assert (result);
