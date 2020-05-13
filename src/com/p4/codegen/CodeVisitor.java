@@ -15,7 +15,9 @@ import java.util.List;
 //Generates the Arduino code that corresponds to the CStar source code
 public class CodeVisitor implements INodeVisitor {
     //FilePath is used to specify the location for the compiled Arduino file
-    String filePath = System.getProperty("user.dir") + "/compile-out/compile-out.ino";
+    String filePath = System.getProperty("user.dir") + "/output/output.ino";
+    //FilePath is used to specify the directory for the compiled Arduino file
+    String dirPath = System.getProperty("user.dir") + "/output";
 
     //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
@@ -34,12 +36,19 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append(line);
         }
 
-        File file = new File(filePath);
-        FileOutputStream outputStream = new FileOutputStream(file);
+        File directory = new File(dirPath);
+        if (! directory.exists()){
+            directory.mkdirs();
+        }
+        //Instantiates new File object
+        File f = new File(filePath);
+
+        //Instantiates new FileOutPutStream
+        FileOutputStream oS = new FileOutputStream(f);
 
         //Writes the string builder to the file,
         //If file not found, it will create one
-        outputStream.write(stringBuilder.toString().getBytes());
+        oS.write(stringBuilder.toString().getBytes());
     }
 
     @Override
@@ -454,6 +463,7 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append(")");
         //Second child is the block
         this.visitChild(node.children.get(1));
+        stringBuilder.append('\n');
     }
 
     //Format in Arduino C: if(10 < 20){ int i = 0; } else { int i = 1; }
@@ -472,6 +482,7 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append("else ");
             visitChild(node.children.get(2));
         }
+        stringBuilder.append('\n');
     }
 
     //Format in Arduino C:
@@ -526,7 +537,7 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(FuncDclNode node) {
         symbolTable.enterScope(node.getNodeHash());
-
+        stringBuilder.append('\n');
         stringBuilder.append(getTargetType(node.getReturnType()));
         stringBuilder.append(" ");
         stringBuilder.append(node.getId());
@@ -611,18 +622,21 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append(")");
     }
 
+    //Handles pin mode. Changes it to input or output if necessary
     private void appendPinModeIfNeeded(boolean isOutput, String pinId) {
         String id = (pinId.contains("[") ? pinId.split("\\[")[0] : pinId);
         PinAttributes pinAttr = (PinAttributes)symbolTable.lookupSymbol(id);
 
-        if (isOutput != pinAttr.getIsOutput()) {
+        //Enters if the output is not set yet
+        if (isOutput != pinAttr.getIsOutput() || pinId.contains("[")) {
             pinAttr.setIsOutput(!pinAttr.getIsOutput());
             symbolTable.insertSymbol(pinId, pinAttr);
 
-            if(stringBuilder.toString().contains("=")){
-                output.add("pinMode("+pinId+", "+(isOutput ? "OUTPUT" : "INPUT")+");\n");
-            }else{
-                stringBuilder.append("pinMode("+pinId+", "+(isOutput ? "OUTPUT" : "INPUT")+");\n");
+            if (stringBuilder.toString().contains("=")) {
+                output.add("pinMode(" + pinId + ", " + (isOutput ? "OUTPUT" : "INPUT") + ");\n");
+            }
+            else {
+                stringBuilder.append("pinMode(" + pinId + ", " + (isOutput ? "OUTPUT" : "INPUT") + ");\n");
             }
         }
     }
@@ -747,8 +761,7 @@ public class CodeVisitor implements INodeVisitor {
     private String convertIntToPinValue(AstNode node) {
         if (node instanceof PinNode) {
             return "A" + ((PinNode) node).getValue() * (-1);
-        }
-        else {
+        } else {
             return ((NumberNode) node).getValue().toString();
         }
     }

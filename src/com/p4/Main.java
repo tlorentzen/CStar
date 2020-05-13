@@ -28,7 +28,13 @@ public class Main {
         if(args.length == 1){
             inputSource = Paths.get(args[0]);
 
-            System.out.println("####  The C* Parser ####");
+            System.out.println(" ██████╗███████╗████████╗ █████╗ ██████╗ \n" +
+                               "██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗\n" +
+                               "██║     ███████╗   ██║   ███████║██████╔╝\n" +
+                               "██║     ╚════██║   ██║   ██╔══██║██╔══██╗\n" +
+                               "╚██████╗███████║   ██║   ██║  ██║██║  ██║\n" +
+                               " ╚═════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝");
+            System.out.println();
             System.out.println("File: "+inputSource.getFileName());
             System.out.println("Path: "+inputSource.toAbsolutePath());
 
@@ -62,8 +68,8 @@ public class Main {
                             CStarBaseVisitor<?> visitor = new AstVisitor<>();
                             ProgNode ast = (ProgNode) visitor.visit(tree);
 
-                            AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
-                            astTreeVisitor.visit(0, ast);
+                            //AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
+                            //astTreeVisitor.visit(0, ast);
 
                             FuncVisitor funcVisitor = new FuncVisitor(symbolTable, errors);
                             funcVisitor.visit(ast);
@@ -81,6 +87,10 @@ public class Main {
                             if(!errors.containsErrors()){
                                 CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
                                 codeVisitor.visit(ast);
+
+                                CliExec cli = new CliExec(errors, true);
+                                cli.arduinoSelection();
+                                cli.compileAndUpload();
 
                                 try {
                                     codeVisitor.print();
