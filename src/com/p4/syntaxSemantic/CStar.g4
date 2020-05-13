@@ -92,4 +92,4 @@ WHITESPACE: [ \t]+ -> skip;
 Newline: ('\r' '\n'? | '\n' ) -> skip;
 LINE_COMMENT: '//' ~[\r\n]*;
 INCLUDE: '#include';
-HEADER: '<'(ID | FUNCID)'>';
+HEADER: LESS_THAN (ID | FUNCID) GREATER_THAN;

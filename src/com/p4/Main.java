@@ -40,7 +40,7 @@ public class Main {
                 if (!extension.equals("cstar")) {
                     errors.addEntry(ErrorType.WRONG_EXTENSION, "Wrong file extension, expected .cstar");
                 }
-                else{
+                else {
                     try {
                         //Get the contents of the file
                         CharStream inputStream = CharStreams.fromPath(inputSource);
@@ -150,7 +150,7 @@ public class Main {
         String fileName = file.getName();
 
         if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
-            return fileName.substring(fileName.lastIndexOf(".")+1);
+            return fileName.substring(fileName.lastIndexOf(".") + 1);
         }
         else {
             return "";

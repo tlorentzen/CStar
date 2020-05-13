@@ -1,4 +1,4 @@
-// Generated from C:/Users/Jakob/OneDrive - Aalborg Universitet/P4/src/com/p4/syntaxSemantic\CStar.g4 by ANTLR 4.8
+// Generated from /Users/lenasaid/floobits/share/ichris18/src/com/p4/syntaxSemantic/CStar.g4 by ANTLR 4.8
 package com.p4.syntaxSemantic;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -38,7 +38,7 @@ public class CStarParser extends Parser {
 			"prog", "dcl", "assign", "expr", "logical_expr", "interval", "in_array", 
 			"cond_expr", "arithm_expr", "term", "factor", "value_expr", "array_dcl", 
 			"array_expr", "array_access", "stmt", "iterative", "selection", "blk", 
-			"print", "func", "return_type", "param", "return_exp", "func_call", "array_func",
+			"print", "func", "return_type", "param", "return_exp", "func_call", "array_func", 
 			"val", "comment", "include"
 		};
 	}
@@ -46,24 +46,24 @@ public class CStarParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, null, "'<'", "'>'", "'IS'", "'ISNOT'", "'OR'", "'AND'", "'ONE OF'",
-			"'='", "'+'", "'-'", "'*'", "'/'", "'<='", "'>='", "'%'", "'('", "')'",
-			"'['", "']'", "'{'", "'}'", "';'", "'.'", "'if'", "'else'", "'while'",
-			"'repeat'", "','", "'void'", null, "'array'", "'return'", "'console.print'",
-			"'HIGH'", "'LOW'", "'BETWEEN'", "'IN'", null, null, null, null, null,
+			null, null, "'<'", "'>'", "'IS'", "'ISNOT'", "'OR'", "'AND'", "'ONE OF'", 
+			"'='", "'+'", "'-'", "'*'", "'/'", "'<='", "'>='", "'%'", "'('", "')'", 
+			"'['", "']'", "'{'", "'}'", "';'", "'.'", "'if'", "'else'", "'while'", 
+			"'repeat'", "','", "'void'", null, "'array'", "'return'", "'console.print'", 
+			"'HIGH'", "'LOW'", "'BETWEEN'", "'IN'", null, null, null, null, null, 
 			null, null, null, null, null, "'#include'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "COMP_OP", "LESS_THAN", "GREATER_THAN", "IS", "ISNOT", "OR", "AND",
-			"ONE_OF", "ASSIGN_OP", "PLUS", "MINUS", "MULT", "DIVISION", "LESS_THAN_EQ",
-			"GREATER_THAN_EQ", "MODULO", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACKET",
-			"RIGHT_BRACKET", "LEFT_BRACE", "RIGHT_BRACE", "SEMICOLON", "DOT", "IF",
-			"ELSE", "WHILE", "REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN",
-			"PRINT", "HIGH", "LOW", "BETWEEN", "IN", "NUMBER", "BOOLEAN_LITERAL",
-			"PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL", "ID", "FUNCID", "WHITESPACE",
+			null, "COMP_OP", "LESS_THAN", "GREATER_THAN", "IS", "ISNOT", "OR", "AND", 
+			"ONE_OF", "ASSIGN_OP", "PLUS", "MINUS", "MULT", "DIVISION", "LESS_THAN_EQ", 
+			"GREATER_THAN_EQ", "MODULO", "LEFT_PAREN", "RIGHT_PAREN", "LEFT_BRACKET", 
+			"RIGHT_BRACKET", "LEFT_BRACE", "RIGHT_BRACE", "SEMICOLON", "DOT", "IF", 
+			"ELSE", "WHILE", "REPEAT", "COMMA", "VOID", "TYPE", "ARRAY", "RETURN", 
+			"PRINT", "HIGH", "LOW", "BETWEEN", "IN", "NUMBER", "BOOLEAN_LITERAL", 
+			"PIN_LITERAL", "CHAR_LITERAL", "STRING_LITERAL", "ID", "FUNCID", "WHITESPACE", 
 			"Newline", "LINE_COMMENT", "INCLUDE", "HEADER"
 		};
 	}
