@@ -346,7 +346,47 @@ class SemanticsVisitorTest {
     }
 
     @Test
-    void visitArrayDcl_() {}
+    void visitArrayDcl_ReceivesCorrectArrayDcl_SetsTheType() {
+        //Arrange
+        String id = "id";
+        ArrayDclNode<?> dcl = new ArrayDclNode<Integer>(id);
+        dcl.children.add(new ArrayNode(id, "integer"));
+        dcl.children.add(new ArrayExprNode());
+
+        //Act
+        visitor.visit(dcl);
+        String result = dcl.type;
+
+        //Assert
+        assert(result.equals("integer"));
+    }
+
+    @Test
+    void visitArrayDcl_ReceivesArrayDclWithArrayExprWithIllegalTypeConversions_AddsTypeError() {
+        //Arrange
+        String id = "id";
+        ArrayDclNode<?> dcl = new ArrayDclNode<Integer>(id);
+        dcl.children.add(new ArrayNode(id, "integer"));
+        ArrayExprNode expr = new ArrayExprNode();
+        expr.children.add(new IdNode("intId", "integer"));
+        expr.children.add(new IdNode("decimalId", "decimal"));
+        dcl.children.add(expr);
+
+        Attributes intAttr = new Attributes("dcl", "integer");
+        Attributes decimalAttr = new Attributes("dcl", "decimal");
+        SymbolTable symbolTable = new SymbolTable();
+        symbolTable.insertSymbol("intId", intAttr);
+        symbolTable.insertSymbol("decimalId", decimalAttr);
+        ErrorBag errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
+        //Act
+        visitor.visit(dcl);
+        ErrorType result = errorBag.getErrorType(0);
+
+        //Assert
+        assert(result.equals(ErrorType.TYPE_ERROR));
+    }
 
     @Test
     void visitReturnExpr_ReceivesCorrectReturnExprNode_ReturnsCorrectReturnType() {
