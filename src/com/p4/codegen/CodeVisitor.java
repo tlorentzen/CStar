@@ -31,6 +31,7 @@ public class CodeVisitor implements INodeVisitor {
 
     //Prints the content of the string builder to the file
     public void print() throws IOException {
+        output.add(getLine());
         for (String line : output) {
             stringBuilder.append(line);
         }
@@ -148,6 +149,7 @@ public class CodeVisitor implements INodeVisitor {
      */
     @Override
     public void visit(MultValNode node) {
+        //TODO forkert format i output
         AstNode firstChild = node.children.get(0);
         //Add parentheses to ensure the precedens is correct
         stringBuilder.append("(");
@@ -284,26 +286,42 @@ public class CodeVisitor implements INodeVisitor {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
 
-        Attributes array = symbolTable.lookupSymbol(((IdNode)rightChild).getId());
+        if (rightChild instanceof IdNode){
+            Attributes array = symbolTable.lookupSymbol(((IdNode)rightChild).getId());
 
-        stringBuilder.append("(");
-        for (int i = 0; i < array.getArrayLength(); i++) {
-            //Appends the value being compared with
-            this.visitChild(leftChild);
-            stringBuilder.append(" == ");
-            //Appends the array id
-            this.visitChild(rightChild);
-            //Appends index
-            stringBuilder.append("[");
-            stringBuilder.append(i);
-            stringBuilder.append("]");
+            stringBuilder.append("(");
+            for (int i = 0; i < array.getArrayLength(); i++) {
+                //Appends the value being compared with
+                this.visitChild(leftChild);
+                stringBuilder.append(" == ");
+                //Appends the array id
+                this.visitChild(rightChild);
+                //Appends index
+                stringBuilder.append("[");
+                stringBuilder.append(i);
+                stringBuilder.append("]");
 
-            if (i != array.getArrayLength() - 1) {
-                stringBuilder.append(" ||\n");
+                if (i != array.getArrayLength() - 1) {
+                    stringBuilder.append(" ||\n");
+                }
             }
+            stringBuilder.append(")\n");
+            output.add(getLine());
         }
-        stringBuilder.append(")\n");
-        output.add(getLine());
+        else if (rightChild instanceof ArrayExprNode){
+            ArrayExprNode arrayExprNode = (ArrayExprNode) rightChild;
+            stringBuilder.append("(");
+            for (AstNode child: arrayExprNode.children){
+                visitChild(leftChild);
+                stringBuilder.append(" == ");
+                visitChild(child);
+                stringBuilder.append(" || ");
+            }
+            //Deletes leftover " || "
+            stringBuilder.delete(stringBuilder.length() - 4, stringBuilder.length());
+            stringBuilder.append(")");
+        }
+
     }
 
     //Format in Arduino C: 10 + 20
