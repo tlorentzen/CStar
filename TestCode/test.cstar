@@ -57,11 +57,10 @@ void loop(){
     cow = 10 + (10 * 5);
     cow = (10 + 10) * 5;
 
-
     // Literal assigning with value
     cow = (5 * (10 / 4)) - 2;
-    cow = cow + horse / weight;
-
+    //cow = cow + horse / weight;
+    weight = cow + horse / cow;
 
     // ##########################################
     // SELECTION TEST (IF)
@@ -98,17 +97,21 @@ void loop(){
         console.print("character i in 'fish'");
     }
 
-    //if(1 IN [1,2,3,4]){
-    //    console.print("1 is in the list");
-    //}
+    if(1 IN [1,2,3,4,1.6]){
+        console.print("1 is in the list");
+    }
 
-    //if('r' IN ['r', 'g', 'b', 'h']){
-    //    console.print("1 is in the list");
-    //}
+    if('r' IN ['r', 'g', 'b', 'h']){
+        console.print("1 is in the list");
+    }
 
-    //if(fish IN ['f', 'g', 'b', 'h']){
-    //    console.print("fish (char f) is in the list");
-    //}
+    if(fish IN ['f', 'g', 'b', 'f']){
+        console.print("fish (char f) is in the list");
+    }
+
+    if(true IN [true, false]){
+        console.print(1.5);
+    }
 
     // Arduino function call
     if(100 < random(50, 150)){
