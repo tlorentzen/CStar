@@ -209,10 +209,22 @@ void loop(){
         console.print("4 is in the array");
     }
 
+    //Testing the different BETWEEN kombinations
     if(newIntArray[2] BETWEEN ]1;4[){
         console.print("The third element is between one and four");
     }
 
+    if(newIntArray[2] BETWEEN [1;4[){
+        console.print("The third element is between one and four");
+    }
+
+    if(newIntArray[2] BETWEEN [1;4]){
+        console.print("The third element is between one and four");
+    }
+
+    if(newIntArray[2] BETWEEN ]1;4[){
+        console.print("The third element is between one and four");
+    }
 }
 
 integer getRandomNumber(integer min, integer max){

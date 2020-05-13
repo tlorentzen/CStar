@@ -656,10 +656,11 @@ public class SemanticsVisitor implements INodeVisitor {
                 //Enters if the pin has not been declared
                 if (symbolTable.lookupSymbol(idName) == null) {
                         errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl",idName), node.lineNumber);
-                }
-                else {
+                } else {
                     checkFunction(node, functionName);
                 }
+            } else {
+                checkFunction(node, functionName);
             }
         }
         //Enters if the function has not been declared
