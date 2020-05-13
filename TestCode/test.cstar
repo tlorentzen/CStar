@@ -166,6 +166,16 @@ void loop(){
     weight = led_array[0].read();
 
     counter = counter + 1;
+
+    //Setting array items to the value of a defined integer
+    integer i = 5;
+    integer array newIntArray = [i-4, i-3, i-2, i-1, i, i+1];
+
+    while(i <= newIntArray[5]) repeat {
+        i = i + 1;
+        console.print(i);
+    }
+
 }
 
 integer getRandomNumber(integer min, integer max){
