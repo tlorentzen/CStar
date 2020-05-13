@@ -349,7 +349,46 @@ class SemanticsVisitorTest {
     void visitArrayDcl_() {}
 
     @Test
-    void visitReturnExpr_() {}
+    void visitReturnExpr_ReceivesCorrectReturnExprNode_ReturnsCorrectReturnType() {
+        //Arrange
+        ReturnExpNode expr = new ReturnExpNode();
+        String id = "Id";
+        expr.children.add(new IdNode(id, false));
+
+        Attributes attr = new Attributes("integer", "integer");
+        SymbolTable symbolTable = new SymbolTable();
+        symbolTable.insertSymbol(id, attr);
+        ErrorBag errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
+        //Act
+        visitor.visit(expr);
+        String result = expr.type;
+
+        //Assert
+        assert(result.equals("integer"));
+    }
+
+    @Test
+    void visitReturnExpr_ReceivesArrayReturnExprNode_AddsTypeError() {
+        //Arrange
+        ReturnExpNode expr = new ReturnExpNode();
+        String id = "Id";
+        expr.children.add(new IdNode(id, false));
+
+        Attributes attr = new Attributes("array", "integer");
+        SymbolTable symbolTable = new SymbolTable();
+        symbolTable.insertSymbol(id, attr);
+        ErrorBag errorBag = new ErrorBag();
+        visitor = new SemanticsVisitor(symbolTable, errorBag);
+
+        //Act
+        visitor.visit(expr);
+        ErrorType result = errorBag.getErrorType(0);
+
+        //Assert
+        assert(result.equals(ErrorType.TYPE_ERROR));
+    }
 
     @Test
     void visitFuncCall_ReceivesDeclaredKnownAndCalledFunction_SetsTheFunctionTypeToTheTypeOfTheRelatedAttribute() {
