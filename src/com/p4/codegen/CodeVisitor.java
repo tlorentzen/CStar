@@ -263,7 +263,7 @@ public class CodeVisitor implements INodeVisitor {
         Attributes array = symbolTable.lookupSymbol(((IdNode)rightChild).getId());
 
         stringBuilder.append("(");
-        for (int i = 0; i < array.getArrayLength(); i++) {
+        for (int elementIndex = 0; elementIndex < array.getArrayLength(); elementIndex++) {
             //Appends the value being compared with
             this.visitChild(leftChild);
             stringBuilder.append(" == ");
@@ -272,10 +272,10 @@ public class CodeVisitor implements INodeVisitor {
 
             //Appends index
             stringBuilder.append("[");
-            stringBuilder.append(i);
+            stringBuilder.append(elementIndex);
             stringBuilder.append("]");
 
-            if (i != array.getArrayLength() - 1) {
+            if (elementIndex != array.getArrayLength() - 1) {
                 stringBuilder.append(" ||\n");
             }
         }
@@ -591,7 +591,6 @@ public class CodeVisitor implements INodeVisitor {
             appendPinModeIfNeeded(false, funcIDSplit[0]);
             handleRead(funcIDSplit[0]);
         }
-
         //Enters if a write function has been called on the pin
         else if (parameter != null && funcIDSplit[1].equals("write")) {
             appendPinModeIfNeeded(true, funcIDSplit[0]);
@@ -623,11 +622,11 @@ public class CodeVisitor implements INodeVisitor {
     private void handleRead(String pinId) {
         Attributes attributes = null;
         //Checks if its an array access and then deletes the index to do lookup
-        if (pinId.contains("[")){
+        if (pinId.contains("[")) {
             String tempPinID = pinId.substring(0, pinId.length() - 3);
             attributes = this.symbolTable.lookupSymbol(tempPinID);
         }
-        else{
+        else {
             attributes = this.symbolTable.lookupSymbol(pinId);
         }
 
