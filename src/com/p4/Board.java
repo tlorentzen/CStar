@@ -1,10 +1,10 @@
 package com.p4;
 
 public class Board {
-    private String name = "";
-    private String core = "";
-    private String port = "";
-    private String fqbn = "";
+    private String name;
+    private String core;
+    private String port;
+    private String fqbn;
 
     public Board(String name, String core, String port, String fqbn) {
         this.name = name;

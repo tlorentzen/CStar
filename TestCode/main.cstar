@@ -1,7 +1,7 @@
-// Literal assigning with value
-integer cow = 1000;
-small integer horse = 1;
-decimal weight = 145.95;
+integer i = 5;
+integer array newIntArray = [i-4, i-3, i-2, i-1, i, i+1];
 
-cow = (5 * (10 / 4)) - 2;
-cow = cow + horse / weight;
+while(i <= newIntArray[5]) repeat {
+     i = i + 1;
+     console.print(i);
+}
