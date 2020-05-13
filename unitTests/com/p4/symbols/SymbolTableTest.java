@@ -200,7 +200,7 @@ class SymbolTableTest {
 
         //Act
         symbolTable.enterScope(secondScopeName);
-        String resgit ult = symbolTable.getCurrentScope().getScopeName();
+        String result = symbolTable.getCurrentScope().getScopeName();
 
         //Assert
         assert(result.equals(secondScopeName));
