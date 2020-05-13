@@ -133,9 +133,9 @@ public class Main {
         codeVisitor.visit(ast);
 
         //Creates the command line interface
-        CliExec cli = new CliExec(errors, true);
+       /* CliExec cli = new CliExec(errors, true);
         cli.arduinoSelection();
-        cli.compileAndUpload();
+        cli.compileAndUpload();*/
     
         try {
             codeVisitor.print();
