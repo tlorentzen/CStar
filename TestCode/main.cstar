@@ -1,7 +1,7 @@
-pin array led_array = [11,12,13];
+// Literal assigning with value
+integer cow = 1000;
+small integer horse = 1;
+decimal weight = 145.95;
 
-// Write: pinMode should change from INPUT to OUTPUT on both
-led_array[1].write(HIGH);
-led_array[0].write(LOW);
-led_array[1].write(LOW);
-led_array[0].write(HIGH);
+cow = (5 * (10 / 4)) - 2;
+cow = cow + horse / weight;

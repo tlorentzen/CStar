@@ -46,6 +46,28 @@ void setup(){
 void loop(){
 
     // ##########################################
+    // Arithmetic expressions
+    // ##########################################
+    cow = 10 + 10;
+    cow = 10 - 10;
+    cow = 10 * 10;
+    cow = 10 / 10;
+
+    cow = 10 + 10 * 5;
+    cow = 10 + (10 * 5);
+    cow = (10 + 10) * 5;
+
+
+    // Literal assigning with value
+    integer cow = 1000;
+    small integer horse = 1;
+    decimal weight = 145.95;
+
+    cow = (5 * (10 / 4)) - 2;
+    cow = cow + horse / weight;
+
+
+    // ##########################################
     // SELECTION TEST (IF)
     // ##########################################
     if(1 < 100){
