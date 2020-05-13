@@ -85,7 +85,7 @@ class SymbolTableTest {
         symbolTable.addScope(scopeName);
 
         //Act
-        CStarScope result = symbolTable.getCurrentScope().getScopeName();
+        String result = symbolTable.getCurrentScope().getScopeName();
 
         // Assert
         assert(result.equals(scopeName));
@@ -169,7 +169,7 @@ class SymbolTableTest {
         symbolTable.addScope(secondScopeName);
 
         //Act
-        CStarScope result = symbolTable.lookupScope(secondScopeName).getScopeName();
+        String result = symbolTable.lookupScope(secondScopeName).getScopeName();
 
         //Assert
         assert(result.equals(secondScopeName));
@@ -200,7 +200,7 @@ class SymbolTableTest {
 
         //Act
         symbolTable.enterScope(secondScopeName);
-        CstarScope result = symbolTable.getCurrentScope().getScopeName();
+        String result = symbolTable.getCurrentScope().getScopeName();
 
         //Assert
         assert(result.equals(secondScopeName));
