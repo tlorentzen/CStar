@@ -31,6 +31,7 @@ public class CodeVisitor implements INodeVisitor {
 
     //Prints the content of the string builder to the file
     public void print() throws IOException {
+        output.add(getLine());
         for (String line : output) {
             stringBuilder.append(line);
         }
@@ -148,6 +149,7 @@ public class CodeVisitor implements INodeVisitor {
      */
     @Override
     public void visit(MultValNode node) {
+        //TODO forkert format i output
         AstNode firstChild = node.children.get(0);
         //Add parentheses to ensure the precedens is correct
         stringBuilder.append("(");
@@ -219,9 +221,6 @@ public class CodeVisitor implements INodeVisitor {
         this.visitChild(rightChild);
         stringBuilder.append(";\n");
         output.add(getLine());
-
-        String test = output.get(output.size() - 1);
-        output.add(getLine());
     }
 
     @Override
@@ -287,26 +286,42 @@ public class CodeVisitor implements INodeVisitor {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
 
-        Attributes array = symbolTable.lookupSymbol(((IdNode)rightChild).getId());
+        if (rightChild instanceof IdNode){
+            Attributes array = symbolTable.lookupSymbol(((IdNode)rightChild).getId());
 
-        stringBuilder.append("(");
-        for (int i = 0; i < array.getArrayLength(); i++) {
-            //Appends the value being compared with
-            this.visitChild(leftChild);
-            stringBuilder.append(" == ");
-            //Appends the array id
-            this.visitChild(rightChild);
-            //Appends index
-            stringBuilder.append("[");
-            stringBuilder.append(i);
-            stringBuilder.append("]");
+            stringBuilder.append("(");
+            for (int i = 0; i < array.getArrayLength(); i++) {
+                //Appends the value being compared with
+                this.visitChild(leftChild);
+                stringBuilder.append(" == ");
+                //Appends the array id
+                this.visitChild(rightChild);
+                //Appends index
+                stringBuilder.append("[");
+                stringBuilder.append(i);
+                stringBuilder.append("]");
 
-            if (i != array.getArrayLength() - 1) {
-                stringBuilder.append(" ||\n");
+                if (i != array.getArrayLength() - 1) {
+                    stringBuilder.append(" ||\n");
+                }
             }
+            stringBuilder.append(")\n");
+            output.add(getLine());
         }
-        stringBuilder.append(")\n");
-        output.add(getLine());
+        else if (rightChild instanceof ArrayExprNode){
+            ArrayExprNode arrayExprNode = (ArrayExprNode) rightChild;
+            stringBuilder.append("(");
+            for (AstNode child: arrayExprNode.children){
+                visitChild(leftChild);
+                stringBuilder.append(" == ");
+                visitChild(child);
+                stringBuilder.append(" || ");
+            }
+            //Deletes leftover " || "
+            stringBuilder.delete(stringBuilder.length() - 4, stringBuilder.length());
+            stringBuilder.append(")");
+        }
+
     }
 
     //Format in Arduino C: 10 + 20
@@ -488,11 +503,8 @@ public class CodeVisitor implements INodeVisitor {
 
         for(AstNode child : node.children){
             this.visitChild(child);
-            if (!(child instanceof CommentNode)){
-                stringBuilder.append(";\n");
-            }
             if(child instanceof FuncCallNode){
-                output.add(getLine());
+                stringBuilder.append(";\n");
             }
         }
 
@@ -630,11 +642,15 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     private void handleRead(String pinId) {
-        //Deletes the index of an array access
+        Attributes attributes = null;
+        //Checks if its an array access and then deletes the index to do lookup
         if (pinId.contains("[")){
-            pinId = pinId.substring(0, pinId.length() - 3);
+            String tempPinID = pinId.substring(0, pinId.length() - 3);
+            attributes = this.symbolTable.lookupSymbol(tempPinID);
         }
-        Attributes attributes = this.symbolTable.lookupSymbol(pinId);
+        else{
+            attributes = this.symbolTable.lookupSymbol(pinId);
+        }
 
         //Enters if the pin is analog
         if (attributes != null && ((PinAttributes)attributes).getAnalog()) {
@@ -657,6 +673,7 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append(pinId);
             stringBuilder.append(", ");
             visitChild(parameter);
+
         }
         else if ((parameter instanceof NumberNode || parameter instanceof IdNode) && checkWriteType(parameter.type)) {
             //The value to be written to the pin is either HIGH or LOW

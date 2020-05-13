@@ -58,16 +58,6 @@ public interface CStarListener extends ParseTreeListener {
 	 */
 	void exitLogical_expr(CStarParser.Logical_exprContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CStarParser#test_mult_val}.
-	 * @param ctx the parse tree
-	 */
-	void enterTest_mult_val(CStarParser.Test_mult_valContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CStarParser#test_mult_val}.
-	 * @param ctx the parse tree
-	 */
-	void exitTest_mult_val(CStarParser.Test_mult_valContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link CStarParser#interval}.
 	 * @param ctx the parse tree
 	 */

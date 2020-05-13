@@ -297,11 +297,19 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         //Adds the left operand
         inNode.children.add(visit(ctx.value_expr()));
 
-        //Adds the right operand (the array)
-        IdNode idNode = new IdNode(idChild.getText(), isNegative);
-        inNode.children.add(idNode);
+        if(ctx.ID() != null){
+            //Adds the right operand (the array)
+            IdNode idNode = new IdNode(idChild.getText(), isNegative);
+            inNode.children.add(idNode);
+            idNode.lineNumber = ctx.start.getLine();
+        }
+        else if (ctx.array_expr() != null){
+            ArrayExprNode arrayExprNode = (ArrayExprNode) visit(ctx.array_expr());
+            inNode.children.add(arrayExprNode);
+            arrayExprNode.lineNumber = ctx.start.getLine();
+        }
 
-        idNode.lineNumber = ctx.start.getLine();
+
         inNode.lineNumber = ctx.start.getLine();
 
         return inNode;
@@ -893,7 +901,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
-    @Override public AstNode visitTest_mult_val(CStarParser.Test_mult_valContext ctx) {
+    /*@Override public AstNode visitTest_mult_val(CStarParser.Test_mult_valContext ctx) {
         MultValNode node = new MultValNode();
 
         for(ParseTree child : ctx.children){
@@ -904,5 +912,5 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         node.lineNumber = ctx.start.getLine();
 
         return node;
-    }
+    }*/
 }
