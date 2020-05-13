@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class SymbolTableTest {
-
     private SymbolTable symbolTable = new SymbolTable();
 
     @BeforeEach
@@ -20,7 +19,7 @@ class SymbolTableTest {
         symbolTable.addScope(scopeName);
 
         //Act
-        var result = symbolTable.getCurrentScope().getScopeName();
+        String result = symbolTable.getCurrentScope().getScopeName();
 
         //Assert
         assert(result.equals(scopeName));
@@ -48,7 +47,7 @@ class SymbolTableTest {
         symbolTable.leaveScope();
 
         //Act
-        var result = symbolTable.getCurrentScope().getParent();
+        CStarScope result = symbolTable.getCurrentScope().getParent();
 
         //Assert
         assert(result == null);
@@ -86,7 +85,7 @@ class SymbolTableTest {
         symbolTable.addScope(scopeName);
 
         //Act
-        var result = symbolTable.getCurrentScope().getScopeName();
+        String result = symbolTable.getCurrentScope().getScopeName();
 
         // Assert
         assert(result.equals(scopeName));
@@ -103,7 +102,7 @@ class SymbolTableTest {
         symbolTable.addScope(thirdScopeName);
 
         //Act
-        var result = symbolTable.getCurrentScope().getParent().getScopeName();
+        String result = symbolTable.getCurrentScope().getParent().getScopeName();
 
         // Assert
         assert(result.equals(secondScopeName));
@@ -118,7 +117,7 @@ class SymbolTableTest {
         symbolTable.insertSymbol("symbol", attr);
 
         //Act
-        var result = symbolTable.lookupSymbol("symbol");
+        Attributes result = symbolTable.lookupSymbol("symbol");
 
         //Assert
         assert(result.equals(attr));
@@ -137,7 +136,7 @@ class SymbolTableTest {
         symbolTable.addScope(thirdScopeName);
 
         //Act
-        var result = symbolTable.lookupSymbol("symbol");
+        Attributes result = symbolTable.lookupSymbol("symbol");
 
         //Assert
         assert(result.equals(attr));
@@ -155,7 +154,7 @@ class SymbolTableTest {
         symbolTable.leaveScope();
 
         //Act
-        var result = symbolTable.lookupSymbol("symbol");
+        Attributes result = symbolTable.lookupSymbol("symbol");
 
         // Assert
         assert(result == null);
@@ -170,7 +169,7 @@ class SymbolTableTest {
         symbolTable.addScope(secondScopeName);
 
         //Act
-        var result = symbolTable.lookupScope(secondScopeName).getScopeName();
+        String result = symbolTable.lookupScope(secondScopeName).getScopeName();
 
         //Assert
         assert(result.equals(secondScopeName));
@@ -183,7 +182,7 @@ class SymbolTableTest {
         symbolTable.addScope(firstScopeName);
 
         //Act
-        var result = symbolTable.lookupScope("SomeScope");
+        CStarScope result = symbolTable.lookupScope("SomeScope");
 
         //Assert
         assert(result == null);
@@ -201,7 +200,7 @@ class SymbolTableTest {
 
         //Act
         symbolTable.enterScope(secondScopeName);
-        var result = symbolTable.getCurrentScope().getScopeName();
+        String result = symbolTable.getCurrentScope().getScopeName();
 
         //Assert
         assert(result.equals(secondScopeName));
@@ -216,12 +215,12 @@ class SymbolTableTest {
         symbolTable.addScope(secondScopeName);
         symbolTable.leaveScope();
         symbolTable.leaveScope();
-        var previousCurrentScope = symbolTable.getCurrentScope();
+        CStarScope previousCurrentScope = symbolTable.getCurrentScope();
 
         //Act
         symbolTable.enterScope(secondScopeName);
         symbolTable.leaveScope();
-        var result = symbolTable.getCurrentScope();
+        CStarScope result = symbolTable.getCurrentScope();
 
         //Assert
         assert(result.equals(previousCurrentScope));
@@ -235,7 +234,7 @@ class SymbolTableTest {
 
         //Act
         symbolTable.insertSymbol(symbol, attr);
-        var result = symbolTable.getCurrentScope().getSymbols().containsKey(symbol);
+        boolean result = symbolTable.getCurrentScope().getSymbols().containsKey(symbol);
 
         //Assert
         assert(result);
@@ -249,7 +248,7 @@ class SymbolTableTest {
 
         //Act
         symbolTable.insertParam(param, attr);
-        var result = symbolTable.getCurrentScope().getParams().containsKey(param);
+        boolean result = symbolTable.getCurrentScope().getParams().containsKey(param);
 
         //Assert
         assert(result);
@@ -262,7 +261,7 @@ class SymbolTableTest {
         symbolTable.declaredFunctions.add("loop");
 
         //Act
-        var result = symbolTable.isSetupAndLoopDefined();
+        boolean result = symbolTable.isSetupAndLoopDefined();
 
         //Assert
         assert(result);
@@ -274,7 +273,7 @@ class SymbolTableTest {
         symbolTable.declaredFunctions.add("setup");
 
         //Act
-        var result = symbolTable.isSetupAndLoopDefined();
+        boolean result = symbolTable.isSetupAndLoopDefined();
 
         //Assert
         assert(!result);
@@ -286,7 +285,7 @@ class SymbolTableTest {
         symbolTable.declaredFunctions.add("loop");
 
         //Act
-        var result = symbolTable.isSetupAndLoopDefined();
+        boolean result = symbolTable.isSetupAndLoopDefined();
 
         //Assert
         assert(!result);
@@ -297,7 +296,7 @@ class SymbolTableTest {
         //Arrange
 
         //Act
-        var result = symbolTable.isSetupAndLoopDefined();
+        boolean result = symbolTable.isSetupAndLoopDefined();
 
         //Assert
         assert(!result);

@@ -104,6 +104,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
             IdNode idNode = new IdNode(id, false);
             idNode.lineNumber = ctx.start.getLine();
+            assignNode.lineNumber = ctx.start.getLine();
             assignNode.children.add(idNode);
             assignNode.children.add(exprNode);
 
@@ -186,10 +187,10 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         //Creates a node depending on the operator
         switch (child.getText()) {
             case "OR":
-                node.setToken(6);
+                node.setToken(CStarParser.OR);
                 break;
             case "AND":
-                node.setToken(7);
+                node.setToken(CStarParser.AND);
                 break;
             default:
                 return null;
@@ -241,22 +242,22 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         //Creates a node depending on the operator
         switch (child.getText()) {
             case "<":
-                node.setToken(2);
+                node.setToken(CStarParser.LESS_THAN);
                 break;
             case ">":
-                node.setToken(3);
+                node.setToken(CStarParser.GREATER_THAN);
                 break;
             case "<=":
-                node.setToken(13);
+                node.setToken(CStarParser.LESS_THAN_EQ);
                 break;
             case ">=":
-                node.setToken(14);
+                node.setToken(CStarParser.GREATER_THAN_EQ);
                 break;
             case "IS":
-                node.setToken(4);
+                node.setToken(CStarParser.IS);
                 break;
             case "ISNOT":
-                node.setToken(5);
+                node.setToken(CStarParser.ISNOT);
                 break;
             default:
                 return null;
@@ -900,17 +901,4 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         node.lineNumber = ctx.start.getLine();
         return node;
     }
-
-    /*@Override public AstNode visitTest_mult_val(CStarParser.Test_mult_valContext ctx) {
-        MultValNode node = new MultValNode();
-
-        for(ParseTree child : ctx.children){
-            if(!(child instanceof TerminalNode)){
-                node.children.add(visit(child));
-            }
-        }
-        node.lineNumber = ctx.start.getLine();
-
-        return node;
-    }*/
 }
