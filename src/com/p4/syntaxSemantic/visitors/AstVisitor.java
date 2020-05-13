@@ -104,6 +104,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
 
             IdNode idNode = new IdNode(id, false);
             idNode.lineNumber = ctx.start.getLine();
+            assignNode.lineNumber = ctx.start.getLine();
             assignNode.children.add(idNode);
             assignNode.children.add(exprNode);
 

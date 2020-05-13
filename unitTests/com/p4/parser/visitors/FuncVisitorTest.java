@@ -33,7 +33,7 @@ class FuncVisitorTest {
         String id = ((IdNode)funcCall.children.get(0)).getId();
 
         SymbolTable symbolTable = new SymbolTable();
-        Errorbag errorBag = new ErrorBag();
+        ErrorBag errorBag = new ErrorBag();
         visitor = new FuncVisitor(symbolTable, errorBag);
 
         //Act
