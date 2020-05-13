@@ -650,7 +650,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
                 //Enters if the id is an array access
                 if (idName.contains("[")) {
-                    idName = idName.substring(0, idName.length() - 3);
+                    idName = idName.split("\\[")[0];
                 }
 
                 //Enters if the pin has not been declared
