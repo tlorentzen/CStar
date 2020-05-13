@@ -158,7 +158,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
         else {
             //Creates and adds the function to the symbol table
-            FunctionAttributes attributes = new FunctionAttributes("function", node.getReturnType());
+            Attributes attributes = new Attributes("function", node.getReturnType());
             symbolTable.insertSymbol(node.getId(), attributes);
 
             symbolTable.addScope(node.getNodeHash());
@@ -216,6 +216,11 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(CondNode node) {
         this.visitChildren(node);
+    }
+
+    @Override
+    public void visit(IntervalNode node) {
+
     }
 
     @Override
@@ -327,10 +332,4 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(IncludeNode node) {
         this.visitChildren(node);
     }
-
-    @Override
-    public void visit(IntervalNode node) {
-
-    }
-
 }

@@ -21,16 +21,8 @@ public class Attributes{
         return kind;
     }
 
-    public void setKind(String kind) {
-        this.kind = kind;
-    }
-
     public String getVariableType() {
         return variableType;
-    }
-
-    public void setVariableType(String variableType) {
-        this.variableType = variableType;
     }
 
     public String getScope() {

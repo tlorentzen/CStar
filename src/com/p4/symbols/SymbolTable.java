@@ -50,10 +50,6 @@ public class SymbolTable {
         return currentScope;
     }
 
-    public CStarScope getParent() {
-        return this.currentScope.getParent();
-    }
-
     //Enters a scope depending on the given scope name
     public void enterScope(String scopeName) {
         CStarScope scope = this.findScope(scopeName, globalScope);
@@ -112,13 +108,6 @@ public class SymbolTable {
     }
 
     public void insertSymbol(String symbol, Attributes attributes) {
-        //Enters if the symbol is a pin
-        /*
-        if (attributes.getVariableType().equals("pin")) {
-            pinList.put(symbol, (PinAttributes)attributes);
-        }
-         */
-
         currentScope.getSymbols().put(symbol, attributes);
     }
 
@@ -130,40 +119,4 @@ public class SymbolTable {
     public boolean isSetupAndLoopDefined() {
         return (declaredFunctions.contains("setup") && declaredFunctions.contains("loop"));
     }
-
-    //todo slet? (bliver ikke brugt)
-    public PinAttributes getPin(String symbol) {
-        return pinList.getOrDefault(symbol, null);
-    }
-    //todo slet
-    public void outputAvailableSymbols(){
-        CStarScope scope = currentScope;
-
-        do{
-            for (Map.Entry<String, Attributes> entry : scope.getSymbols().entrySet()){
-                String key = entry.getKey();
-                Attributes value = entry.getValue();
-
-                //System.out.printf("Symbol: %10s:%s \n", key, value.variableType);
-            }
-        } while((scope = scope.getParent()) != null);
-    }
-
-    //todo slet
-    public void outputSymbolTable(CStarScope scope){
-        CStarScope oldScope = scope;
-
-        for (Map.Entry<String, Attributes> entry : scope.getSymbols().entrySet()){
-            String key = entry.getKey();
-            Attributes value = entry.getValue();
-
-            //System.out.printf("Current scope: " + scope.scopeName + " Symbol: %10s:%s \n", key, value.variableType);
-        }
-
-        scope = oldScope;
-        for (CStarScope child : scope.children) {
-            outputSymbolTable(child);
-        }
-    }
 }
-

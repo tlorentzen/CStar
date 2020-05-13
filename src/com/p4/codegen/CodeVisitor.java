@@ -62,7 +62,6 @@ public class CodeVisitor implements INodeVisitor {
                     stringBuilder.append(";\n");
                 }
             }
-
         }
     }
 
@@ -118,28 +117,25 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IntervalNode node) {
         //Left side of the interval
         stringBuilder.append("(");
-        if(node.getLeftBracket().equals("]")){
-            visitChild(node.children.get(0));
-            stringBuilder.append(" > ");
-            visitChild(node.children.get(1));
-        }else{
-            visitChild(node.children.get(0));
-            stringBuilder.append(" >= ");
-            visitChild(node.children.get(1));
-        }
+        changeComparison(node, "]", ">", 1);
         //Sides are always connected with logical AND
         stringBuilder.append(" && ");
         //Right side of the interval
-        if(node.getRightBracket().equals("[")){
-            visitChild(node.children.get(0));
-            stringBuilder.append(" < ");
-            visitChild(node.children.get(2));
-        }else{
-            visitChild(node.children.get(0));
-            stringBuilder.append(" <= ");
-            visitChild(node.children.get(2));
-        }
+        changeComparison(node, "[", "<", 2);
         stringBuilder.append(")");
+    }
+
+    private void changeComparison(IntervalNode node, String bracketDirection, String compDirection, int childNumber) {
+        if (node.getLeftBracket().equals(bracketDirection)) {
+            visitChild(node.children.get(0));
+            stringBuilder.append(" " + compDirection + " ");
+            visitChild(node.children.get(childNumber));
+        }
+        else {
+            visitChild(node.children.get(0));
+            stringBuilder.append(" " + compDirection + "= ");
+            visitChild(node.children.get(childNumber));
+        }
     }
 
     //Format in Arduino C: int pinName;
@@ -155,14 +151,14 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     //Format in Arduino C: int i
-    public void visitDclNode(DclNode<?> node){
+    public void visitDclNode(DclNode<?> node) {
         stringBuilder.append(getTargetType(node.type));
         stringBuilder.append(" ");
         stringBuilder.append(node.getId());
     }
 
     //Converts CStar types to Arduino C types
-    private String getTargetType(String type){
+    private String getTargetType(String type) {
         switch (type) {
             case "integer":
             case "pin":
@@ -180,11 +176,7 @@ public class CodeVisitor implements INodeVisitor {
         }
     }
 
-    /**
-     * Handles assignments and calls methods to handle pins when necessary.
-     * Format in Arduino C: i = 10
-     * @param node is the assign node to be handled.
-     */
+    //Format in Arduino C: i = 10
     @Override
     public void visit(AssignNode node) {
         AstNode leftChild = node.children.get(0);
@@ -218,11 +210,6 @@ public class CodeVisitor implements INodeVisitor {
         checkParentheses(node, false);
     }
 
-    /**
-     * Converts the operator id to the actual logical operator '<', '>', '==', or '!='.
-     * Only handles '>', '<', 'IS', and 'ISNOT'.
-     * @param node is the conditional node to be handled.
-     */
     @Override
     public void visit(CondNode node) {
         checkParentheses(node, true);
@@ -261,7 +248,7 @@ public class CodeVisitor implements INodeVisitor {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
 
-        if (rightChild instanceof IdNode){
+        if (rightChild instanceof IdNode) {
             Attributes array = symbolTable.lookupSymbol(((IdNode)rightChild).getId());
 
             stringBuilder.append("(");
@@ -271,6 +258,7 @@ public class CodeVisitor implements INodeVisitor {
                 stringBuilder.append(" == ");
                 //Appends the array id
                 this.visitChild(rightChild);
+
                 //Appends index
                 stringBuilder.append("[");
                 stringBuilder.append(i);
@@ -283,10 +271,10 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append(")\n");
             output.add(getLine());
         }
-        else if (rightChild instanceof ArrayExprNode){
+        else if (rightChild instanceof ArrayExprNode) {
             ArrayExprNode arrayExprNode = (ArrayExprNode) rightChild;
             stringBuilder.append("(");
-            for (AstNode child: arrayExprNode.children){
+            for (AstNode child: arrayExprNode.children) {
                 visitChild(leftChild);
                 stringBuilder.append(" == ");
                 visitChild(child);
@@ -296,7 +284,6 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.delete(stringBuilder.length() - 4, stringBuilder.length());
             stringBuilder.append(")");
         }
-
     }
 
     //Format in Arduino C: 10 + 20
@@ -470,15 +457,17 @@ public class CodeVisitor implements INodeVisitor {
         output.add(getLine());
         currentIndent++;
 
-        if(node.getParentID().equals("setup")
-                && symbolTable.calledFunctions.contains("Serial.println")){
+        //Enters if there is a setup function and the print function is called
+        if (node.getParentID().equals("setup") && symbolTable.calledFunctions.contains("Serial.println")) {
             stringBuilder.append("Serial.begin(9600);\n");
             output.add(getLine());
         }
 
-        for(AstNode child : node.children){
+        for (AstNode child : node.children) {
             this.visitChild(child);
-            if(child instanceof FuncCallNode || child instanceof InNode){
+
+            //Enters if the child node is either a funcCallNode or inNode
+            if (child instanceof FuncCallNode || child instanceof InNode) {
                 stringBuilder.append(";\n");
             }
         }

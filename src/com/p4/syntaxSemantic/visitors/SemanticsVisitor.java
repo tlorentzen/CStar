@@ -229,8 +229,28 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(IntervalNode node) {
+        visitChildren(node);
+        String leftType = null;
+
+        if (node.children.get(0) instanceof IdNode) {
+            leftType = ((IdNode)node.children.get(0)).type;
+        }
+        else if (node.children.get(0) instanceof NumberNode) {
+            leftType = ((NumberNode)node.children.get(0)).type;
+        }
+        //Enters if the left type is a character, pin, or boolean
+        if (leftType != null && (leftType.equals("character") || leftType.equals("pin") || leftType.equals("boolean"))) {
+            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("interval not ID", leftType), node.lineNumber);
+        }
+
+        checkBooleanType(node, false);
+    }
+
+    @Override
     public void visit(InNode node) {
         visitChildren(node);
+
         checkIfChildrenAreDeclared(node);
         String leftType = node.children.get(0).type;
         String rightType = node.children.get(1).type;
@@ -243,66 +263,80 @@ public class SemanticsVisitor implements INodeVisitor {
             checkInNode(leftType, rightType, node);
         }
     }
+    
+    private void checkIfChildrenAreDeclared(InNode node) {
+        AstNode child = node.children.get(0);
+        //Enters if the left side is an IdNode
+        if (child instanceof IdNode) {
+            String symbolId = ((IdNode)child).getId();
+            Attributes attributes = symbolTable.lookupSymbol(symbolId);
 
-    private void checkIfChildrenAreDeclared(InNode node){
-    //Checks the left side (IdNode)
-    if (node.children.get(0) instanceof IdNode){
-        Attributes attributes = symbolTable.lookupSymbol(((IdNode)node.children.get(0)).getId());
-        if (attributes == null){
-            node.children.get(0).type = "error";
-            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl", ((IdNode)node.children.get(0)).getId()), node.lineNumber);
+            //Enters if the variable wasn't found in the symbol table
+            if (attributes == null) {
+                node.children.get(0).type = "error";
+                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl", symbolId), node.lineNumber);
+            }
         }
-    }
     }
 
 
     //Checks if the inNode operands are valid
     private void checkInNode(String leftType, String rightType, AstNode node) {
-        if(node.children.get(1) instanceof IdNode){
-            //Parameters below are switched, since widening is only possible for the left side instead of right side
-            String resultType = operationResultType(rightType, leftType);
-            //Gets right side and checks if it is an array
-            IdNode idNode = (IdNode) node.children.get(1);
-            Attributes rightAttribute = symbolTable.lookupSymbol(idNode.getId());
-
-            //Enters if the id h node has not been declared
-            if (rightAttribute != null) {
-                //Enters if the id is not an array
-                if (!rightAttribute.getKind().equals("array")) {
-                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("not array"), node.lineNumber);
-                }
-                //Enters if the types were not compatible
-                else if (resultType.equals("error") && !leftType.equals("ArduinoC")) {
-                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, rightType), node.lineNumber);
-                }
-                //Enters if the types were compatible and the id was an array
-                else {
-                    node.type = "boolean";
-                }
-            }
+        AstNode child = node.children.get(1);
+        if (child instanceof IdNode) {
+            checkInId(leftType, rightType, node, (IdNode)child);
         }
-        else if (node.children.get(1) instanceof ArrayExprNode){
-            ArrayExprNode arrayExprNode = (ArrayExprNode)node.children.get(1);
-
-            for (AstNode child : arrayExprNode.children){
-                String childRightType = child.type;
-                String resultType = "";
-                if (childRightType != null){
-                    resultType = operationResultType(childRightType, leftType);
-                }
-                else{
-                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("null type", leftType, child.type), node.lineNumber);
-                }
-
-                if (resultType.equals("error") && !leftType.equals("ArduinoC")){
-                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, child.type), node.lineNumber);
-                }
-                else{
-                    node.type = "boolean";
-                }
-            }
+        else if (child instanceof ArrayExprNode){
+            checkInExpr(leftType, node, (ArrayExprNode)child);
         }
 
+    }
+    
+    //Checks the right side of the IN operator when RHS is an id
+    private void checkInId(String leftType, String rightType, AstNode node, IdNode idNode) {
+        String resultType = operationResultType(rightType, leftType);
+        //Gets right side and checks if it is an array
+        Attributes rightAttribute = symbolTable.lookupSymbol(idNode.getId());
+
+        //Enters if the id node has not been declared
+        if (rightAttribute != null) {
+            //Enters if the id is not an array
+            if (!rightAttribute.getKind().equals("array")) {
+                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("not array"), node.lineNumber);
+            }
+            //Enters if the types were not compatible
+            else if (resultType.equals("error") && !leftType.equals("ArduinoC")) {
+                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, rightType), node.lineNumber);
+            }
+            //Enters if the types were compatible and the id was an array
+            else {
+                node.type = "boolean";
+            }
+        }
+    }
+
+    //Checks the right side of the IN operator when RHS is an array expression
+    private void checkInExpr(String leftType, AstNode node, ArrayExprNode arrayExprNode) {
+        //Goes through all elements in the array
+        for (AstNode child : arrayExprNode.children) {
+            String elementType = child.type;
+            String resultType = "";
+            
+            //Enters if the element has a type
+            if (elementType != null) {
+                resultType = operationResultType(elementType, leftType);
+            }
+            else {
+                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("null type", leftType, "null"), node.lineNumber);
+            }
+            //Enters if the type is ArduinoC function
+            if (resultType.equals("error") && !leftType.equals("ArduinoC")) {
+                errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, child.type), node.lineNumber);
+            }
+            else {
+                node.type = "boolean";
+            }
+        }
     }
 
     private void checkBooleanType(AstNode node, boolean isLogical) {
@@ -314,7 +348,7 @@ public class SemanticsVisitor implements INodeVisitor {
         if (isLogical) {
             isValidType = logicalOperationValid(leftType, rightType);
         }
-        else if (node instanceof IntervalNode){
+        else if (node instanceof IntervalNode) {
             isValidType = intervalOperationValid((IntervalNode) node);
         }
         else {
@@ -344,16 +378,18 @@ public class SemanticsVisitor implements INodeVisitor {
     //Checks whether the operands in the interval are a number type
     private boolean intervalOperationValid(IntervalNode node) {
         String leftType = node.children.get(0).type;
-        String firstNumType = node.children.get(1).type;
-        String secondNumType = node.children.get(2).type;
+        String lowerBoundType = node.children.get(1).type;
+        String upperBoundType = node.children.get(2).type;
 
-        if (leftType == null || firstNumType == null || secondNumType == null) {
+        //Enters if either type is null
+        if (leftType == null || lowerBoundType == null || upperBoundType == null) {
             return false;
         }
-        //Return true if all types are a number type
-        if ((isNumber(leftType) && isNumber(firstNumType) && isNumber(secondNumType))) {
+        //Enters if all types are of a number type
+        if ((isNumber(leftType) && isNumber(lowerBoundType) && isNumber(upperBoundType))) {
             return true;
         }
+        //Enters if the variable is of the Arduino C type
         else if (leftType.equals("ArduinoC")) {
             errors.addEntry(ErrorType.ARDUINO_FUNCTION_IN_INTERVAL, errorMessage("arduino c in interval"), node.lineNumber);
             return false;
@@ -657,21 +693,18 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
 
         String functionName = ((IdNode)node.children.get(0)).getId();
-
         node.type = ((IdNode) node.children.get(0)).type;
 
         //Enters if the function is declared
         if (symbolTable.declaredFunctions.contains(functionName)) {
             //Enters if the function includes a dot operator
             if (functionName.contains(".")) {
-                //TODO check if its an array
                 String idName = functionName.split("\\.")[0];
 
                 //Enters if the id is an array access
                 if (idName.contains("[")) {
                     idName = idName.split("\\[")[0];
                 }
-
                 //Enters if the pin has not been declared
                 if (symbolTable.lookupSymbol(idName) == null) {
                         errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl",idName), node.lineNumber);
@@ -816,35 +849,6 @@ public class SemanticsVisitor implements INodeVisitor {
 
     }
 
-    @Override
-    public void visit(IntervalNode node) {
-        visitChildren(node);
-        String leftType = null;
-
-        if (node.children.get(0) instanceof IdNode) {
-            leftType = ((IdNode)node.children.get(0)).type;
-        }
-        else if (node.children.get(0) instanceof NumberNode) {
-            leftType = ((NumberNode)node.children.get(0)).type;
-        }
-        //Enters if the left type is a character, pin, or boolean
-        if (leftType != null && (leftType.equals("character") || leftType.equals("pin") || leftType.equals("boolean"))) {
-            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("interval not ID", leftType), node.lineNumber);
-        }
-
-        checkBooleanType(node, false);
-    }
-
-    private boolean multValTypeCheck(String leftType, AstNode child){
-        String rightType = child.type;
-        //Returns true if left and right types are both numbers
-        if(isNumber(leftType) && isNumber(rightType)){
-            return true;
-        }
-        //Returns true if left and right types are both characters
-        else return leftType.equals("character") && rightType.equals("character");
-    }
-
     //Finds and returns the correct error message
     private String errorMessage(String errorType, String ... type) {
         switch (errorType) {
@@ -902,8 +906,6 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "Arduino C functions are not compatible with intervals.";
             case "not array":
                 return "Illegal type: the right operand must be an array";
-            case "MultValNodeTypeError":
-                return "Cannot test the variable because it is of boolean or pin type. Make sure all elements are a number or a character";
             default:
                 return null;
         }
