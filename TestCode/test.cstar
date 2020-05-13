@@ -46,6 +46,24 @@ void setup(){
 void loop(){
 
     // ##########################################
+    // Arithmetic expressions
+    // ##########################################
+    cow = 10 + 10;
+    cow = 10 - 10;
+    cow = 10 * 10;
+    cow = 10 / 10;
+
+    cow = 10 + 10 * 5;
+    cow = 10 + (10 * 5);
+    cow = (10 + 10) * 5;
+
+
+    // Literal assigning with value
+    cow = (5 * (10 / 4)) - 2;
+    cow = cow + horse / weight;
+
+
+    // ##########################################
     // SELECTION TEST (IF)
     // ##########################################
     if(1 < 100){
@@ -166,6 +184,47 @@ void loop(){
     weight = led_array[0].read();
 
     counter = counter + 1;
+
+    //Setting array items to the value of a defined integer
+    integer i = 5;
+    integer array newIntArray = [i-4, i-3, i-2, i-1, i, i+1];
+
+    while(i <= newIntArray[5]) repeat {
+        i = i + 1;
+        console.print(i);
+    }
+
+    if(i ISNOT 2){
+        console.print("i is not 2");
+    } else {
+        console.print("i is 2");
+    }
+
+    character char = 'c';
+    if(char IS 'a'){
+        console.print("The character is 'a'");
+    }
+
+    if(4 IN newIntArray){
+        console.print("4 is in the array");
+    }
+
+    //Testing the different BETWEEN kombinations
+    if(newIntArray[2] BETWEEN ]1;4[){
+        console.print("The third element is between one and four");
+    }
+
+    if(newIntArray[2] BETWEEN [1;4[){
+        console.print("The third element is between one and four");
+    }
+
+    if(newIntArray[2] BETWEEN [1;4]){
+        console.print("The third element is between one and four");
+    }
+
+    if(newIntArray[2] BETWEEN ]1;4[){
+        console.print("The third element is between one and four");
+    }
 }
 
 integer getRandomNumber(integer min, integer max){

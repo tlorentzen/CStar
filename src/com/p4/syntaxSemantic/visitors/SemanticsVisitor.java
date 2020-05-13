@@ -453,7 +453,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
         else if (leftType.equals("ArduinoC")) {
             return rightType;
-        } 
+        }
         else if (rightType.equals("ArduinoC")) {
             return leftType;
         }
@@ -667,17 +667,19 @@ public class SemanticsVisitor implements INodeVisitor {
                 //TODO check if its an array
                 String idName = functionName.split("\\.")[0];
 
-                if (idName.contains("[")){
+                //Enters if the id is an array access
+                if (idName.contains("[")) {
                     idName = idName.split("\\[")[0];
                 }
 
                 //Enters if the pin has not been declared
                 if (symbolTable.lookupSymbol(idName) == null) {
-                    //Enters if the left side is an array access
-                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl",idName), node.lineNumber);
+                        errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl",idName), node.lineNumber);
                 } else {
                     checkFunction(node, functionName);
                 }
+            } else {
+                checkFunction(node, functionName);
             }
         }
         //Enters if the function has not been declared

@@ -1,7 +1,2 @@
-pin array led_array = [11,12,13];
-
-// Write: pinMode should change from INPUT to OUTPUT on both
-led_array[1].write(HIGH);
-led_array[0].write(LOW);
-led_array[1].write(LOW);
-led_array[0].write(HIGH);
+integer i = 5;
+i = 5.5;

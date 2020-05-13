@@ -2,7 +2,6 @@ package com.p4;
 
 //https://mkyong.com/java/how-to-detect-os-in-java-systemgetpropertyosname/
 public class SystemInfo {
-
     private static String OS = System.getProperty("os.name").toLowerCase();
 
     public static boolean isWindows() {
@@ -17,14 +16,17 @@ public class SystemInfo {
         return (OS.contains("nix") || OS.contains("nux") || OS.contains("aix"));
     }
 
-    public static String getOsString(){
-        if(isWindows()){
+    public static String getOsString() {
+        if (isWindows()) {
             return "win";
-        }else if(isMac()){
+        }
+        else if (isMac()) {
             return "mac";
-        }else if(isUnix()){
+        }
+        else if (isUnix()) {
             return "unix";
-        }else{
+        }
+        else {
             return "";
         }
     }

@@ -9,12 +9,12 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="antlr-runtime-4.8" level="project" />
-    <orderEntry type="library" name="org.jsoup:jsoup:1.13.1" level="project" />
-    <orderEntry type="library" name="org.apache.commons:commons-compress:1.20" level="project" />
-    <orderEntry type="library" name="zip4j-2.5.2" level="project" />
-    <orderEntry type="library" name="com.google.code.gson:gson:2.8.5" level="project" />
-    <orderEntry type="library" name="commons-compress-1.20" level="project" />
-    <orderEntry type="library" name="gson-2.8.5" level="project" />
+    <orderEntry type="library" exported="" name="org.jsoup:jsoup:1.13.1" level="project" />
+    <orderEntry type="library" exported="" name="org.apache.commons:commons-compress:1.20" level="project" />
+    <orderEntry type="library" exported="" name="zip4j-2.5.2" level="project" />
+    <orderEntry type="library" exported="" name="com.google.code.gson:gson:2.8.5" level="project" />
+    <orderEntry type="library" exported="" name="commons-compress-1.20" level="project" />
+    <orderEntry type="library" exported="" name="gson-2.8.5" level="project" />
     <orderEntry type="module-library" scope="TEST">
       <library name="JUnit5.4">
         <CLASSES>
@@ -31,9 +31,10 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="org.junit.jupiter:junit-jupiter:5.6.2" level="project" />
-    <orderEntry type="library" name="junit-platform-engine-1.6.2" level="project" />
-    <orderEntry type="library" name="jsoup-1.13.1" level="project" />
-    <orderEntry type="library" name="commons-compress-1.20-javadoc" level="project" />
+    <orderEntry type="library" exported="" name="org.junit.jupiter:junit-jupiter:5.6.2" level="project" />
+    <orderEntry type="library" exported="" name="junit-platform-engine-1.6.2" level="project" />
+    <orderEntry type="library" exported="" name="jsoup-1.13.1" level="project" />
+    <orderEntry type="library" exported="" name="commons-compress-1.20-javadoc" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>
