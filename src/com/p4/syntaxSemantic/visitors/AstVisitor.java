@@ -281,6 +281,23 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         return node;
     }
 
+    @Override public AstNode visitInterval(CStarParser.IntervalContext ctx) {
+        IntervalNode node = new IntervalNode();
+        int variable = 0, leftBracket = 2, lowerBound = 3, upperBound = 5, rightBracket = 6;
+
+        //Sets the brackets around the interval
+        node.setLeftBracket(ctx.children.get(leftBracket).getText());
+        node.setRightBracket(ctx.children.get(rightBracket).getText());
+
+        //Sets the children of the interval
+        node.children.add(visit(ctx.children.get(variable)));
+        node.children.add(visit(ctx.children.get(lowerBound)));
+        node.children.add(visit(ctx.children.get(upperBound)));
+
+        node.lineNumber = ctx.start.getLine();
+        return node;
+    }
+
     @Override
     public AstNode visitIn_array(CStarParser.In_arrayContext ctx) {
         boolean isNegative = false;
@@ -296,18 +313,19 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         //Adds the left operand
         inNode.children.add(visit(ctx.value_expr()));
 
-        if(ctx.ID() != null){
+        //Enters if the right operand is an ID node
+        if (ctx.ID() != null) {
             //Adds the right operand (the array)
             IdNode idNode = new IdNode(idChild.getText(), isNegative);
             inNode.children.add(idNode);
             idNode.lineNumber = ctx.start.getLine();
         }
-        else if (ctx.array_expr() != null){
+        //Enters if the right operand is an array expression
+        else if (ctx.array_expr() != null) {
             ArrayExprNode arrayExprNode = (ArrayExprNode) visit(ctx.array_expr());
             inNode.children.add(arrayExprNode);
             arrayExprNode.lineNumber = ctx.start.getLine();
         }
-
 
         inNode.lineNumber = ctx.start.getLine();
 
@@ -871,32 +889,18 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
     public AstNode visitComment(CStarParser.CommentContext ctx) {
         return new CommentNode(ctx.getText());
     }
+
     @Override public AstNode visitInclude(CStarParser.IncludeContext ctx) {
         String header = "";
-        if(ctx.HEADER() != null){
+
+        //Enters if there is a header (<header>)
+        if (ctx.HEADER() != null) {
             header = ctx.INCLUDE().getText() + ' ' + ctx.HEADER().getText();
-        } else if (ctx.STRING_LITERAL() != null){
+        }
+        //Enters if there is a string
+        else if (ctx.STRING_LITERAL() != null) {
             header = ctx.INCLUDE().getText() + ' ' + ctx.STRING_LITERAL().getText();
         }
         return new IncludeNode(header);
-    }
-
-    @Override public AstNode visitInterval(CStarParser.IntervalContext ctx) {
-        IntervalNode node = new IntervalNode();
-
-        //Sets the brackets around the interval
-        node.setLeftBracket(ctx.children.get(2).getText());
-        node.setRightBracket(ctx.children.get(6).getText());
-
-        //Sets the children of the interval
-        //Child 0 is the variable to be compared
-        //Child 1 is the lower bound
-        //Child 2 is the upper bound
-        node.children.add(visit(ctx.children.get(0)));
-        node.children.add(visit(ctx.children.get(3)));
-        node.children.add(visit(ctx.children.get(5)));
-
-        node.lineNumber = ctx.start.getLine();
-        return node;
     }
 }

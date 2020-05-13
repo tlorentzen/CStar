@@ -8,3 +8,7 @@ arduino-cli
 arduino-cli.exe
 LICENSE.txt
 language-meta.json
+Out2/production/P4/com/p4/syntaxSemantic/CStarParser$Value_exprContext.class
+*.class
+*.class
+*.class
