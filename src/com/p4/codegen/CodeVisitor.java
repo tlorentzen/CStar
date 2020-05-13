@@ -248,42 +248,57 @@ public class CodeVisitor implements INodeVisitor {
         AstNode leftChild = node.children.get(0);
         AstNode rightChild = node.children.get(1);
 
+        //Enters if the RHS is an id node
         if (rightChild instanceof IdNode) {
-            Attributes array = symbolTable.lookupSymbol(((IdNode)rightChild).getId());
-
-            stringBuilder.append("(");
-            for (int i = 0; i < array.getArrayLength(); i++) {
-                //Appends the value being compared with
-                this.visitChild(leftChild);
-                stringBuilder.append(" == ");
-                //Appends the array id
-                this.visitChild(rightChild);
-
-                //Appends index
-                stringBuilder.append("[");
-                stringBuilder.append(i);
-                stringBuilder.append("]");
-
-                if (i != array.getArrayLength() - 1) {
-                    stringBuilder.append(" ||\n");
-                }
-            }
-            stringBuilder.append(")\n");
-            output.add(getLine());
+            appendInId(leftChild, rightChild);
         }
+        //Enters if the RHS is an array expression
         else if (rightChild instanceof ArrayExprNode) {
-            ArrayExprNode arrayExprNode = (ArrayExprNode) rightChild;
-            stringBuilder.append("(");
-            for (AstNode child: arrayExprNode.children) {
-                visitChild(leftChild);
-                stringBuilder.append(" == ");
-                visitChild(child);
-                stringBuilder.append(" || ");
-            }
-            //Deletes leftover " || "
-            stringBuilder.delete(stringBuilder.length() - 4, stringBuilder.length());
-            stringBuilder.append(")");
+            appendInExpr(leftChild, rightChild);
         }
+    }
+
+    //Checks if the right operand is an id
+    private void appendInId(AstNode leftChild, AstNode rightChild) {
+        Attributes array = symbolTable.lookupSymbol(((IdNode)rightChild).getId());
+
+        stringBuilder.append("(");
+        for (int i = 0; i < array.getArrayLength(); i++) {
+            //Appends the value being compared with
+            this.visitChild(leftChild);
+            stringBuilder.append(" == ");
+            //Appends the array id
+            this.visitChild(rightChild);
+
+            //Appends index
+            stringBuilder.append("[");
+            stringBuilder.append(i);
+            stringBuilder.append("]");
+
+            if (i != array.getArrayLength() - 1) {
+                stringBuilder.append(" ||\n");
+            }
+        }
+        stringBuilder.append(")\n");
+        output.add(getLine());
+    }
+
+    //Checks if the right operand is an array expression
+    private void appendInExpr(AstNode leftChild, AstNode rightChild) {
+        ArrayExprNode arrayExprNode = (ArrayExprNode) rightChild;
+        stringBuilder.append("(");
+
+        for (AstNode child: arrayExprNode.children) {
+            //Appends the value being compared with
+            visitChild(leftChild);
+            stringBuilder.append(" == ");
+            //Appends the array id
+            visitChild(child);
+            stringBuilder.append(" || ");
+        }
+        //Deletes leftover " || "
+        stringBuilder.delete(stringBuilder.length() - 4, stringBuilder.length());
+        stringBuilder.append(")");
     }
 
     //Format in Arduino C: 10 + 20
