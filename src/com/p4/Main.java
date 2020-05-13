@@ -133,10 +133,10 @@ public class Main {
         codeVisitor.visit(ast);
 
         //Create the command line interface
-        /*
+
         CliExec cli = new CliExec(errors, true);
         cli.arduinoSelection();
-        cli.compileAndUpload();*/
+        cli.compileAndUpload();
     
         try {
             codeVisitor.print();
