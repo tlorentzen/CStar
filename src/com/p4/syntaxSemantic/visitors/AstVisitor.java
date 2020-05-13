@@ -901,17 +901,4 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
         node.lineNumber = ctx.start.getLine();
         return node;
     }
-
-    /*@Override public AstNode visitTest_mult_val(CStarParser.Test_mult_valContext ctx) {
-        MultValNode node = new MultValNode();
-
-        for(ParseTree child : ctx.children){
-            if(!(child instanceof TerminalNode)){
-                node.children.add(visit(child));
-            }
-        }
-        node.lineNumber = ctx.start.getLine();
-
-        return node;
-    }*/
 }
