@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 
 class FuncVisitorTest {
@@ -33,7 +34,7 @@ class FuncVisitorTest {
         String id = ((IdNode)funcCall.children.get(0)).getId();
 
         SymbolTable symbolTable = new SymbolTable();
-        Errorbag errorBag = new ErrorBag();
+        ErrorBag errorBag = new ErrorBag();
         visitor = new FuncVisitor(symbolTable, errorBag);
 
         //Act
