@@ -586,15 +586,16 @@ public class CodeVisitor implements INodeVisitor {
         if (funcIDSplit[1].equals("read")) {
             appendPinModeIfNeeded(false, funcIDSplit[0]);
             handleRead(funcIDSplit[0]);
+            stringBuilder.append(")");
         }
 
         //Enters if a write function has been called on the pin
         else if (parameter != null && funcIDSplit[1].equals("write")) {
             appendPinModeIfNeeded(true, funcIDSplit[0]);
             handleWrite(parameter, funcIDSplit[0]);
+            stringBuilder.append(")");
         }
 
-        stringBuilder.append(")");
     }
 
     //Handles pin mode. Changes it to input or output if necessary
