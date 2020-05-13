@@ -1,2 +1,1 @@
-integer i = 5;
-i = 5.5;
+integer array hey = [1, 2, 3];
