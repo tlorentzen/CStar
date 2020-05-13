@@ -1,8 +1,7 @@
-pin array led_array = [11,12,13];
-//heyhey
+integer i = 5;
+integer array newIntArray = [i-4, i-3, i-2, i-1, i, i+1];
 
-// Write: pinMode should change from INPUT to OUTPUT on both
-led_array[1].write(HIGH);
-led_array[0].write(LOW);
-led_array[1].write(LOW);
-led_array[0].write(HIGH);
+while(i <= newIntArray[5]) repeat {
+     i = i + 1;
+     console.print(i);
+}

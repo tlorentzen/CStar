@@ -263,7 +263,7 @@ public class CliExec {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 String answer = reader.readLine();
                 if (answer.equals("Y") || answer.equals("y")) {
-                    switch(SystemInfo.getOsString()){
+                    switch(SystemInfo.getOsString()) {
                         case "win":
                             downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Windows_64bit.zip";
                             fileName = "arduino-cli_latest_Windows_64bit.zip";
@@ -361,11 +361,11 @@ public class CliExec {
         }
     }
 
-    private void printOk(){
+    private void printOk() {
         printIt(setColor(ANSI_GREEN)+"OK!\n"+setColor(ANSI_RESET), true);
     }
 
-    private void printFailed(){
+    private void printFailed() {
         printIt(setColor(ANSI_RED)+"Failed!\n"+setColor(ANSI_RESET), true);
     }
 
