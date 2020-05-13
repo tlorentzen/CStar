@@ -681,7 +681,6 @@ public class SemanticsVisitor implements INodeVisitor {
             } else {
                 checkFunction(node, functionName);
             }
-
         }
         //Enters if the function has not been declared
         else {
