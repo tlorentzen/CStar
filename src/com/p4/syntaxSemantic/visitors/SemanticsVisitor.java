@@ -279,17 +279,15 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-
     //Checks if the inNode operands are valid
     private void checkInNode(String leftType, String rightType, AstNode node) {
         AstNode child = node.children.get(1);
         if (child instanceof IdNode) {
             checkInId(leftType, rightType, node, (IdNode)child);
         }
-        else if (child instanceof ArrayExprNode){
+        else if (child instanceof ArrayExprNode) {
             checkInExpr(leftType, node, (ArrayExprNode)child);
         }
-
     }
     
     //Checks the right side of the IN operator when RHS is an id

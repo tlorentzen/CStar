@@ -32,23 +32,26 @@ public class CodeVisitor implements INodeVisitor {
     //Prints the content of the string builder to the file
     public void print() throws IOException {
         output.add(getLine());
+
         for (String line : output) {
             stringBuilder.append(line);
         }
 
         File directory = new File(dirPath);
-        if (! directory.exists()){
+
+        //Enters if there is not directory
+        if (!directory.exists()) {
             directory.mkdirs();
         }
         //Instantiates new File object
-        File f = new File(filePath);
+        File file = new File(filePath);
 
         //Instantiates new FileOutPutStream
-        FileOutputStream oS = new FileOutputStream(f);
+        FileOutputStream outputStream = new FileOutputStream(file);
 
         //Writes the string builder to the file,
         //If file not found, it will create one
-        oS.write(stringBuilder.toString().getBytes());
+        outputStream.write(stringBuilder.toString().getBytes());
     }
 
     @Override
@@ -56,9 +59,9 @@ public class CodeVisitor implements INodeVisitor {
         //Visits all its children and puts a semicolon if a Dcl with no value is made in global scope
         for (AstNode child: node.children) {
             this.visitChild(child);
-            if(stringBuilder.length() > 0){
+            if (stringBuilder.length() > 0) {
                 char c = stringBuilder.charAt(stringBuilder.length()-1);
-                if (child instanceof DclNode && !Character.toString(c).matches(";")){
+                if (child instanceof DclNode && !Character.toString(c).matches(";")) {
                     stringBuilder.append(";\n");
                 }
             }
@@ -480,7 +483,7 @@ public class CodeVisitor implements INodeVisitor {
 
         for (AstNode child : node.children) {
             this.visitChild(child);
-          
+
             //Enters if the child node is either a funcCallNode or inNode
             if(child instanceof FuncCallNode || child instanceof InNode || child instanceof IntervalNode){
                 stringBuilder.append(";\n");
@@ -598,7 +601,6 @@ public class CodeVisitor implements INodeVisitor {
             handleWrite(parameter, funcIDSplit[0]);
             stringBuilder.append(")");
         }
-
     }
 
     //Handles pin mode. Changes it to input or output if necessary
@@ -632,16 +634,14 @@ public class CodeVisitor implements INodeVisitor {
         }
 
         //Enters if the pin is analog
-        if (attributes != null && ((PinAttributes)attributes).getAnalog()) {
+        if (((PinAttributes)attributes).getAnalog()) {
             stringBuilder.append("analogRead(");
         }
         //Enters if the pin is digital
-        else if (attributes != null) {
+        else {
             stringBuilder.append("digitalRead(");
         }
-        else {
-            //Todo: handle attributes = null
-        }
+
         stringBuilder.append(pinId);
     }
 
@@ -652,7 +652,6 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append(pinId);
             stringBuilder.append(", ");
             visitChild(parameter);
-
         }
         else if ((parameter instanceof NumberNode || parameter instanceof IdNode) && checkWriteType(parameter.type)) {
             //The value to be written to the pin is either HIGH or LOW
@@ -740,7 +739,8 @@ public class CodeVisitor implements INodeVisitor {
     private String convertIntToPinValue(AstNode node) {
         if (node instanceof PinNode) {
             return "A" + ((PinNode) node).getValue() * (-1);
-        } else {
+        }
+        else {
             return ((NumberNode) node).getValue().toString();
         }
     }
@@ -771,7 +771,7 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.delete(0, stringBuilder.length());
 
         int indent = currentIndent;
-        if(line.endsWith("}\n")){
+        if (line.endsWith("}\n")) {
             indent--;
         }
 
