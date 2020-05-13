@@ -288,7 +288,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 String childRightType = child.type;
                 String resultType = "";
                 if (childRightType != null){
-                    resultType = operationResultType(leftType, childRightType);
+                    resultType = operationResultType(childRightType, leftType);
                 }
                 else{
                     errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("null type", leftType, child.type), node.lineNumber);
