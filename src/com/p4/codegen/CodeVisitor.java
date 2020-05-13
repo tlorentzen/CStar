@@ -142,31 +142,6 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append(")");
     }
 
-    /**
-     * Creates comparison of one value to many values
-     * Format in Arduino C: (i == 1 || i == 2 || i == 3)
-     * @param node is the MultValNode to be handled
-     */
-    @Override
-    public void visit(MultValNode node) {
-        //TODO forkert format i output
-        AstNode firstChild = node.children.get(0);
-        //Add parentheses to ensure the precedens is correct
-        stringBuilder.append("(");
-        //Takes every child on right side and creates an arduino c comparison to the left side
-        //"(i == 1 || i == 2...)"
-        for (AstNode child: node.children.subList(1,node.children.size())){
-            visitChild(firstChild);
-            stringBuilder.append(" == ");
-            visitChild(child);
-            stringBuilder.append(" || ");
-
-        }
-        //Deletes leftover " || "
-        stringBuilder.delete(stringBuilder.length() - 4, stringBuilder.length());
-        stringBuilder.append(")");
-    }
-
     //Format in Arduino C: int pinName;
     @Override
     public void visit(PinDclNode node) {
@@ -503,7 +478,7 @@ public class CodeVisitor implements INodeVisitor {
 
         for(AstNode child : node.children){
             this.visitChild(child);
-            if(child instanceof FuncCallNode){
+            if(child instanceof FuncCallNode || child instanceof InNode){
                 stringBuilder.append(";\n");
             }
         }

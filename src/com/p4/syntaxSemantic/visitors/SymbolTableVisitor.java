@@ -333,9 +333,4 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     }
 
-    @Override
-    public void visit(MultValNode multValNode) {
-
-    }
-
 }

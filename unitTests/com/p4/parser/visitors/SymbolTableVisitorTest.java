@@ -1,6 +1,7 @@
 package com.p4.parser.visitors;
 
 import com.p4.errors.ErrorBag;
+import com.p4.symbols.Attributes;
 import com.p4.symbols.PinAttributes;
 import com.p4.symbols.SymbolTable;
 import com.p4.syntaxSemantic.nodes.*;
@@ -59,7 +60,9 @@ class SymbolTableVisitorTest {
         String id = "Id";
         ArrayDclNode<Integer> Dcl = new ArrayDclNode<>(id);
         Dcl.children.add(new ArrayNode("array" + id, "integer"));
-        Dcl.children.add(new ArrayExprNode());
+        ArrayExprNode arrayExpr = new ArrayExprNode();
+        arrayExpr.children.add(new NumberNode((long)1, false));
+        Dcl.children.add(arrayExpr);
 
         SymbolTable symbolTable = new SymbolTable();
         ErrorBag errorBag = new ErrorBag();
@@ -81,11 +84,15 @@ class SymbolTableVisitorTest {
         Dcl.children.add(new ArrayNode("array" + id, "integer"));
         Dcl.children.add(new ArrayExprNode());
 
+        ArrayExprNode arrayExpr = new ArrayExprNode();
+        arrayExpr.children.add(new NumberNode((long)1, false));
+        Dcl.children.add(arrayExpr);
+
         SymbolTable symbolTable = new SymbolTable();
+        Attributes attr = new Attributes("array", "integer", 1);
+        symbolTable.insertSymbol(id, attr);
         ErrorBag errorBag = new ErrorBag();
         visitor = new SymbolTableVisitor(symbolTable, errorBag);
-
-        visitor.visit(Dcl);
 
         //Act
         visitor.visit(Dcl);

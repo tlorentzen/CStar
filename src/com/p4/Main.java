@@ -132,11 +132,10 @@ public class Main {
         CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
         codeVisitor.visit(ast);
 
-        //Create the command line interface
-        /*
+        //Creates the command line interface
         CliExec cli = new CliExec(errors, true);
         cli.arduinoSelection();
-        cli.compileAndUpload();*/
+        cli.compileAndUpload();
     
         try {
             codeVisitor.print();
@@ -144,8 +143,6 @@ public class Main {
         catch (IOException e) {
             e.printStackTrace();
         }
-        
-
     }
 
     private static String getFileExtension(File file) {

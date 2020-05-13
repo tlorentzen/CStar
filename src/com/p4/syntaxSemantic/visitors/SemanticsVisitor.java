@@ -231,7 +231,7 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(InNode node) {
         visitChildren(node);
-
+        checkIfChildrenAreDeclared(node);
         String leftType = node.children.get(0).type;
         String rightType = node.children.get(1).type;
 
@@ -243,6 +243,18 @@ public class SemanticsVisitor implements INodeVisitor {
             checkInNode(leftType, rightType, node);
         }
     }
+
+    private void checkIfChildrenAreDeclared(InNode node){
+    //Checks the left side (IdNode)
+    if (node.children.get(0) instanceof IdNode){
+        Attributes attributes = symbolTable.lookupSymbol(((IdNode)node.children.get(0)).getId());
+        if (attributes == null){
+            node.children.get(0).type = "error";
+            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl", ((IdNode)node.children.get(0)).getId()), node.lineNumber);
+        }
+    }
+    }
+
 
     //Checks if the inNode operands are valid
     private void checkInNode(String leftType, String rightType, AstNode node) {
@@ -274,7 +286,14 @@ public class SemanticsVisitor implements INodeVisitor {
 
             for (AstNode child : arrayExprNode.children){
                 String childRightType = child.type;
-                String resultType = operationResultType(leftType, childRightType);
+                String resultType = "";
+                if (childRightType != null){
+                    resultType = operationResultType(childRightType, leftType);
+                }
+                else{
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("null type", leftType, child.type), node.lineNumber);
+                }
+
                 if (resultType.equals("error") && !leftType.equals("ArduinoC")){
                     errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, child.type), node.lineNumber);
                 }
@@ -650,7 +669,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
                 //Enters if the id is an array access
                 if (idName.contains("[")) {
-                    idName = idName.substring(0, idName.length() - 3);
+                    idName = idName.split("\\[")[0];
                 }
 
                 //Enters if the pin has not been declared
@@ -814,39 +833,6 @@ public class SemanticsVisitor implements INodeVisitor {
         }
 
         checkBooleanType(node, false);
-    }
-
-    @Override
-    public void visit(MultValNode node) {
-        this.visitChildren(node);
-        boolean isValid = multValOperationValid(node);
-
-        if (isValid) {
-            node.type = "boolean";
-        }
-    }
-
-    //Checks whether the elements in the MultVal expression are numbers
-    private boolean multValOperationValid(MultValNode node) {
-        boolean valid = false;
-        String leftType = node.children.get(0).type;
-
-        if (!(leftType.equals("pin") || leftType.equals("boolean"))) {
-            for (AstNode child : node.children.subList(1, node.children.size() - 1)) {
-                if (multValTypeCheck(leftType, child)) {
-                    valid = true;
-                }
-                else {
-                    valid = false;
-                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("combination", leftType, child.type), node.lineNumber);
-                }
-            }
-        }
-        else {
-            errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("MultValNodeTypeError"), node.lineNumber);
-        }
-
-        return valid;
     }
 
     private boolean multValTypeCheck(String leftType, AstNode child){
