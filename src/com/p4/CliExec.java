@@ -94,7 +94,7 @@ public class CliExec {
         System.out.println("Select Arduino:");
 
         for (Board b: boards) {
-            System.out.println("  " + counter + ") " + b.getName() + " - " + b.getCore());
+            System.out.println("  " + counter + ") " + b.getName() + " - " + b.getPort());
             counter++;
         }
 
