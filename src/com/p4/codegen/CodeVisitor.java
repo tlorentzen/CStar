@@ -59,9 +59,15 @@ public class CodeVisitor implements INodeVisitor {
         //Visits all its children and puts a semicolon if a Dcl with no value is made in global scope
         for (AstNode child: node.children) {
             this.visitChild(child);
+
+            //Enters if the string builder has not been reset yet
             if (stringBuilder.length() > 0) {
-                char c = stringBuilder.charAt(stringBuilder.length()-1);
-                if (child instanceof DclNode && !Character.toString(c).matches(";")) {
+                char lastChar = stringBuilder.charAt(stringBuilder.length() - 1);
+                boolean isSemicolonPresent = Character.toString(lastChar).matches(";");
+
+                //Enters if the child is a declaration and a semicolon has not been added yet
+               // if ((child instanceof DclNode || child instanceof InNode) && !isSemicolonPresent) {
+                if (!(child instanceof CommentNode || child instanceof IncludeNode) && !isSemicolonPresent) {
                     stringBuilder.append(";\n");
                 }
             }
@@ -272,17 +278,17 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append(" == ");
             //Appends the array id
             this.visitChild(rightChild);
+
             //Appends index
             stringBuilder.append("[");
             stringBuilder.append(elementIndex);
             stringBuilder.append("]");
 
             if (elementIndex != array.getArrayLength() - 1) {
-                stringBuilder.append(" ||\n");
+                stringBuilder.append(" || ");
             }
         }
-        stringBuilder.append(")\n");
-        output.add(getLine());
+        stringBuilder.append(")");
     }
 
     //Checks if the right operand is an array expression
@@ -482,17 +488,30 @@ public class CodeVisitor implements INodeVisitor {
 
         for (AstNode child : node.children) {
             this.visitChild(child);
+            boolean isReadWrite = isReadWrite(child);
 
             //Enters if the child node is either a funcCallNode or inNode
-            if(child instanceof FuncCallNode || child instanceof InNode || child instanceof IntervalNode){
+            if ((child instanceof FuncCallNode && !isReadWrite)|| child instanceof InNode || child instanceof IntervalNode) {
                 stringBuilder.append(";\n");
                 output.add(getLine());
             }
         }
-
         stringBuilder.append("}\n");
         output.add(getLine());
         currentIndent--;
+    }
+
+    private boolean isReadWrite(AstNode node) {
+        //Enters if there is a child
+        if (node.children.size() > 0) {
+            AstNode firstChild = node.children.get(0);
+
+            //Enters if the child is an id node
+            if (firstChild instanceof IdNode) {
+                return ((IdNode)firstChild).getId().contains("write") || ((IdNode)firstChild).getId().contains("read");
+            }
+        }
+        return false;
     }
 
     @Override
@@ -529,7 +548,6 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append("()");
         }
         this.visitChildren(node);
-
         symbolTable.leaveScope();
     }
 
@@ -592,14 +610,17 @@ public class CodeVisitor implements INodeVisitor {
         //Enters if a read function has been called on the pin
         if (funcIDSplit[1].equals("read")) {
             appendPinModeIfNeeded(false, funcIDSplit[0]);
-            handleRead(funcIDSplit[0]);
+            appendReadWrite(funcIDSplit[0], "Read");
             stringBuilder.append(")");
         }
         //Enters if a write function has been called on the pin
         else if (parameter != null && funcIDSplit[1].equals("write")) {
             appendPinModeIfNeeded(true, funcIDSplit[0]);
-            handleWrite(parameter, funcIDSplit[0]);
-            stringBuilder.append(")");
+            appendReadWrite(funcIDSplit[0], "Write");
+            stringBuilder.append(", ");
+            visitChild(parameter);
+            stringBuilder.append(");\n");
+            output.add(getLine());
         }
     }
 
@@ -610,62 +631,39 @@ public class CodeVisitor implements INodeVisitor {
 
         //Enters if the output is not set yet
         if (isOutput != pinAttr.getIsOutput() || pinId.contains("[")) {
+            String pinMode = "pinMode(" + pinId + ", " + (isOutput ? "OUTPUT" : "INPUT") + ");\n";
+            output.add(pinMode.indent(currentIndent * 4));
+
+            //Sets output to true if it is not already set to true
             pinAttr.setIsOutput(!pinAttr.getIsOutput());
             symbolTable.insertSymbol(pinId, pinAttr);
-
-            if (stringBuilder.toString().contains("=")) {
-                output.add("pinMode(" + pinId + ", " + (isOutput ? "OUTPUT" : "INPUT") + ");\n");
-            }
-            else {
-                output.add("pinMode(" + pinId + ", " + (isOutput ? "OUTPUT" : "INPUT") + ");\n");
-            }
         }
     }
 
-    private void handleRead(String pinId) {
-        Attributes attributes = null;
-        //Checks if its an array access and then deletes the index to do lookup
-        if (pinId.contains("[")) {
-            String tempPinID = pinId.substring(0, pinId.length() - 3);
-            attributes = this.symbolTable.lookupSymbol(tempPinID);
-        }
-        else {
-            attributes = this.symbolTable.lookupSymbol(pinId);
-        }
+    //Appends either read of write functions depending on the readWrite parameter
+    private void appendReadWrite(String pinId, String readWrite) {
+        Attributes attributes = getPinAttribute(pinId);
 
         //Enters if the pin is analog
         if (((PinAttributes)attributes).getAnalog()) {
-            stringBuilder.append("analogRead(");
+            stringBuilder.append("analog" + readWrite + "(");
         }
         //Enters if the pin is digital
         else {
-            stringBuilder.append("digitalRead(");
+            stringBuilder.append("digital" + readWrite + "(");
         }
-
         stringBuilder.append(pinId);
     }
 
-    private void handleWrite(AstNode parameter, String pinId) {
-        if (parameter instanceof ConstantNode) {
-            //The value to be written to the pin is either HIGH or LOW
-            stringBuilder.append("digitalWrite(");
-            stringBuilder.append(pinId);
-            stringBuilder.append(", ");
-            visitChild(parameter);
+    private Attributes getPinAttribute(String pinId) {
+        //Checks if its an array access and then deletes the index to do lookup
+        if (pinId.contains("[")) {
+            String tempPinID = pinId.substring(0, pinId.length() - 3);
+            return this.symbolTable.lookupSymbol(tempPinID);
         }
-        else if ((parameter instanceof NumberNode || parameter instanceof IdNode) && checkWriteType(parameter.type)) {
-            //The value to be written to the pin is either HIGH or LOW
-            stringBuilder.append("analogWrite(");
-            stringBuilder.append(pinId);
-            stringBuilder.append(", ");
-            visitChild(parameter);
+        else {
+            return this.symbolTable.lookupSymbol(pinId);
         }
-    }
-
-    private boolean checkWriteType(String writeType) {
-        return (writeType.equals("integer") || writeType.equals("long integer") ||
-                writeType.equals("small integer") || writeType.equals("character") ||
-                writeType.equals("ArduinoC"));
     }
 
     private void addParameters(AstNode node, AstNode id) {

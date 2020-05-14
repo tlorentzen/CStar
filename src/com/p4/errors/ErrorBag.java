@@ -69,11 +69,7 @@ public class ErrorBag {
         boolean isEmpty = this.errors.isEmpty();
 
         //Enters if errors have occurred
-        if(!isEmpty){
-
-            //System.out.println("Something went wrong... Found " + errorGrammar());
-            //System.out.println("-----------------------");
-
+        if (!isEmpty){
             printErrorMessages();
         }
     }
@@ -132,10 +128,11 @@ public class ErrorBag {
         return hasErrors;
     }
 
-    public ErrorType getErrorType(int index){
-        if(index < errors.size()){
+    public ErrorType getErrorType(int index) {
+        if (index < errors.size()) {
             return errors.get(index).type;
-        } else{
+        }
+        else {
             return null;
         }
     }

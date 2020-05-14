@@ -223,7 +223,10 @@ public class SemanticsVisitor implements INodeVisitor {
         IdNode leftId = (IdNode)id;
         Attributes leftAttribute = symbolTable.lookupSymbol(leftId.getId());
 
-        if (leftAttribute.getKind().equals("array")) {
+        if (leftAttribute == null) {
+            return;
+        }
+        else if (leftAttribute.getKind().equals("array")) {
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("array", message), parent.lineNumber);
         }
     }
@@ -256,7 +259,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String leftType = node.children.get(0).type;
         String rightType = node.children.get(1).type;
 
-        //Enters if one or both of operands has no type
+        //Enters if one or both of operands has no type and if the right child is an id node
         if ((leftType == null || rightType == null) && node.children.get(1) instanceof IdNode) {
             errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("null type"), node.lineNumber);
         }
@@ -264,23 +267,7 @@ public class SemanticsVisitor implements INodeVisitor {
             checkInNode(leftType, rightType, node);
         }
     }
-    private void checkIfLeftSideIsArray(InNode node){
-        if (node.children.get(0) instanceof IdNode){
-            //Gets left side and checks if it is an array
-            Attributes attributes = symbolTable.lookupSymbol(((IdNode) node.children.get(0)).getId());
 
-            //Enters if the id node has not been declared
-            if (attributes != null) {
-                //Enters if the id is not an array
-                if (attributes.getKind().equals("array")) {
-                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("is array"), node.lineNumber);
-                }
-            }
-        }
-
-
-
-    }
     private void checkIfChildrenAreDeclared(InNode node) {
         AstNode child = node.children.get(0);
         //Enters if the left side is an IdNode
@@ -292,6 +279,21 @@ public class SemanticsVisitor implements INodeVisitor {
             if (attributes == null) {
                 node.children.get(0).type = "error";
                 errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl", symbolId), node.lineNumber);
+            }
+        }
+    }
+
+    private void checkIfLeftSideIsArray(InNode node){
+        if (node.children.get(0) instanceof IdNode){
+            //Gets left side and checks if it is an array
+            Attributes attributes = symbolTable.lookupSymbol(((IdNode) node.children.get(0)).getId());
+
+            //Enters if the id node has not been declared
+            if (attributes != null) {
+                //Enters if the id is not an array
+                if (attributes.getKind().equals("array")) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("is array"), node.lineNumber);
+                }
             }
         }
     }
@@ -309,18 +311,18 @@ public class SemanticsVisitor implements INodeVisitor {
     
     //Checks the right side of the IN operator when RHS is an id
     private void checkInId(String leftType, String rightType, AstNode node, IdNode idNode) {
-        String resultType = operationResultType(rightType, leftType);
+        boolean isTypeValid = compareOperationValid(CStarParser.IN, leftType, rightType);
         //Gets right side and checks if it is an array
         Attributes rightAttribute = symbolTable.lookupSymbol(idNode.getId());
 
-        //Enters if the id node has not been declared
+        //Enters if the id node has been declared
         if (rightAttribute != null) {
             //Enters if the id is not an array
             if (!rightAttribute.getKind().equals("array")) {
                 errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("not array"), node.lineNumber);
             }
             //Enters if the types were not compatible
-            else if (resultType.equals("error") && !leftType.equals("ArduinoC")) {
+            else if (!isTypeValid && !leftType.equals("ArduinoC")) {
                 errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, rightType), node.lineNumber);
             }
             //Enters if the types were compatible and the id was an array
@@ -335,17 +337,17 @@ public class SemanticsVisitor implements INodeVisitor {
         //Goes through all elements in the array
         for (AstNode child : arrayExprNode.children) {
             String elementType = child.type;
-            String resultType = "";
+            boolean isTypeValid = false;
             
             //Enters if the element has a type
             if (elementType != null) {
-                resultType = operationResultType(elementType, leftType);
+                isTypeValid = compareOperationValid(CStarParser.IN, elementType, leftType);
             }
             else {
                 errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("null type", leftType, "null"), node.lineNumber);
             }
             //Enters if the type is ArduinoC function
-            if (resultType.equals("error") && !leftType.equals("ArduinoC")) {
+            if (!isTypeValid && !leftType.equals("ArduinoC")) {
                 errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("comparison", leftType, child.type), node.lineNumber);
             }
             else {
@@ -359,6 +361,10 @@ public class SemanticsVisitor implements INodeVisitor {
         String leftType = node.children.get(0).type;
         String rightType = node.children.get(1).type;
 
+        //Enters if either left or right side has an undeclared type
+        if (leftType == null || rightType == null) {
+            return;
+        }
         //Checks if the types of the children are valid
         if (isLogical) {
             isValidType = logicalOperationValid(leftType, rightType);
@@ -421,7 +427,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
 
         //Checks if the operator is IS or ISNOT
-        if (operator == CStarParser.IS || operator == CStarParser.ISNOT) {
+        if (operator == CStarParser.IS || operator == CStarParser.ISNOT || operator == CStarParser.IN) {
             if (leftType.equals(rightType)) {
                 return true;
             }
@@ -715,6 +721,7 @@ public class SemanticsVisitor implements INodeVisitor {
             //Enters if the function includes a dot operator
             if (functionName.contains(".")) {
                 String idName = functionName.split("\\.")[0];
+                String methodName = functionName.split("\\.")[1];
 
                 //Enters if the id is an array access
                 if (idName.contains("[")) {
@@ -722,11 +729,18 @@ public class SemanticsVisitor implements INodeVisitor {
                 }
                 //Enters if the pin has not been declared
                 if (symbolTable.lookupSymbol(idName) == null) {
-                        errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl",idName), node.lineNumber);
-                } else {
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("no id dcl",idName), node.lineNumber);
+                }
+                else if (methodName.equals("write")) {
+                    if (node.children.size() - 1 != 1) {
+                        errors.addEntry(ErrorType.PARAMETER_ERROR, errorMessage("write param", idName), node.lineNumber);
+                    }
+                }
+                else {
                     checkFunction(node, functionName);
                 }
-            } else {
+            }
+            else {
                 checkFunction(node, functionName);
             }
         }
@@ -893,9 +907,11 @@ public class SemanticsVisitor implements INodeVisitor {
             case "indexing":
                 return "Illegal indexing type: The index can not be of type " + type[0];
             case "actual parameter":
-                return "Illegal parameter type: The actual parameter '"+ type[0] +"' is not a legal type";
+                return "Illegal parameter type: The actual parameter '" + type[0] + "' is not a legal type";
             case "number of param":
                 return "The number of actual parameters does not correspond with the number of formal parameters in call to function '" + type[0] + "'";
+            case "write param":
+                return "No parameter: Have to declare a parameter for the write function related to the pin '" + type[0] + "'";
             case "no func dcl":
                 return "'" + type[0] + "' is not declared in your project. Please make sure that the function is an accepted Arduino C function.";
             case "array":

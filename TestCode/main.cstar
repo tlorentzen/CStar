@@ -1,5 +1,10 @@
-integer i = 5;
+pin pinName = 1;
+integer result = 255;
 
-if (i IN [1, 2]) {
-    i = 1;
+void loop(){
+
+    pinName.write(result);
+
+
+    result  = pinName.read();
 }
