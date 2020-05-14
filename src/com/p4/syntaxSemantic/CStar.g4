@@ -47,7 +47,6 @@ IS: 'IS';
 ISNOT: 'ISNOT';
 OR: 'OR';
 AND: 'AND';
-ONE_OF: 'ONE OF';
 ASSIGN_OP: '=';
 PLUS: '+';
 MINUS: '-';
