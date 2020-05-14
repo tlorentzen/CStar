@@ -487,6 +487,7 @@ public class CodeVisitor implements INodeVisitor {
             //Enters if the child node is either a funcCallNode or inNode
             if(child instanceof FuncCallNode || child instanceof InNode || child instanceof IntervalNode){
                 stringBuilder.append(";\n");
+                output.add(getLine());
             }
         }
 
@@ -617,7 +618,7 @@ public class CodeVisitor implements INodeVisitor {
                 output.add("pinMode(" + pinId + ", " + (isOutput ? "OUTPUT" : "INPUT") + ");\n");
             }
             else {
-                stringBuilder.append("pinMode(" + pinId + ", " + (isOutput ? "OUTPUT" : "INPUT") + ");\n");
+                output.add("pinMode(" + pinId + ", " + (isOutput ? "OUTPUT" : "INPUT") + ");\n");
             }
         }
     }
