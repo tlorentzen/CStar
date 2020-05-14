@@ -210,7 +210,7 @@ public class CliExec {
 
     public void installBoardCore(String core) {
         if (arduinoCliPresent) {
-            CmdPrint.print("Installing core... ", true);
+            CmdPrint.print("Checking core... ", true);
 
             //Enters if it is possible to install the core
             if (execute("core install " + core, acli)) {

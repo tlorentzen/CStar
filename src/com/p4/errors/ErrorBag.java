@@ -77,7 +77,7 @@ public class ErrorBag {
             printErrorMessages();
         }
     }
-    
+
     private void printErrorMessages() {
         boolean isNotWindows = !(OS.contains("win") && System.console() != null);
 
