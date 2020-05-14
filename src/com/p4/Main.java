@@ -75,9 +75,9 @@ public class Main {
                                 CmdPrint.printOk();
 
                                 //Creates the command line interface
-                                CliExec cli = new CliExec(errors, true);
+                                /*CliExec cli = new CliExec(errors, true);
                                 cli.arduinoSelection();
-                                cli.compileAndUpload();
+                                cli.compileAndUpload();*/
                             }else{
                                 CmdPrint.printFailed();
 

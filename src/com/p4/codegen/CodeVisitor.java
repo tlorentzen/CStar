@@ -272,7 +272,6 @@ public class CodeVisitor implements INodeVisitor {
             stringBuilder.append(" == ");
             //Appends the array id
             this.visitChild(rightChild);
-
             //Appends index
             stringBuilder.append("[");
             stringBuilder.append(elementIndex);
@@ -289,8 +288,8 @@ public class CodeVisitor implements INodeVisitor {
     //Checks if the right operand is an array expression
     private void appendInExpr(AstNode leftChild, AstNode rightChild) {
         ArrayExprNode arrayExprNode = (ArrayExprNode) rightChild;
-        stringBuilder.append("(");
 
+        stringBuilder.append("(");
         for (AstNode child: arrayExprNode.children) {
             //Appends the value being compared with
             visitChild(leftChild);
