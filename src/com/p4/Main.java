@@ -58,7 +58,7 @@ public class Main {
                             //astTreeVisitor.visit(0, ast);
 
                             //Creates the symbol table
-                            SymbolTable symbolTable = symbolTableSetup(ast,  errors);
+                            SymbolTable symbolTable = symbolTableSetup(ast, errors);
 
                             //Type checks and scope checks the AST
                             SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
@@ -128,7 +128,7 @@ public class Main {
     }
 
     private static void codeGenerationPhase(SymbolTable symbolTable, ProgNode ast, ErrorBag errors) {
-        //Generates theArduino C code equivalent to the CStar code
+        //Generates the Arduino C code equivalent to the CStar code
         CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
         codeVisitor.visit(ast);
 

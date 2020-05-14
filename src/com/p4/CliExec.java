@@ -142,7 +142,7 @@ public class CliExec {
                     for (int j = 4; j < items.length - 2; j++) {
                         boardName = boardName.concat(items[j]+" ");
                     }
-                    //todo write what the different indexes are
+                    //Frist: name Second: core Third: port Fourth: fqbn
                     Board board = new Board(boardName.trim(), items[items.length - 1], items[portIndex], items[items.length - 2]);
                     boards.add(board);
                 }
@@ -304,7 +304,8 @@ public class CliExec {
                         output.deleteOnExit();
                     } 
                     else {
-                        //TODO error
+                        System.out.println("Download failed!");
+                        System.out.println("Please try again");
                     }
                 }
 
