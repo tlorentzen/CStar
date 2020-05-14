@@ -42,6 +42,8 @@ public class Main {
                 }
                 else {
                     try {
+                        CmdPrint.print("Compiling C* to Arduino C code... ", true);
+
                         //Get the contents of the file
                         CharStream inputStream = CharStreams.fromPath(inputSource);
 
@@ -64,10 +66,24 @@ public class Main {
                             SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
                             semanticsVisitor.visit(ast);
 
+
+
                             //Enters if no errors were found when type/scope checking
                             if (!errors.containsErrors()) {
-                               codeGenerationPhase(symbolTable, ast, errors);
+                                codeGenerationPhase(symbolTable, ast, errors);
+
+                                CmdPrint.printOk();
+
+                                //Creates the command line interface
+                                CliExec cli = new CliExec(errors, true);
+                                cli.arduinoSelection();
+                                cli.compileAndUpload();
+                            }else{
+                                CmdPrint.printFailed();
+
                             }
+                        }else{
+                            CmdPrint.printFailed();
                         }
                     }
                     catch (IOException e) {
@@ -76,6 +92,8 @@ public class Main {
                 }
             }
             errors.display();
+        }else{
+            System.err.println("Missing path to C* source file");
         }
     }
 
@@ -132,11 +150,6 @@ public class Main {
         CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
         codeVisitor.visit(ast);
 
-        //Creates the command line interface
-        CliExec cli = new CliExec(errors, true);
-        cli.arduinoSelection();
-        cli.compileAndUpload();
-    
         try {
             codeVisitor.print();
         }

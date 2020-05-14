@@ -12,7 +12,6 @@
     <orderEntry type="library" exported="" name="org.jsoup:jsoup:1.13.1" level="project" />
     <orderEntry type="library" exported="" name="org.apache.commons:commons-compress:1.20" level="project" />
     <orderEntry type="library" exported="" name="zip4j-2.5.2" level="project" />
-    <orderEntry type="library" exported="" name="com.google.code.gson:gson:2.8.5" level="project" />
     <orderEntry type="library" exported="" name="commons-compress-1.20" level="project" />
     <orderEntry type="library" exported="" name="gson-2.8.5" level="project" />
     <orderEntry type="module-library" scope="TEST">

@@ -71,8 +71,8 @@ public class ErrorBag {
         //Enters if errors have occurred
         if(!isEmpty){
 
-            System.out.println("Something went wrong... Found " + errorGrammar());
-            System.out.println("-----------------------");
+            //System.out.println("Something went wrong... Found " + errorGrammar());
+            //System.out.println("-----------------------");
 
             printErrorMessages();
         }
@@ -115,6 +115,8 @@ public class ErrorBag {
 
     private void printErrorMessages() {
         boolean isNotWindows = !(OS.contains("win") && System.console() != null);
+
+        System.out.println();
 
         //Prints error messages for all errors and warnings
         for (Item error : errors) {
