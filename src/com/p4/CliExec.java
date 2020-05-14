@@ -13,10 +13,7 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.ZipFile;
 
 public class CliExec {
-    // Ansi colors
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
+
 
     String basePath = System.getProperty("user.dir");
     String baseCommand = "";
@@ -158,23 +155,23 @@ public class CliExec {
     public void compileAndUpload() {
         //Enters if a cli file and a board is present
         if (arduinoCliPresent && board != null) {
-            printIt("Compiling C-code... ", true);
+            CmdPrint.print("Compiling Arduino C code... ", true);
 
             //Enters if it is possible to compile
             if (execute("compile --fqbn " + board.getFqbn() + " output", acli)) {
-                printOk();
-                printIt("Uploading to Arduino... ", true);
+                CmdPrint.printOk();
+                CmdPrint.print("Uploading to Arduino... ", true);
 
                 //Enters if it is possible to upload
                 if (execute("upload -p " + board.getPort() + " --fqbn " + board.getFqbn() + " output", acli)) {
-                    printOk();
+                    CmdPrint.printOk();
                 }
                 else {
-                    printFailed();
+                    CmdPrint.printFailed();
                 }
             }
             else {
-                printFailed();
+                CmdPrint.printFailed();
             }
         }
     }
@@ -213,42 +210,32 @@ public class CliExec {
 
     public void installBoardCore(String core) {
         if (arduinoCliPresent) {
-            printIt("Installing core... ", true);
+            CmdPrint.print("Checking core... ", true);
 
             //Enters if it is possible to install the core
             if (execute("core install " + core, acli)) {
-                printOk();
+                CmdPrint.printOk();
             }
             else {
-                printFailed();
+                CmdPrint.printFailed();
             }
         }
     }
 
     private void initializeCliSetup() {
         if (arduinoCliPresent) {
-            printIt("Updating core index... ", true);
+            CmdPrint.print("Updating core index... ", true);
 
             //Enters if it is possible to update the core index
             if (execute("core update-index", acli)) {
-                printOk();
+                CmdPrint.printOk();
             }
             else{
-                printFailed();
+                CmdPrint.printFailed();
             }
         }
     }
 
-    private void printIt(String text, boolean skipNewline) {
-        if (outputInfo) {
-            if (skipNewline) {
-                System.out.print(text);
-            }
-            else {
-                System.out.println(text);
-            }
-        }
-    }
 
     public void checkCliInstallation() {
         String downloadUrl = "";
@@ -362,14 +349,6 @@ public class CliExec {
         }
     }
 
-    private void printOk() {
-        printIt(setColor(ANSI_GREEN)+"OK!\n"+setColor(ANSI_RESET), true);
-    }
-
-    private void printFailed() {
-        printIt(setColor(ANSI_RED)+"Failed!\n"+setColor(ANSI_RESET), true);
-    }
-
     private void unpackZip(File file) {
         try {
             ZipFile zipFile = new ZipFile(file);
@@ -380,10 +359,4 @@ public class CliExec {
         }
     }
 
-    private String setColor(String color) {
-        if (!SystemInfo.isWindows()) {
-            return color;
-        }
-        return "";
-    }
 }

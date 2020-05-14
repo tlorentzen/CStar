@@ -71,50 +71,17 @@ public class ErrorBag {
         //Enters if errors have occurred
         if(!isEmpty){
 
-            System.out.println("Something went wrong... Found " + errorGrammar());
-            System.out.println("-----------------------");
+            //System.out.println("Something went wrong... Found " + errorGrammar());
+            //System.out.println("-----------------------");
 
             printErrorMessages();
         }
     }
 
-    //Creates the string containing number of errors and warnings for the error message
-    private String errorGrammar() {
-        int numberOfWarnings = 0;
-        int numberOfErrors;
-        String errorGrammar;
-        String warningGrammar;
-
-        //Finds the number of warnings in the error list
-        for (Item error : errors) {
-            if (error.type.toString().startsWith("W")) {
-                numberOfWarnings++;
-            }
-        }
-        //Finds the number of errors in the error list
-        numberOfErrors = errors.size() - numberOfWarnings;
-
-        //Writes word in singular if there is only one
-        errorGrammar = (numberOfErrors == 1 ? " error" : " errors");
-        warningGrammar = (numberOfWarnings == 1 ? " warning" : " warnings");
-
-        //Returns the correct error message depending on whether errors and warnings are present
-        if (numberOfErrors > 0 && numberOfWarnings > 0) {
-            return numberOfErrors + errorGrammar + " and " + numberOfWarnings + warningGrammar;
-        }
-        else if (numberOfErrors > 0) {
-            return numberOfErrors  + errorGrammar;
-        }
-        else if (numberOfWarnings > 0) {
-            return numberOfWarnings + warningGrammar;
-        }
-        else {
-            return "We made  mistake";
-        }
-    }
-
     private void printErrorMessages() {
         boolean isNotWindows = !(OS.contains("win") && System.console() != null);
+
+        System.out.println();
 
         //Prints error messages for all errors and warnings
         for (Item error : errors) {
