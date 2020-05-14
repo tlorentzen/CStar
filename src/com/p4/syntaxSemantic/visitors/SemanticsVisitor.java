@@ -252,6 +252,7 @@ public class SemanticsVisitor implements INodeVisitor {
         visitChildren(node);
 
         checkIfChildrenAreDeclared(node);
+        checkIfLeftSideIsArray(node);
         String leftType = node.children.get(0).type;
         String rightType = node.children.get(1).type;
 
@@ -263,7 +264,23 @@ public class SemanticsVisitor implements INodeVisitor {
             checkInNode(leftType, rightType, node);
         }
     }
-    
+    private void checkIfLeftSideIsArray(InNode node){
+        if (node.children.get(0) instanceof IdNode){
+            //Gets left side and checks if it is an array
+            Attributes attributes = symbolTable.lookupSymbol(((IdNode) node.children.get(0)).getId());
+
+            //Enters if the id node has not been declared
+            if (attributes != null) {
+                //Enters if the id is not an array
+                if (attributes.getKind().equals("array")) {
+                    errors.addEntry(ErrorType.TYPE_ERROR, errorMessage("is array"), node.lineNumber);
+                }
+            }
+        }
+
+
+
+    }
     private void checkIfChildrenAreDeclared(InNode node) {
         AstNode child = node.children.get(0);
         //Enters if the left side is an IdNode
@@ -904,6 +921,8 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "Arduino C functions are not compatible with intervals.";
             case "not array":
                 return "Illegal type: the right operand must be an array";
+            case "is array":
+                return "Illegal type: the left operand cannot be an array";
             default:
                 return null;
         }
