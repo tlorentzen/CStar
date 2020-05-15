@@ -451,6 +451,9 @@ public class SemanticsVisitor implements INodeVisitor {
 
     //Checks if the type is of the number types
     private boolean isNumber(String type) {
+        if (type == null){
+            return false;
+        }
         return (type.equals("decimal") || type.equals("long integer") ||
                 type.equals("integer") || type.equals("small integer"));
     }
