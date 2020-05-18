@@ -662,7 +662,7 @@ public class CodeVisitor implements INodeVisitor {
     private Attributes getPinAttribute(String pinId) {
         //Checks if its an array access and then deletes the index to do lookup
         if (pinId.contains("[")) {
-            String tempPinID = pinId.substring(0, pinId.length() - 3);
+            String tempPinID = pinId.split("\\[")[0];
             return this.symbolTable.lookupSymbol(tempPinID);
         }
         else {
