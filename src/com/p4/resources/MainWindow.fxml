@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import com.p4.gui.GUI.*?>
+
+<AnchorPane prefHeight="472.0" prefWidth="311.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.p4.gui.MainWindowController">
+   <children>
+      <Label layoutX="20.0" layoutY="21.0" text="Choose input file:" />
+      <Button fx:id="compileButton" defaultButton="true" layoutX="364.0" layoutY="230.0" mnemonicParsing="false" onAction="#CompileButtonAction" text="Compile" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="20.0" />
+      <TextField id="chosenFilePath" fx:id="chosenFilePath" layoutX="20.0" layoutY="38.0" prefHeight="25.0" prefWidth="425.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="120.0" />
+      <Button id="chooseInputFileButton" layoutX="191.0" layoutY="38.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#ChooseInputFileButtonAction" prefWidth="100.0" text="Select..." AnchorPane.rightAnchor="20.0" />
+      <Label layoutX="21.0" layoutY="75.0" text="Output destination" AnchorPane.topAnchor="75.0" />
+      <TextField id="chosenFilePath" fx:id="chosenOutputPath" disable="true" layoutX="21.0" layoutY="93.0" prefHeight="25.0" prefWidth="425.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="119.0" AnchorPane.topAnchor="93.0" />
+      <Button id="chooseInputFileButton" fx:id="outputFileButton" layoutX="192.0" layoutY="93.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#ChooseOutputFileButtonAction" prefWidth="100.0" text="Select..." AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="93.0" />
+      <Label layoutX="20.0" layoutY="150.0" text="Available Ardunio Board(s):" />
+      <ProgressIndicator fx:id="spinner" layoutX="499.0" layoutY="425.0" maxHeight="25.0" maxWidth="25.0" minHeight="25.0" minWidth="25.0" prefHeight="25.0" prefWidth="25.0" progress="0.0" visible="false" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="90.0" />
+      <TextArea id = "console" fx:id="console" layoutX="21.0" layoutY="167.0" prefHeight="211.0" prefWidth="270.0" />
+   </children>
+</AnchorPane>

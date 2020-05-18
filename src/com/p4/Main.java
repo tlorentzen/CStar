@@ -16,9 +16,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import com.p4.gui.GUI;
 
 public class Main {
     public static void main(String[] args) {
+
+        GUI.main(args);
+
         Path inputSource;
         ErrorBag errors = new ErrorBag();
 
@@ -108,7 +112,7 @@ public class Main {
         System.out.println("Path: " + inputSource.toAbsolutePath());
     }
     
-    private static ParseTree syntaxPhase(CharStream inputStream, ErrorBag errors) {
+    public static ParseTree syntaxPhase(CharStream inputStream, ErrorBag errors) {
         //Scans the source code
         CStarLexer lexer = new CStarLexer(inputStream);
         lexer.removeErrorListeners();
@@ -125,7 +129,7 @@ public class Main {
         return parser.prog();
     }
 
-    private static SymbolTable symbolTableSetup(ProgNode ast, ErrorBag errors) {
+    public static SymbolTable symbolTableSetup(ProgNode ast, ErrorBag errors) {
         //Visits functions and adds their declaration into the symbol table
         SymbolTable symbolTable = new SymbolTable();
         FuncVisitor funcVisitor = new FuncVisitor(symbolTable, errors);
@@ -143,7 +147,7 @@ public class Main {
         return symbolTable;
     }
 
-    private static void codeGenerationPhase(SymbolTable symbolTable, ProgNode ast, ErrorBag errors) {
+    public static void codeGenerationPhase(SymbolTable symbolTable, ProgNode ast, ErrorBag errors) {
         //Generates the Arduino C code equivalent to the CStar code
         CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
         codeVisitor.visit(ast);
