@@ -642,6 +642,10 @@ public class CodeVisitor implements INodeVisitor {
 
     //Appends either read of write functions depending on the readWrite parameter
     private void appendReadWrite(String pinId, String readWrite) {
+        //If its an array access, then delete the index "[x]"
+        if (pinId.contains("[")){
+            pinId = pinId.split("\\[")[0];
+        }
         Attributes attributes = getPinAttribute(pinId);
 
         //Enters if the pin is analog
