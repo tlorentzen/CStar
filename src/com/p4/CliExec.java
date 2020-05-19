@@ -2,6 +2,8 @@ package com.p4;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
+import com.p4.gui.MainWindowController;
+import com.p4.gui.ShowArduinoController;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -13,6 +15,7 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.ZipFile;
 
 public class CliExec {
+    public static ArrayList<Board> boards;
     String basePath = System.getProperty("user.dir");
     String baseCommand = "";
     String arduinoCliFilename;
@@ -55,17 +58,18 @@ public class CliExec {
         }
     }
 
-    public void arduinoSelection() {
+    public void arduinoSelection() throws IOException {
         if (!arduinoCliPresent) {
             return;
         }
-        ArrayList<Board> boards = getBoards();
+        boards = getBoards();
         
         //Enters if there are any boards
         if (boards.size() > 0) {
             //Enters if there are more than one board
             if (boards.size() > 1) {
-                printBoardChoices(boards);
+                MainWindowController.showStage();
+                board = ShowArduinoController.chosenBoard;
             }
             else {
                 board = boards.get(0);
@@ -78,35 +82,6 @@ public class CliExec {
                                                                  "been compiled and is located in the 'output' folder");
         }
     }
-
-    //Prints the different boards and asks the user to select one
-    private void printBoardChoices(ArrayList<Board> boards) {
-        int counter = 1;
-        
-        initializeCliSetup();
-        System.out.println();
-        System.out.println("Select Arduino:");
-
-        for (Board b: boards) {
-            System.out.println("  " + counter + ") " + b.getName() + " - " + b.getPort());
-            counter++;
-        }
-
-        System.out.print("> ");
-
-        //Tries to get the index for the board from the user
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            int index = Integer.parseInt(reader.readLine());
-            board = boards.get(index - 1);
-        }
-        catch(Exception e) {
-            System.out.println();
-        }
-
-        System.out.println();
-    }
-
 
     private ArrayList<Board> getBoards() {
         ArrayList<Board> boards = new ArrayList<>();

@@ -15,9 +15,9 @@ import java.util.List;
 //Generates the Arduino code that corresponds to the CStar source code
 public class CodeVisitor implements INodeVisitor {
     //FilePath is used to specify the location for the compiled Arduino file
-    String filePath = System.getProperty("user.dir") + "/output/output.ino";
+    //String filePath = System.getProperty("user.dir") + "/output/output.ino";
     //FilePath is used to specify the directory for the compiled Arduino file
-    String dirPath = System.getProperty("user.dir") + "/output";
+    //String dirPath = System.getProperty("user.dir") + "/output";
 
     //The string builder is used to construct the Arduino file
     StringBuilder stringBuilder = new StringBuilder();
@@ -30,7 +30,7 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     //Prints the content of the string builder to the file
-    public void print() throws IOException {
+    public void print(String filePath, String dirPath) throws IOException {
         output.add(getLine());
 
         for (String line : output) {

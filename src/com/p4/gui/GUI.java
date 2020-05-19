@@ -22,7 +22,7 @@ public class GUI extends Application{
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("com/p4/resources/MainWindow.fxml")));
         stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/com/p4/resources/icon.png")));
         stage.setTitle("CStar Compiler");
-        Scene scene =  new Scene(root);
+        Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }

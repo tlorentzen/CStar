@@ -700,7 +700,7 @@ public class AstVisitor<T> extends CStarBaseVisitor<AstNode> {
             funcNode.children.add(visit(ctx.param()));
         }
 
-        funcNode.children.add( handleBlk(ctx.blk(), funcNode.getId()));
+        funcNode.children.add(handleBlk(ctx.blk(), funcNode.getId()));
         funcNode.lineNumber = ctx.start.getLine();
         funcNode.lineNumber = ctx.start.getLine();
 

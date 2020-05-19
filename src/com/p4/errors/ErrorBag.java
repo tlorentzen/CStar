@@ -1,5 +1,7 @@
 package com.p4.errors;
 
+import com.p4.gui.MainWindowController;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,23 +77,15 @@ public class ErrorBag {
     }
 
     private void printErrorMessages() {
-        boolean isNotWindows = !(OS.contains("win") && System.console() != null);
 
-        System.out.println();
+        MainWindowController.print("", true);
 
         //Prints error messages for all errors and warnings
         for (Item error : errors) {
-            if (isNotWindows) {
-                System.out.print(getColor(error.type.toString()));
-                System.out.print(error.type);
-                System.out.print(Color.RESET);
-                System.out.print(": " + error.message + " (" + error.type.name() + ")");
-                System.out.print(error.lineNumber > 0 ? " on line " + error.lineNumber + "\n" : "\n");
-            }
-            else {
-                System.out.println(error.type.toString()+": "+error.message+" ("+error.type.name()+")" +
-                        (error.lineNumber > 0 ? " on line "+error.lineNumber : ""));
-            }
+
+            MainWindowController.print(error.type.toString()+": "+error.message+" ("+error.type.name()+")" +
+                    (error.lineNumber > 0 ? " on line "+error.lineNumber : ""), true);
+
 
             //Enters if the error message is on multiple lines
             if (error.lines.size() > 0) {
@@ -101,10 +95,10 @@ public class ErrorBag {
                 for (String line : error.lines) {
                     //Enters if line contains other characters than just spaces
                     if (line.trim().length() > 0) {
-                        System.out.println(indent + "| " + line);
+                        MainWindowController.print(indent + "| " + line, true);
                     }
                 }
-                System.out.println();
+                MainWindowController.print("", true);
             }
         }
     }

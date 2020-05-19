@@ -1,32 +1,32 @@
 package com.p4.gui;
 
 import com.p4.CliExec;
-import com.p4.CmdPrint;
-import com.p4.Main;
-import com.p4.SystemInfo;
+import com.p4.codegen.CodeVisitor;
 import com.p4.errors.ErrorBag;
+import com.p4.errors.ErrorType;
 import com.p4.symbols.SymbolTable;
+import com.p4.syntaxSemantic.*;
 import com.p4.syntaxSemantic.nodes.ProgNode;
-import com.p4.syntaxSemantic.visitors.AstVisitor;
-import com.p4.syntaxSemantic.visitors.CStarBaseVisitor;
-import com.p4.syntaxSemantic.visitors.SemanticsVisitor;
-import javafx.application.Platform;
+import com.p4.syntaxSemantic.visitors.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Stream;
+import java.util.Objects;
 
 public class MainWindowController {
 
@@ -34,6 +34,10 @@ public class MainWindowController {
     public String fileName;
 
     public String filePath;
+
+    public String newFilePath;
+
+    public String dirPath;
 
     @FXML
     public TextField chosenFilePath;
@@ -51,30 +55,46 @@ public class MainWindowController {
     public TextField chosenOutputPath;
 
     @FXML
+    public ImageView imageView;
+
+    @FXML
     private TextArea console;
-    private PrintStream ps;
+    private static PrintStream printStreamLog;
+
+    @FXML
+    private TextArea ArduinoConsole;
+    private static PrintStream printStreamArduino;
 
     @FXML
     public ProgressIndicator spinner;
 
-    public void initialize() {
-        ps = new PrintStream(new Console(console)) ;
+    public void initialize() throws FileNotFoundException {
+        printStreamLog = new PrintStream(new Console(console));
+        printStreamArduino = new PrintStream(new Console(ArduinoConsole));
+        FileInputStream inputstream = new FileInputStream(System.getProperty("user.dir") + "\\src\\com\\p4\\resources\\icon.png");
+        Image image = new Image(inputstream);
+        imageView.setImage(image);
     }
 
     public void CompileButtonAction(ActionEvent actionEvent) {
+        //Clear the log
+        console.clear();
+
+        //Create the errorbag
+        ErrorBag errors = new ErrorBag();
         if (fileName != null){
             try {
-                System.setOut(ps);
-                System.setErr(ps);
+                print("Compiling C* to Arduino C code... ", false);
+                System.setOut(printStreamLog);
+                System.setErr(printStreamLog);
                 //Get the contents of the file
                 Path inputSource = Paths.get(filePath);
                 CharStream inputStream = CharStreams.fromPath(inputSource);
 
-                //Create the errorbag
-                ErrorBag errors = new ErrorBag();
+
 
                 //Gets a parse tree for making the AST
-                ParseTree tree = Main.syntaxPhase(inputStream, errors);
+                ParseTree tree = syntaxPhase(inputStream, errors);
 
                 //Enters if there were no errors when parsing or scanning
                 if (!errors.containsErrors()) {
@@ -86,7 +106,7 @@ public class MainWindowController {
                     //astTreeVisitor.visit(0, ast);
 
                     //Creates the symbol table
-                    SymbolTable symbolTable = Main.symbolTableSetup(ast, errors);
+                    SymbolTable symbolTable = symbolTableSetup(ast, errors);
 
                     //Type checks and scope checks the AST
                     SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
@@ -94,27 +114,75 @@ public class MainWindowController {
 
                     //Enters if no errors were found when type/scope checking
                     if (!errors.containsErrors()) {
-                        Main.codeGenerationPhase(symbolTable, ast, errors);
-                        CmdPrint.printOk();
+                        codeGenerationPhase(symbolTable, ast, errors);
+                        print("OK!", true);
 
                         //Creates the command line interface
                         CliExec cli = new CliExec(errors, true);
                         cli.arduinoSelection();
                         cli.compileAndUpload();
+
+
                     }
                     else {
-                        CmdPrint.printFailed();
+                        print("Failed!", true);
                     }
                 }
                 else {
-                    CmdPrint.printFailed();
+                    print("Failed!", true);
                 }
             }
             catch (IOException e) {
                 System.out.println(e);
             }
         }
+        errors.display();
     }
+
+    public static ParseTree syntaxPhase(CharStream inputStream, ErrorBag errors) {
+        //Scans the source code
+        CStarLexer lexer = new CStarLexer(inputStream);
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(new LexerErrorListener(errors));
+        CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+
+        //Parses the source source code
+        CStarParser parser = new CStarParser(commonTokenStream);
+        parser.setBuildParseTree(true);
+        parser.setErrorHandler(new CStarErrorStrategy());
+        parser.removeErrorListeners();
+        parser.addErrorListener(new ParserErrorListener(errors));
+
+        return parser.prog();
+    }
+
+    public static SymbolTable symbolTableSetup(ProgNode ast, ErrorBag errors) {
+        //Visits functions and adds their declaration into the symbol table
+        SymbolTable symbolTable = new SymbolTable();
+        FuncVisitor funcVisitor = new FuncVisitor(symbolTable, errors);
+        funcVisitor.visit(ast);
+
+        //Enters if the setup and loop functions haven't been declared in the source code
+        if (!symbolTable.isSetupAndLoopDefined()) {
+            errors.addEntry(ErrorType.MISSING_ARDUINO_FUNCTION,
+                "Both the functions 'void setup()' and 'void loop()' are required by Arduino");
+        }
+        //Adds variable declarations in the symbol table
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable, errors);
+        symbolTableVisitor.visit(ast);
+
+        return symbolTable;
+    }
+
+    public void codeGenerationPhase(SymbolTable symbolTable, ProgNode ast, ErrorBag errors) {
+        //Generates the Arduino C code equivalent to the CStar code
+        CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
+        codeVisitor.visit(ast);
+
+
+    }
+
+
 
     public void ChooseInputFileButtonAction(ActionEvent actionEvent) throws IOException {
         FileChooser fc = new FileChooser();
@@ -124,9 +192,17 @@ public class MainWindowController {
 
         if (selected != null){
             chosenFilePath.setText(selected.getAbsolutePath());
-            filePath = selected.getAbsolutePath();
             fileName = selected.getName();
-            getOutputPath(selected.getAbsolutePath());
+            fileName = fileName.substring(0,fileName.length() - 6);
+            StringBuilder stringBuilder = new StringBuilder(selected.getAbsolutePath());
+            stringBuilder.replace(stringBuilder.length() - 6, stringBuilder.length(), "");
+            this.dirPath = stringBuilder.toString() + "/";
+            stringBuilder.append("/").append(fileName).append(".ino");
+            newFilePath = stringBuilder.toString();
+            filePath = selected.getAbsolutePath();
+            chosenOutputPath.setText(newFilePath);
+
+            //getOutputPath(selected.getAbsolutePath());
         }
     }
 
@@ -135,6 +211,8 @@ public class MainWindowController {
         String dirPath = filePath.substring(0, filePath.length() - 6);
 
         createDir(dirPath);
+
+
 
         String newFilePath = dirPath + "/" + fileName.substring(0, fileName.length() - 6) + ".ino";
         chosenOutputPath.setText(newFilePath);
@@ -159,6 +237,7 @@ public class MainWindowController {
 
             if (selected != null) {
                 String dirPath = selected.getAbsolutePath();
+                this.dirPath = dirPath;
                 createDir(dirPath);
                 String newFile = new File(dirPath).getName();
                 String filePath = dirPath + "/" + newFile + ".ino";
@@ -167,28 +246,25 @@ public class MainWindowController {
         }
     }
 
-    public void print(String text, boolean skipNewline) {
+    public static void print(String text, boolean skipNewline) {
         if (skipNewline) {
-            System.out.println(text + "\n");
+            printStreamLog.println(text);
         }
         else {
-            System.out.println(text);
+            printStreamLog.print(text);
         }
     }
+    public static void showStage() throws IOException
+    {
+        FXMLLoader loader = new FXMLLoader(MainWindowController.class.getClassLoader().getResource("AdvancedOptions.fxml"));
+        Parent root = loader.load();
+        Stage dialog = new Stage();
 
-    public class Console extends OutputStream {
-        private TextArea console;
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.setTitle("Advanced options");
+        dialog.setScene(new Scene(root));
 
-        public Console(TextArea console) {
-            this.console = console;
-        }
-
-        public void appendText(String valueOf) {
-            Platform.runLater(() -> console.appendText(valueOf));
-        }
-
-        public void write(int b) throws IOException {
-            appendText(String.valueOf((char)b));
-        }
+        dialog.showAndWait();
     }
+
 }
