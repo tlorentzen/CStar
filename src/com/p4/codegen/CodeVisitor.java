@@ -645,12 +645,12 @@ public class CodeVisitor implements INodeVisitor {
         Attributes attributes = getPinAttribute(pinId);
 
         //Enters if the pin is analog
-        if (((PinAttributes)attributes).getAnalog()) {
-            stringBuilder.append("analog" + readWrite + "(");
+        if (!((PinAttributes) attributes).getAnalog()) {
+            stringBuilder.append("digital" + readWrite + "(");
         }
         //Enters if the pin is digital
         else {
-            stringBuilder.append("digital" + readWrite + "(");
+            stringBuilder.append("analog" + readWrite + "(");
         }
         stringBuilder.append(pinId);
     }
