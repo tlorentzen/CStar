@@ -1,4 +1,4 @@
-package com.p4.gui;
+package com.p4;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

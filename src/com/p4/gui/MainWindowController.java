@@ -15,6 +15,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.*;
@@ -23,6 +26,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,9 +53,6 @@ public class MainWindowController {
     public Button compileButton;
 
     @FXML
-    public CheckBox overrideOutputPath;
-
-    @FXML
     public TextField chosenOutputPath;
 
     @FXML
@@ -71,7 +72,7 @@ public class MainWindowController {
     public void initialize() throws FileNotFoundException {
         printStreamLog = new PrintStream(new Console(console));
         printStreamArduino = new PrintStream(new Console(ArduinoConsole));
-        FileInputStream inputstream = new FileInputStream(System.getProperty("user.dir") + "\\src\\com\\p4\\resources\\icon.png");
+        FileInputStream inputstream = new FileInputStream(System.getProperty("user.dir") + "\\icon.png");
         Image image = new Image(inputstream);
         imageView.setImage(image);
     }
@@ -178,8 +179,6 @@ public class MainWindowController {
         //Generates the Arduino C code equivalent to the CStar code
         CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
         codeVisitor.visit(ast);
-
-
     }
 
 
@@ -187,6 +186,7 @@ public class MainWindowController {
     public void ChooseInputFileButtonAction(ActionEvent actionEvent) throws IOException {
         FileChooser fc = new FileChooser();
         FileChooser.ExtensionFilter cstarExtensionFilter = new FileChooser.ExtensionFilter("CStar - Source file", "*.cstar");
+        fc.getExtensionFilters().add(cstarExtensionFilter);
         File selected = fc.showOpenDialog(null);
 
 
@@ -194,28 +194,19 @@ public class MainWindowController {
             chosenFilePath.setText(selected.getAbsolutePath());
             fileName = selected.getName();
             fileName = fileName.substring(0,fileName.length() - 6);
+
             StringBuilder stringBuilder = new StringBuilder(selected.getAbsolutePath());
             stringBuilder.replace(stringBuilder.length() - 6, stringBuilder.length(), "");
+
             this.dirPath = stringBuilder.toString() + "/";
+
             stringBuilder.append("/").append(fileName).append(".ino");
+
             newFilePath = stringBuilder.toString();
             filePath = selected.getAbsolutePath();
+
             chosenOutputPath.setText(newFilePath);
-
-            //getOutputPath(selected.getAbsolutePath());
         }
-    }
-
-    private void getOutputPath(String filePath){
-
-        String dirPath = filePath.substring(0, filePath.length() - 6);
-
-        createDir(dirPath);
-
-
-
-        String newFilePath = dirPath + "/" + fileName.substring(0, fileName.length() - 6) + ".ino";
-        chosenOutputPath.setText(newFilePath);
     }
 
     private void createDir(String dirPath){
@@ -261,7 +252,7 @@ public class MainWindowController {
         Stage dialog = new Stage();
 
         dialog.initModality(Modality.WINDOW_MODAL);
-        dialog.setTitle("Advanced options");
+        dialog.setTitle("Select Arduino board");
         dialog.setScene(new Scene(root));
 
         dialog.showAndWait();
