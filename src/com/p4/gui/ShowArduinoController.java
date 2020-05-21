@@ -4,16 +4,16 @@ import com.p4.Board;
 import com.p4.CliExec;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 
+import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
 
 public class ShowArduinoController {
     public ObservableList<Board> items = FXCollections.observableArrayList();
     @FXML
-    public ListView<Board> listView;
+    public ListView listView;
 
     public static Board chosenBoard;
 
@@ -22,6 +22,6 @@ public class ShowArduinoController {
         listView.setItems(items);
     }
     public void saveBoardAction(ActionEvent actionEvent) {
-        chosenBoard = listView.getSelectionModel().getSelectedItem();
+        chosenBoard = (Board) listView.getSelectionModel().getSelectedItem();
     }
 }

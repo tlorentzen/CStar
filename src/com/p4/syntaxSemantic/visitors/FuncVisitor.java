@@ -1,9 +1,8 @@
 package com.p4.syntaxSemantic.visitors;
 
 import com.p4.errors.ErrorBag;
-import com.p4.syntaxSemantic.CStarParser;
-import com.p4.syntaxSemantic.nodes.*;
 import com.p4.symbols.SymbolTable;
+import com.p4.syntaxSemantic.nodes.*;
 
 //Goes through the program and adds all functions declared and called to the symbol table
 public class FuncVisitor implements INodeVisitor {

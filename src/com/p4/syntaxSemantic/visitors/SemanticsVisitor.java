@@ -2,11 +2,11 @@ package com.p4.syntaxSemantic.visitors;
 
 import com.p4.errors.ErrorBag;
 import com.p4.errors.ErrorType;
-import com.p4.syntaxSemantic.CStarParser;
-import com.p4.syntaxSemantic.nodes.*;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.CStarScope;
 import com.p4.symbols.SymbolTable;
+import com.p4.syntaxSemantic.CStarParser;
+import com.p4.syntaxSemantic.nodes.*;
 
 import java.util.List;
 import java.util.Map;

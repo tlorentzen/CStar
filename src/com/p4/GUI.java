@@ -24,6 +24,7 @@ public class GUI extends Application{
         stage.setTitle("CStar Compiler");
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 }

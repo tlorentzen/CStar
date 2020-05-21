@@ -1,9 +1,7 @@
 package com.p4;
 
-import com.p4.errors.ErrorBag;
-import com.p4.errors.ErrorType;
-import com.p4.gui.MainWindowController;
-import com.p4.gui.ShowArduinoController;
+import com.p4.errors.*;
+import com.p4.gui.*;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
