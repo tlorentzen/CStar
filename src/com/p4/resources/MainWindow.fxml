@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
-<?import javafx.scene.canvas.*?>
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import com.p4.gui.GUI.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="733.0" prefWidth="412.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.p4.gui.MainWindowController">
+<AnchorPane prefHeight="733.0" prefWidth="412.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.p4.gui.MainWindowController">
    <children>
       <Label layoutX="20.0" layoutY="297.0" text="Choose input file:" />
       <Button fx:id="compileButton" defaultButton="true" layoutX="364.0" layoutY="230.0" mnemonicParsing="false" onAction="#CompileButtonAction" text="Compile" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="20.0" />
@@ -18,7 +19,7 @@
       <Button id="chooseInputFileButton" fx:id="outputFileButton" layoutX="324.0" layoutY="369.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#ChooseOutputFileButtonAction" prefHeight="25.0" prefWidth="69.0" text="Select..." AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="369.0" />
       <Label layoutX="20.0" layoutY="411.0" text="Log:" />
       <ProgressIndicator fx:id="spinner" layoutX="499.0" layoutY="425.0" maxHeight="25.0" maxWidth="25.0" minHeight="25.0" minWidth="25.0" prefHeight="25.0" prefWidth="25.0" progress="0.0" visible="false" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="90.0" />
-      <TextArea id="console" fx:id="console" layoutX="20.0" layoutY="428.0" prefHeight="211.0" prefWidth="372.0" />
+      <TextArea id="console" fx:id="console" editable="false" layoutX="20.0" layoutY="428.0" prefHeight="211.0" prefWidth="372.0" />
       <ImageView id="imageView" fx:id="imageView" fitHeight="294.0" fitWidth="284.0" layoutX="68.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </AnchorPane>
