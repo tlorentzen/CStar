@@ -210,58 +210,51 @@ public class CliExec {
         String fileName = "";
         
         if (!arduinoCli.exists() || !arduinoCli.isFile()) {
-            System.out.println("The Arduino CLI does not exist on your system");
-            System.out.println("Would you like to have it downloaded?");
-            System.out.println("Y/N");
-
             try {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-                String answer = reader.readLine();
-                if (answer.equals("Y") || answer.equals("y")) {
-                    switch(SystemInfo.getOsString()) {
-                        case "win":
-                            downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Windows_64bit.zip";
-                            fileName = "arduino-cli_latest_Windows_64bit.zip";
-                            break;
-                        case "mac":
-                            downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_macOS_64bit.tar.gz";
-                            fileName = "arduino-cli_latest_macOS_64bit.tar.gz";
-                            break;
-                        case "unix":
-                            downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz";
-                            fileName = "arduino-cli_latest_Linux_64bit.tar.gz";
-                            break;
-                        default:
-                            downloadUrl = "";
-                            fileName = "";
+                switch (SystemInfo.getOsString()) {
+                    case "win":
+                        downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Windows_64bit.zip";
+                        fileName = "arduino-cli_latest_Windows_64bit.zip";
+                        break;
+                    case "mac":
+                        downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_macOS_64bit.tar.gz";
+                        fileName = "arduino-cli_latest_macOS_64bit.tar.gz";
+                        break;
+                    case "unix":
+                        downloadUrl = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz";
+                        fileName = "arduino-cli_latest_Linux_64bit.tar.gz";
+                        break;
+                    default:
+                        downloadUrl = "";
+                        fileName = "";
+                }
+
+                if (!downloadUrl.equals("")) {
+                    File output = new File(basePath+"/"+fileName);
+
+                    Connection.Response response= Jsoup.connect(downloadUrl)
+                            .ignoreContentType(true)
+                            .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
+                            .timeout(5000)
+                            .maxBodySize(0)
+                            .execute();
+
+                    try (FileOutputStream fos = new FileOutputStream(output)) {
+                        fos.write(response.bodyAsBytes());
                     }
 
-                    if (!downloadUrl.equals("")) {
-                        File output = new File(basePath+"/"+fileName);
-
-                        Connection.Response response= Jsoup.connect(downloadUrl)
-                                .ignoreContentType(true)
-                                .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
-                                .timeout(5000)
-                                .maxBodySize(0)
-                                .execute();
-
-                        try (FileOutputStream fos = new FileOutputStream(output)) {
-                            fos.write(response.bodyAsBytes());
-                        }
-
-                        if (SystemInfo.getOsString().equals("win")) {
-                            unpackZip(output);
-                        }
-                        else {
-                            unpackGZip(output);
-                        }
-                        output.deleteOnExit();
-                    } 
+                    if (SystemInfo.getOsString().equals("win")) {
+                        unpackZip(output);
+                    }
                     else {
-                        System.out.println("Download failed!");
-                        System.out.println("Please try again");
+                        unpackGZip(output);
                     }
+                    output.deleteOnExit();
+                }
+                else {
+                    System.out.println("Download failed!");
+                    System.out.println("Please try again");
                 }
             }
             catch(Exception e) {

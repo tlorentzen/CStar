@@ -69,7 +69,7 @@ public class MainWindowController {
     public void initialize() throws FileNotFoundException {
         printStreamLog = new PrintStream(new Console(console));
         printStreamArduino = new PrintStream(new Console(ArduinoConsole));
-        FileInputStream inputstream = new FileInputStream(System.getProperty("user.dir") + "\\icon.png");
+        FileInputStream inputstream = new FileInputStream(System.getProperty("user.dir") + "/icon.png");
         Image image = new Image(inputstream);
         imageView.setImage(image);
     }

@@ -5,6 +5,7 @@ import com.p4.errors.ErrorType;
 import com.p4.symbols.Attributes;
 import com.p4.symbols.SymbolTable;
 import com.p4.syntaxSemantic.CStarParser;
+import com.p4.syntaxSemantic.nodes.*;
 import com.p4.syntaxSemantic.visitors.SemanticsVisitor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
