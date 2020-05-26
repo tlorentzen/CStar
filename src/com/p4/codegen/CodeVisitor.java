@@ -508,7 +508,7 @@ public class CodeVisitor implements INodeVisitor {
 
             //Enters if the child is an id node
             if (firstChild instanceof IdNode) {
-                return ((IdNode)firstChild).getId().contains("write") || ((IdNode)firstChild).getId().contains("read");
+                return ((IdNode)firstChild).getId().contains(".write") || ((IdNode)firstChild).getId().contains(".read");
             }
         }
         return false;
