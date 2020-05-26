@@ -1,4 +1,4 @@
-# P4 - Decentralized technologies
+# P4 - CStar Programming Language
 
 ## Resourcer
 
