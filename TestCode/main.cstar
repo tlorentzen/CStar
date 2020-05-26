@@ -5,6 +5,7 @@ void loop(){
 
     pinName.write(result);
 
+    character char = 'c';
 
     result  = pinName.read();
 }

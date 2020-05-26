@@ -1,4 +1,4 @@
-# P4 - Decentralized technologies
+# P4 - C* Language
 
 ## Resourcer
 
