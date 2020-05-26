@@ -9,7 +9,7 @@
 | LS | Lena Said | lsaid18@student.aau.dk | 29893184 |
 | ITC | Ida Thoft Christiansen | ichris18@student.aau.dk | 42400162 |
 | JKL | Jakob Kjeldbjerg Lund | jlund18@student.aau.dk | 42489540 |
-| | Zohra Amini | | |
+| | ZA | | |
 
 **Group e-mail:**<br>
 sw418f20@cs.aau.dk
