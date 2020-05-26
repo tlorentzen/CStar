@@ -231,7 +231,6 @@ public class CliExec {
         }
     }
 
-
     public void checkCliInstallation() {
         String downloadUrl = "";
         String fileName = "";
@@ -297,8 +296,12 @@ public class CliExec {
         }
     }
 
+
+    // Function found on
+    // https://stackoverflow.com/questions/7128171/how-to-compress-decompress-tar-gz-files-in-java
+    // And is used for unzipping tar gz files in java
     private void unpackGZip(File zipFile) {
-        //https://stackoverflow.com/questions/7128171/how-to-compress-decompress-tar-gz-files-in-java
+
         try {
             InputStream fis = new FileInputStream(zipFile);
             GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(fis);

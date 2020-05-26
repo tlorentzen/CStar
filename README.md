@@ -1,11 +1,6 @@
 # P4 - C* Language
 
-## Resources
-
-**Group e-mail:**<br>
-sw418f20@cs.aau.dk
-
-## Members
+## Members and contact information
 
 | Initial | Name | Email | Phone |
 | ------------- | ------------- | ------------- | ------------- |
@@ -15,6 +10,9 @@ sw418f20@cs.aau.dk
 | ITC | Ida Thoft Christiansen | ichris18@student.aau.dk | 42400162 |
 | JKL | Jakob Kjeldbjerg Lund | jlund18@student.aau.dk | 42489540 |
 | | Zohra Amini | | |
+
+**Group e-mail:**<br>
+sw418f20@cs.aau.dk
 
 ## Supervisor
 Lone Leth Thomsen
