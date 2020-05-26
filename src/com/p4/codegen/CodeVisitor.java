@@ -195,7 +195,9 @@ public class CodeVisitor implements INodeVisitor {
         this.visitChild(leftChild);
         stringBuilder.append(" = ");
         this.visitChild(rightChild);
-        stringBuilder.append(";\n");
+        if (!(rightChild instanceof FuncCallNode)){
+            stringBuilder.append(";\n");
+        }
         output.add(getLine());
     }
 
@@ -611,7 +613,8 @@ public class CodeVisitor implements INodeVisitor {
         if (funcIDSplit[1].equals("read")) {
             appendPinModeIfNeeded(false, funcIDSplit[0]);
             appendReadWrite(funcIDSplit[0], "Read");
-            stringBuilder.append(")");
+            stringBuilder.append(");\n");
+            output.add(getLine());
         }
         //Enters if a write function has been called on the pin
         else if (parameter != null && funcIDSplit[1].equals("write")) {
