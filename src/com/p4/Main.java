@@ -60,29 +60,27 @@ public class Main {
                             //astTreeVisitor.visit(0, ast);
 
                             //Creates the symbol table
-                            SymbolTable symbolTable = symbolTableSetup(ast,  errors);
+                            SymbolTable symbolTable = symbolTableSetup(ast, errors);
 
                             //Type checks and scope checks the AST
                             SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errors);
                             semanticsVisitor.visit(ast);
 
-
-
                             //Enters if no errors were found when type/scope checking
                             if (!errors.containsErrors()) {
                                 codeGenerationPhase(symbolTable, ast, errors);
-
                                 CmdPrint.printOk();
 
                                 //Creates the command line interface
                                 CliExec cli = new CliExec(errors, true);
                                 cli.arduinoSelection();
                                 cli.compileAndUpload();
-                            }else{
-                                CmdPrint.printFailed();
-
                             }
-                        }else{
+                            else {
+                                CmdPrint.printFailed();
+                            }
+                        }
+                        else {
                             CmdPrint.printFailed();
                         }
                     }
@@ -92,7 +90,8 @@ public class Main {
                 }
             }
             errors.display();
-        }else{
+        }
+        else {
             System.err.println("Missing path to C* source file");
         }
     }
@@ -137,7 +136,6 @@ public class Main {
             errors.addEntry(ErrorType.MISSING_ARDUINO_FUNCTION,
                     "Both the functions 'void setup()' and 'void loop()' are required by Arduino");
         }
-
         //Adds variable declarations in the symbol table
         SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable, errors);
         symbolTableVisitor.visit(ast);
@@ -146,7 +144,7 @@ public class Main {
     }
 
     private static void codeGenerationPhase(SymbolTable symbolTable, ProgNode ast, ErrorBag errors) {
-        //Generates theArduino C code equivalent to the CStar code
+        //Generates the Arduino C code equivalent to the CStar code
         CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
         codeVisitor.visit(ast);
 

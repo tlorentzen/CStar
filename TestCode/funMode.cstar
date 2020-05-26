@@ -1,4 +1,4 @@
-integer inFunMode = 0;
+boolean inFunMode = false;
 
 integer valPot1 = 0;
 integer valPot2 = 0;
@@ -18,7 +18,7 @@ void setup() {
 }
 
 void loop() {
-    if(inFunMode IS 0){
+    if(inFunMode IS false){
         readInput();
         setBarGraph();
         setRGB();
@@ -53,7 +53,7 @@ void readInput() {
     console.print(btnState);
 
     if(btnState > 500){
-        inFunMode = 1;
+        inFunMode = true;
     }
 }
 
@@ -120,6 +120,6 @@ void makeFun(){
         cycle = cycle + 1;
     }
 
-    inFunMode = 0;
+    inFunMode = false;
 }
 

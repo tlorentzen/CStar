@@ -203,8 +203,8 @@ void loop(){
         console.print("i is 2");
     }
 
-    character char = 'c';
-    if(char IS 'a'){
+    character c = 'c';
+    if(c IS 'a'){
         console.print("The character is 'a'");
     }
 

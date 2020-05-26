@@ -13,8 +13,6 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.ZipFile;
 
 public class CliExec {
-
-
     String basePath = System.getProperty("user.dir");
     String baseCommand = "";
     String arduinoCliFilename;
@@ -28,7 +26,6 @@ public class CliExec {
     ErrorBag errors;
     Board board;
 
-    
     public CliExec(ErrorBag errors, boolean outputInfo) {
         this.errors = errors;
         this.outputInfo = outputInfo;
@@ -139,7 +136,6 @@ public class CliExec {
                     for (int j = 4; j < items.length - 2; j++) {
                         boardName = boardName.concat(items[j]+" ");
                     }
-                    //todo write what the different indexes are
                     Board board = new Board(boardName.trim(), items[items.length - 1], items[portIndex], items[items.length - 2]);
                     boards.add(board);
                 }
@@ -150,7 +146,6 @@ public class CliExec {
         }
         return boards;
     }
-
 
     public void compileAndUpload() {
         //Enters if a cli file and a board is present
@@ -290,10 +285,10 @@ public class CliExec {
                         output.deleteOnExit();
                     } 
                     else {
-                        //TODO error
+                        System.out.println("Download failed!");
+                        System.out.println("Please try again");
                     }
                 }
-
             }
             catch(Exception e) {
                 System.out.println();
@@ -360,5 +355,4 @@ public class CliExec {
             e.printStackTrace();
         }
     }
-
 }

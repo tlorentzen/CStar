@@ -20,9 +20,4 @@ public abstract class AstNode {
     }
 
     public abstract void accept(INodeVisitor visitor);
-
-    //todo slet?
-    public void accept(AstTreeVisitor visitor) {
-        visitor.visit(0,this);
-    }
 }
