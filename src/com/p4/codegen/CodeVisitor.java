@@ -195,7 +195,7 @@ public class CodeVisitor implements INodeVisitor {
         this.visitChild(leftChild);
         stringBuilder.append(" = ");
         this.visitChild(rightChild);
-        if ((rightChild instanceof FuncCallNode)){
+        if (rightChild instanceof FuncCallNode){
             if(!(((IdNode)rightChild.children.get(0)).getId().contains(".read") || ((IdNode)rightChild.children.get(0)).getId().contains(".write"))){
                 stringBuilder.append(";\n");
             }
