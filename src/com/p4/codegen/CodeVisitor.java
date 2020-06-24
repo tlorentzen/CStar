@@ -126,24 +126,38 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IntervalNode node) {
         //Left side of the interval
         stringBuilder.append("(");
-        changeComparison(node, "]", ">", 1);
+        changeComparison(node, "]", ">", 1, 1);
         //Sides are always connected with logical AND
         stringBuilder.append(" && ");
         //Right side of the interval
-        changeComparison(node, "[", "<", 2);
+        changeComparison(node, "[", "<", 2, 2);
         stringBuilder.append(")");
     }
 
-    private void changeComparison(IntervalNode node, String bracketDirection, String compDirection, int childNumber) {
-        if (node.getLeftBracket().equals(bracketDirection)) {
-            visitChild(node.children.get(0));
-            stringBuilder.append(" " + compDirection + " ");
-            visitChild(node.children.get(childNumber));
+    private void changeComparison(IntervalNode node, String bracketDirection, String compDirection, int childNumber, int bracketNum) {
+        if(bracketNum == 1){
+            if (node.getLeftBracket().equals(bracketDirection)) {
+                visitChild(node.children.get(0));
+                stringBuilder.append(" " + compDirection + " ");
+                visitChild(node.children.get(childNumber));
+            }
+            else {
+                visitChild(node.children.get(0));
+                stringBuilder.append(" " + compDirection + "= ");
+                visitChild(node.children.get(childNumber));
+            }
         }
-        else {
-            visitChild(node.children.get(0));
-            stringBuilder.append(" " + compDirection + "= ");
-            visitChild(node.children.get(childNumber));
+        if(bracketNum == 2){
+            if (node.getRightBracket().equals(bracketDirection)) {
+                visitChild(node.children.get(0));
+                stringBuilder.append(" " + compDirection + " ");
+                visitChild(node.children.get(childNumber));
+            }
+            else {
+                visitChild(node.children.get(0));
+                stringBuilder.append(" " + compDirection + "= ");
+                visitChild(node.children.get(childNumber));
+            }
         }
     }
 
