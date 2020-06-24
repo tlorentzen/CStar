@@ -176,6 +176,10 @@ public class MainWindowController {
         //Generates the Arduino C code equivalent to the CStar code
         CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
         codeVisitor.visit(ast);
+        try{
+            codeVisitor.print(newFilePath, dirPath);
+        }
+        catch (IOException e){}
     }
 
 
