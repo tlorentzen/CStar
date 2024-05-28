@@ -4,7 +4,7 @@
 
 | Initial | Name | Email | Phone |
 | ------------- | ------------- | ------------- | ------------- |
-| TGL | Thomas Gjedsted Lorentzen | tglo18@student.aau.dk | 26836007 |
+| TGL | Thomas Gjedsted Lorentzen | tglo18@student.aau.dk |  |
 | NFSV | Niels Vistisen | nvisti18@student.aau.dk  | 31901999 |
 | LS | Lena Said | lsaid18@student.aau.dk | 29893184 |
 | ITC | Ida Thoft Christiansen | ichris18@student.aau.dk | 42400162 |
